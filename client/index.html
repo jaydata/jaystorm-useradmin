@@ -1,0 +1,101 @@
+<html>
+    <head>
+
+    <script src="/scripts/jquery-1.7.2.min.js"></script>
+    <script src="scripts/datajs-1.0.3.js"></script>
+    <script src="/scripts/jaydata/jaydata.js"></script>
+    <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+    <script src="/scripts/JaySvcUtil.js"></script>
+    <script src="scripts/knockout-2.1.0.debug.js"></script>
+    <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+    <script src="scripts/application.js"></script>
+    </head>
+<body>
+    <div id="output">
+
+    </div>
+
+    <div id="manageGroupsUI">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th><a href="#" data-bind="click: newGroupModel.show">add group</a></th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: groups">
+            <tr>
+                <td data-bind="text: name"></td>
+                <td> <a href="#" data-bind="click: $root.removeGroup">remove</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div id="addGroupUI" data-bind="visible: visible"  style="border:1px solid red">
+        <title>Add group</title>
+        <form data-bind="submit: createGroup">
+            Name: <input data-bind="value: name" /><br />
+            <input type="submit" value="Create Group"/>
+            <input type="checkbox" data-bind="checked: closeOnCreate" /> Close when created
+        </form>
+    </div>
+
+    <div id="adminUI">
+        <div>
+            <span>Users: <span data-bind="text: userCount"></span></span>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Login name</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Enabled</th>
+                <th><a href="#" data-bind="click: newUserModel.show">Add user</a></th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: userList">
+            <tr>
+                <!-- , click: $root.loadProducts-->
+                <td data-bind="text: login"></td>
+                <td data-bind="text: firstName"></td>
+                <td data-bind="text: lastName"></td>
+                <td data-bind="text: enabled"></td>
+                <td><a href="#" data-bind="text: 'Remove', click: $root.removeUser"></a>, <a href="#" data-bind="text: 'SetPassword', click: $root.changePassword"></a></td>
+            </tr>
+            </tbody>
+        </table>
+        <form data="submit:">
+
+        </form>
+    </div>
+
+
+    <div id="addUserUI" data-bind="visible: visible">
+        <form data-bind="submit: createUser">
+            <fieldset data-bind="with: $root.user">
+            login:<input data-bind="value: login"/><br />
+            first name: <input data-bind="value: firstName"/><br />
+            last name: <input data-bind="value: lastName" /><br />
+             enabled: <input type="checkbox" data-bind="checked: enabled" /><br />
+                <input type="submit" value="Create user"/>
+            </fieldset>
+        </form>
+    </div>
+
+    <div data-bind="visible: $root.user" id="changePasswordUI">
+        <form data-bind="submit: changePassword">
+            <div data-bind="with: $root.user">
+                <span data-bind="text: login"></span> (Id: <span data-bind="text: Id"></span>)
+            </div>
+            <input type="password" data-bind="value: password" />
+            <input type="password" data-bind="value: password2" />
+            <input type="submit" value="Set Password"/>
+            <div data-bind="text: progressText"></div>
+        </form>
+    </div>
+
+</body>
+</html>
