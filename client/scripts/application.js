@@ -28,9 +28,21 @@ $data.Base.extend("ViewModels.EventSource", {
     },
 
     fireEvent: function(event, data) {
+        var self = this;
+
         var subs = (this.eventClasses[event] || []).concat(this.eventClasses["*"] || []) ;
         for(var i = 0; i < subs.length; i++) {
             subs[i].apply(this, Array.prototype.slice.call(arguments,1));
+        };
+
+
+
+        if (event === 'ok' || event === 'cancel') {
+            var handler = this[event + '_handler'] || function() { };
+            handler.apply(self, data);
+            //ok and cancel are a one time event, reset after call to any of them
+            this.ok_handler = function() { };
+            this.cancel_handler = function()  { };
         }
     },
 
@@ -41,6 +53,16 @@ $data.Base.extend("ViewModels.EventSource", {
         }
 
         (this.eventClasses[event] = this.eventClasses[event] || []).push(fn);
+    },
+
+    'ok': function(fn) {
+        this["ok_handler"] = fn;
+        return this;
+    },
+
+    'cancel': function(fn) {
+        this.cancel_handler = fn;
+        return this;
     },
 
     detach: function(event, fn) {
@@ -128,21 +150,117 @@ function ManageGroupsModel(context, newGroupModel) {
 
 };
 
-function ManageUsersModel(context, spModel, groupsModel, newUserModel) {
+
+$data.Class.defineEx("ViewModels.EditUser", [ViewModels.Showable, ViewModels.EventSource], null, {
+    constructor: function (context) {
+        var self = this;
+
+
+        self.user = ko.observable();
+
+
+        self.createUser = function() {
+            self.fireEvent("ok", self.user());
+        }
+
+        self.cancelCreateUser = function() {
+            self.fireEvent("cancel", self.user());
+        }
+    }
+});
+
+$data.Class.defineEx("ViewModels.EntityEditor", [ViewModels.Showable, ViewModels.EventSource], null, {
+    constructor: function (context) {
+        var self = this;
+
+
+        self.object = ko.observable();
+
+        self.data = function(value) {
+            self.object(value);
+            return self;
+        }
+
+
+        self.save = function() {
+            self.fireEvent("ok", self.object());
+        }
+
+        self.cancelSave = function() {
+            self.fireEvent("cancel", self.object());
+        }
+
+        self.new = function(eSet) {
+            var d = $.Deferred();
+            var u = new eSet.createNew().asKoObservable();
+
+            self.data(u)
+                .ok(function() {
+                    eSet.add(u);
+                    context.saveChanges( function() {
+                        self.data(null).hide();
+                        d.resolve(u);
+                    });
+                })
+                .cancel(function() {d.reject() ;this.hide(); })
+                .show();
+            return d.promise();
+        }
+
+        self.edit = function(obj, eSet) {
+            var d = $.Deferred();
+
+            function ok() {
+                context.saveChanges(function() {
+                    d.resolve(obj);
+                    self.hide();
+                });
+            }
+            function cancel() {
+                eSet.detach(obj);
+                d.resolve(null);
+                self.hide();
+            }
+
+
+            eSet.attach(obj);
+            self.data(obj).ok(ok).cancel(cancel).show();
+
+            var sub = self.object.subscribe( function() {
+                eSet.detach(obj);
+                //todo rollback user
+                sub.dispose();
+            })
+            return d.promise();
+        }
+    }
+});
+
+function ManageUsersModel(context, spModel, groupsModel, editor) {
     var _context = context;
 
+    c = context;
     var self = this;
 
     self.groupsModel = groupsModel;
-    self.newUserModel = newUserModel;
-
-    self.newUserModel.attach(function(user) {
-        self.userList.push(user);
-    });
+    self.editor = editor;
 
     self.userCount = ko.observable();
     self.userList = ko.observableArray([]);
 
+    self.selectedUser = ko.observable();
+
+
+
+    self.newUser = function() {
+            self.editor.new(context.Users).then(function(user) {
+                self.userList.push(user);
+            });
+    }
+
+    self.editUser = function(user) {
+        self.editor.edit(user, context.Users);
+    }
 
 
     self.changePassword = function(user) {
@@ -162,33 +280,6 @@ function ManageUsersModel(context, spModel, groupsModel, newUserModel) {
 
 }
 
-$data.Class.defineEx("ViewModels.NewUser", [ViewModels.Showable, ViewModels.EventSource], null, {
-    constructor: function (context) {
-        var self = this;
-
-        self.hide = function() {
-            self.user(null);
-            ViewModels.Showable.prototype.hide.apply(this, arguments);
-        }
-
-        self.show = function() {
-            var u = new context.Users.createNew();
-            self.user(u.asKoObservable());
-            ViewModels.Showable.prototype.show.apply(this, arguments);
-        }
-
-        self.user = ko.observable();
-
-        self.createUser = function() {
-            context.Users.add(self.user());
-            context.saveChanges( function() {
-                self.fireEvent("newUser", self.user());
-                self.hide();
-            });
-
-        }
-    }
-});
 
 
 
@@ -204,10 +295,10 @@ $(function() {
         var spModel = new SetPasswordModel(context);
         ko.applyBindings(spModel, document.getElementById("changePasswordUI"));
 
-        var newUserModel = new ViewModels.NewUser(context);
-        ko.applyBindings(newUserModel, document.getElementById("addUserUI"));
+        var entityEditor = new ViewModels.EntityEditor(context);
+        ko.applyBindings(entityEditor, document.getElementById("editObjectUI"));
 
-        var manageUsersModel = new ManageUsersModel(context, spModel, manageGroupsModel, newUserModel);
+        var manageUsersModel = new ManageUsersModel(context, spModel, manageGroupsModel, entityEditor);
         ko.applyBindings(manageUsersModel, document.getElementById("adminUI"));
 
     };
