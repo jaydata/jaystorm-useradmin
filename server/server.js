@@ -22,11 +22,13 @@ require('q');
 
 function registerEdmTypes() {
 
-    function Edm_Boolean() { };
+    function Edm_Boolean() {
+    }
     $data.Container.registerType('Edm.Boolean', Edm_Boolean);
     $data.Container.mapType(Edm_Boolean, $data.Boolean);
 
-    function Edm_Binary() { };
+    function Edm_Binary() {
+    }
     $data.Container.registerType('Edm.Binary', Edm_Binary);
     $data.Container.mapType(Edm_Binary, $data.Blob);
 
@@ -85,8 +87,16 @@ function registerEdmTypes() {
 };
 registerEdmTypes();
 
-$data.Entity.extend('JayStormApplication.User', {
+$data.Entity.extend('JayStormApplication.Base', {
+
+    constructor: function() {
+        this.creationDate = new Date();
+    },
     'Id':{ key:true, type:'id', nullable:false, computed:true },
+    'creationDate': { type: 'date' }
+});
+
+$data.Class.define('JayStormApplication.User', JayStormApplication.Base, null, {
     login: { type: 'Edm.String' },
     firstName: { type: 'Edm.String' },
     lastName:  { type: 'Edm.String' },
@@ -95,10 +105,14 @@ $data.Entity.extend('JayStormApplication.User', {
     roles: { type: 'Edm.String' }
 });
 
-$data.Entity.extend('JayStormApplication.Group', {
-    'Id':{ key:true, type:'id', nullable:false, computed:true },
+$data.Class.define('JayStormApplication.Group', JayStormApplication.Base, null , {
     name: { type: 'Edm.String' }
 });
+
+$data.Class.define('JayStormApplication.Entity', JayStormApplication.Base, null , {
+    tableName: { type: 'Edm.String' }
+});
+
 
 $data.Class.defineEx('JayStormApplication.Context', [$data.EntityContext, $data.ServiceBase], null, {
 
@@ -161,10 +175,15 @@ var c = require('connect');
 var app = c();
 
 app.use(c.query());
+//app.use(function(req, res, next) {
+//   console.log("!!!");
+//    console.dir(req);
+//   next();
+//});
 app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);
 app.use("/db", $data.JayService.createAdapter(JayStormApplication.Context, function() {
     return new JayStormApplication.Context({name: "mongoDB", databaseName:"ApplicationDB"});
 }));
 app.use("/", c.static("../client"));
-app.listen(80);
+app.listen(8080);
 console.log("end");

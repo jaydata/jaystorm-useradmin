@@ -5,6 +5,49 @@
  * Time: 11:40 PM
  * To change this template use File | Settings | File Templates.
  */
+$data.Base.extend("ViewModels.Showable", {
+    constructor: function() {
+        //var self = this;
+
+        this.visible = ko.observable(false);
+    },
+
+    visible: { },
+
+    hide: function() {
+        this.visible(false)
+    },
+    show: function() {
+        this.visible(true);
+    }
+});
+
+$data.Base.extend("ViewModels.EventSource", {
+    constructor: function() {
+        this.eventClasses = [];
+    },
+
+    fireEvent: function(event, data) {
+        var subs = (this.eventClasses[event] || []).concat(this.eventClasses["*"] || []) ;
+        for(var i = 0; i < subs.length; i++) {
+            subs[i].apply(this, Array.prototype.slice.call(arguments,1));
+        }
+    },
+
+    attach: function(event, fn) {
+        if (arguments.length < 2) {
+            fn = event;
+            event = "*";
+        }
+
+        (this.eventClasses[event] = this.eventClasses[event] || []).push(fn);
+    },
+
+    detach: function(event, fn) {
+        throw "NOT IMPLEMENTED";
+        //this.visible(true);
+    }
+});
 
 function SetPasswordModel(context) {
     var self = this;
@@ -39,33 +82,27 @@ function SetPasswordModel(context) {
 
 }
 
-function NewGroupModel(context) {
-
-    var self = this;
-    self.notify = function() { };
-
-    self.visible = ko.observable(false);
-    self.hide = function() { self.visible(false) }
-    self.show = function() { self.visible(true); }
 
 
-    self.name = ko.observable();
+$data.Class.defineEx("ViewModels.NewGroup", [ViewModels.Showable, ViewModels.EventSource], null, {
+    constructor: function(context) {
+        var self = this;
 
+        self.name = ko.observable();
 
-    self.closeOnCreate = ko.observable(false);
+        self.closeOnCreate = ko.observable(false);
 
-    self.closeOnCreate(false);
-
-    self.createGroup = function() {
-        self.visible(! self.closeOnCreate());
-        var group = new JayStormApplication.Group();
-        group.name = self.name();
-        context.Groups.add(group);
-        context.saveChanges( function( item ) {
-            self.notify(group);
-        })
+        self.createGroup = function() {
+            self.visible(! self.closeOnCreate());
+            var group = new context.Groups.createNew();
+            group.name = self.name();
+            context.Groups.add(group);
+            context.saveChanges( function( item ) {
+                self.fireEvent("newGroup", group);
+            })
+        }
     }
-}
+});
 
 function ManageGroupsModel(context, newGroupModel) {
     var self = this;
@@ -75,9 +112,9 @@ function ManageGroupsModel(context, newGroupModel) {
 
     self.newGroupModel = newGroupModel;
 
-    self.newGroupModel.notify = function(group) {
+    self.newGroupModel.attach(function(group) {
         self.groups.push(group.asKoObservable());
-    };
+    });
 
     self.selectedGroup = ko.observable();
 
@@ -99,9 +136,9 @@ function ManageUsersModel(context, spModel, groupsModel, newUserModel) {
     self.groupsModel = groupsModel;
     self.newUserModel = newUserModel;
 
-    self.newUserModel.notify = function(user) {
+    self.newUserModel.attach(function(user) {
         self.userList.push(user);
-    }
+    });
 
     self.userCount = ko.observable();
     self.userList = ko.observableArray([]);
@@ -125,41 +162,40 @@ function ManageUsersModel(context, spModel, groupsModel, newUserModel) {
 
 }
 
-function NewUserModel(context) {
-    var self = this;
-    self.notify = function() { };
+$data.Class.defineEx("ViewModels.NewUser", [ViewModels.Showable, ViewModels.EventSource], null, {
+    constructor: function (context) {
+        var self = this;
 
-    self.visible = ko.observable(false);
-    self.hide = function() {
-        self.user(null);
-        self.visible(false);
+        self.hide = function() {
+            self.user(null);
+            ViewModels.Showable.prototype.hide.apply(this, arguments);
+        }
+
+        self.show = function() {
+            var u = new context.Users.createNew();
+            self.user(u.asKoObservable());
+            ViewModels.Showable.prototype.show.apply(this, arguments);
+        }
+
+        self.user = ko.observable();
+
+        self.createUser = function() {
+            context.Users.add(self.user());
+            context.saveChanges( function() {
+                self.fireEvent("newUser", self.user());
+                self.hide();
+            });
+
+        }
     }
+});
 
-    self.show = function() {
-        var u = new JayStormApplication.User();
-        self.user(u.asKoObservable());
-        self.visible(true);
-    }
 
-    self.user = ko.observable();
-
-    self.createUser = function() {
-        context.Users.add(self.user());
-        context.saveChanges( function() {
-            self.notify(self.user());
-            self.hide();
-        });
-
-    }
-};
 
 $(function() {
-    $data.MetadataLoader.xsltRepoUrl = '/scripts/';
-    $data.MetadataLoader.load('/db/$metadata', function () {
 
-        var context = JayStormApplication.context;
-
-        var newGroupModel = new NewGroupModel(context);
+    function loadUserManagerUI(context) {
+        var newGroupModel = new ViewModels.NewGroup(context);
         ko.applyBindings(newGroupModel,document.getElementById('addGroupUI') )
 
         var manageGroupsModel = new ManageGroupsModel(context, newGroupModel);
@@ -168,10 +204,18 @@ $(function() {
         var spModel = new SetPasswordModel(context);
         ko.applyBindings(spModel, document.getElementById("changePasswordUI"));
 
-        var newUserModel = new NewUserModel(context);
+        var newUserModel = new ViewModels.NewUser(context);
         ko.applyBindings(newUserModel, document.getElementById("addUserUI"));
 
         var manageUsersModel = new ManageUsersModel(context, spModel, manageGroupsModel, newUserModel);
         ko.applyBindings(manageUsersModel, document.getElementById("adminUI"));
+
+    };
+
+    $data.MetadataLoader.xsltRepoUrl = '/scripts/';
+    $data.MetadataLoader.load('/db/$metadata', function () {
+
+        var context = JayStormApplication.context;
+        loadUserManagerUI(context);
     });
 })

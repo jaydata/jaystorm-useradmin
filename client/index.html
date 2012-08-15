@@ -15,12 +15,13 @@
 
     </div>
 
+    <div id="UserGroupAdminUI">
     <div id="manageGroupsUI">
         <table border="1">
             <thead>
-            <tr>
+            <tr data-bind="with: newGroupModel">
                 <th>Name</th>
-                <th><a href="#" data-bind="click: newGroupModel.show">add group</a></th>
+                <th><a href="#" data-bind="click: show">add group</a></th>
             </tr>
             </thead>
             <tbody data-bind="foreach: groups">
@@ -42,25 +43,85 @@
         </form>
     </div>
 
-    <div id="adminUI">
+        <script type="text/html" id="Edm.String">
+            <div data-bind="text: $data"  />
+        </script>
+
+
+        <script type="text/html" id="Edm.String-editor">
+            <div data-bind="text: $data.getType().fullName" />
+            <input data-bind="value: $parent[$data.name] " />
+        </script>
+
+        <script type="text/html" id="Edm.Boolean-editor">
+            <input type="checkbox" data-bind="checked: $parent[$data.name]" />
+        </script>
+
+        <script type="text/html" id="Edm.DateTime-editor">
+            <input type="date" data-bind="value: $parent[$data.name]" />
+        </script>
+
+        <!--<script type="text/html" id="property-editor">-->
+            <!--<div data-bind="text: $data.name"></div>-->
+            <!--<div data-bind="text: $data.value"></div>-->
+
+            <!--<div data-bind="{template:  $data.value.getType().memberDefinitions.getMember($data.name).type +'-editor', data: $data.value}"></div>-->
+            <!--&lt;!&ndash;<div data-bind="template: {name: $data.value.getType().memberDefinitions.getMember($data.name+'-editor').type, data: $data.value[$data.name]}" ></div>-->
+            <!--&lt;!&ndash;<div data-bind="template: {name: $data.value.getType().memberDefinitions.getMember($data.name+'-editor').type, data: $data.value[$data.name]}" ></div>&ndash;&gt;-->
+        <!--</script>-->
+        <script type="text/html" id="debug">
+            Debug: !<div data-bind="text: $data"></div>!
+        </script>
+        <script type="text/html" id="object-property-editor-working">
+            <div data-bind="text: $data.name"></div>
+            <div data-bind="text: $data.templateName = $data.type + '-editor'"></div>
+            <div data-bind="{ template: $data.type+'-editor', data: $parent[$data.name]}" ></div>
+        </script>
+
+        <script type="text/html" id="object-property-editor">
+            <div data-bind="text: $data.name"></div>
+            <!--<div data-bind="{ template: $data.type+'-editor', data: $parent[$data.name]}" ></div>-->
+            <div data-bind="template: { name: $data.type + '-editor', data: $data.name}" ></div>
+        </script>
+
+
+        <script type="text/html" id="object-editor">
+            <div data-bind="template:{name: 'object-property-editor',
+                        foreach: $data.innerInstance.getType().memberDefinitions.getPublicMappedProperties() }">
+            </div>
+        </script>
+
+
+        <div id="addUserUI" data-bind="visible: visible">
+            <form data-bind="submit: createUser">
+                <fieldset data-bind="with: $root.user">
+                    <div data-bind="template: { name: 'object-editor'}"></div>
+                    <input type="submit" value="Create user"/>
+                </fieldset>
+            </form>
+        </div>
+
+        <div id="adminUI">
         <div>
             <span>Users: <span data-bind="text: userCount"></span></span>
         </div>
         <table>
             <thead>
             <tr>
+                <td>!!!!!</td>
                 <th>Login name</th>
                 <th>Firstname</th>
                 <th>Lastname</th>
                 <th>Enabled</th>
-                <th><a href="#" data-bind="click: newUserModel.show">Add user</a></th>
+                <th data-bind="with:newUserModel"><a href="#" data-bind="click: show">Add user</a></th>
             </tr>
             </thead>
             <tbody data-bind="foreach: userList">
             <tr>
+                <!--<td data-bind="template:{name: 'object-properties', data: $data}"></td>-->
                 <!-- , click: $root.loadProducts-->
-                <td data-bind="text: login"></td>
-                <td data-bind="text: firstName"></td>
+                <td data-bind="template: { name: 'Edm.String', data: login }"></td>
+                <td data-bind="text: $data['firstName']"></td>
                 <td data-bind="text: lastName"></td>
                 <td data-bind="text: enabled"></td>
                 <td><a href="#" data-bind="text: 'Remove', click: $root.removeUser"></a>, <a href="#" data-bind="text: 'SetPassword', click: $root.changePassword"></a></td>
@@ -73,18 +134,6 @@
     </div>
 
 
-    <div id="addUserUI" data-bind="visible: visible">
-        <form data-bind="submit: createUser">
-            <fieldset data-bind="with: $root.user">
-            login:<input data-bind="value: login"/><br />
-            first name: <input data-bind="value: firstName"/><br />
-            last name: <input data-bind="value: lastName" /><br />
-             enabled: <input type="checkbox" data-bind="checked: enabled" /><br />
-                <input type="submit" value="Create user"/>
-            </fieldset>
-        </form>
-    </div>
-
     <div data-bind="visible: $root.user" id="changePasswordUI">
         <form data-bind="submit: changePassword">
             <div data-bind="with: $root.user">
@@ -95,6 +144,31 @@
             <input type="submit" value="Set Password"/>
             <div data-bind="text: progressText"></div>
         </form>
+    </div>
+    </div>
+
+    <div id="DatabasesAdminUI">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach:databases">
+                <tr>
+                    <td data-bind="text: name" />
+                    <td><a href="#" data-bind="click: manage"></a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="StringEditor">
+        <input data-bind="$data" />
+    </div>
+    <div id="AddDatabase">
+
     </div>
 
 </body>
