@@ -47,7 +47,7 @@
 //        <tr><th>A</th><th>B</th></tr>\
 //    </thead>\
 
-    function getColumnsMetadata(source, fields) {
+    function getColumnsMetadata(source, fields, showItemControls) {
         var entityType = null;
 
         if (source instanceof $data.EntitySet) {
@@ -56,25 +56,35 @@
             entityType = source._defaultType;
         }
         var props = entityType.memberDefinitions.getPublicMappedProperties();
-        if (fields.length == 0) {
-            return props;
-        }
-        var res = [];
-        for(var i = 0; i < fields.length; i++) {
-            var propname = fields[i].name || fields[i];
-            var prop = null;
-            j = 0;
-            while(!prop && j < props.length) {
-                if (props[j].name === propname) {
-                    prop = props[j];
+        if (fields.length > 0) {
+            var res = [];
+            for(var i = 0; i < fields.length; i++) {
+                var propname = fields[i].name || fields[i];
+                var prop = null;
+                j = 0;
+                while(!prop && j < props.length) {
+                    if (props[j].name === propname) {
+                        prop = props[j];
+                    }
+                    j++;
                 }
-                j++;
+                if (prop) {
+                    res.push(prop);
+                }
             }
-            if (prop) {
-                res.push(prop);
-            }
+            props = res;
         }
-        return res;
+
+//        if (showItemControls) {
+//            var meta = {
+//                isVirtual : true,
+//                name: 'controls',
+//                type: 'itemControls'
+//            };
+//            props.push(meta);
+//        }
+
+        return props;
     };
 
     ko.bindingHandlers.jayGrid = {
@@ -87,23 +97,49 @@
             var viewModel = viewModelAccessor(), allBindings = allBindingsAccessor();
 
             var source = null, fields = [];
+
+
             if (viewModel instanceof $data.EntitySet || viewModel instanceof $data.Queryable) {
                 source = viewModel;
             } else {
                 source = viewModel.source;
             };
 
+
             fields = viewModel.fields || [];
 
+
             var model = {
-                columns: getColumnsMetadata(source, fields),
-                items: ko.observableArray([])
+                columns: getColumnsMetadata(source, fields, {}),
+                items: ko.observableArray([]),
+                selectedItem: ko.observable()
             }
+
+            var receiveEvents = viewModel.receiveEvents !== false;
+
+            if (source instanceof $data.EntitySet && receiveEvents) {
+                source.entityContext.addEventListener("added", function(sender, itemInfo) {
+                    if (itemInfo.data instanceof source.createNew) {
+                        model.items.push( itemInfo.data.asKoObservable());
+                    }
+                });
+                source.entityContext.addEventListener("deleted", function(sender, itemInfo) {
+                    if (itemInfo.data instanceof source.createNew) {
+                        model.items.remove( function(item) {
+                            return item.innerInstance.equals(itemInfo.data);
+                        });
+                    }
+                })
+
+            }
+
 
             while(element.firstChild) {
                 ko.removeNode(element.firstChild);
             }
+
             var gridTemplateName = allBindings.gridTemplate || "jay-data-grid";
+
             var container = element.appendChild( document.createElement("div"));
 
             ko.renderTemplate(  gridTemplateName,

@@ -32,10 +32,16 @@
                 };
 
                 $data.MetadataLoader.xsltRepoUrl = '/scripts/';
+
                 $data.MetadataLoader.load('/db/$metadata', function () {
+
                     var context = JayStormApplication.context;
 
                     context.top2Users = context.Users.take(2);
+
+
+
+
                     ko.applyBindings(context, document.getElementById("JayGridTests"));
 
 
@@ -58,21 +64,35 @@
 
 
     <div id="JayGridTests">
-        <div data-bind="jayGrid: Users">
 
-        </div>
-        <div data-bind="jayGrid: {source: Users, fields:['Id','login']}">
 
-        </div>
-        <div data-bind="jayGrid: {source: Users, fields:['Id','login']}, gridTemplate:'myGrid'">
-
+        <div data-bind='jayGrid: Users' id='myUsers'>
+            loading...
         </div>
 
-        <div data-bind="jayGrid: {source: top2Users, fields:['Id','login']}, gridTemplate:'myGrid'">
+
+        <div id="x" data-bind="jayGrid: {source: Groups, fields:['Id','name'], itemCommands: ['remove','edit']}">
 
         </div>
+
+
+        <!--<div data-bind="jayPropertyEditor: ">-->
+
+        <!--</div>-->
+
+        <!--<a href="#" data-bind="click: "></a>-->
+
+        <!--<div data-bind="jayGrid: {source: Users, fields:['Id','login']}, gridTemplate:'myGrid'">-->
+
+        <!--</div>-->
+
+        <!--<div data-bind="jayGrid: {source: top2Users, fields:['Id','login']}, gridTemplate:'myGrid'">-->
+
+        <!--</div>-->
 
     </div>
+
+
 
     <script type="text/html" id="myGrid">
         <table class='jay-data-grid' border='12'>

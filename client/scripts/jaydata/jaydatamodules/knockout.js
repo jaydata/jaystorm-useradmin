@@ -323,7 +323,6 @@
             },
 
             getProperties: function(props) {
-                alert(arguments);
                 //todo cache!
                 var self = this;
                 var _props = this.innerInstance.getType().memberDefinitions.getPublicMappedProperties();

@@ -88,15 +88,16 @@ function registerEdmTypes() {
 registerEdmTypes();
 
 $data.Entity.extend('JayStormApplication.Base', {
-
+    'Id':{ key:true, type:'id', nullable:false, computed:true },
+    'creationDate': { type: 'date' },
+    'description': { type: 'string' },
     constructor: function() {
         this.creationDate = new Date();
     },
-    'Id':{ key:true, type:'id', nullable:false, computed:true },
-    'creationDate': { type: 'date' }
 });
 
 $data.Class.define('JayStormApplication.User', JayStormApplication.Base, null, {
+    hajniLikes: { type: 'Edm.Boolean'},
     login: { type: 'Edm.String' },
     firstName: { type: 'Edm.String' },
     lastName:  { type: 'Edm.String' },
