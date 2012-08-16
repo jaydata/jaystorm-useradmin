@@ -33,15 +33,13 @@
 
                 $data.MetadataLoader.xsltRepoUrl = '/scripts/';
                 $data.MetadataLoader.load('/db/$metadata', function () {
+                    var context = JayStormApplication.context;
+
+                    context.top2Users = context.Users.take(2);
+                    ko.applyBindings(context, document.getElementById("JayGridTests"));
 
 
-                    JayStormApplication.context.top2Users = JayStormApplication.context.Users.take(2);
-
-                    ko.applyBindings(JayStormApplication.context, document.getElementById("test"));
-
-
-//                    var context = JayStormApplication.context;
-//                    loadUserManagerUI(context);
+                    loadUserManagerUI(context);
                 });
 
             })
