@@ -1,20 +1,97 @@
 <html>
     <head>
+        <script src="/scripts/jquery-1.7.2.min.js"></script>
+        <script src="scripts/datajs-1.0.3.js"></script>
+        <script src="/scripts/jaydata/jaydata.js"></script>
+        <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+        <script src="/scripts/JaySvcUtil.js"></script>
+        <script src="scripts/knockout-2.1.0.debug.js"></script>
+            <script src="scripts/jaygrid.js"></script>
+        <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+        <script src="scripts/application.js"></script>
+        <script type="text/javascript">
 
-    <script src="/scripts/jquery-1.7.2.min.js"></script>
-    <script src="scripts/datajs-1.0.3.js"></script>
-    <script src="/scripts/jaydata/jaydata.js"></script>
-    <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
-    <script src="/scripts/JaySvcUtil.js"></script>
-    <script src="scripts/knockout-2.1.0.debug.js"></script>
-    <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
-    <script src="scripts/application.js"></script>
+            $(function() {
 
+                function loadUserManagerUI(context) {
+                    var newGroupModel = new ViewModels.NewGroup(context);
+                    ko.applyBindings(newGroupModel,document.getElementById('addGroupUI') )
+
+                    var manageGroupsModel = new ManageGroupsModel(context, newGroupModel);
+                    ko.applyBindings(manageGroupsModel, document.getElementById("manageGroupsUI"));
+
+                    var spModel = new SetPasswordModel(context);
+                    ko.applyBindings(spModel, document.getElementById("changePasswordUI"));
+
+                    var entityEditor = new ViewModels.EntityEditor(context);
+                    ko.applyBindings(entityEditor, document.getElementById("editObjectUI"));
+
+                    var manageUsersModel = new ManageUsersModel(context, spModel, manageGroupsModel, entityEditor);
+                    ko.applyBindings(manageUsersModel, document.getElementById("adminUI"));
+
+                };
+
+                $data.MetadataLoader.xsltRepoUrl = '/scripts/';
+                $data.MetadataLoader.load('/db/$metadata', function () {
+
+
+                    JayStormApplication.context.top2Users = JayStormApplication.context.Users.take(2);
+
+                    ko.applyBindings(JayStormApplication.context, document.getElementById("test"));
+
+
+//                    var context = JayStormApplication.context;
+//                    loadUserManagerUI(context);
+                });
+
+            })
+        </script>
     </head>
 <body>
     <div id="output">
+    </div>
+
+    <script type="text/html" id="foobar">
+        <table>
+
+        </table>
+    </script>
+
+
+
+    <div id="JayGridTests">
+        <div data-bind="jayGrid: Users">
+
+        </div>
+        <div data-bind="jayGrid: {source: Users, fields:['Id','login']}">
+
+        </div>
+        <div data-bind="jayGrid: {source: Users, fields:['Id','login']}, gridTemplate:'myGrid'">
+
+        </div>
+
+        <div data-bind="jayGrid: {source: top2Users, fields:['Id','login']}, gridTemplate:'myGrid'">
+
+        </div>
 
     </div>
+
+    <script type="text/html" id="myGrid">
+        <table class='jay-data-grid' border='12'>
+            <thead class='jay-data-grid-columns'>
+                <tr class='jay-data-grid-columns-row' data-bind="foreach: columns">
+                    <td data-bind='text: name'></td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: items">
+                <tr  data-bind='foreach: $parent.columns'>
+                    <td data-bind='text: $parent[name]'></td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+
 
     <div id="UserGroupAdminUI">
     <div id="manageGroupsUI">
@@ -35,7 +112,7 @@
     </div>
 
 
-    <div id="addGroupUI" data-bind="visible: visible"  style="border:1px solid red">
+    <div id="addGroupUI" data-bind="visible: visible"  style="border:1px solid #2dff4c">
         <title>Add group</title>
         <form data-bind="submit: createGroup">
             Name: <input data-bind="value: name" /><br />
@@ -66,16 +143,15 @@
 
 
 
-        <script type="text/html" id="object-property-editor">
-            <div data-bind="text: name"></div>
-            <div data-bind="template: { name: type + '-editor' }"></div>
-        </script>
-
 
         <div id="editObjectUI" data-bind="visible: visible">
             <form data-bind="submit: save">
                 <fieldset data-bind="with: $root.object">
-                    <div data-bind="template:{name: 'object-property-editor', foreach: $data.getProperties() }">
+                    <div data-bind="foreach: getProperties()">
+                        <div class="input-unit">
+                            <div data-bind="text: name"></div>
+                            <div data-bind="template: { name: type + '-editor' }"></div>
+                        </div>
                     </div>
                     <input type="submit" value="Save"/>
                     <input type="button" value="Cancel" data-bind="click: $parent.cancelSave"/>
@@ -147,6 +223,7 @@
     <div id="StringEditor">
         <input data-bind="$data" />
     </div>
+
     <div id="AddDatabase">
 
     </div>

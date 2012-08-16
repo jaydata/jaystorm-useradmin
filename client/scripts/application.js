@@ -283,30 +283,3 @@ function ManageUsersModel(context, spModel, groupsModel, editor) {
 
 
 
-$(function() {
-
-    function loadUserManagerUI(context) {
-        var newGroupModel = new ViewModels.NewGroup(context);
-        ko.applyBindings(newGroupModel,document.getElementById('addGroupUI') )
-
-        var manageGroupsModel = new ManageGroupsModel(context, newGroupModel);
-        ko.applyBindings(manageGroupsModel, document.getElementById("manageGroupsUI"));
-
-        var spModel = new SetPasswordModel(context);
-        ko.applyBindings(spModel, document.getElementById("changePasswordUI"));
-
-        var entityEditor = new ViewModels.EntityEditor(context);
-        ko.applyBindings(entityEditor, document.getElementById("editObjectUI"));
-
-        var manageUsersModel = new ManageUsersModel(context, spModel, manageGroupsModel, entityEditor);
-        ko.applyBindings(manageUsersModel, document.getElementById("adminUI"));
-
-    };
-
-    $data.MetadataLoader.xsltRepoUrl = '/scripts/';
-    $data.MetadataLoader.load('/db/$metadata', function () {
-
-        var context = JayStormApplication.context;
-        loadUserManagerUI(context);
-    });
-})

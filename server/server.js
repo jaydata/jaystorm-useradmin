@@ -109,9 +109,14 @@ $data.Class.define('JayStormApplication.Group', JayStormApplication.Base, null ,
     name: { type: 'Edm.String' }
 });
 
-$data.Class.define('JayStormApplication.Entity', JayStormApplication.Base, null , {
-    tableName: { type: 'Edm.String' }
+$data.Class.define('JayStormApplication.Table', JayStormApplication.Base, null , {
+    name: { type: 'Edm.String' }
 });
+
+$data.Class.define('JayStormApplication.ComplexType', JayStormApplication.Base, null , {
+    name: { type: 'Edm.String' }
+});
+
 
 
 $data.Class.defineEx('JayStormApplication.Context', [$data.EntityContext, $data.ServiceBase], null, {

@@ -322,12 +322,13 @@
                 return this.innerInstance;
             },
 
-            getProperties: function() {
+            getProperties: function(props) {
+                alert(arguments);
                 //todo cache!
                 var self = this;
-                var props = this.innerInstance.getType().memberDefinitions.getPublicMappedProperties();
+                var _props = this.innerInstance.getType().memberDefinitions.getPublicMappedProperties();
                 //todo remove map
-                var koData = props.map( function(memberInfo) {
+                var koData = _props.map( function(memberInfo) {
                    return {
                        type: memberInfo.type,
                        name: memberInfo.name,
