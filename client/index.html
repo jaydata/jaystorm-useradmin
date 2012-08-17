@@ -7,6 +7,7 @@
         <script src="/scripts/JaySvcUtil.js"></script>
         <script src="scripts/knockout-2.1.0.debug.js"></script>
             <script src="scripts/jaygrid.js"></script>
+        <script src="scripts/jaypropertyeditor.js"></script>
         <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
         <script src="scripts/application.js"></script>
         <script type="text/javascript">
@@ -31,21 +32,65 @@
 
                 };
 
-                $data.MetadataLoader.xsltRepoUrl = '/scripts/';
+                $data.MetadataLoader.load('/db', function (factory) {
 
-                $data.MetadataLoader.load('/db/$metadata', function () {
-
-                    var context = JayStormApplication.context;
-
-                    context.top2Users = context.Users.take(2);
+                    var context = factory();
 
 
+                    function userManagerModel(context) {
+                        var self = this;
 
 
-                    ko.applyBindings(context, document.getElementById("JayGridTests"));
+                        self.Users = context.Users;
+
+                        self.Groups = context.Groups;
+
+                        self.groups = ko.observableArray([]);
+
+                        self.selectedObject = ko.observable();
+
+                        self.selectObjectCommand = function(o) {
+                            self.selectedObject(o);
+                            self.propEditorVisible(true);
+                        };
+
+                        self.editObject = function(o) {
+                            self.selectedObject(o);
+                            self.propEditorVisible(true);
+                        };
+                        self.editObject.displayName = 'Edit';
+
+                        this.propEditorVisible = ko.observable(false);
+
+                        self.editObjectCommand = {
+                            execute: function(o) {
+                                self.selectedObject(o);
+                                self.propEditorVisible(true);
+                            },
+                            displayName : 'Edit'
+                        };
+
+                        self.removeObjectCommand = {
+                            execute: function(o) {
+                                self.selectedObject(o);
+                                self.propEditorVisible(true);
+                            },
+                            displayName : 'Remove'
+                        };
 
 
-                    loadUserManagerUI(context);
+                        self.removeObject = function(o) {
+
+                        }
+
+
+                    }
+
+
+                    ko.applyBindings(new userManagerModel(context), document.getElementById("JayGridTests"));
+
+
+                    //loadUserManagerUI(context);
                 });
 
             })
@@ -66,15 +111,24 @@
     <div id="JayGridTests">
 
 
-        <div data-bind='jayGrid: Users' id='myUsers'>
-            loading...
+        <!--<div data-bind='jayGrid: Users' id='myUsers'>-->
+            <!--loading...-->
+        <!--</div>-->
+
+        <div id="x" data-bind="jayGrid: {source: Users,
+                               itemCommands: [ editObjectCommand, removeObjectCommand ]}">
+
+        </div>
+
+        <div id="x" data-bind="jayGrid: {source: Groups, itemStore: groups,
+                               itemCommands: [ editObjectCommand, removeObjectCommand ]}">
+
         </div>
 
 
-        <div id="x" data-bind="jayGrid: {source: Groups, fields:['Id','name'], itemCommands: ['remove','edit']}">
-
+        <div data-bind="jayPropertyEditor: selectedObject, visible: propEditorVisible">
+            !!!
         </div>
-
 
         <!--<div data-bind="jayPropertyEditor: ">-->
 
@@ -93,158 +147,150 @@
     </div>
 
 
+    <!--
+        <script type="text/html" id="myGrid">
+            <table class='jay-data-grid' border='12'>
+                <thead class='jay-data-grid-columns'>
+                    <tr class='jay-data-grid-columns-row' data-bind="foreach: columns">
+                        <td data-bind='text: name'></td>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: items">
+                    <tr  data-bind='foreach: $parent.columns'>
+                        <td data-bind='text: $parent[name]'></td>
+                    </tr>
+                </tbody>
+            </table>
+        </script>
 
-    <script type="text/html" id="myGrid">
-        <table class='jay-data-grid' border='12'>
-            <thead class='jay-data-grid-columns'>
-                <tr class='jay-data-grid-columns-row' data-bind="foreach: columns">
-                    <td data-bind='text: name'></td>
+
+
+        <div id="UserGroupAdminUI">
+        <div id="manageGroupsUI">
+            <table border="1">
+                <thead>
+                <tr data-bind="with: newGroupModel">
+                    <th>Name</th>
+                    <th><a href="#" data-bind="click: show">add group</a></th>
                 </tr>
-            </thead>
-            <tbody data-bind="foreach: items">
-                <tr  data-bind='foreach: $parent.columns'>
-                    <td data-bind='text: $parent[name]'></td>
+                </thead>
+                <tbody data-bind="foreach: groups">
+                <tr>
+                    <td data-bind="text: name"></td>
+                    <td> <a href="#" data-bind="click: $root.removeGroup">remove</a></td>
                 </tr>
-            </tbody>
-        </table>
-    </script>
+                </tbody>
+            </table>
+        </div>
 
 
-
-    <div id="UserGroupAdminUI">
-    <div id="manageGroupsUI">
-        <table border="1">
-            <thead>
-            <tr data-bind="with: newGroupModel">
-                <th>Name</th>
-                <th><a href="#" data-bind="click: show">add group</a></th>
-            </tr>
-            </thead>
-            <tbody data-bind="foreach: groups">
-            <tr>
-                <td data-bind="text: name"></td>
-                <td> <a href="#" data-bind="click: $root.removeGroup">remove</a></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-
-    <div id="addGroupUI" data-bind="visible: visible"  style="border:1px solid #2dff4c">
-        <title>Add group</title>
-        <form data-bind="submit: createGroup">
-            Name: <input data-bind="value: name" /><br />
-            <input type="submit" value="Create Group"/>
-            <input type="checkbox" data-bind="checked: closeOnCreate" /> Close when created
-        </form>
-    </div>
-
-        <!--<script type="text/html" id="Edm.String">-->
-            <!--<div data-bind="text: $data.m"  />-->
-        <!--</script>-->
-
-
-
-        <script type="text/html" id="Edm.String-editor">
-            <input data-bind="value: value" />
-        </script>
-
-        <script type="text/html" id="Edm.Boolean-editor">
-            <input type="checkbox" data-bind="checked: value" />
-        </script>
-
-        <script type="text/html" id="Edm.DateTime-editor">
-            <input type="datetime" data-bind="value: value" />
-        </script>
-
-        <script type="text/html" id="debug">Debug: !<div data-bind="text: $data"></div>!</script>
-
-
-
-
-        <div id="editObjectUI" data-bind="visible: visible">
-            <form data-bind="submit: save">
-                <fieldset data-bind="with: $root.object">
-                    <div data-bind="foreach: getProperties()">
-                        <div class="input-unit">
-                            <div data-bind="text: name"></div>
-                            <div data-bind="template: { name: type + '-editor' }"></div>
-                        </div>
-                    </div>
-                    <input type="submit" value="Save"/>
-                    <input type="button" value="Cancel" data-bind="click: $parent.cancelSave"/>
-                </fieldset>
+        <div id="addGroupUI" data-bind="visible: visible"  style="border:1px solid #2dff4c">
+            <title>Add group</title>
+            <form data-bind="submit: createGroup">
+                Name: <input data-bind="value: name" /><br />
+                <input type="submit" value="Create Group"/>
+                <input type="checkbox" data-bind="checked: closeOnCreate" /> Close when created
             </form>
         </div>
 
-        <div id="adminUI">
-        <div>
-            <span>Users: <span data-bind="text: userCount"></span></span>
-        </div>
-        <table>
-            <thead>
-            <tr>
-                <th>Login name</th>
-                <th>Firstname</th>
-                <th>Lastname</th>
-                <th>Enabled</th>
-                <th><a href="#" data-bind="click: $root.newUser">Add user</a></th>
-            </tr>
-            </thead>
-            <tbody data-bind="foreach: userList">
-            <tr>
-                <td data-bind="text: login"></td>
-                <td data-bind="text: $data['firstName']"></td>
-                <td data-bind="text: lastName"></td>
-                <td data-bind="text: enabled"></td>
-                <td><a href="#" data-bind="text: 'Remove', click: $root.removeUser"></a>,
-                    <a href="#" data-bind="text: 'SetPassword', click: $root.changePassword"></a>
-                    <a href="#" data-bind="text: 'Edit', click: $root.editUser"></a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-    </div>
 
 
-    <div data-bind="visible: $root.user" id="changePasswordUI">
-        <form data-bind="submit: changePassword">
-            <div data-bind="with: $root.user">
-                <span data-bind="text: login"></span> (Id: <span data-bind="text: Id"></span>)
+            <script type="text/html" id="Edm.String-editor">
+                <input data-bind="value: value" />
+            </script>
+
+            <script type="text/html" id="Edm.Boolean-editor">
+                <input type="checkbox" data-bind="checked: value" />
+            </script>
+
+            <script type="text/html" id="Edm.DateTime-editor">
+                <input type="datetime" data-bind="value: value" />
+            </script>
+
+
+            <div id="editObjectUI" data-bind="visible: visible">
+                <form data-bind="submit: save">
+                    <fieldset data-bind="with: $root.object">
+                        <div data-bind="foreach: getProperties()">
+                            <div class="input-unit">
+                                <div data-bind="text: name"></div>
+                                <div data-bind="template: { name: type + '-editor' }"></div>
+                            </div>
+                        </div>
+                        <input type="submit" value="Save"/>
+                        <input type="button" value="Cancel" data-bind="click: $parent.cancelSave"/>
+                    </fieldset>
+                </form>
             </div>
-            <input type="password" data-bind="value: password" />
-            <input type="password" data-bind="value: password2" />
-            <input type="submit" value="Set Password"/>
-            <div data-bind="text: progressText"></div>
-        </form>
-    </div>
-    </div>
 
-    <div id="DatabasesAdminUI">
-        <table>
-            <thead>
+            <div id="adminUI">
+            <div>
+                <span>Users: <span data-bind="text: userCount"></span></span>
+            </div>
+            <table>
+                <thead>
                 <tr>
-                    <th>Name</th>
-                    <th></th>
+                    <th>Login name</th>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Enabled</th>
+                    <th><a href="#" data-bind="click: $root.newUser">Add user</a></th>
                 </tr>
-            </thead>
-            <tbody data-bind="foreach:databases">
+                </thead>
+                <tbody data-bind="foreach: userList">
                 <tr>
-                    <td data-bind="text: name" />
-                    <td><a href="#" data-bind="click: manage"></a></td>
+                    <td data-bind="text: login"></td>
+                    <td data-bind="text: $data['firstName']"></td>
+                    <td data-bind="text: lastName"></td>
+                    <td data-bind="text: enabled"></td>
+                    <td><a href="#" data-bind="text: 'Remove', click: $root.removeUser"></a>,
+                        <a href="#" data-bind="text: 'SetPassword', click: $root.changePassword"></a>
+                        <a href="#" data-bind="text: 'Edit', click: $root.editUser"></a>
+                    </td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
 
-    <div id="StringEditor">
-        <input data-bind="$data" />
-    </div>
+        </div>
 
-    <div id="AddDatabase">
 
-    </div>
+        <div data-bind="visible: $root.user" id="changePasswordUI">
+            <form data-bind="submit: changePassword">
+                <div data-bind="with: $root.user">
+                    <span data-bind="text: login"></span> (Id: <span data-bind="text: Id"></span>)
+                </div>
+                <input type="password" data-bind="value: password" />
+                <input type="password" data-bind="value: password2" />
+                <input type="submit" value="Set Password"/>
+                <div data-bind="text: progressText"></div>
+            </form>
+        </div>
+        </div>
 
+        <div id="DatabasesAdminUI">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach:databases">
+                    <tr>
+                        <td data-bind="text: name" />
+                        <td><a href="#" data-bind="click: manage"></a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="StringEditor">
+            <input data-bind="$data" />
+        </div>
+
+        <div id="AddDatabase">
+
+        </div>
+    -->
 </body>
 </html>

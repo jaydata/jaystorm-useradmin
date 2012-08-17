@@ -15,8 +15,18 @@
     //todo displayName
 
 
+
     templateEngine.addTemplate("jay-data-grid-header-cell", "<td data-bind='text: name'></td>");
 
+    templateEngine.addTemplate("jay-data-grid-control-cell", "<td>\
+                                                                <div  data-bind='foreach: data'>\
+                                                                    <span data-bind='with: $parents[1]'>\
+                                                                        <a href='#' data-bind='click: $parent.execute, text: $parent.displayName || \"command\"'></a> \
+                                                                    </span>\
+                                                                </div>\
+                                                              </td>");
+
+    templateEngine.addTemplate("jay-data-grid-data-cell", "<td data-bind='text: $parent[name]'></td>");
 
     templateEngine.addTemplate("jay-data-grid-head", "<thead class='jay-data-grid-columns'>\
                                                             <tr class='jay-data-grid-columns-row' \
@@ -24,9 +34,12 @@
                                                             </tr>\
                                                          </thead>");
 
+//    <td data-bind='text: $parent[name]'></td>\
+//                                                        <td data-bind='if: isVirtual === \"true\"'></td>  \
     templateEngine.addTemplate("jay-data-grid-row", "<tr  data-bind='foreach: $parent.columns'>\
-                                                        <td data-bind='text: $parent[name]'></td>\
-                                                    </tr>");
+                                                            <!-- ko template: { name: ($data[\"isVirtual\"] ? 'jay-data-grid-control-cell' : 'jay-data-grid-data-cell') } -->\
+                                                            <!-- /ko -->\
+                                                        </tr>");
 
     templateEngine.addTemplate("jay-data-grid-body", "<tbody data-bind=\"template: {name: 'jay-data-grid-row', foreach: items}\">\
                                                      </tbody>");
@@ -47,7 +60,7 @@
 //        <tr><th>A</th><th>B</th></tr>\
 //    </thead>\
 
-    function getColumnsMetadata(source, fields, showItemControls) {
+    function getColumnsMetadata(source, fields, itemCommands) {
         var entityType = null;
 
         if (source instanceof $data.EntitySet) {
@@ -55,7 +68,7 @@
         } else if (source instanceof $data.Queryable ) {
             entityType = source._defaultType;
         }
-        var props = entityType.memberDefinitions.getPublicMappedProperties();
+        var props = [].concat(entityType.memberDefinitions.getPublicMappedProperties());
         if (fields.length > 0) {
             var res = [];
             for(var i = 0; i < fields.length; i++) {
@@ -75,14 +88,15 @@
             props = res;
         }
 
-//        if (showItemControls) {
-//            var meta = {
-//                isVirtual : true,
-//                name: 'controls',
-//                type: 'itemControls'
-//            };
-//            props.push(meta);
-//        }
+        if (itemCommands.length > 0) {
+            var meta = {
+                isVirtual : true,
+                name: 'controls',
+                type: 'itemCommands',
+                data: itemCommands
+            };
+            props.push(meta);
+        }
 
         return props;
     };
@@ -108,10 +122,12 @@
 
             fields = viewModel.fields || [];
 
+            var itemCommands = viewModel.itemCommands || [];
+
 
             var model = {
-                columns: getColumnsMetadata(source, fields, {}),
-                items: ko.observableArray([]),
+                columns: getColumnsMetadata(source, fields, itemCommands),
+                items: viewModel.itemStore || ko.observableArray([]),
                 selectedItem: ko.observable()
             }
 
@@ -147,6 +163,8 @@
                                 {templateEngine: templateEngine},
                                 container,
                                 "replaceNode");
+
+
 
             source.toArray(model.items);
         }
