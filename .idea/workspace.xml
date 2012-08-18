@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/client/scripts/jayPropertyEditor.js" afterPath="" />
+    <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/jay-property-editor.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="jaystorm-useradmin.iws" />
@@ -330,7 +330,11 @@
       <created>1345309623510</created>
       <updated>1345309623510</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
+      <created>1345309958893</created>
+      <updated>1345309958893</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
