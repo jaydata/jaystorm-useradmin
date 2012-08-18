@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/jayrepeater.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/jayPropertyEditor.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/index.html" afterPath="$PROJECT_DIR$/client/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JaySvcUtil.js" afterPath="$PROJECT_DIR$/client/scripts/JaySvcUtil.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaygrid.js" afterPath="$PROJECT_DIR$/client/scripts/jaygrid.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server.js" afterPath="$PROJECT_DIR$/server/server.js" />
     </list>
     <ignored path="jaystorm-useradmin.iws" />
@@ -70,9 +67,7 @@
         <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="12348" column="0" selection-start="476978" selection-end="476978" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -80,104 +75,46 @@
       <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="197" column="0" selection-start="6932" selection-end="6932" vertical-scroll-proportion="0.0">
+            <state line="158" column="19" selection-start="5293" selection-end="5293" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="75" column="61" selection-start="3214" selection-end="3214" vertical-scroll-proportion="0.5026399">
+            <state line="7" column="0" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jaypropertyeditor.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaypropertyeditor.js">
+      <file leaf-file-name="knockout-2.1.0.debug.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="27" selection-start="1270" selection-end="1270" vertical-scroll-proportion="0.0">
-              <folding>
-                <marker date="1345220559000" expanded="true" signature="932:1475" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1470" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1469" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1458" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:956" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:956" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1020" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1045" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1080" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1092" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1219" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1267" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1291" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1229" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:1220" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="932:963" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="987:1020" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="987:1317" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="1047:1080" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="1047:1267" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="1047:1292" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="1093:1268" placeholder="..." />
-                <marker date="1345220559000" expanded="true" signature="1093:1219" placeholder="..." />
-              </folding>
+            <state line="2065" column="34" selection-start="96115" selection-end="96115" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jaygrid.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="jaygrid.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="95" selection-start="2144" selection-end="2144" vertical-scroll-proportion="0.0">
+            <state line="46" column="49" selection-start="2610" selection-end="2610" vertical-scroll-proportion="0.011965812">
               <folding>
-                <element signature="e#0#164#0" expanded="false" />
                 <marker date="1345214839000" expanded="true" signature="622:1145" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:1074" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:1212" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:1074" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:723" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:892" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:931" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:931" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:976" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="622:985" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="720:1074" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="720:1074" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="720:723" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="826:892" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="826:976" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="826:1071" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="1413:1787" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="1513:1653" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="2046:2358" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2298" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2214" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2214" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2213" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2158" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2220" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2153" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2141" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="2492:2555" placeholder="..." />
                 <marker date="1345214839000" expanded="true" signature="2649:3054" placeholder="..." />
               </folding>
@@ -204,17 +141,17 @@
         <option value="$PROJECT_DIR$/client/scripts/jayPropertyEditor.js" />
         <option value="$PROJECT_DIR$/client/scripts/jayrepeater.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
-        <option value="$PROJECT_DIR$/client/index.html" />
-        <option value="$PROJECT_DIR$/client/scripts/jaypropertyeditor.js" />
         <option value="$PROJECT_DIR$/server/server.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaypropertyeditor.js" />
+        <option value="$PROJECT_DIR$/client/index.html" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-22" />
-    <option name="y" value="104" />
-    <option name="width" value="1439" />
-    <option name="height" value="1119" />
+    <option name="x" value="399" />
+    <option name="y" value="22" />
+    <option name="width" value="1649" />
+    <option name="height" value="1331" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -242,6 +179,16 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -308,15 +255,14 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -326,7 +272,7 @@
   <component name="RunManager">
     <configuration default="true" type="JavascriptDebugSession" factoryName="Local">
       <JSDebuggerConfigurationSettings>
-        <option name="engineId" />
+        <option name="engineId" value="embedded" />
         <option name="fileUrl" />
       </JSDebuggerConfigurationSettings>
       <method />
@@ -374,19 +320,21 @@
       <created>1345141343556</created>
       <updated>1345141343556</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
+      <created>1345224340200</created>
+      <updated>1345224340200</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-22" y="104" width="1439" height="1119" extended-state="0" />
-    <editor active="true" />
+    <frame x="399" y="22" width="1649" height="1331" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15607345" sideWeight="0.9488978" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2810578" sideWeight="0.9488978" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -396,6 +344,8 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -458,6 +408,13 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/client/scripts/jayrepeater.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="41" selection-start="2022" selection-end="2022" vertical-scroll-proportion="0.63084924">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/deferred.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -472,31 +429,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3379" column="9" selection-start="167567" selection-end="167567" vertical-scroll-proportion="0.20896861">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="325" column="0" selection-start="15299" selection-end="15299" vertical-scroll-proportion="0.0">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jayrepeater.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="41" selection-start="2022" selection-end="2022" vertical-scroll-proportion="0.63084924">
-          <folding>
-            <marker date="1345208737000" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1345208737000" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1345208737000" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1345208737000" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -510,109 +446,49 @@
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="12348" column="0" selection-start="476978" selection-end="476978" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="95" selection-start="2144" selection-end="2144" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#164#0" expanded="false" />
-            <marker date="1345214839000" expanded="true" signature="622:1145" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:1074" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:1212" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:1074" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:723" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:892" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:931" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:931" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:976" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="622:985" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="720:1074" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="720:1074" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="720:723" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="826:892" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="826:976" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="826:1071" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="1413:1787" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="1513:1653" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2358" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2298" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2214" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2049" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2214" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2213" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2158" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2220" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2153" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2046:2141" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2492:2555" placeholder="..." />
-            <marker date="1345214839000" expanded="true" signature="2649:3054" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaypropertyeditor.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="27" selection-start="1270" selection-end="1270" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1345220559000" expanded="true" signature="932:1475" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1470" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1469" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1458" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:956" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:956" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1020" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1045" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1080" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1092" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1219" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1267" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1291" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1295" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1229" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:1220" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="932:963" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="987:1020" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="987:1317" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="1047:1080" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="1047:1267" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="1047:1292" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="1093:1268" placeholder="..." />
-            <marker date="1345220559000" expanded="true" signature="1093:1219" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="197" column="0" selection-start="6932" selection-end="6932" vertical-scroll-proportion="0.0">
+        <state line="158" column="19" selection-start="5293" selection-end="5293" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="75" column="61" selection-start="3214" selection-end="3214" vertical-scroll-proportion="0.5026399">
+        <state line="7" column="0" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2065" column="34" selection-start="96115" selection-end="96115" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="49" selection-start="2610" selection-end="2610" vertical-scroll-proportion="0.011965812">
+          <folding>
+            <marker date="1345214839000" expanded="true" signature="622:1145" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:1074" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:1212" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:723" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:892" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:931" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:976" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="622:985" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="1413:1787" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="1513:1653" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="2046:2358" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="2492:2555" placeholder="..." />
+            <marker date="1345214839000" expanded="true" signature="2649:3054" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>

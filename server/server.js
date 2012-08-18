@@ -88,7 +88,6 @@ registerEdmTypes();
 $data.Entity.extend('$data.JayStormAPI.EntityBase', {
     'Id':{ key:true, type:'id', nullable:false, computed:true },
     'creationDate': { type: 'date', $ui_visible:false },
-
     constructor: function() {
         this.creationDate = new Date();
     }
@@ -189,7 +188,8 @@ $data.Class.define('$data.JayStormAPI.Group', $data.JayStormAPI.EntityBase, null
 });
 
 
-$data.EntityContext.extend('$data.JayStormAPI.Context', {
+
+$data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.ServiceBase], null, {
     Entities: { type: $data.EntitySet, elementType: $data.JayStormAPI.Entity },
     //EntityFields: { type: $data.EntitySet, elementType: $data.ContextAPI.EntityField },
     EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler },
