@@ -6,7 +6,8 @@
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
         <script src="/scripts/JaySvcUtil.js"></script>
         <script src="scripts/knockout-2.1.0.debug.js"></script>
-            <script src="scripts/jaygrid.js"></script>
+        <script src="scripts/jaygrid-table-template.js"></script>
+        <script src="scripts/jaygrid.js"></script>
         <script src="scripts/jay-property-editor.js"></script>
         <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
         <script src="scripts/application.js"></script>
@@ -119,7 +120,7 @@
                        self.esPageSize = ko.observable(30);
 
 
-                       self.EntitySets = ko.observable(context.Users);
+                       self.EntitySets = ko.observable();
 
                        self.Tables = ko.observableArray([]);
                        self.visible = ko.observable(false);
@@ -262,7 +263,7 @@
                         source: EntitySets,
                         pageSize: esPageSize,
                         discriminatorField: 'Database',
-                        discriminatorValue: selectedDatabaseName, itemCommands: [ ]}">
+                        discriminatorValue: selectedDatabaseName}">
 
             <script type="text/html" data-type-template="Edm.String">
                 <div style="background-color: silver" data-bind="text: $parent[name]"></div>

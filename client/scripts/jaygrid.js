@@ -14,77 +14,13 @@
 
     //todo displayName
 
+    function regiserTemplates(templates) {
+        for(var i = 0; i < templates.length; i++) {
+            templateEngine.addTemplate(templates[i][0], templates[i][1]);
+        }
+    }
 
-    templateEngine.addTemplate("jay-data-grid-Edm.String-editor", "<input  \
-                                                                   data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />");
-
-
-    templateEngine.addTemplate("jay-data-grid-Edm.Int32-editor", "<input  type='range' min=1 max=10 \
-                                                                   data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />");
-
-    templateEngine.addTemplate("jay-data-grid-Edm.String-editor", "<input  patten: \"asd\" \
-                                                                   data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />");
-
-    templateEngine.addTemplate("jay-data-grid-header-cell", "<td data-bind='text: name'></td>");
-
-    templateEngine.addTemplate("jay-data-grid-control-cell", "<td>\
-                                                                <div  data-bind='foreach: data'>\
-                                                                    <span data-bind='with: $parents[1]'>\
-                                                                        <a href='#' data-bind='click: $parent.execute, text: $parent.displayName || \"command\"'></a> \
-                                                                    </span>\
-                                                                </div>\
-                                                              </td>");
-
-    templateEngine.addTemplate("jay-data-text-cell", "<span data-bind='text: $parent[name]'></span>");
-
-    templateEngine.addTemplate("jay-data-grid-data-cell", "<td data-bind='template: $root.getTemplate($parent,$data)'></td>");
-
-//    templateEngine.addTemplate("jay-data-grid-data-cell", "<td>text</td>");
-
-    templateEngine.addTemplate("jay-data-grid-head", "<thead class='jay-data-grid-columns'>\
-                                                            <tr class='jay-data-grid-columns-row' \
-                                                            data-bind=\"template: { name: 'jay-data-grid-header-cell', foreach: columns}\"\
-                                                            </tr>\
-                                                         </thead>");
-
-//    <td data-bind='text: $parent[name]'></td>\
-//                                                        <td data-bind='if: isVirtual === \"true\"'></td>  \
-    templateEngine.addTemplate("jay-data-grid-row", "<tr  data-bind='foreach: $parent.columns'>\
-                                                            <!-- ko template: { name: ($data[\"isVirtual\"] ? 'jay-data-grid-control-cell' : 'jay-data-grid-data-cell') } -->\
-                                                            <!-- /ko -->\
-                                                        </tr>");
-
-    templateEngine.addTemplate("jay-data-grid-body", "<tbody data-bind=\"template: {name: 'jay-data-grid-row', foreach: items}\">\
-                                                     </tbody>");
-
-//    templateEngine.addTemplate("jay-data-grid-body", "<tbody>\
-//                                                            <tr><td data-bind='foreach: items()'>!!!!</td></tr>\
-//                                                     </tbody>");
-
-    templateEngine.addTemplate("jay-data-grid", "<form data-bind='submit:save'><table data-bind='visible: source' class='jay-data-grid' border='1'> \
-                                                    <thead>\
-                                                    <td data-bind='attr: {colspan: columns().length}'>\
-                                                        <a href='#' data-bind='click: addNew, text: \"New \" '/> \
-                                                        <a href='#' data-bind='click: save'>Save</a>\
-                                                        Sort: <select data-bind='options: columns, optionsValue: \"name\", optionsText: \"name\", value: sortColumn'></select>\
-                                                    </td>\
-                                                    </thead>\
-                                                    <!-- ko template: { name: 'jay-data-grid-head' } --> \
-                                                    <!-- /ko -->\
-                                                    <!-- ko template: { name: 'jay-data-grid-body' } --> \
-                                                    <!-- /ko -->\
-                                                    <tbody>\
-                                                    <td data-bind='attr: {colspan: columns().length}'>\
-                                                        <a href='#' data-bind='click: addNew, text: \"New \" '/> \
-                                                        <input type='submit' value='Save' />\
-                                                        <select data-bind='options: ko.utils.range(1,50), value: pageSize, visible: pageSize() > 0'></select>\
-                                                        <a hef='#' data-bind='click:goToPreviousPage'> < </a>\
-                                                        <select data-bind='options: pages, value: currentPage'></select>\
-                                                        <a hef='#' data-bind='click:goToNextPage'> > </a>\
-                                                    </td>\
-                                                    </tbody>\
-                                                </table></form>");
-
+    regiserTemplates($data.jayGridTemplates.tableTemplate);
 
     function getColumnsMetadata(source, fields, itemCommands) {
         var entityType = null;
@@ -118,16 +54,18 @@
             name: 'ValidationErrors',
             type: 'Array'
         });
+
         props.push( {
             name: 'entityState',
             type: 'int'
         });
+
         if (itemCommands.length > 0) {
             var meta = {
                 isVirtual : true,
                 name: 'controls',
                 type: 'itemCommands',
-                data: itemCommands
+                itemCommands: itemCommands
             };
             props.push(meta);
         }
@@ -180,8 +118,10 @@
 
             fields = viewModel.fields || [];
 
-            var itemCommands = viewModel.itemCommands || [];
 
+            function getItemCommands() {
+
+            }
 
             function _model() {
                 console.log("Grid model created");
@@ -195,39 +135,134 @@
 
                 self.source = source;
 
+
+
                 self.source.subscribe( function(){
                     self.sortColumn('');
                 }, 'beforeChange');
 
+                self.items =  ko.observableArray([]);
+                self.objectsToDelete = ko.observableArray([]);
+                self.objectsInEditMode = ko.observableArray([]);
 
-                var cols = getColumnsMetadata(source, fields, itemCommands);
-                this.cols = cols;
-
-                self.columns = ko.observableArray(cols);
-                self.sortColumn = ko.observable(cols[0].name);
-
-                self.sortDirection = ko.observable(true);
 
 
                 self.save =  function() {
-                  ko.utils.unwrapObservable(source).entityContext.saveChanges( function() {
-                      console.log("saved");
+                    console.dir(arguments);
+                    var source = ko.utils.unwrapObservable(self.source);
+                    for(var i = 0; i < self.objectsToDelete().length; i++) {
+                        console.log("items found");
+                        var item = self.objectsToDelete()[i];
+                        source.remove(item);
+                    }
+                    source.entityContext.saveChanges( function() {
+                      //console.log("saved");
+                        for(var i = 0; i < self.objectsToDelete().length; i++) {
+                            var item = self.objectsToDelete()[i];
+                            self.items.remove(item);
+                        }
                       self.objectsInEditMode.removeAll()
-                  })
+                    })
                 };
 
-                self.objectsInEditMode = ko.observableArray([]);
+
+
+                self.pendingChanges = ko.computed( function() {
+                    return this.objectsToDelete().length > 0 ||
+                        this.objectsInEditMode().length > 0;
+                }, this);
+
+                self.pendingStatusInfo = function() {
+                    var es = ko.utils.unwrapObservable(self.source);
+                    if (!es) { return "-" };
+                    return "Number of tracked changes: " + es.entityContext.stateManager.trackedEntities.length;
+                }
 
                 self.addNew = function() {
-                    var es = new ko.utils.unwrapObservable(self.source);
+                    var es = ko.utils.unwrapObservable(self.source);
                     var o = new es.createNew();
-
-                    //console.dir(o);
                     o = o.asKoObservable();
                     self.objectsInEditMode.push(o);
                     ko.utils.unwrapObservable(source).add(o);
                     self.items.push(o);
                 };
+
+
+                var itemCommands = viewModel.itemCommands || [
+                    {
+                        displayName: 'Edit',
+                        commandName: 'edit',
+
+                        visible: function( item ) {
+                            return self.objectsInEditMode.indexOf(item) < 0;
+                        },
+
+                        execute: function( item ) {
+                            var es = ko.utils.unwrapObservable(self.source);
+                            es.attach(item);
+                            self.objectsInEditMode.push(item);
+                        }
+                    },
+                    {
+                        displayName: 'Revert',
+                        commandName: 'revert',
+
+                        visible: function( item ) {
+                            return self.objectsInEditMode.indexOf(item) > -1;
+                        },
+
+                        execute: function( item ) {
+                            var es = ko.utils.unwrapObservable(self.source);
+                            es.detach(item);
+                            self.objectsInEditMode.remove(item);
+                        }
+                    },
+                    {
+                        displayName: 'Delete',
+                        commandName : 'delete',
+
+                        execute: function( item ) {
+                            self.objectsToDelete.push(item);
+                        },
+
+                        visible: function( item ) {
+                            return self.objectsToDelete.indexOf(item) < 0;
+                        }
+
+
+                    },
+                    {
+                        displayName: 'Undo delete',
+                        commandName : 'undelete',
+
+                        execute: function( item ) {
+                            self.objectsToDelete.remove(item);
+                        },
+
+                        visible: function( item ) {
+                            return self.objectsToDelete.indexOf(item) > -1;
+                        }
+
+
+                    }
+                ];
+
+
+                var cols = [];
+                var sortColName = '';
+
+                var srcval = ko.utils.unwrapObservable(self.source);
+                if ( srcval !== undefined && srcval !== null)
+                {
+                    cols = getColumnsMetadata(srcval, fields, itemCommands);
+                    sortColName = cols[0].name;
+                };
+
+
+                self.columns = ko.observableArray(cols);
+                self.sortColumn = ko.observable(sortColName);
+                self.sortDirection = ko.observable(true);
+
 
                 self.columnNames = ko.computed( function() {
                     return this.columns().map( function(memDef) { return memDef.name });
@@ -235,7 +270,6 @@
 
                 self.selectedItem = ko.observable();
 
-                self.items =  ko.observableArray([]);
 //            if (source instanceof $data.EntitySet && receiveEvents) {
 //                source.entityContext.addEventListener("added", function(sender, itemInfo) {
 //                    if (itemInfo.data instanceof source.createNew) {
@@ -299,22 +333,6 @@
 
 
             var receiveEvents = viewModel.receiveEvents !== false;
-
-//            if (source instanceof $data.EntitySet && receiveEvents) {
-//                source.entityContext.addEventListener("added", function(sender, itemInfo) {
-//                    if (itemInfo.data instanceof source.createNew) {
-//                        model.items.push( itemInfo.data.asKoObservable());
-//                    }
-//                });
-//                source.entityContext.addEventListener("deleted", function(sender, itemInfo) {
-//                    if (itemInfo.data instanceof source.createNew) {
-//                        model.items.remove( function(item) {
-//                            return item.innerInstance.equals(itemInfo.data);
-//                        });
-//                    }
-//                })
-//            }
-//
 
 
             while(element.firstChild) {
