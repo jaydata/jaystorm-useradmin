@@ -40,6 +40,14 @@
             instanceDefinition[propName] = {
                 type: ko.observable
             };
+
+            instanceDefinition["ValidationErrors"] = {
+                type: ko.observable
+            };
+
+            instanceDefinition["entityState"] = {
+                type: ko.observable
+            };
         }
 
         $data.Class.defineEx(
@@ -314,7 +322,9 @@
                     Guard.raise(new Exception("innerData is instance of '$data.Entity' instead of '" + wrappedType.fullName + "'"));
                 } else {
                     innerInstance = new wrappedType(innerData);
-                }
+                };
+
+
 
                 Object.defineProperty(this, 'innerInstance', { enumerable: false, configurable: true, writable: true, value: innerInstance });
             },

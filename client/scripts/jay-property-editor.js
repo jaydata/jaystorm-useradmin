@@ -20,7 +20,7 @@
 
 
     templateEngine.addTemplate("jay-property-editor",
-        "<form>\
+        "<form data-bind='submit: save'>\
             <fieldset data-bind='with: objectToEdit'>\
                 <div data-bind='foreach: getProperties()'>\
                     <div class='input-unit'>\
@@ -29,10 +29,10 @@
                     </div>\
                 </div>\
             </fieldset>\
+            \
                 <input type='submit' value='Save'/>\
                 <input type='button' value='Cancel' data-bind='click: cancel' />\
          </form>");
-
 
 
     ko.bindingHandlers.jayPropertyEditor = {
@@ -42,7 +42,9 @@
         },
 
         update: function(element, viewModelAccessor, allBindingsAccessor) {
+
             var viewModel = viewModelAccessor(), allBindings = allBindingsAccessor();
+
             while(element.firstChild) {
                 ko.removeNode(element.firstChild);
             };
@@ -52,9 +54,9 @@
             var container = element.appendChild( document.createElement("div"));
 
             var model = {
-                save: function() {
+                save: viewModel.submitCommand().method,
 
-                },
+                commands: viewModel.commands,
 
                 objectToEdit : viewModel.objectToEdit,
 

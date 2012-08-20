@@ -12117,7 +12117,7 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         dataType: Array,
         elementType: $data.Validation.ValidationError,
         storeOnObject: true,
-        monitorChanges: false,
+        monitorChanges: true,
         notMapped: true,
         enumerable: false
     },
@@ -14380,6 +14380,17 @@ $data.Class.define('$data.Queryable', null, null,
         return Container.createQueryable(this, takeExp);
     },
 
+    order: function(selector) {
+          if (selector === '') return this;
+          if (selector[0] == "-") {
+              var orderString = "it." + selector.replace("-","");
+              return this.orderByDescending(orderString);
+          }  else {
+              //console.log()
+              return this.orderBy("it." + selector);
+          };
+
+    },
     orderBy: function (selector, thisArg) {
 		///<summary>Order a set of entities using an expression.</summary>
         ///<param name="selector" type="Function">An order expression</param>

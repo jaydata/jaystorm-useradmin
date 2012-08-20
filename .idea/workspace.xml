@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/index.html" afterPath="$PROJECT_DIR$/client/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jay-property-editor.js" afterPath="$PROJECT_DIR$/client/scripts/jay-property-editor.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaygrid.js" afterPath="$PROJECT_DIR$/client/scripts/jaygrid.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server.js" afterPath="$PROJECT_DIR$/server/server.js" />
     </list>
     <ignored path="jaystorm-useradmin.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,15 +30,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="deferred.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/deferred.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="qDeferred.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/qDeferred.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -46,17 +42,154 @@
       <file leaf-file-name="knockout.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="325" column="0" selection-start="15299" selection-end="15299" vertical-scroll-proportion="0.0">
+            <state line="13" column="18" selection-start="473" selection-end="473" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="application.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="application.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/application.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="208" column="0" selection-start="5092" selection-end="5092" vertical-scroll-proportion="0.01775148">
+            <state line="208" column="0" selection-start="5092" selection-end="5092" vertical-scroll-proportion="0.0">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="192" column="44" selection-start="6537" selection-end="6537" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JaySvcUtil.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/JaySvcUtil.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="240" column="12" selection-start="11378" selection-end="11378" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jay-property-editor.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/jay-property-editor.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="0" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
+              <folding>
+                <marker date="1345323842000" expanded="true" signature="963:1515" placeholder="..." />
+                <marker date="1345323842000" expanded="true" signature="1018:1348" placeholder="..." />
+                <marker date="1345323842000" expanded="true" signature="1078:1323" placeholder="..." />
+                <marker date="1345323842000" expanded="true" signature="1124:1299" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="199" column="0" selection-start="7667" selection-end="7667" vertical-scroll-proportion="-89.57143">
+              <folding>
+                <element signature="e#885#3540#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jaygrid.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="87" selection-start="1107" selection-end="1107" vertical-scroll-proportion="0.50461894">
+              <folding>
+                <marker date="1345419164000" expanded="true" signature="531:720" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="826:1014" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="1102:1298" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="1467:1988" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="1467:2057" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="1565:1988" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="1671:1916" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="2464:2838" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="2564:2704" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="3097:3409" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="3543:3606" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="3674:3756" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="3674:3854" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="3938:6091" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:6084" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4692" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4691" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5195" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5161" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5200" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4358" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4284" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4172" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4564" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4504" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4504" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:4510" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5630" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5644" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5904" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5899" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5672" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4006:5897" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4068:4686" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4068:4122" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4068:4122" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4068:4122" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4564" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4510" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4504" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4504" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4624" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4358" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="4172:4284" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5093:6026" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5964" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5904" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5899" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5897" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5672" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5644" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5630" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5482" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5197:5200" placeholder="..." />
+                <marker date="1345419164000" expanded="true" signature="5789:5959" placeholder="..." />
+                <element signature="e#6573#7111#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -64,30 +197,18 @@
       <file leaf-file-name="knockout-2.1.0.debug.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2065" column="34" selection-start="96115" selection-end="96115" vertical-scroll-proportion="0.0">
+            <state line="2244" column="52" selection-start="105169" selection-end="105169" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jaygrid.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
+      <file leaf-file-name="jaydata.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="46" column="49" selection-start="2610" selection-end="2610" vertical-scroll-proportion="0.0">
+            <state line="12138" column="82" selection-start="468457" selection-end="468457" vertical-scroll-proportion="0.0">
               <folding>
-                <marker date="1345214839000" expanded="true" signature="622:1145" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:1074" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:1212" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:723" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:892" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:931" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:976" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="622:985" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="1413:1787" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="1513:1653" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2046:2358" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2492:2555" placeholder="..." />
-                <marker date="1345214839000" expanded="true" signature="2649:3054" placeholder="..." />
+                <element signature="n#!!doc" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,22 +228,23 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/client/scripts/application.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" />
         <option value="$PROJECT_DIR$/client/scripts/jayPropertyEditor.js" />
         <option value="$PROJECT_DIR$/client/scripts/jayrepeater.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaypropertyeditor.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jay-property-editor.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" />
         <option value="$PROJECT_DIR$/client/index.html" />
         <option value="$PROJECT_DIR$/server/server.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="129" />
-    <option name="y" value="44" />
-    <option name="width" value="1649" />
-    <option name="height" value="1331" />
+    <option name="x" value="64" />
+    <option name="y" value="-4" />
+    <option name="width" value="1857" />
+    <option name="height" value="1085" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -224,6 +346,54 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaydata" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaydata" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaydatamodules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -231,7 +401,7 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="FullScreen" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
@@ -316,15 +486,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="129" y="44" width="1649" height="1331" extended-state="0" />
+    <frame x="64" y="-4" width="1857" height="1085" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2810578" sideWeight="0.9488978" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="CSS Styles" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18231441" sideWeight="0.67096776" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28056768" sideWeight="0.07096774" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -401,16 +572,6 @@
         <state line="52" column="41" selection-start="2022" selection-end="2022" vertical-scroll-proportion="0.63084924" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="53" selection-start="504" selection-end="504" vertical-scroll-proportion="0.09663503" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="167" column="1" selection-start="5714" selection-end="5714" vertical-scroll-proportion="0.1183432" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/deferred.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
@@ -421,32 +582,158 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="325" column="0" selection-start="15299" selection-end="15299" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2065" column="34" selection-start="96115" selection-end="96115" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="49" selection-start="2610" selection-end="2610" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12300" column="4" selection-start="474830" selection-end="474830" vertical-scroll-proportion="0.011965812">
+        <state line="2244" column="52" selection-start="105169" selection-end="105169" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/application.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="208" column="0" selection-start="5092" selection-end="5092" vertical-scroll-proportion="0.01775148">
+        <state line="208" column="0" selection-start="5092" selection-end="5092" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/JaySvcUtil.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="240" column="12" selection-start="11378" selection-end="11378" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jay-property-editor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="0" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
+          <folding>
+            <marker date="1345323842000" expanded="true" signature="963:1515" placeholder="..." />
+            <marker date="1345323842000" expanded="true" signature="1018:1348" placeholder="..." />
+            <marker date="1345323842000" expanded="true" signature="1078:1323" placeholder="..." />
+            <marker date="1345323842000" expanded="true" signature="1124:1299" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="18" selection-start="473" selection-end="473" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12138" column="82" selection-start="468457" selection-end="468457" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="192" column="44" selection-start="6537" selection-end="6537" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="199" column="0" selection-start="7667" selection-end="7667" vertical-scroll-proportion="-89.57143">
+          <folding>
+            <element signature="e#885#3540#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="87" selection-start="1107" selection-end="1107" vertical-scroll-proportion="0.50461894">
+          <folding>
+            <marker date="1345419164000" expanded="true" signature="531:720" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="826:1014" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="1102:1298" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="1467:1988" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="1467:2057" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="1565:1988" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="1671:1916" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="2464:2838" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="2564:2704" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="3097:3409" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="3543:3606" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="3674:3756" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="3674:3854" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="3938:6091" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:6084" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4692" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4691" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5195" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5161" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5200" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4358" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4284" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4172" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4564" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4504" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4504" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:4510" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5630" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5644" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5904" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5899" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5672" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4006:5897" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4068:4686" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4068:4122" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4068:4122" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4068:4122" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4564" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4510" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4504" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4504" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4624" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4358" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="4172:4284" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:5147" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5093:6026" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5964" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5904" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5899" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5898" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5897" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5672" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5644" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5630" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5482" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5197:5200" placeholder="..." />
+            <marker date="1345419164000" expanded="true" signature="5789:5959" placeholder="..." />
+            <element signature="e#6573#7111#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -7,30 +7,12 @@
         <script src="/scripts/JaySvcUtil.js"></script>
         <script src="scripts/knockout-2.1.0.debug.js"></script>
             <script src="scripts/jaygrid.js"></script>
-        <script src="scripts/jayPropertyEditor.js"></script>
+        <script src="scripts/jay-property-editor.js"></script>
         <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
         <script src="scripts/application.js"></script>
         <script type="text/javascript">
 
             $(function() {
-
-                function loadUserManagerUI(context) {
-                    var newGroupModel = new ViewModels.NewGroup(context);
-                    ko.applyBindings(newGroupModel,document.getElementById('addGroupUI') )
-
-                    var manageGroupsModel = new ManageGroupsModel(context, newGroupModel);
-                    ko.applyBindings(manageGroupsModel, document.getElementById("manageGroupsUI"));
-
-                    var spModel = new SetPasswordModel(context);
-                    ko.applyBindings(spModel, document.getElementById("changePasswordUI"));
-
-                    var entityEditor = new ViewModels.EntityEditor(context);
-                    ko.applyBindings(entityEditor, document.getElementById("editObjectUI"));
-
-                    var manageUsersModel = new ManageUsersModel(context, spModel, manageGroupsModel, entityEditor);
-                    ko.applyBindings(manageUsersModel, document.getElementById("adminUI"));
-
-                };
 
                 $data.MetadataLoader.load('/db', function (factory) {
 
@@ -80,13 +62,24 @@
                             displayName : 'Remove'
                         };
 
+                        self.saveObjectCommand = ko.observable({
+                            method: function() { }
+                        });
+
                         self.addNew = function(entitySet, model, event) {
                                 var o = new entitySet.createNew().asKoObservable();
                                 self.selectedObject(o);
                                 self.propEditorVisible(true);
-                                console.log(arguments)
-                        };
-
+                                console.log(arguments);
+                                self.saveObjectCommand({
+                                            method: function() {
+                                                entitySet.add(o);
+                                                entitySet.entityContext.saveChanges( function() {
+                                                   self.propEditorVisible(false);
+                                                });
+                                            }
+                                        });
+                        }
 
                         self.removeObject = function(o) {
 
@@ -98,15 +91,84 @@
                    function databaseManagerModel(context) {
 
                        var self = this;
+
+                       self.context = context;
+
+                       self.entitySets = function() {
+                           var result = [];
+                           for(var name in context) {
+                            if (context[name] instanceof $data.EntitySet) {
+                                result.push(context[name]);
+                            }
+                           }
+                           return result;
+                       };
+
+                       self.selectSet = function(eSet) {
+                           //self.order('');
+                           self.EntitySets(eSet);
+                       }
+
+                       self.Databases = context.Databases;
+                       self.selectedDatabase = ko.observable();
+
+                       self.selectedDatabaseName = ko.computed( function() {
+                           return this.selectedDatabase() ? this.selectedDatabase().Name() : '';
+                       }, this);
+
+                       self.esPageSize = ko.observable(30);
+
+
+                       self.EntitySets = ko.observable(context.Users);
+
                        self.Tables = ko.observableArray([]);
                        self.visible = ko.observable(false);
+                       self.databaseEditorVisible = ko.observable(false);
+
+                       self.saveObjectCommand = ko.observable({
+                           method: function() { }
+                       });
+
+
+
+                       self.addNew = function(entitySet, model, event) {
+                           var o = new entitySet.createNew();
+                           if ("DatabaseName" in o) {
+                               o.DatabaseName = self.selectedDatabaseName();
+                           };
+
+                           var o = o.asKoObservable();
+
+                           self.selectedDatabase(o);
+                           self.databaseEditorVisible(true);
+                           console.log(arguments);
+                           self.saveObjectCommand({
+                               method: function() {
+                                   entitySet.add(o);
+                                   entitySet.entityContext.saveChanges( function() {
+                                       self.databaseEditorVisible(false);
+                                   });
+                               }
+                           });
+                       };
+
+                       self.selectDatabaseCommand = {
+                           execute: function(o) {
+                               self.selectedDatabase(o);
+                           },
+                           displayName: 'Select'
+
+                       }
+
+
+
                    }
 
                     var userManagerModel = new userManagerModel(context);
                     var databaseManagerModel = new databaseManagerModel(context);
 
-                    ko.applyBindings(userManagerModel, document.getElementById("UserManagerUI"));
-                    ko.applyBindings(databaseManagerModel, document.getElementById("DatabaseManagerUI"))
+                    //ko.applyBindings(userManagerModel, document.getElementById("UserManagerUI"));
+                    ko.applyBindings(databaseManagerModel, document.getElementById("DatabaseManagerUI"));
 
                     function MenuModel(items) {
                         var self = this;
@@ -121,9 +183,8 @@
                     }
 
                     var items = [];
-                    var sections =
-                            [{ Title: 'Users and Groups', Model: userManagerModel },
-                            { Title: 'Databases', Model: databaseManagerModel }];
+                    var sections = //[{ Title: 'Users and Groups', Model: userManagerModel },
+                            [{ Title: 'Databases', Model: databaseManagerModel }];
                     ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));
                     //loadUserManagerUI(context);
                 });
@@ -155,189 +216,71 @@
             <!--loading...-->
         <!--</div>-->
 
-        <div id="x" data-bind="jayGrid: {source: Users,
-                               itemCommands: [ editObjectCommand, removeObjectCommand ]}">
+        <div id="x345" data-bind="jayGrid: {source: Users, pageSize: 10,
+                                            itemCommands: [ editObjectCommand, removeObjectCommand ]}">
 
         </div>
         <a href="#" data-bind="event: {click: addNew.bind($data, Users) }">click me</a>
 
-        <div id="x" data-bind="jayGrid: {source: Groups, itemStore: groups,
+        <div id="x123" data-bind="jayGrid: {source: Groups, itemStore: groups,
                                itemCommands: [ editObjectCommand, removeObjectCommand ]}">
 
         </div>
         <a href="#" data-bind="event: {click: addNew.bind($data, Groups) }">click me</a>
 
-
-
-
-        <div data-bind="jayPropertyEditor: { objectToEdit: selectedObject, commands: {  } }, visible: propEditorVisible">
+        <div data-bind="jayPropertyEditor: { objectToEdit: selectedObject, submitCommand: saveObjectCommand }, visible: propEditorVisible">
             !!!
         </div>
-
-        <!--<div data-bind="jayPropertyEditor: ">-->
-
-        <!--</div>-->
-
-        <!--<a href="#" data-bind="click: "></a>-->
-
-        <!--<div data-bind="jayGrid: {source: Users, fields:['Id','login']}, gridTemplate:'myGrid'">-->
-
-        <!--</div>-->
-
-        <!--<div data-bind="jayGrid: {source: top2Users, fields:['Id','login']}, gridTemplate:'myGrid'">-->
-
-        <!--</div>-->
-
     </div>
 
     <div id="DatabaseManagerUI" data-bind="visible: visible">
-            !!!!
+        <!--<div id="x56" data-bind="jayGrid: {source: Databases, itemCommands: [ selectDatabaseCommand ]}">-->
+
+        <!--</div>-->
+
+        <div data-bind="jayPropertyEditor: { objectToEdit: selectedDatabase, submitCommand: saveObjectCommand },  visible: databaseEditorVisible">
+
+        </div>
+
+
+        <a href="#" data-bind="event: {click: addNew.bind($data, Databases) }">Add new db</a>
+
+        <h1>Tables</h1>
+
+        <h3 data-bind="with: selectedDatabase">
+            <span data-bind="text: Name" />
+        </h3>
+
+        <h4 data-bind="text: selectedDatabaseName"></h4>
+
+        <div data-bind="foreach: entitySets()">
+            <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
+        </div>
+
+
+        <div id="x567" data-bind="jayGrid: {
+                        source: EntitySets,
+                        pageSize: esPageSize,
+                        discriminatorField: 'Database',
+                        discriminatorValue: selectedDatabaseName, itemCommands: [ ]}">
+
+            <script type="text/html" data-type-template="Edm.String">
+                <div style="background-color: silver" data-bind="text: $parent[name]"></div>
+            </script>
+
+            <script type="text/html" data-type-template="Edm.Boolean">
+                <input type="checkbox" data-bind="checked: $parent[name]" disabled />
+            </script>
+
+
+            <script type="text/html" data-field-template="Roles">
+                <div data-bind="text: $data"></div>
+            </script>
+        </div>
+
+        <a href="#" data-bind="event: {click: addNew.bind($data, EntitySets) }">Add new db</a>
+
     </div>
 
-    <!--
-        <script type="text/html" id="myGrid">
-            <table class='jay-data-grid' border='12'>
-                <thead class='jay-data-grid-columns'>
-                    <tr class='jay-data-grid-columns-row' data-bind="foreach: columns">
-                        <td data-bind='text: name'></td>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: items">
-                    <tr  data-bind='foreach: $parent.columns'>
-                        <td data-bind='text: $parent[name]'></td>
-                    </tr>
-                </tbody>
-            </table>
-        </script>
-
-
-
-        <div id="UserGroupAdminUI">
-        <div id="manageGroupsUI">
-            <table border="1">
-                <thead>
-                <tr data-bind="with: newGroupModel">
-                    <th>Name</th>
-                    <th><a href="#" data-bind="click: show">add group</a></th>
-                </tr>
-                </thead>
-                <tbody data-bind="foreach: groups">
-                <tr>
-                    <td data-bind="text: name"></td>
-                    <td> <a href="#" data-bind="click: $root.removeGroup">remove</a></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-
-        <div id="addGroupUI" data-bind="visible: visible"  style="border:1px solid #2dff4c">
-            <title>Add group</title>
-            <form data-bind="submit: createGroup">
-                Name: <input data-bind="value: name" /><br />
-                <input type="submit" value="Create Group"/>
-                <input type="checkbox" data-bind="checked: closeOnCreate" /> Close when created
-            </form>
-        </div>
-
-
-
-            <script type="text/html" id="Edm.String-editor">
-                <input data-bind="value: value" />
-            </script>
-
-            <script type="text/html" id="Edm.Boolean-editor">
-                <input type="checkbox" data-bind="checked: value" />
-            </script>
-
-            <script type="text/html" id="Edm.DateTime-editor">
-                <input type="datetime" data-bind="value: value" />
-            </script>
-
-
-            <div id="editObjectUI" data-bind="visible: visible">
-                <form data-bind="submit: save">
-                    <fieldset data-bind="with: $root.object">
-                        <div data-bind="foreach: getProperties()">
-                            <div class="input-unit">
-                                <div data-bind="text: name"></div>
-                                <div data-bind="template: { name: type + '-editor' }"></div>
-                            </div>
-                        </div>
-                        <input type="submit" value="Save"/>
-                        <input type="button" value="Cancel" data-bind="click: $parent.cancelSave"/>
-                    </fieldset>
-                </form>
-            </div>
-
-            <div id="adminUI">
-            <div>
-                <span>Users: <span data-bind="text: userCount"></span></span>
-            </div>
-            <table>
-                <thead>
-                <tr>
-                    <th>Login name</th>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Enabled</th>
-                    <th><a href="#" data-bind="click: $root.newUser">Add user</a></th>
-                </tr>
-                </thead>
-                <tbody data-bind="foreach: userList">
-                <tr>
-                    <td data-bind="text: login"></td>
-                    <td data-bind="text: $data['firstName']"></td>
-                    <td data-bind="text: lastName"></td>
-                    <td data-bind="text: enabled"></td>
-                    <td><a href="#" data-bind="text: 'Remove', click: $root.removeUser"></a>,
-                        <a href="#" data-bind="text: 'SetPassword', click: $root.changePassword"></a>
-                        <a href="#" data-bind="text: 'Edit', click: $root.editUser"></a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-
-        <div data-bind="visible: $root.user" id="changePasswordUI">
-            <form data-bind="submit: changePassword">
-                <div data-bind="with: $root.user">
-                    <span data-bind="text: login"></span> (Id: <span data-bind="text: Id"></span>)
-                </div>
-                <input type="password" data-bind="value: password" />
-                <input type="password" data-bind="value: password2" />
-                <input type="submit" value="Set Password"/>
-                <div data-bind="text: progressText"></div>
-            </form>
-        </div>
-        </div>
-
-        <div id="DatabasesAdminUI">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach:databases">
-                    <tr>
-                        <td data-bind="text: name" />
-                        <td><a href="#" data-bind="click: manage"></a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="StringEditor">
-            <input data-bind="$data" />
-        </div>
-
-        <div id="AddDatabase">
-
-        </div>
-    -->
 </body>
 </html>
