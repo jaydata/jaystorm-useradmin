@@ -258,7 +258,6 @@
                     sortColName = cols[0].name;
                 };
 
-
                 self.columns = ko.observableArray(cols);
                 self.sortColumn = ko.observable(sortColName);
                 self.sortDirection = ko.observable(true);
@@ -296,11 +295,16 @@
                     self.currentPage( self.currentPage() - 1);
                 }
 
+                self.discriminatorColumn = viewModel.discriminatorColumn;
+                self.discriminatorValue = viewModel.discriminatorValue;
+
                 self.itemsTrigger = ko.computed( function(){
                     if (ko.utils.unwrapObservable(this.source) == null) {
                         return;
                     }
-                    return this.source()
+                    var q = this.source();
+
+                    return q
                         .order(this.sortColumn())
                         .skip(this.pageSize() * this.currentPage())
                         .take(this.pageSize())
@@ -329,6 +333,9 @@
                     //console.dir(arguments);
                     return 'jay-data-text-cell';
                 }
+
+
+
             }
 
 

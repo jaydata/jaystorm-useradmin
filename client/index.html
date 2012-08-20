@@ -89,7 +89,7 @@
 
                     }
 
-                   function databaseManagerModel(context) {
+                   function dataManagerModel(context) {
 
                        var self = this;
 
@@ -107,69 +107,41 @@
 
                        self.selectSet = function(eSet) {
                            //self.order('');
-                           self.EntitySets(eSet);
+                           self.collection(eSet);
                        }
-
-                       self.Databases = context.Databases;
-                       self.selectedDatabase = ko.observable();
-
-                       self.selectedDatabaseName = ko.computed( function() {
-                           return this.selectedDatabase() ? this.selectedDatabase().Name() : '';
-                       }, this);
 
                        self.esPageSize = ko.observable(30);
-
-
-                       self.EntitySets = ko.observable();
-
-                       self.Tables = ko.observableArray([]);
+                       self.collection = ko.observable();
                        self.visible = ko.observable(false);
-                       self.databaseEditorVisible = ko.observable(false);
-
-                       self.saveObjectCommand = ko.observable({
-                           method: function() { }
-                       });
-
-
-
-                       self.addNew = function(entitySet, model, event) {
-                           var o = new entitySet.createNew();
-                           if ("DatabaseName" in o) {
-                               o.DatabaseName = self.selectedDatabaseName();
-                           };
-
-                           var o = o.asKoObservable();
-
-                           self.selectedDatabase(o);
-                           self.databaseEditorVisible(true);
-                           console.log(arguments);
-                           self.saveObjectCommand({
-                               method: function() {
-                                   entitySet.add(o);
-                                   entitySet.entityContext.saveChanges( function() {
-                                       self.databaseEditorVisible(false);
-                                   });
-                               }
-                           });
-                       };
-
-                       self.selectDatabaseCommand = {
-                           execute: function(o) {
-                               self.selectedDatabase(o);
-                           },
-                           displayName: 'Select'
-
-                       }
-
-
 
                    }
 
-                    var userManagerModel = new userManagerModel(context);
-                    var databaseManagerModel = new databaseManagerModel(context);
+                    function schemaManagerModel( appdbContext ) {
+                        var self = this;
+
+                        self.visible = ko.observable(false);
+
+                        self.databases = ko.observableArray([]);
+                        appdbContext.Databases.toArray(self.databases);
+                        self.currentDatabase = ko.observable();
+
+                        self.selectDatabase = function(db) {
+                            self.currentDatabase(db);
+                        }
+
+                        self.entitySets = ko.observable(appdbContext.EntitySets);
+                        self.eSetsPageSize = ko.observable(100);
+
+
+                    }
+
+                    //var userManagerModel = new userManagerModel(context);
+                    var databaseManagerModel = new dataManagerModel(context);
+                    var schemaManagerModel = new schemaManagerModel(context);
 
                     //ko.applyBindings(userManagerModel, document.getElementById("UserManagerUI"));
-                    ko.applyBindings(databaseManagerModel, document.getElementById("DatabaseManagerUI"));
+                    ko.applyBindings(databaseManagerModel, document.getElementById("DataManagerUI"));
+                    ko.applyBindings(schemaManagerModel, document.getElementById("DatabaseManagerUI"));
 
                     function MenuModel(items) {
                         var self = this;
@@ -185,7 +157,7 @@
 
                     var items = [];
                     var sections = //[{ Title: 'Users and Groups', Model: userManagerModel },
-                            [{ Title: 'Databases', Model: databaseManagerModel }];
+                            [{ Title: 'Show tables', Model: databaseManagerModel }, { Title: 'Manage Schema', Model: schemaManagerModel }];
                     ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));
                     //loadUserManagerUI(context);
                 });
@@ -211,48 +183,10 @@
     </ul>
 
     <div id="UserManagerUI" data-bind="visible: visible">
-
-
-        <!--<div data-bind='jayGrid: Users' id='myUsers'>-->
-            <!--loading...-->
-        <!--</div>-->
-
-        <div id="x345" data-bind="jayGrid: {source: Users, pageSize: 10,
-                                            itemCommands: [ editObjectCommand, removeObjectCommand ]}">
-
-        </div>
-        <a href="#" data-bind="event: {click: addNew.bind($data, Users) }">click me</a>
-
-        <div id="x123" data-bind="jayGrid: {source: Groups, itemStore: groups,
-                               itemCommands: [ editObjectCommand, removeObjectCommand ]}">
-
-        </div>
-        <a href="#" data-bind="event: {click: addNew.bind($data, Groups) }">click me</a>
-
-        <div data-bind="jayPropertyEditor: { objectToEdit: selectedObject, submitCommand: saveObjectCommand }, visible: propEditorVisible">
-            !!!
-        </div>
     </div>
 
-    <div id="DatabaseManagerUI" data-bind="visible: visible">
-        <!--<div id="x56" data-bind="jayGrid: {source: Databases, itemCommands: [ selectDatabaseCommand ]}">-->
 
-        <!--</div>-->
-
-        <div data-bind="jayPropertyEditor: { objectToEdit: selectedDatabase, submitCommand: saveObjectCommand },  visible: databaseEditorVisible">
-
-        </div>
-
-
-        <a href="#" data-bind="event: {click: addNew.bind($data, Databases) }">Add new db</a>
-
-        <h1>Tables</h1>
-
-        <h3 data-bind="with: selectedDatabase">
-            <span data-bind="text: Name" />
-        </h3>
-
-        <h4 data-bind="text: selectedDatabaseName"></h4>
+    <div id="DataManagerUI" data-bind="visible: visible">
 
         <div data-bind="foreach: entitySets()">
             <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
@@ -260,10 +194,8 @@
 
 
         <div id="x567" data-bind="jayGrid: {
-                        source: EntitySets,
-                        pageSize: esPageSize,
-                        discriminatorField: 'Database',
-                        discriminatorValue: selectedDatabaseName}">
+                        source: collection,
+                        pageSize: esPageSize}">
 
             <script type="text/html" data-type-template="Edm.String">
                 <div style="background-color: silver" data-bind="text: $parent[name]"></div>
@@ -279,9 +211,40 @@
             </script>
         </div>
 
-        <a href="#" data-bind="event: {click: addNew.bind($data, EntitySets) }">Add new db</a>
-
     </div>
 
+    <div id="DatabaseManagerUI" data-bind="visible: visible">
+        <h3>Manage Database Schemas</h3>
+        <h4>Select database to manage</h4>
+        <ul data-bind="foreach: databases">
+            <li>
+                <a href="#" data-bind="text: Name, click: $root.selectDatabase"></a>
+            </li>
+        </ul>
+        <h4>Tables | ComplexTypes</h4>
+
+        <div data-bind="">
+            <h5>List of tables</h5>
+            <div data-bind="jayGrid: {
+                        source: entitySets,
+                        discriminatorColumns: 'DatabaseID',
+                        discriminatorValue: currentDatabase.DatabaseID,
+                        pageSize: eSetsPageSize}">
+
+                <script type="text/html" data-type-template="Edm.String">
+                    <div style="background-color: silver" data-bind="text: $parent[name]"></div>
+                </script>
+
+                <script type="text/html" data-type-template="Edm.Boolean">
+                    <input type="checkbox" data-bind="checked: $parent[name]" disabled />
+                </script>
+
+
+                <script type="text/html" data-field-template="Roles">
+                    <div data-bind="text: $data"></div>
+                </script>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

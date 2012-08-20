@@ -12,6 +12,7 @@ var templateList = [
         "<form data-bind='submit:save'><table data-bind='visible: source' class='jay-data-grid' border='1'> \
             <thead>\
             <td data-bind='attr: {colspan: columns().length}'>\
+            <span data-bind='text: discriminatorValue'></span>\
                 <a href='#' data-bind='click: addNew, text: \"New \" '/> \
                 <input type='submit' value='Save' data-bind='visible: pendingChanges' />\
                 Sort: <select data-bind='options: columns, optionsValue: \"name\", optionsText: \"name\", value: sortColumn'></select>\
