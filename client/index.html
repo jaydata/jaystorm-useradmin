@@ -2,10 +2,12 @@
     <head>
         <script src="/scripts/jquery-1.7.2.min.js"></script>
         <script src="scripts/datajs-1.0.3.js"></script>
+        <script type="text/javascript" src="scripts/q.js"></script>
         <script src="/scripts/jaydata/jaydata.js"></script>
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
         <script src="/scripts/JaySvcUtil.js"></script>
         <script src="scripts/knockout-2.1.0.debug.js"></script>
+        <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
         <script src="scripts/jaygrid-table-template.js"></script>
         <script src="scripts/jaygrid.js"></script>
         <script src="scripts/jay-property-editor.js"></script>
@@ -13,11 +15,15 @@
         <script src="scripts/application.js"></script>
         <script type="text/javascript">
 
+
+
             $(function() {
 
                 $data.MetadataLoader.load('/db', function (factory) {
 
                     var context = factory();
+
+
 
 
                    function userManagerModel(context) {
@@ -92,7 +98,7 @@
                    function dataManagerModel(context) {
 
                        var self = this;
-
+                       dmContext = context;
                        self.context = context;
 
                        self.entitySets = function() {
@@ -119,18 +125,105 @@
                     function schemaManagerModel( appdbContext ) {
                         var self = this;
 
+                        smContext = appdbContext;
+
                         self.visible = ko.observable(false);
 
                         self.databases = ko.observableArray([]);
                         appdbContext.Databases.toArray(self.databases);
                         self.currentDatabase = ko.observable();
 
+                        self.currentDatabaseID = ko.observable();
+
                         self.selectDatabase = function(db) {
                             self.currentDatabase(db);
+                            var dbID= ko.utils.unwrapObservable(db.DatabaseID);
+                            self.currentDatabaseID(dbID);
+                            self.entitySets( context.EntitySets);
+                        };
+
+
+
+
+                        var executing;
+
+                        self.tableCommands = [{
+
+                                displayName: 'Manage fields',
+                                commandName: 'manageFields',
+
+                                visible: function( item ) {
+                                    return true;
+                                    //return self.objectsInEditMode.indexOf(item) < 0;
+                                },
+
+
+                                execute: function( item ) {
+                                        var c = factory();
+                                    tmpContext = c;
+                                    var elementName = ko.utils.unwrapObservable(item.ElementType);
+                                    var ents = c.Entities.filter("it.Name == this.ename", { ename: elementName }).toArray(
+                                            function(items)  {
+                                        if ( items.length < 1 ) {
+                                            console.log("execute new item!");
+                                            var dbID = ko.utils.unwrapObservable(self.currentDatabaseID);
+                                            var newEnt = new c.Entities.createNew({
+                                                            Name: elementName,
+                                                            DatabaseID: dbID,
+                                                            FullName: 'NAMESPACE.' + elementName,
+                                                            Namespace: 'NAMESPACE'
+                                                        });
+
+                                            c.Entities.add(newEnt);
+
+                                            c.saveChanges(function() {
+                                                console.log("new enty saved!");
+                                                var idField = new c.EntityFields.createNew({
+                                                    EntityID: newEnt.EntityID,
+                                                    DatabaseID: newEnt.DatabaseID,
+                                                    Name: 'ID',
+                                                    Type: 'id',
+                                                    Computed: true,
+                                                    Key: true
+                                                });
+                                                c.add(idField);
+                                                c.saveChanges(function() {
+                                                    console.dir("Field:ID created");
+                                                    self.selectedEntity(newEnt.asKoObservable());
+                                                    self.currentEntityID(newEnt.EntityID);
+
+                                                });
+                                            });
+
+                                            console.log(elementName + " " + dbID);
+                                            console.log(items);
+
+                                        } else {
+
+                                            self.selectedEntity(items[0].asKoObservable());
+                                            self.currentEntityID(items[0].EntityID);
+
+                                            console.log("alread!");
+                                        }
+                                    });
+
+                                }
+                            }];
+
+                        self.entitySets = ko.observable(context.EntitySets);
+                        self.eSetsPageSize = 50;
+
+
+                        self.saveEntity = function() {
+                            alert("not implemented");
                         }
 
-                        self.entitySets = ko.observable(appdbContext.EntitySets);
-                        self.eSetsPageSize = ko.observable(100);
+                        self.selectedEntity = ko.observable();
+
+                        self.currentEntityID = ko.observable();
+
+                        self.entityFields = ko.observable(context.EntityFields);
+
 
 
                     }
@@ -156,7 +249,7 @@
                     }
 
                     var items = [];
-                    var sections = //[{ Title: 'Users and Groups', Model: userManagerModel },
+                    var sections =
                             [{ Title: 'Show tables', Model: databaseManagerModel }, { Title: 'Manage Schema', Model: schemaManagerModel }];
                     ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));
                     //loadUserManagerUI(context);
@@ -223,27 +316,75 @@
         </ul>
         <h4>Tables | ComplexTypes</h4>
 
-        <div data-bind="">
-            <h5>List of tables</h5>
-            <div data-bind="jayGrid: {
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <h5>List of tables</h5>
+                        <div data-bind="jayGrid: {
                         source: entitySets,
-                        discriminatorColumns: 'DatabaseID',
-                        discriminatorValue: currentDatabase.DatabaseID,
-                        pageSize: eSetsPageSize}">
+                        itemCommands: tableCommands,
+                        fields: ['Name','ElementType','Published'],
+                        discriminatorColumn: 'DatabaseID',
+                        discriminatorValue: currentDatabaseID,
+                        pageSize: eSetsPageSize},
+                        visible: currentDatabase">
 
-                <script type="text/html" data-type-template="Edm.String">
-                    <div style="background-color: silver" data-bind="text: $parent[name]"></div>
-                </script>
+                            <script type="text/html" data-type-template="Edm.String">
+                                <div style="background-color: silver" data-bind="text: $parent[name]"></div>
+                            </script>
 
-                <script type="text/html" data-type-template="Edm.Boolean">
-                    <input type="checkbox" data-bind="checked: $parent[name]" disabled />
-                </script>
+                            <script type="text/html" data-type-template="Edm.Boolean">
+                                <input type="checkbox" data-bind="checked: $parent[name]" disabled />
+                            </script>
 
 
-                <script type="text/html" data-field-template="Roles">
-                    <div data-bind="text: $data"></div>
-                </script>
-            </div>
+                            <script type="text/html" data-field-template="Roles">
+                                <div data-bind="text: $data"></div>
+                            </script>
+                        </div>
+
+                    </td>
+                    <td>
+                        <div data-bind="visible: selectedEntity">
+                            <form data-bind="submit: saveEntity">
+                                <fieldset data-bind="with: selectedEntity">
+                                    Table item name: <span data-bind="text: Name"></span>,
+                                    Namespace: <span data-bind="text: Namespace"></span>
+                                </fieldset>
+                            </form>
+                            <h5>List of tables</h5>
+                            <div data-bind="jayGrid: {
+                            source: entityFields,
+                            fields:['Name','Type','ElementType','Key','Computed','Required'],
+                            discriminatorColumn: 'EntityID',
+                            discriminatorValue: currentEntityID,
+                            defaultValues: { 'DatabaseID' : currentDatabaseID },
+                            pageSize: eSetsPageSize},
+                            visible: currentDatabase">
+
+                                <script type="text/html" data-type-template="Edm.String">
+                                    <div style="background-color: silver" data-bind="text: $parent[name]"></div>
+                                </script>
+
+                                <script type="text/html" data-type-template="Edm.Boolean">
+                                    <input type="checkbox" data-bind="checked: $parent[name]" disabled />
+                                </script>
+
+
+                                <script type="text/html" data-field-template="Roles">
+                                    <div data-bind="text: $data"></div>
+                                </script>
+                            </div>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+
         </div>
     </div>
 </body>

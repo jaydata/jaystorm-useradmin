@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="">
+    <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/q.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/index.html" afterPath="$PROJECT_DIR$/client/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaygrid-table-template.js" afterPath="$PROJECT_DIR$/client/scripts/jaygrid-table-template.js" />
@@ -37,14 +38,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="125" column="63" selection-start="4915" selection-end="4915" vertical-scroll-proportion="0.33506045">
+            <state line="322" column="5" selection-start="12739" selection-end="12739" vertical-scroll-proportion="13.75">
               <folding>
-                <element signature="e#3658#4543#0" expanded="false" />
+                <element signature="e#1118#3773#0" expanded="false" />
+                <element signature="e#10214#10612#0" expanded="false" />
                 <element signature="tag#div#2;tag#body#0;tag#html#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="q.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/q.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="600" column="19" selection-start="20744" selection-end="20748" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -52,17 +63,19 @@
       <file leaf-file-name="jaygrid.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="289" column="48" selection-start="10138" selection-end="10138" vertical-scroll-proportion="0.0">
+            <state line="373" column="30" selection-start="13312" selection-end="13312" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="server.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="103" column="3" selection-start="3202" selection-end="3202" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="101" column="34" selection-start="3138" selection-end="3138" vertical-scroll-proportion="-2.6788156">
+              <folding>
+                <element signature="e#9077#9551#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -79,27 +92,21 @@
       <file leaf-file-name="jaygrid-table-template.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="26" selection-start="1787" selection-end="1787" vertical-scroll-proportion="0.0">
+            <state line="72" column="56" selection-start="3062" selection-end="3062" vertical-scroll-proportion="0.0">
               <folding>
-                <marker date="1345483230000" expanded="true" signature="266:1295" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="266:1755" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="334:1295" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="356:826" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="356:826" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="420:804" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1033:1730" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1033:1047" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1097:1708" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1097:1708" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1097:1295" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1460:1703" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1833:2011" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="1884:1975" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="2218:2386" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="2550:2873" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="2604:2858" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="2658:2838" placeholder="..." />
-                <marker date="1345483230000" expanded="true" signature="3309:3430" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="266:1761" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="334:1754" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="356:832" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="420:810" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="1039:1736" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="1103:1714" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="1839:2017" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="1890:1981" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="2224:2392" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="2556:2879" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="2610:2864" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="2664:2844" placeholder="..." />
+                <marker date="1345493430000" expanded="true" signature="3342:3463" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -135,18 +142,18 @@
         <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaydata/jaygrid-table-template.js" />
-        <option value="$PROJECT_DIR$/server/server.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaygrid-table-template.js" />
+        <option value="$PROJECT_DIR$/client/scripts/q.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
         <option value="$PROJECT_DIR$/client/index.html" />
+        <option value="$PROJECT_DIR$/server/server.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="63" />
-    <option name="y" value="34" />
-    <option name="width" value="1371" />
-    <option name="height" value="1330" />
+    <option name="x" value="-1" />
+    <option name="width" value="1922" />
+    <option name="height" value="1060" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -174,16 +181,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -246,6 +243,16 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="scripts" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -347,13 +354,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="63" y="34" width="1371" height="1330" extended-state="0" />
+    <frame x="-1" y="0" width="1922" height="1060" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16097923" sideWeight="0.99917287" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16025303" sideWeight="0.99917287" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28056768" sideWeight="0.07096774" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -463,9 +470,21 @@
         <state line="208" column="0" selection-start="5092" selection-end="5092" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/q.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="600" column="19" selection-start="20744" selection-end="20748" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="185" column="25" selection-start="8031" selection-end="8031" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="72" column="56" selection-start="3062" selection-end="3062" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
@@ -473,53 +492,29 @@
         <state line="12138" column="82" selection-start="468457" selection-end="468457" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/server.js">
+    <entry file="file://$PROJECT_DIR$/client/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="3" selection-start="3202" selection-end="3202" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="322" column="5" selection-start="12739" selection-end="12739" vertical-scroll-proportion="13.75">
+          <folding>
+            <element signature="e#1118#3773#0" expanded="false" />
+            <element signature="e#10214#10612#0" expanded="false" />
+            <element signature="tag#div#2;tag#body#0;tag#html#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="289" column="48" selection-start="10138" selection-end="10138" vertical-scroll-proportion="0.0">
+        <state line="373" column="30" selection-start="13312" selection-end="13312" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
+    <entry file="file://$PROJECT_DIR$/server/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="26" selection-start="1787" selection-end="1787" vertical-scroll-proportion="0.0">
+        <state line="101" column="34" selection-start="3138" selection-end="3138" vertical-scroll-proportion="-2.6788156">
           <folding>
-            <marker date="1345483230000" expanded="true" signature="266:1295" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="266:1755" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="334:1295" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="356:826" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="356:826" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="420:804" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1033:1730" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1033:1047" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1097:1708" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1097:1708" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1097:1295" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1460:1703" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1833:2011" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="1884:1975" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="2218:2386" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="2550:2873" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="2604:2858" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="2658:2838" placeholder="..." />
-            <marker date="1345483230000" expanded="true" signature="3309:3430" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="125" column="63" selection-start="4915" selection-end="4915" vertical-scroll-proportion="0.33506045">
-          <folding>
-            <element signature="e#3658#4543#0" expanded="false" />
-            <element signature="tag#div#2;tag#body#0;tag#html#0" expanded="false" />
+            <element signature="e#9077#9551#0" expanded="false" />
           </folding>
         </state>
       </provider>

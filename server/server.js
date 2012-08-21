@@ -98,16 +98,23 @@ $data.Entity.extend('$data.JayStormAPI.Entity', {
     Name: { type: 'string', required: true },
     FullName: { type: 'string', required: true },
     Namespace: { type: 'string' },
-    Fields: { type: 'Array', elementType: '$data.JayStormAPI.EntityField' },
-    CreationDate: { type: 'date', computed: true },
+    //Fields: { type: 'Array', elementType: '$data.JayStormAPI.EntityField' },
+    CreationDate: { type: 'date'  },
     DatabaseID: {type: 'id', required: true}
 });
 
 
 $data.JayStormAPI.Entity.extend('$data.JayStormAPI.ComplexType', { });
 
+$data.Entity.extend('$data.JayStormAPI.XXX', {
+    ID: { type: 'id', key: true, computed: true },
+    EntityID: { type: 'id', required: true },
+    Name: { type: 'string', required: true }
+})
+
+
 $data.Entity.extend('$data.JayStormAPI.EntityField', {
-    EntityFieldID: { type: 'id', key: true, computed: true },
+    'EntityFieldID': { type: 'id', key: true, computed: true },
     EntityID: { type: 'id', required: true },
     Name: { type: 'string', required: true },
     Type: { type: 'string', required: true },
@@ -124,7 +131,7 @@ $data.Entity.extend('$data.JayStormAPI.EntityField', {
     MaxLength: { type: 'int' },
     Length: { type: 'int' },
     RegExp: { type: 'string' },
-    ExtensionAttributes: { type: 'Array', elementType: '$data.JayStormAPI.KeyValuePair' },
+    //ExtensionAttributes: { type: 'Array', elementType: '$data.JayStormAPI.KeyValuePair' },
     DatabaseID: {type: 'id', required: true}
 });
 
@@ -172,8 +179,8 @@ $data.Entity.extend('$data.JayStormAPI.Database', {
 
 $data.Entity.extend('$data.JayStormAPI.EntitySet', {
     EntitySetID: { type: 'id', key: true, computed: true },
-    Name: { type: 'string', required: true },
-    ElementType: { type: 'string', required: true },
+    Name: { type: 'string', required: true, $displayName: 'Table name' },
+    ElementType: { type: 'string', required: true, $displayName: 'Table item name' },
     //ElementTypeID: { type: 'id', required: true },
     TableName: { type: 'string' },
     //EventHandlers: { type: 'Array', elementType: '$data.ContextAPI.EventHandler' },
@@ -218,17 +225,19 @@ $data.Class.define('$data.JayStormAPI.Group', $data.Entity, null , {
 $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.ServiceBase], null, {
 
     constructor: function() {
-      this.EntitySets.beforeCreate = function() {
-          console.dir(arguments[0]);
-      }
+//      this.EntitySets.beforeCreate = function() {
+//          console.dir(arguments[0]);
+//      }
     },
 
+
+    XXX: { type: $data.EntitySet, elementType: $data.JayStormAPI.XXX},
     Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database},
     Entities: { type: $data.EntitySet, elementType: $data.JayStormAPI.Entity },
     EntityFields: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntityField },
-    EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler },
+    //EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler },
     EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet },
-    ServiceParameters: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperationParameter },
+    //ServiceParameters: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperationParameter },
     ServiceOperations: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperation },
 
     Users: {type: $data.EntitySet, elementType: $data.JayStormAPI.User},

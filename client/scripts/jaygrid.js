@@ -50,15 +50,15 @@
             }
             props = res;
         }
-        props.push( {
-            name: 'ValidationErrors',
-            type: 'Array'
-        });
-
-        props.push( {
-            name: 'entityState',
-            type: 'int'
-        });
+//        props.push( {
+//            name: 'ValidationErrors',
+//            type: 'Array'
+//        });
+//
+//        props.push( {
+//            name: 'entityState',
+//            type: 'int'
+//        });
 
         if (itemCommands.length > 0) {
             var meta = {
@@ -182,13 +182,25 @@
                     var es = ko.utils.unwrapObservable(self.source);
                     var o = new es.createNew();
                     o = o.asKoObservable();
+                    var v = ko.utils.unwrapObservable(self.discriminatorValue),
+                        f = ko.utils.unwrapObservable(self.discriminatorColumn);
+                    if (v && f) {
+                        console.log(f + ":" + v);
+                        o[f](v);
+                    }
+                    if (self.defaultValues) {
+                        for(var m in self.defaultValues) {
+                            o[m](ko.utils.unwrapObservable(self.defaultValues[m]));
+                        }
+                    }
                     self.objectsInEditMode.push(o);
                     ko.utils.unwrapObservable(source).add(o);
                     self.items.push(o);
                 };
 
 
-                var itemCommands = viewModel.itemCommands || [
+
+                var itemCommands = [
                     {
                         displayName: 'Edit',
                         commandName: 'edit',
@@ -245,7 +257,7 @@
 
 
                     }
-                ];
+                ].concat(viewModel.itemCommands || []);
 
 
                 var cols = [];
@@ -262,6 +274,8 @@
                 self.sortColumn = ko.observable(sortColName);
                 self.sortDirection = ko.observable(true);
 
+
+                self.defaultValues = viewModel.defaultValues;
 
                 self.columnNames = ko.computed( function() {
                     return this.columns().map( function(memDef) { return memDef.name });
@@ -295,14 +309,25 @@
                     self.currentPage( self.currentPage() - 1);
                 }
 
-                self.discriminatorColumn = viewModel.discriminatorColumn;
-                self.discriminatorValue = viewModel.discriminatorValue;
+                //console.log("model builder:" + viewModel.discriminatorColumn);
+                self.discriminatorColumn = viewModel.discriminatorColumn; // || ko.observable();
+                self.discriminatorValue = viewModel.discriminatorValue; //|| ko.observable();
 
                 self.itemsTrigger = ko.computed( function(){
                     if (ko.utils.unwrapObservable(this.source) == null) {
                         return;
                     }
                     var q = this.source();
+
+                    var column = ko.utils.unwrapObservable(this.discriminatorColumn);
+                    var value = ko.utils.unwrapObservable(this.discriminatorValue);
+                    if (column && !(value) ) {
+                        return;
+                    }
+
+                    if (value  && column) {
+                        q = q.filter("it." + column + " == '" + value + "'");
+                    }
 
                     return q
                         .order(this.sortColumn())

@@ -12,7 +12,7 @@ var templateList = [
         "<form data-bind='submit:save'><table data-bind='visible: source' class='jay-data-grid' border='1'> \
             <thead>\
             <td data-bind='attr: {colspan: columns().length}'>\
-            <span data-bind='text: discriminatorValue'></span>\
+            <span data-bind='text: $root.discriminatorValue'></span>\
                 <a href='#' data-bind='click: addNew, text: \"New \" '/> \
                 <input type='submit' value='Save' data-bind='visible: pendingChanges' />\
                 Sort: <select data-bind='options: columns, optionsValue: \"name\", optionsText: \"name\", value: sortColumn'></select>\
@@ -70,7 +70,7 @@ var templateList = [
 
 
     ["jay-data-grid-header-cell",
-        "<td data-bind='text: name'></td>"],
+        "<td data-bind='text: $data[\"$displayName\"] || name'></td>"],
 
     ["jay-data-grid-Edm.String-editor",
         "<input data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />" ],
