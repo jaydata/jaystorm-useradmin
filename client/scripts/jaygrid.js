@@ -20,6 +20,7 @@
         }
     }
 
+
     regiserTemplates($data.jayGridTemplates.tableTemplate);
 
     function getColumnsMetadata(source, fields, itemCommands) {
@@ -73,15 +74,37 @@
         return props;
     };
 
+    ko.bindingHandlers['readValue'] = {
+        'update': function (element, valueAccessor) {
+            console.log("@@@@@readValue start");
+            var v = valueAccessor();
+            var eset = ko.utils.unwrapObservable(v.source);
+            var key = ko.utils.unwrapObservable(v.key);
+            console.dir([v,key]);
+
+            var field = ko.utils.unwrapObservable(v.field);
+            var keyField = eset.createNew.memberDefinitions.getKeyProperties()[0].name;
+
+            eset.filter("it." + keyField.toString() + " == this.value", { value: key})
+                .map("it." + field)
+                .forEach(function(item) {
+
+                    console.log("@@@@@readValue rece");;
+                    ko.utils.setTextContent(element, item);
+                }
+            );
+
+        }
+    };
+
     ko.bindingHandlers.jayGrid = {
 
         init: function() {
-            this.finishInit = false;
             return { 'controlsDescendantBindings': true };
-
         },
 
-        update: function(element, viewModelAccessor, allBindingsAccessor) {
+        update: function(element, viewModelAccessor, allBindingsAccessor, vModel) {
+            //console.dir(vModel);
             var viewModel = viewModelAccessor(), allBindings = allBindingsAccessor();
 
             var source = null, fields = [];
@@ -92,6 +115,8 @@
             } else {
                 source = viewModel.source;
             };
+
+            source = ko.isObservable(source) ? source: ko.observable(source);
 
             var fieldTemplates = {};
 
@@ -116,14 +141,36 @@
             }
 
 
+            if (! element.nameTemplates) {
+                element.nameTemplates = {};
+                var children = element.childNodes;
+                for(var i = 0; i < children.length; i++) {
+                    var child = children[i];
+                    var tmpName = undefined;
+                    if (child.nodeType == 1) {
+                        tmpName = child.getAttribute("data-name-template");
+                        if (tmpName) {
+                            var rndId = Math.random().toString().replace(".","").replace(",","");
+                            child.setAttribute("id", rndId);
+                            element.nameTemplates[tmpName] = rndId;
+                            document.body.appendChild(child);
+                            console.log("template registered:" + tmpName );
+                        }
+                    }
+                }
+            }
             fields = viewModel.fields || [];
 
 
-            function getItemCommands() {
-
-            }
-
             function _model() {
+                for (var j in vModel) {
+                    this[j] = vModel[j];
+                };
+
+                for(var j in viewModel) {
+                    this[j] = viewModel[j];
+                };
+
                 console.log("Grid model created");
                 var self = this;
 
@@ -329,8 +376,14 @@
                         q = q.filter("it." + column + " == '" + value + "'");
                     }
 
+                    var sortColumn = this.sortColumn();
+
+                    if (!q.defaultType.memberDefinitions[sortColumn]) {
+                        sortColumn = '';
+                    }
+
                     return q
-                        .order(this.sortColumn())
+                        .order(sortColumn)
                         .skip(this.pageSize() * this.currentPage())
                         .take(this.pageSize())
                         .toArray(self.items);
@@ -340,23 +393,40 @@
 
                 self.getTemplate =  function(propertyOwner, metadata) {
                     var nameSuffix = '';
-                    if (self.objectsInEditMode.indexOf(propertyOwner) > -1) {
-                        return 'jay-data-grid-Edm.String-editor';
-                        //nameSuffix = '-editor';
-                    } else {
-
-                    };
 
                     if (! (metadata.resolvedName && metadata.stringName)) {
                         metadata.stringName = Container.getName(metadata.type);
                         metadata.resolvedName = Container.resolveName(metadata.type);
                     };
 
-                    if (metadata.stringName in element.typeTemplates) {
-                        return element.typeTemplates[metadata.stringName];
-                    }
-                    //console.dir(arguments);
-                    return 'jay-data-text-cell';
+                    if (self.objectsInEditMode.indexOf(propertyOwner) > -1) {
+                        var templateId;
+                        return element.nameTemplates[metadata.name + "-editor"] ||
+                            element.typeTemplates[metadata.stringName + "-editor"] ||
+                            element.typeTemplates[metadata.resolvedName + "-editor"] ||
+                            (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
+                                            'jay-data-grid-' + metadata.resolvedName + '-editor' :
+                                            'jay-data-grid-generic-editor');
+                        //nameSuffix = '-editor';
+                    } else {
+
+                    };
+
+
+
+                    var named = metadata.name + '-display';
+                    var f = element.nameTemplates[named] || 'xxx';
+
+                    var result = element.nameTemplates[metadata.name + '-display'] ||
+                                 element.typeTemplates[metadata.stringName + '-display'] ||
+                                 element.typeTemplates[metadata.resolvedName + '-display'] ||
+                                 (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
+                                'jay-data-grid-' + metadata.resolvedName + '-display' :
+                                'jay-data-grid-generic-display');
+
+
+                    return result;
+
                 }
 
 

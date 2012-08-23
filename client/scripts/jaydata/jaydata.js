@@ -8441,6 +8441,7 @@ $data.Class.define("$data.Expressions.ExpressionType", null, null, {}, {
     Some: "Some",
     Every: "Every",
     ToArray: "ToArray",
+    BatchDelete: "BatchDelete",
     ForEach: "ForEach",
     Projection: "Projection",
     EntityMember: "EntityMember",
@@ -10882,6 +10883,14 @@ $C('$data.Expressions.EntityExpression', $data.Expressions.ExpressionNode, null,
         return expression;
     },
 
+    VisitBatchDeleteExpression: function (expression, context) {
+        var source = this.Visit(expression.source, context);
+        if (source !== expression.source) {
+            return Container.createBatchDeleteExpression(source);
+        }
+        return expression;
+    },
+
     VisitObjectLiteralExpression: function (expression, context) {
         var newValues = expression.members.map(function (ofe) {
             return this.Visit(ofe, context);
@@ -11243,6 +11252,17 @@ $C('$data.Expressions.EveryExpression', $data.Expressions.FrameOperator, null, {
         this.resultType = $data.Object;
     },
     nodeType: { value: $data.Expressions.ExpressionType.Every, enumerable: true }
+});
+
+$C('$data.Expressions.BatchDeleteExpression', $data.Expressions.FrameOperator, null, {
+    constructor: function (source) {
+        ///<signature>
+        ///<param name="source" type="$data.Expressions.EntitySetExpression" />
+        ///</signature>
+        this.source = source;
+        this.resultType = $data.Integer;
+    },
+    nodeType: { value: $data.Expressions.ExpressionType.BatchDelete, enumerable: true }
 });$C('$data.Expressions.IncludeExpression', $data.Expressions.EntitySetExpression, null, {
     constructor: function (source, selector) {
     },
@@ -12362,31 +12382,31 @@ $data.Class.define('$data.EntityContext', null, null,
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.beforeCreate = item.beforeCreate;
                     }
-                    if (item.beforeCreate) {
+                    if (item.beforeRead) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.beforeRead = item.beforeRead;
                     }
-                    if (item.beforeCreate) {
+                    if (item.beforeUpdate) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.beforeUpdate = item.beforeUpdate;
                     }
-                    if (item.beforeCreate) {
+                    if (item.beforeDelete) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.beforeDelete = item.beforeDelete;
                     }
-                    if (item.beforeCreate) {
+                    if (item.afterCreate) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.afterCreate = item.afterCreate;
                     }
-                    if (item.beforeCreate) {
+                    if (item.afterRead) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.afterRead = item.afterRead;
                     }
-                    if (item.beforeCreate) {
+                    if (item.afterUpdate) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.afterUpdate = item.afterUpdate;
                     }
-                    if (item.beforeCreate) {
+                    if (item.afterDelete) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.afterDelete = item.afterDelete;
                     }
@@ -12770,6 +12790,7 @@ $data.Class.define('$data.EntityContext', null, null,
             
             if (query.expression.nodeType === $data.Expressions.ExpressionType.Single ||
                 query.expression.nodeType === $data.Expressions.ExpressionType.Count ||
+                query.expression.nodeType === $data.Expressions.ExpressionType.BatchDelete ||
                 query.expression.nodeType === $data.Expressions.ExpressionType.Some ||
                 query.expression.nodeType === $data.Expressions.ExpressionType.Every) {
                 if (query.result.length !== 1) {
@@ -14381,16 +14402,18 @@ $data.Class.define('$data.Queryable', null, null,
     },
 
     order: function(selector) {
-          if (selector === '') return this;
-          if (selector[0] == "-") {
-              var orderString = "it." + selector.replace("-","");
-              return this.orderByDescending(orderString);
-          }  else {
-              //console.log()
-              return this.orderBy("it." + selector);
-          };
+       if (selector === '' || selector === undefined || selector === null) {
+           return this;
+       }
+       if(selector[0] === "-") {
+           var orderString = "it." + selector.replace("-","");
+           return this.orderByDescending(orderString);
+       } else {
+           return this.orderBy("it." + selector);
+       }
 
     },
+
     orderBy: function (selector, thisArg) {
 		///<summary>Order a set of entities using an expression.</summary>
         ///<param name="selector" type="Function">An order expression</param>
@@ -14537,6 +14560,61 @@ $data.Class.define('$data.Queryable', null, null,
         var takeExp = Container.createIncludeExpression(this.expression, constExp);
         return Container.createQueryable(this, takeExp);
     },
+    removeAll: function (filterPredicate, thisArg, onResult) {
+        ///	<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
+        ///	<param name="onResult_items" type="Function">A callback function</param>
+        ///	<returns type="$data.Promise" />
+        ///	<signature>
+        ///		<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
+        ///		<param name="filterPredicate" type="string">
+        ///			Same as in filter.
+        ///		</param>
+        ///		<param name="onResult" type="Function">
+        ///			The callback function to handle the result, same as in toArray.
+        ///		</param>
+        ///		<returns type="$data.Promise" />
+        ///	</signature>
+        ///	<signature>
+        ///		<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
+        ///		<param name="filterPredicate" type="Function">
+        ///			Same as in filter.
+        ///		</param>
+        ///		<param name="onResult" type="Function">
+        ///			The callback function to handle the result, same as in toArray.
+        ///		</param>
+        ///		<returns type="$data.Promise" />
+        ///		<example>
+        ///			Get "George" from the Person entity set. &#10;
+        ///			Persons.single( function( person ) { return person.FirstName == this.name; }, { name: "George" }, {&#10;
+        ///				success: function ( result ){ ... },&#10;
+        ///				error: function () { ... }
+        ///			});
+        ///		</example>
+        ///	</signature>
+
+        this._checkOperation('batchDelete');
+        var q = this;
+        if (filterPredicate) {
+            q = this.filter(filterPredicate, thisArg);
+        }
+
+        var pHandler = new $data.PromiseHandler();
+        var cbWrapper = pHandler.createCallback(onResult);
+
+        var batchDeleteExpression = Container.createBatchDeleteExpression(q.expression);
+        var preparator = Container.createQueryExpressionCreator(q.entityContext);
+        try {
+            var expression = preparator.Visit(batchDeleteExpression);
+            this.entityContext.log({ event: "EntityExpression", data: expression });
+
+            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper);
+        } catch (e) {
+            cbWrapper.error(e);
+        }
+
+        return pHandler.getPromise();
+    },
+
 
     _runQuery: function (onResult_items) {
         var pHandler = new $data.PromiseHandler();
@@ -15773,6 +15851,16 @@ $C('$data.modelBinder.ModelBinderConfigCompiler', $data.Expressions.EntityExpres
         }
     },
     VisitCountExpression: function (expression) {
+        var builder = Container.createqueryBuilder();
+
+        builder.modelBinderConfig['$type'] = $data.Array;
+        builder.selectModelBinderProperty('$item');
+        builder.modelBinderConfig['$type'] = $data.Integer;
+        builder.modelBinderConfig['$source'] = 'cnt';
+        builder.resetModelBinderProperty();
+        this._query.modelBinderConfig = builder.modelBinderConfig;
+    },
+    VisitBatchDeleteExpression: function (expression) {
         var builder = Container.createqueryBuilder();
 
         builder.modelBinderConfig['$type'] = $data.Array;

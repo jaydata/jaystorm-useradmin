@@ -47,7 +47,7 @@ var templateList = [
         "<tbody data-bind=\"template: {name: 'jay-data-grid-row', foreach: items}\"></tbody>"],
 
     ["jay-data-grid-row",
-        "<tr  data-bind='foreach: $parent.columns'>\
+        "<tr  data-bind='template: {foreach: $parent.columns }'>\
             <!-- ko template: { name: ($data[\"isVirtual\"] ? 'jay-data-grid-control-cell' : 'jay-data-grid-data-cell') } -->\
             <!-- /ko -->\
         </tr>"],
@@ -65,20 +65,33 @@ var templateList = [
             </div>\
         </td>"],
 
-    ["jay-data-text-cell",
-        "<span data-bind='text: $parent[name]'></span>"],
-
-
     ["jay-data-grid-header-cell",
         "<td data-bind='text: $data[\"$displayName\"] || name'></td>"],
+
+    ["jay-data-grid-generic-display",
+        "<span data-bind='text: Container.resolveName(type)'></span>"],
+
+    ["jay-data-grid-$data.Boolean-display",
+        '<input type="checkbox" data-bind="checked: $parent[name]" disabled />'],
+
+    ["jay-data-grid-$data.String-display",
+        '<span data-bind="text: $parent[name]"></span>'],
+
+    ["jay-data-grid-$data.Array-display",
+        '[<div data-bind="foreach: $parent[name]"><span data-bind="text:$data"></span></div>]'],
+
+    ["jay-data-grid-generic-editor",
+        '<input data-bind="value: $parent[name]" />'],
+
+    ["jay-data-grid-$data.Boolean-editor",
+        '<input type="checkbox" data-bind="checked: $parent[name]"  />'],
 
     ["jay-data-grid-Edm.String-editor",
         "<input data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />" ],
 
-
     ["jay-data-grid-Edm.Int32-editor",
         "<input  type='range' min=1 max=10 \
-data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />" ],
+            data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />" ],
 
     ["jay-data-grid-Edm.String-editor",
         "<input  data-bind='value: $parent[name], attr: { required: $data[\"required\"] }, css: { verror: $parent.ValidationErrors }' />" ]

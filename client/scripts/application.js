@@ -1,285 +1,320 @@
-/**
- * Created with JetBrains WebStorm.
- * User: zpace
- * Date: 8/12/12
- * Time: 11:40 PM
- * To change this template use File | Settings | File Templates.
- */
-$data.Base.extend("ViewModels.Showable", {
-    constructor: function() {
-        //var self = this;
+$data.pushState = function( fn, title, url) {
+    $data.navigationStates = $data.navigationStates || [];
+    var key = Math.random().toString().replace(".","").replace(",",0);
+    $data.navigationStates[key] = fn;
+    window.history.pushState( { key: key }, title, url);
+}
 
-        this.visible = ko.observable(false);
-    },
-
-    visible: { },
-
-    hide: function() {
-        this.visible(false)
-    },
-    show: function() {
-        this.visible(true);
+window.onpopstate = function(data) {
+    console.dir(data);
+    if (data && data.state && data.state.key) {
+    $data.navigationStates[data.state.key]();
     }
-});
-
-$data.Base.extend("ViewModels.EventSource", {
-    constructor: function() {
-        this.eventClasses = [];
-    },
-
-    fireEvent: function(event, data) {
-        var self = this;
-
-        var subs = (this.eventClasses[event] || []).concat(this.eventClasses["*"] || []) ;
-        for(var i = 0; i < subs.length; i++) {
-            subs[i].apply(this, Array.prototype.slice.call(arguments,1));
-        };
-
-
-
-        if (event === 'ok' || event === 'cancel') {
-            var handler = this[event + '_handler'] || function() { };
-            handler.apply(self, data);
-            //ok and cancel are a one time event, reset after call to any of them
-            this.ok_handler = function() { };
-            this.cancel_handler = function()  { };
-        }
-    },
-
-    attach: function(event, fn) {
-        if (arguments.length < 2) {
-            fn = event;
-            event = "*";
-        }
-
-        (this.eventClasses[event] = this.eventClasses[event] || []).push(fn);
-    },
-
-    'ok': function(fn) {
-        this["ok_handler"] = fn;
-        return this;
-    },
-
-    'cancel': function(fn) {
-        this.cancel_handler = fn;
-        return this;
-    },
-
-    detach: function(event, fn) {
-        throw "NOT IMPLEMENTED";
-        //this.visible(true);
-    }
-});
-
-function SetPasswordModel(context) {
-    var self = this;
-
-    self.user = ko.observable();
-
-    self.user.subscribe(function(value) {
-        self.password(null);
-        self.password2(null);
-    });
-
-    self.password = ko.observable();
-    self.password2 = ko.observable();
-
-    self.progressText = ko.observable();
-
-    self.changePassword = function() {
-
-        if (! (self.password() && self.password2())) {
-            alert("password field is empty");
-            return;
-        }
-        if (self.password() !== self.password2()) {
-            alert("password dont match");
-            return;
-        }
-
-        context.setPassword(self.user().Id(), self.password(), function() {
-            self.user(null);
-        });
-    }
-
+//delete $data.navigationStates[data.state.key];
 }
 
 
+$(function() {
 
-$data.Class.defineEx("ViewModels.NewGroup", [ViewModels.Showable, ViewModels.EventSource], null, {
-    constructor: function(context) {
-        var self = this;
+    $data.MetadataLoader.load('/db', function (factory) {
 
-        self.name = ko.observable();
+        var context = factory();
 
-        self.closeOnCreate = ko.observable(false);
+        function userManagerModel(context) {
+            var self = this;
 
-        self.createGroup = function() {
-            self.visible(! self.closeOnCreate());
-            var group = new context.Groups.createNew();
-            group.name = self.name();
-            context.Groups.add(group);
-            context.saveChanges( function( item ) {
-                self.fireEvent("newGroup", group);
-            })
-        }
-    }
+            self.visible = ko.observable(false);
+
+
+            self.Users = context.Users;
+
+            self.Groups = context.Groups;
+
+            self.groups = ko.observableArray([]);
+
+            self.selectedObject = ko.observable();
+
+            self.selectObjectCommand = function(o) {
+                self.selectedObject(o);
+                self.propEditorVisible(true);
+            };
+
+self.editObject = function(o) {
+    self.selectedObject(o);
+    self.propEditorVisible(true);
+    };
+self.editObject.displayName = 'Edit';
+
+this.propEditorVisible = ko.observable(false);
+
+self.editObjectCommand = {
+    execute: function(o) {
+    self.selectedObject(o);
+    self.propEditorVisible(true);
+    },
+displayName : 'Edit'
+};
+
+self.removeObjectCommand = {
+    execute: function(o) {
+    self.selectedObject(o);
+    self.propEditorVisible(true);
+    },
+displayName : 'Remove'
+};
+
+self.saveObjectCommand = ko.observable({
+    method: function() { }
 });
 
-function ManageGroupsModel(context, newGroupModel) {
+self.addNew = function(entitySet, model, event) {
+    var o = new entitySet.createNew().asKoObservable();
+    self.selectedObject(o);
+    self.propEditorVisible(true);
+    console.log(arguments);
+    self.saveObjectCommand({
+    method: function() {
+    entitySet.add(o);
+    entitySet.entityContext.saveChanges( function() {
+    self.propEditorVisible(false);
+    });
+}
+});
+}
+
+self.removeObject = function(o) {
+
+    }
+
+
+}
+
+function dataManagerModel(context) {
+
+    var self = this;
+    dmContext = context;
+    self.context = context;
+
+    self.entitySets = function() {
+    var result = [];
+    for(var name in context) {
+    if (context[name] instanceof $data.EntitySet) {
+    result.push(context[name]);
+    }
+}
+return result;
+};
+
+self.selectSet = function(eSet) {
+    //self.order('');
+    $data.pushState( function() {
+        self.collection(eSet);
+    })
+self.collection(eSet);
+}
+
+self.esPageSize = ko.observable(30);
+self.collection = ko.observable();
+self.visible = ko.observable(false);
+
+}
+
+function schemaManagerModel( appdbContext ) {
     var self = this;
 
-    self.groups = ko.observableArray([]);
-    context.Groups.toArray(self.groups);
+    smContext = appdbContext;
 
-    self.newGroupModel = newGroupModel;
+    self.context = ko.observable(false);
+    self.visible = ko.observable(false);
 
-    self.newGroupModel.attach(function(group) {
-        self.groups.push(group.asKoObservable());
-    });
+    self.databases = ko.observableArray([]);
+    appdbContext.Databases.toArray(self.databases);
+    self.currentDatabase = ko.observable();
 
-    self.selectedGroup = ko.observable();
+    self.currentDatabaseID = ko.observable();
 
-    self.removeGroup = function(group) {
-        context.Groups.remove(group.innerInstance);
-        context.saveChanges( function() {
-           self.groups.remove(group);
-        });
+    self.selectDatabase = function(db) {
+    self.currentDatabase(db);
+    var dbID= ko.utils.unwrapObservable(db.DatabaseID);
+    self.currentDatabaseID(dbID);
+    self.entitySets( context.EntitySets);
     };
 
 
-};
 
 
-$data.Class.defineEx("ViewModels.EditUser", [ViewModels.Showable, ViewModels.EventSource], null, {
-    constructor: function (context) {
-        var self = this;
+var executing;
+
+self.tableCommands = [{
+
+    displayName: 'Manage fields',
+    commandName: 'manageFields',
+
+    visible: function( item ) {
+    return true;
+    //return self.objectsInEditMode.indexOf(item) < 0;
+    },
 
 
-        self.user = ko.observable();
+execute: function( item ) {
+    var c = factory();
+    tmpContext = c;
+    var elementName = ko.utils.unwrapObservable(item.ElementType);
+    var ents = c.Entities.filter("it.Name == this.ename", { ename: elementName }).toArray(
+function(items)  {
+    if ( items.length < 1 ) {
+    console.log("execute new item!");
+    var dbID = ko.utils.unwrapObservable(self.currentDatabaseID);
+    var newEnt = new c.Entities.createNew({
+    Name: elementName,
+    DatabaseID: dbID,
+    FullName: 'NAMESPACE.' + elementName,
+    Namespace: 'NAMESPACE'
+    });
 
+c.Entities.add(newEnt);
 
-        self.createUser = function() {
-            self.fireEvent("ok", self.user());
-        }
+c.saveChanges(function() {
+    console.log("new enty saved!");
+    var idField = new c.EntityFields.createNew({
+    EntityID: newEnt.EntityID,
+    DatabaseID: newEnt.DatabaseID,
+    Name: 'ID',
+    Type: 'id',
+    Computed: true,
+    Key: true
+    });
+c.add(idField);
+c.saveChanges(function() {
+    console.dir("Field:ID created");
+    self.selectedEntity(newEnt.asKoObservable());
+    self.currentEntityID(newEnt.EntityID);
 
-        self.cancelCreateUser = function() {
-            self.fireEvent("cancel", self.user());
-        }
+    });
+});
+
+console.log(elementName + " " + dbID);
+console.log(items);
+
+} else {
+
+    self.selectedEntity(items[0].asKoObservable());
+    self.currentEntityID(items[0].EntityID);
+
+    console.log("alread!");
     }
 });
 
-$data.Class.defineEx("ViewModels.EntityEditor", [ViewModels.Showable, ViewModels.EventSource], null, {
-    constructor: function (context) {
-        var self = this;
+}
+}];
+
+self.entitySets = ko.observable(context.EntitySets);
+self.eSetsPageSize = 50;
 
 
-        self.object = ko.observable();
-
-        self.data = function(value) {
-            self.object(value);
-            return self;
-        }
-
-
-        self.save = function() {
-            self.fireEvent("ok", self.object());
-        }
-
-        self.cancelSave = function() {
-            self.fireEvent("cancel", self.object());
-        }
-
-        self.new = function(eSet) {
-            var d = $.Deferred();
-            var u = new eSet.createNew().asKoObservable();
-
-            self.data(u)
-                .ok(function() {
-                    eSet.add(u);
-                    context.saveChanges( function() {
-                        self.data(null).hide();
-                        d.resolve(u);
-                    });
-                })
-                .cancel(function() {d.reject() ;this.hide(); })
-                .show();
-            return d.promise();
-        }
-
-        self.edit = function(obj, eSet) {
-            var d = $.Deferred();
-
-            function ok() {
-                context.saveChanges(function() {
-                    d.resolve(obj);
-                    self.hide();
-                });
-            }
-            function cancel() {
-                eSet.detach(obj);
-                d.resolve(null);
-                self.hide();
-            }
-
-
-            eSet.attach(obj);
-            self.data(obj).ok(ok).cancel(cancel).show();
-
-            var sub = self.object.subscribe( function() {
-                eSet.detach(obj);
-                //todo rollback user
-                sub.dispose();
-            })
-            return d.promise();
-        }
-    }
-});
-
-function ManageUsersModel(context, spModel, groupsModel, editor) {
-    var _context = context;
-
-    c = context;
-    var self = this;
-
-    self.groupsModel = groupsModel;
-    self.editor = editor;
-
-    self.userCount = ko.observable();
-    self.userList = ko.observableArray([]);
-
-    self.selectedUser = ko.observable();
-
-
-
-    self.newUser = function() {
-            self.editor.new(context.Users).then(function(user) {
-                self.userList.push(user);
-            });
+self.saveEntity = function() {
+    alert("not implemented");
     }
 
-    self.editUser = function(user) {
-        self.editor.edit(user, context.Users);
-    }
+self.selectedEntity = ko.observable();
+
+self.currentEntityID = ko.observable();
+
+self.entityFields = ko.observable(context.EntityFields);
 
 
-    self.changePassword = function(user) {
-        console.dir(user.login());
-        spModel.user(user);
-    }
-
-    self.removeUser = function(user) {
-        _context.Users.remove(user.innerInstance);
-        _context.saveChanges( function() {
-            self.userList.remove(user);
-        });
-        //alert();
-    }
-
-    _context.Users.toArray(self.userList);
 
 }
 
+function serviceManagerModel (contextFactory ) {
+    var self = this;
+
+    self.context = ko.observable(false);
+    self.visible = ko.observable(false);
 
 
 
+
+
+    self.allDatabases = ko.observableArray([]);
+    contextFactory().Databases.toArray(self.allDatabases);
+
+    self.selectedService = ko.observable();
+
+
+    self.checkBoxStates = ko.observableArray([]);
+
+    self.check = function() {
+        console.log("checking!");
+        self.checkBoxStates.push({});
+    }
+
+    self.selectService = function(item) {
+
+        self.selectedService(item);
+        self.checkBoxStates.removeAll();
+
+        (item.Sets() || []).forEach(function(item) {
+            self.checkBoxStates.push(item);
+        });
+    }
+
+
+
+}
+var svcMan = new serviceManagerModel(factory);
+ko.applyBindings(svcMan, document.getElementById("ServiceManagerUI"));
+
+//var userManagerModel = new userManagerModel(context);
+var databaseManagerModel = new dataManagerModel(context);
+var schemaManagerModel = new schemaManagerModel(context);
+
+//ko.applyBindings(userManagerModel, document.getElementById("UserManagerUI"));
+ko.applyBindings(databaseManagerModel, document.getElementById("DataManagerUI"));
+ko.applyBindings(schemaManagerModel, document.getElementById("DatabaseManagerUI"));
+
+function MenuModel(items) {
+    var self = this;
+    self.items = items;
+
+    self.show = function(item) {
+
+    $data.pushState( function() {
+    self.items.forEach( function(item) {
+    item.Model.visible(false);
+    });
+item.Model.visible(true);
+});
+
+
+self.items.forEach( function(item) {
+    item.Model.visible(false);
+    });
+
+
+item.Model.visible(true);
+item.Model.context( new factory());
+}
+
+$data.pushState( function() {
+    self.items.forEach( function(item) {
+        item.Model.visible(false);
+
+        console.log("set");
+    });
+})
+
+}
+
+var items = [];
+var sections =
+[{ Title: 'Show tables', Model: databaseManagerModel },
+                                { Title: 'Manage Schema', Model: schemaManagerModel },
+                                {Title: 'Manage Services', Model: svcMan}];
+ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));
+
+
+//loadUserManagerUI(context);
+});
+
+})

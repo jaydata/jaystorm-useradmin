@@ -156,7 +156,6 @@ $data.Entity.extend('$data.JayStormAPI.ServiceOperationParameter', {
 $data.Entity.extend('$data.JayStormAPI.ServiceOperation', {
     ServiceOperationID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true },
-    //Parameters: { type: 'Array', elementType: '$data.ContextAPI.ServiceOperationParameter' },
     Method: { type: 'string' },
     Returns: { type: '$data.JayStormAPI.ServiceOperationReturnType' },
     Promise: { type: 'bool' },
@@ -188,6 +187,20 @@ $data.Entity.extend('$data.JayStormAPI.EntitySet', {
     Publish: { type: 'bool' },
     DatabaseID: {type: 'id', required: true}
 });
+
+
+$data.Entity.extend('$data.JayStormAPI.Service', {
+    ServiceID: { type: 'id', key: true, computed: true },
+    Name: { type: 'string', required: true, $displayName: 'Service name' },
+    DatabaseID: {type: 'id' },
+    Sets: { type: 'array', elementType: 'string' },
+    Published: { type: 'bool' },
+    ServiceSource: { type: 'string' }
+
+});
+
+
+
 
 /*$data.Entity.extend('$data.ContextAPI.EntityContext', {
  EntityContextID: { type: 'id', key: true, computed: true },
@@ -224,20 +237,12 @@ $data.Class.define('$data.JayStormAPI.Group', $data.Entity, null , {
 
 $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.ServiceBase], null, {
 
-    constructor: function() {
-//      this.EntitySets.beforeCreate = function() {
-//          console.dir(arguments[0]);
-//      }
-    },
 
-
-    XXX: { type: $data.EntitySet, elementType: $data.JayStormAPI.XXX},
     Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database},
     Entities: { type: $data.EntitySet, elementType: $data.JayStormAPI.Entity },
     EntityFields: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntityField },
-    //EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler },
     EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet },
-    //ServiceParameters: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperationParameter },
+    Services: { type: $data.EntitySet, elementType: $data.JayStormAPI.Service },
     ServiceOperations: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperation },
 
     Users: {type: $data.EntitySet, elementType: $data.JayStormAPI.User},
@@ -328,14 +333,26 @@ var c = require('connect');
 var app = c();
 
 app.use(c.query());
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'X-PINGOTHER, Content-Type, MaxDataServiceVersion, DataServiceVersion');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, MERGE, DELETE');
+    if (req.method === 'OPTIONS') {
+        res.end();
+    } else {
+        next();
+    }
+});
 //app.use(function(req, res, next) {
 //   console.log("!!!");
 //    console.dir(req);
 //   next();
 //});
+app.use(c.bodyParser());
+
 app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);
 app.use("/db", $data.JayService.createAdapter($data.JayStormAPI.Context, function() {
-    return new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB"});
+    return new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB", responseLimit:-1});
 }));
 
 app.use("/db2", $data.JayService.OData.BatchProcessor.connectBodyReader);
@@ -345,5 +362,5 @@ app.use("/db2", $data.JayService.createAdapter($data.DB2.Context, function() {
 
 
 app.use("/", c.static("../client"));
-app.listen(8080);
+app.listen(8181);
 console.log("end");

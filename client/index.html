@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <script src="/scripts/jquery-1.7.2.min.js"></script>
         <script src="scripts/datajs-1.0.3.js"></script>
         <script type="text/javascript" src="scripts/q.js"></script>
@@ -16,246 +18,313 @@
         <script type="text/javascript">
 
 
-
-            $(function() {
-
-                $data.MetadataLoader.load('/db', function (factory) {
-
-                    var context = factory();
-
-
-
-
-                   function userManagerModel(context) {
-                        var self = this;
-
-                        self.visible = ko.observable(false);
-
-
-                        self.Users = context.Users;
-
-                        self.Groups = context.Groups;
-
-                        self.groups = ko.observableArray([]);
-
-                        self.selectedObject = ko.observable();
-
-                        self.selectObjectCommand = function(o) {
-                            self.selectedObject(o);
-                            self.propEditorVisible(true);
-                        };
-
-                        self.editObject = function(o) {
-                            self.selectedObject(o);
-                            self.propEditorVisible(true);
-                        };
-                        self.editObject.displayName = 'Edit';
-
-                        this.propEditorVisible = ko.observable(false);
-
-                        self.editObjectCommand = {
-                            execute: function(o) {
-                                self.selectedObject(o);
-                                self.propEditorVisible(true);
-                            },
-                            displayName : 'Edit'
-                        };
-
-                        self.removeObjectCommand = {
-                            execute: function(o) {
-                                self.selectedObject(o);
-                                self.propEditorVisible(true);
-                            },
-                            displayName : 'Remove'
-                        };
-
-                        self.saveObjectCommand = ko.observable({
-                            method: function() { }
-                        });
-
-                        self.addNew = function(entitySet, model, event) {
-                                var o = new entitySet.createNew().asKoObservable();
-                                self.selectedObject(o);
-                                self.propEditorVisible(true);
-                                console.log(arguments);
-                                self.saveObjectCommand({
-                                            method: function() {
-                                                entitySet.add(o);
-                                                entitySet.entityContext.saveChanges( function() {
-                                                   self.propEditorVisible(false);
-                                                });
-                                            }
-                                        });
-                        }
-
-                        self.removeObject = function(o) {
-
-                        }
-
-
-                    }
-
-                   function dataManagerModel(context) {
-
-                       var self = this;
-                       dmContext = context;
-                       self.context = context;
-
-                       self.entitySets = function() {
-                           var result = [];
-                           for(var name in context) {
-                            if (context[name] instanceof $data.EntitySet) {
-                                result.push(context[name]);
-                            }
-                           }
-                           return result;
-                       };
-
-                       self.selectSet = function(eSet) {
-                           //self.order('');
-                           self.collection(eSet);
-                       }
-
-                       self.esPageSize = ko.observable(30);
-                       self.collection = ko.observable();
-                       self.visible = ko.observable(false);
-
-                   }
-
-                    function schemaManagerModel( appdbContext ) {
-                        var self = this;
-
-                        smContext = appdbContext;
-
-                        self.visible = ko.observable(false);
-
-                        self.databases = ko.observableArray([]);
-                        appdbContext.Databases.toArray(self.databases);
-                        self.currentDatabase = ko.observable();
-
-                        self.currentDatabaseID = ko.observable();
-
-                        self.selectDatabase = function(db) {
-                            self.currentDatabase(db);
-                            var dbID= ko.utils.unwrapObservable(db.DatabaseID);
-                            self.currentDatabaseID(dbID);
-                            self.entitySets( context.EntitySets);
-                        };
-
-
-
-
-                        var executing;
-
-                        self.tableCommands = [{
-
-                                displayName: 'Manage fields',
-                                commandName: 'manageFields',
-
-                                visible: function( item ) {
-                                    return true;
-                                    //return self.objectsInEditMode.indexOf(item) < 0;
-                                },
-
-
-                                execute: function( item ) {
-                                        var c = factory();
-                                    tmpContext = c;
-                                    var elementName = ko.utils.unwrapObservable(item.ElementType);
-                                    var ents = c.Entities.filter("it.Name == this.ename", { ename: elementName }).toArray(
-                                            function(items)  {
-                                        if ( items.length < 1 ) {
-                                            console.log("execute new item!");
-                                            var dbID = ko.utils.unwrapObservable(self.currentDatabaseID);
-                                            var newEnt = new c.Entities.createNew({
-                                                            Name: elementName,
-                                                            DatabaseID: dbID,
-                                                            FullName: 'NAMESPACE.' + elementName,
-                                                            Namespace: 'NAMESPACE'
-                                                        });
-
-                                            c.Entities.add(newEnt);
-
-                                            c.saveChanges(function() {
-                                                console.log("new enty saved!");
-                                                var idField = new c.EntityFields.createNew({
-                                                    EntityID: newEnt.EntityID,
-                                                    DatabaseID: newEnt.DatabaseID,
-                                                    Name: 'ID',
-                                                    Type: 'id',
-                                                    Computed: true,
-                                                    Key: true
-                                                });
-                                                c.add(idField);
-                                                c.saveChanges(function() {
-                                                    console.dir("Field:ID created");
-                                                    self.selectedEntity(newEnt.asKoObservable());
-                                                    self.currentEntityID(newEnt.EntityID);
-
-                                                });
-                                            });
-
-                                            console.log(elementName + " " + dbID);
-                                            console.log(items);
-
-                                        } else {
-
-                                            self.selectedEntity(items[0].asKoObservable());
-                                            self.currentEntityID(items[0].EntityID);
-
-                                            console.log("alread!");
-                                        }
-                                    });
-
-                                }
-                            }];
-
-                        self.entitySets = ko.observable(context.EntitySets);
-                        self.eSetsPageSize = 50;
-
-
-                        self.saveEntity = function() {
-                            alert("not implemented");
-                        }
-
-                        self.selectedEntity = ko.observable();
-
-                        self.currentEntityID = ko.observable();
-
-                        self.entityFields = ko.observable(context.EntityFields);
-
-
-
-                    }
-
-                    //var userManagerModel = new userManagerModel(context);
-                    var databaseManagerModel = new dataManagerModel(context);
-                    var schemaManagerModel = new schemaManagerModel(context);
-
-                    //ko.applyBindings(userManagerModel, document.getElementById("UserManagerUI"));
-                    ko.applyBindings(databaseManagerModel, document.getElementById("DataManagerUI"));
-                    ko.applyBindings(schemaManagerModel, document.getElementById("DatabaseManagerUI"));
-
-                    function MenuModel(items) {
-                        var self = this;
-                        self.items = items;
-
-                        self.show = function(item) {
-                            self.items.forEach( function(item) {
-                                item.Model.visible(false);
-                            });
-                            item.Model.visible(true);
-                        }
-                    }
-
-                    var items = [];
-                    var sections =
-                            [{ Title: 'Show tables', Model: databaseManagerModel }, { Title: 'Manage Schema', Model: schemaManagerModel }];
-                    ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));
-                    //loadUserManagerUI(context);
-                });
-
-            })
+//            $data.pushState = function( fn, title, url) {
+//                $data.navigationStates = $data.navigationStates || [];
+//                var key = Math.random().toString().replace(".","").replace(",",0);
+//                $data.navigationStates[key] = fn;
+//                window.history.pushState( { key: key }, title, url);
+//            }
+//            window.onpopstate = function(data) {
+//                console.dir(data);
+//                if (data && data.state && data.state.key) {
+//                    $data.navigationStates[data.state.key]();
+//                }
+//                //delete $data.navigationStates[data.state.key];
+//            }
+//
+//
+//            $(function() {
+//
+//                $data.MetadataLoader.load('/db', function (factory) {
+//
+//                    var context = factory();
+//
+//                   function userManagerModel(context) {
+//                        var self = this;
+//
+//                        self.visible = ko.observable(false);
+//
+//
+//                        self.Users = context.Users;
+//
+//                        self.Groups = context.Groups;
+//
+//                        self.groups = ko.observableArray([]);
+//
+//                        self.selectedObject = ko.observable();
+//
+//                        self.selectObjectCommand = function(o) {
+//                            self.selectedObject(o);
+//                            self.propEditorVisible(true);
+//                        };
+//
+//                        self.editObject = function(o) {
+//                            self.selectedObject(o);
+//                            self.propEditorVisible(true);
+//                        };
+//                        self.editObject.displayName = 'Edit';
+//
+//                        this.propEditorVisible = ko.observable(false);
+//
+//                        self.editObjectCommand = {
+//                            execute: function(o) {
+//                                self.selectedObject(o);
+//                                self.propEditorVisible(true);
+//                            },
+//                            displayName : 'Edit'
+//                        };
+//
+//                        self.removeObjectCommand = {
+//                            execute: function(o) {
+//                                self.selectedObject(o);
+//                                self.propEditorVisible(true);
+//                            },
+//                            displayName : 'Remove'
+//                        };
+//
+//                        self.saveObjectCommand = ko.observable({
+//                            method: function() { }
+//                        });
+//
+//                        self.addNew = function(entitySet, model, event) {
+//                                var o = new entitySet.createNew().asKoObservable();
+//                                self.selectedObject(o);
+//                                self.propEditorVisible(true);
+//                                console.log(arguments);
+//                                self.saveObjectCommand({
+//                                            method: function() {
+//                                                entitySet.add(o);
+//                                                entitySet.entityContext.saveChanges( function() {
+//                                                   self.propEditorVisible(false);
+//                                                });
+//                                            }
+//                                        });
+//                        }
+//
+//                        self.removeObject = function(o) {
+//
+//                        }
+//
+//
+//                    }
+//
+//                   function dataManagerModel(context) {
+//
+//                       var self = this;
+//                       dmContext = context;
+//                       self.context = context;
+//
+//                       self.entitySets = function() {
+//                           var result = [];
+//                           for(var name in context) {
+//                            if (context[name] instanceof $data.EntitySet) {
+//                                result.push(context[name]);
+//                            }
+//                           }
+//                           return result;
+//                       };
+//
+//                       self.selectSet = function(eSet) {
+//                           //self.order('');
+//                           $data.pushState( function() {
+//                               self.collection(eSet);
+//                           })
+//                           self.collection(eSet);
+//                       }
+//
+//                       self.esPageSize = ko.observable(30);
+//                       self.collection = ko.observable();
+//                       self.visible = ko.observable(false);
+//
+//                   }
+//
+//                    function schemaManagerModel( appdbContext ) {
+//                        var self = this;
+//
+//                        smContext = appdbContext;
+//
+//                        self.context = ko.observable(false);
+//                        self.visible = ko.observable(false);
+//
+//                        self.databases = ko.observableArray([]);
+//                        appdbContext.Databases.toArray(self.databases);
+//                        self.currentDatabase = ko.observable();
+//
+//                        self.currentDatabaseID = ko.observable();
+//
+//                        self.selectDatabase = function(db) {
+//                            self.currentDatabase(db);
+//                            var dbID= ko.utils.unwrapObservable(db.DatabaseID);
+//                            self.currentDatabaseID(dbID);
+//                            self.entitySets( context.EntitySets);
+//                        };
+//
+//
+//
+//
+//                        var executing;
+//
+//                        self.tableCommands = [{
+//
+//                                displayName: 'Manage fields',
+//                                commandName: 'manageFields',
+//
+//                                visible: function( item ) {
+//                                    return true;
+//                                    //return self.objectsInEditMode.indexOf(item) < 0;
+//                                },
+//
+//
+//                                execute: function( item ) {
+//                                        var c = factory();
+//                                    tmpContext = c;
+//                                    var elementName = ko.utils.unwrapObservable(item.ElementType);
+//                                    var ents = c.Entities.filter("it.Name == this.ename", { ename: elementName }).toArray(
+//                                            function(items)  {
+//                                        if ( items.length < 1 ) {
+//                                            console.log("execute new item!");
+//                                            var dbID = ko.utils.unwrapObservable(self.currentDatabaseID);
+//                                            var newEnt = new c.Entities.createNew({
+//                                                            Name: elementName,
+//                                                            DatabaseID: dbID,
+//                                                            FullName: 'NAMESPACE.' + elementName,
+//                                                            Namespace: 'NAMESPACE'
+//                                                        });
+//
+//                                            c.Entities.add(newEnt);
+//
+//                                            c.saveChanges(function() {
+//                                                console.log("new enty saved!");
+//                                                var idField = new c.EntityFields.createNew({
+//                                                    EntityID: newEnt.EntityID,
+//                                                    DatabaseID: newEnt.DatabaseID,
+//                                                    Name: 'ID',
+//                                                    Type: 'id',
+//                                                    Computed: true,
+//                                                    Key: true
+//                                                });
+//                                                c.add(idField);
+//                                                c.saveChanges(function() {
+//                                                    console.dir("Field:ID created");
+//                                                    self.selectedEntity(newEnt.asKoObservable());
+//                                                    self.currentEntityID(newEnt.EntityID);
+//
+//                                                });
+//                                            });
+//
+//                                            console.log(elementName + " " + dbID);
+//                                            console.log(items);
+//
+//                                        } else {
+//
+//                                            self.selectedEntity(items[0].asKoObservable());
+//                                            self.currentEntityID(items[0].EntityID);
+//
+//                                            console.log("alread!");
+//                                        }
+//                                    });
+//
+//                                }
+//                            }];
+//
+//                        self.entitySets = ko.observable(context.EntitySets);
+//                        self.eSetsPageSize = 50;
+//
+//
+//                        self.saveEntity = function() {
+//                            alert("not implemented");
+//                        }
+//
+//                        self.selectedEntity = ko.observable();
+//
+//                        self.currentEntityID = ko.observable();
+//
+//                        self.entityFields = ko.observable(context.EntityFields);
+//
+//
+//
+//                    }
+//
+//                    function serviceManagerModel (contextFactory ) {
+//                        var self = this;
+//
+//                        self.context = ko.observable(false);
+//                        self.visible = ko.observable(false);
+//
+//                        self.checkSetPublish = function() {
+//                            if (arguments.length == 0) {
+//
+//                            }
+//                        }
+//
+//                        self.allDatabases = ko.observableArray([]);
+//                        contextFactory().Databases.toArray(self.allDatabases);
+//
+//                        self.selectedService = ko.observable();
+//
+//
+//                        self.selectService = function(item) {
+//                            self.selectedService(item);
+//                        }
+//                        //self.services =
+//
+//                    }
+//                    var svcMan = new serviceManagerModel(factory);
+//                    ko.applyBindings(svcMan, document.getElementById("ServiceManagerUI"));
+//
+//                    //var userManagerModel = new userManagerModel(context);
+//                    var databaseManagerModel = new dataManagerModel(context);
+//                    var schemaManagerModel = new schemaManagerModel(context);
+//
+//                    //ko.applyBindings(userManagerModel, document.getElementById("UserManagerUI"));
+//                    ko.applyBindings(databaseManagerModel, document.getElementById("DataManagerUI"));
+//                    ko.applyBindings(schemaManagerModel, document.getElementById("DatabaseManagerUI"));
+//
+//                    function MenuModel(items) {
+//                        var self = this;
+//                        self.items = items;
+//
+//                        self.show = function(item) {
+//
+//                            $data.pushState( function() {
+//                                self.items.forEach( function(item) {
+//                                    item.Model.visible(false);
+//                                });
+//                                item.Model.visible(true);
+//                            });
+//
+//
+//                            self.items.forEach( function(item) {
+//                                item.Model.visible(false);
+//                            });
+//
+//
+//                            item.Model.visible(true);
+//                            item.Model.context( new factory());
+//                        }
+//
+//                        $data.pushState( function() {
+//                            self.items.forEach( function(item) {
+//                                item.Model.visible(false);
+//
+//                                console.log("set");
+//                            });
+//                        })
+//
+//                    }
+//
+//                    var items = [];
+//                    var sections =
+//                            [{ Title: 'Show tables', Model: databaseManagerModel },
+//                                { Title: 'Manage Schema', Model: schemaManagerModel },
+//                                {Title: 'Manage Services', Model: svcMan}];
+//                    ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));
+//
+//
+//                    //loadUserManagerUI(context);
+//                });
+//
+//            })
         </script>
     </head>
 <body>
@@ -277,7 +346,6 @@
 
     <div id="UserManagerUI" data-bind="visible: visible">
     </div>
-
 
     <div id="DataManagerUI" data-bind="visible: visible">
 
@@ -353,15 +421,15 @@
                                     Namespace: <span data-bind="text: Namespace"></span>
                                 </fieldset>
                             </form>
-                            <h5>List of tables</h5>
+                            <h5>List of FIELDS</h5>
                             <div data-bind="jayGrid: {
-                            source: entityFields,
-                            fields:['Name','Type','ElementType','Key','Computed','Required'],
-                            discriminatorColumn: 'EntityID',
-                            discriminatorValue: currentEntityID,
-                            defaultValues: { 'DatabaseID' : currentDatabaseID },
-                            pageSize: eSetsPageSize},
-                            visible: currentDatabase">
+                                        source: entityFields,
+                                        fields:['Name','Type','ElementType','Key','Computed','Required'],
+                                        discriminatorColumn: 'EntityID',
+                                        discriminatorValue: currentEntityID,
+                                        defaultValues: { 'DatabaseID' : currentDatabaseID },
+                                        pageSize: eSetsPageSize},
+                                        visible: currentDatabase">
 
                                 <script type="text/html" data-type-template="Edm.String">
                                     <div style="background-color: silver" data-bind="text: $parent[name]"></div>
@@ -387,5 +455,76 @@
 
         </div>
     </div>
+
+    <div id="ServiceManagerUI" data-bind="if: context">
+
+        <h3>Services</h3>
+
+        <div data-bind="foreach: ko.utils.range(1,10)">
+            <div>!!!</div>
+        </div>
+
+        <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
+                                                context: context,
+                                                allDatabases: allDatabases,
+                                                databaseSet: context().Databases}">
+
+            <!--, dbs: databases, databases: context().Databases-->
+            <script type="text/html" data-name-template="DatabaseID-editor">
+                <select data-bind="options: $root.allDatabases,
+                            optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                            optionsCaption: 'Select...' "></select>
+            </script>
+
+            <script type="text/html" data-name-template="DatabaseID-display">
+                <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+            </script>
+
+            <script type="text/html" data-name-template="Sets-editor">
+                <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
+            </script>
+
+        </div>
+
+
+        <div data-bind="if: selectedService">
+            <div id="entitySets" data-bind="jayGrid: {
+                                                    fields: ['Name', 'Publish'],
+                                                    source: context().EntitySets,
+                                                    context: context,
+                                                    discriminatorColumn: 'DatabaseID',
+                                                    discriminatorValue: selectedService().DatabaseID,
+                                                    allDatabases: allDatabases,
+                                                    databaseSet: context().Databases}">
+
+
+                <script type="text/html" data-name-template="Publish-display">
+                    <span data-bind="text: $root.checkBoxStates().length"></span>
+                    <input type="checkbox"
+                           data-bind="click: $root.check,
+                                      checked: $root.checkBoxStates().length < 1" />
+                </script>
+
+
+                <!--, dbs: databases, databases: context().Databases-->
+                <script type="text/html" data-name-template="DatabaseID-editor">
+                    <select data-bind="options: $root.allDatabases,
+                                optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                optionsCaption: 'Select...' "></select>
+                </script>
+
+                <script type="text/html" data-name-template="DatabaseID-display">
+                    <span data-bind="text: $parent[name]" />:
+                    <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                </script>
+
+
+
+            </div>
+        </div>
+
+
+    </div>
+
 </body>
 </html>
