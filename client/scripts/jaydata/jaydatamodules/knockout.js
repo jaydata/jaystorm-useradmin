@@ -22,6 +22,11 @@
 
                     koProperty.subscribe(function (val) {
                         _this.getEntity()[propertyName] = val;
+//                        console.log("!!!!");
+//                        if (memberDefinition.monitorChanges != false && ("instancePropertyChanged" in this.constructor) ) {
+//                            eventData = new PropertyChangeEventData(memberDefinition.name, {}, value);
+//                            this.constructor["instancePropertyChanged"].fire(eventData, this);
+//                        };
                     });
 
                     _this[backingFieldName] = koProperty;
@@ -30,6 +35,8 @@
                 return _this[backingFieldName];
             },
             storeProperty: function (memberDefinition, value) {
+
+
             },
             equalityComparers: { type: $data.Object }
         };
@@ -40,10 +47,11 @@
             instanceDefinition[propName] = {
                 type: ko.observable
             };
-            instanceDefinition["ValidationErrors"] = {
-                type: ko.observable
-            };
+
         }
+        instanceDefinition["ValidationErrors"] = {
+            type: ko.observable
+        };
 
         $data.Class.defineEx(
             observableClassNem,

@@ -2,17 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/zpace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/data-manager.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/inflection.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/context.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/contextapi-api.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/contextapi-context.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/contextapi.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/log" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/index.html" afterPath="$PROJECT_DIR$/client/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JaySvcUtil.js" afterPath="$PROJECT_DIR$/client/scripts/JaySvcUtil.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/application.js" afterPath="$PROJECT_DIR$/client/scripts/application.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/MongoDbProvider.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/MongoDbProvider.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/MongoDbProvider.min.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/MongoDbProvider.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/SqLiteProvider.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/SqLiteProvider.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/SqLiteProvider.min.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/SqLiteProvider.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/oDataProvider.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/oDataProvider.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/oDataProvider.min.js" afterPath="$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/oDataProvider.min.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaygrid-table-template.js" afterPath="$PROJECT_DIR$/client/scripts/jaygrid-table-template.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/jaygrid.js" afterPath="$PROJECT_DIR$/client/scripts/jaygrid.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server.js" afterPath="$PROJECT_DIR$/server/server.js" />
@@ -32,59 +38,24 @@
   <component name="DaemonCodeAnalyzer">
     <disable_hints />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file leaf-file-name="application.js" pinned="false" current="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/client/scripts/application.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state line="247" column="33" selection-start="5379" selection-end="5379" vertical-scroll-proportion="0.29596043">
-                    <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="FavoritesManager">
     <favorites_list name="jaystorm-useradmin" />
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="479" column="66" selection-start="20307" selection-end="20307" vertical-scroll-proportion="0.36708862">
-              <folding>
-                <element signature="tag#script#13;tag#head#0;tag#html#0" expanded="false" />
-              </folding>
+            <state line="230" column="0" selection-start="10320" selection-end="10320" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jayrepeater.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jayrepeater.js">
+      <file leaf-file-name="security-manager.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="41" selection-start="2022" selection-end="2022" vertical-scroll-proportion="0.0">
-              <folding>
-                <marker date="1345548312000" expanded="true" signature="836:1344" placeholder="..." />
-                <marker date="1345548312000" expanded="true" signature="887:1326" placeholder="..." />
-                <marker date="1345548312000" expanded="true" signature="947:1168" placeholder="..." />
-                <marker date="1345548312000" expanded="true" signature="993:1140" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="knockout-2.1.0.debug.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="3026" column="31" selection-start="147794" selection-end="147794" vertical-scroll-proportion="38.56818">
+            <state line="96" column="50" selection-start="3141" selection-end="3141" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -93,43 +64,45 @@
       <file leaf-file-name="jaygrid.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="417" column="44" selection-start="15559" selection-end="15559" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="190" column="46" selection-start="6302" selection-end="6302" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#11961#13982#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jaydata.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
+      <file leaf-file-name="contextapi-api.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/contextapi-api.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13978" column="21" selection-start="551925" selection-end="551925" vertical-scroll-proportion="-30.807692">
+            <state line="403" column="2" selection-start="23313" selection-end="23397" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FacebookProvider.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/FacebookProvider.js">
+      <file leaf-file-name="contextapi-context.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/contextapi-context.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="23" column="5" selection-start="1068" selection-end="1068" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="deferred.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/deferred.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="server.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="192" column="4" selection-start="6484" selection-end="6484" vertical-scroll-proportion="0.0">
+            <state line="111" column="6" selection-start="3344" selection-end="3344" vertical-scroll-proportion="0.41156068">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="contextapi.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/contextapi.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -138,23 +111,39 @@
       <file leaf-file-name="jaygrid-table-template.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="62" selection-start="2236" selection-end="2236" vertical-scroll-proportion="0.0">
+            <state line="14" column="29" selection-start="452" selection-end="452" vertical-scroll-proportion="0.0">
               <folding>
-                <marker date="1345741419000" expanded="true" signature="266:1761" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="334:1754" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="356:832" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="420:810" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="1039:1736" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="1103:1714" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="1839:2017" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="1890:1981" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="2237:2405" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="2569:2892" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="2623:2877" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="2677:2857" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="3630:3691" placeholder="..." />
-                <marker date="1345741419000" expanded="true" signature="3958:4091" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="266:1839" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="334:1832" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="356:910" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="420:888" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="1117:1814" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="1181:1792" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="1917:2095" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="1968:2059" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="2326:2497" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="2799:3075" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="2853:3060" placeholder="..." />
+                <marker date="1345997212000" expanded="true" signature="4121:4244" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="schema-manager.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="0" selection-start="329" selection-end="568" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="service-manager.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="43" selection-start="473" selection-end="473" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -172,29 +161,29 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/client/scripts/jayPropertyEditor.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jayrepeater.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaypropertyeditor.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jay-property-editor.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
+        <option value="$PROJECT_DIR$/client/scripts/inflection.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaygrid-table-template.js" />
-        <option value="$PROJECT_DIR$/client/scripts/q.js" />
-        <option value="$PROJECT_DIR$/client/storm-json.js" />
-        <option value="$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js" />
-        <option value="$PROJECT_DIR$/server/server.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaydata/jaydata.js" />
+        <option value="$USER_HOME$/node_modules/jaydata/lib/Types/EntityContext.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaygrid-table-template.js" />
-        <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
+        <option value="$PROJECT_DIR$/client/scripts/data-manager.js" />
+        <option value="$PROJECT_DIR$/client/scripts/schema-manager.js" />
+        <option value="$PROJECT_DIR$/client/scripts/jaydata/service-manager.js" />
+        <option value="$PROJECT_DIR$/client/scripts/service-manager.js" />
         <option value="$PROJECT_DIR$/client/scripts/application.js" />
+        <option value="$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js" />
+        <option value="$PROJECT_DIR$/client/scripts/JayStormClient/data-manager.js" />
         <option value="$PROJECT_DIR$/client/index.html" />
+        <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
+        <option value="$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js" />
+        <option value="$PROJECT_DIR$/server/server.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-77" />
-    <option name="y" value="85" />
-    <option name="width" value="1485" />
-    <option name="height" value="1278" />
+    <option name="x" value="25" />
+    <option name="width" value="1834" />
+    <option name="height" value="1044" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -222,16 +211,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -278,22 +257,40 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Default">
           <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jaystorm-useradmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jaystorm-useradmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            <PATH_ELEMENT USER_OBJECT="jaystorm-useradmin">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            <PATH_ELEMENT USER_OBJECT="jaystorm-useradmin">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="client">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -304,9 +301,10 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Font" />
+    <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -316,10 +314,19 @@
       <recent name="$PROJECT_DIR$/client/scripts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/client/scripts/JayStormClient" />
       <recent name="$PROJECT_DIR$/client/scripts" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Node JS.server.js">
+    <configuration default="false" name="server.js" type="NodeJSConfigurationType" factoryName="Node JS" temporary="true" path-to-node="/usr/bin/node" path-to-js-file="$PROJECT_DIR$/server/server.js" working-dir="$PROJECT_DIR$" coffeescript-run="false">
+      <RunnerSettings RunnerId="NodeJS.debug" />
+      <ConfigurationWrapper RunnerId="NodeJS.debug" />
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node JS" working-dir="$PROJECT_DIR$" coffeescript-run="false">
+      <method />
+    </configuration>
     <configuration default="true" type="JavascriptDebugSession" factoryName="Local">
       <JSDebuggerConfigurationSettings>
         <option name="engineId" value="embedded" />
@@ -327,7 +334,9 @@
       </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
-    <list size="0" />
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Node JS.server.js" />
+    </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false">
@@ -402,25 +411,25 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-77" y="85" width="1485" height="1278" extended-state="0" />
-    <editor active="true" />
+    <frame x="25" y="0" width="1834" height="1044" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.0629275" sideWeight="0.99914676" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17542888" sideWeight="0.78305084" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21694915" sideWeight="0.99930316" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28056768" sideWeight="0.07096774" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10169491" sideWeight="0.08314437" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917705" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32884398" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="CSS Styles" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -480,120 +489,119 @@
     <MESSAGE value="JayGrid: a dynamic grid for knockoutjs + jaydata entities" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$USER_HOME$/node_modules/jaydata/lib/Types/EntityContext.js</url>
+          <line>982</line>
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$USER_HOME$/node_modules/jaydata/lib/Types/EntityContext.js</url>
+          <line>980</line>
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$USER_HOME$/node_modules/jaydata/lib/Types/EntityContext.js</url>
+          <line>1006</line>
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$USER_HOME$/node_modules/jaydata/lib/JayService/OData/BatchProcessor.js</url>
+          <line>80</line>
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/client/scripts/JaySvcUtil.js">
+    <entry file="file://$USER_HOME$/node_modules/jaydata/lib/JayService/OData/BatchProcessor.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="240" column="12" selection-start="11378" selection-end="11378" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jay-property-editor.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/q.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="600" column="19" selection-start="20744" selection-end="20748" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/storm-json.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="14" selection-start="1526" selection-end="1526" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydataproviders/FacebookProvider.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/deferred.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="62" selection-start="2236" selection-end="2236" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1345741419000" expanded="true" signature="266:1761" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="334:1754" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="356:832" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="420:810" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="1039:1736" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="1103:1714" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="1839:2017" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="1890:1981" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="2237:2405" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="2569:2892" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="2623:2877" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="2677:2857" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="3630:3691" placeholder="..." />
-            <marker date="1345741419000" expanded="true" signature="3958:4091" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="192" column="4" selection-start="6484" selection-end="6484" vertical-scroll-proportion="0.0">
+        <state line="114" column="26" selection-start="4247" selection-end="4247" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3026" column="31" selection-start="147794" selection-end="147794" vertical-scroll-proportion="38.56818">
-          <folding />
-        </state>
+        <state line="2986" column="36" selection-start="145518" selection-end="145524" vertical-scroll-proportion="-9.44" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/q.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydata.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13978" column="21" selection-start="551925" selection-end="551925" vertical-scroll-proportion="-30.807692">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jayrepeater.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="41" selection-start="2022" selection-end="2022" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1345548312000" expanded="true" signature="836:1344" placeholder="..." />
-            <marker date="1345548312000" expanded="true" signature="887:1326" placeholder="..." />
-            <marker date="1345548312000" expanded="true" signature="947:1168" placeholder="..." />
-            <marker date="1345548312000" expanded="true" signature="993:1140" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="417" column="44" selection-start="15559" selection-end="15559" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="14709" column="0" selection-start="586282" selection-end="586818" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/application.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="247" column="33" selection-start="5379" selection-end="5379" vertical-scroll-proportion="0.29596043">
-          <folding />
-        </state>
+        <state line="70" column="0" selection-start="1928" selection-end="1928" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/data-manager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="0" selection-start="743" selection-end="743" vertical-scroll-proportion="0.6485549" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="479" column="66" selection-start="20307" selection-end="20307" vertical-scroll-proportion="0.36708862">
+        <state line="230" column="0" selection-start="10320" selection-end="10320" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="96" column="50" selection-start="3141" selection-end="3141" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="29" selection-start="452" selection-end="452" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="0" selection-start="329" selection-end="568" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="43" selection-start="473" selection-end="473" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="190" column="46" selection-start="6302" selection-end="6302" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="tag#script#13;tag#head#0;tag#html#0" expanded="false" />
+            <element signature="e#11961#13982#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/contextapi.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/contextapi-api.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="403" column="2" selection-start="23313" selection-end="23397" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/contextapi-context.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="5" selection-start="1068" selection-end="1068" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="111" column="6" selection-start="3344" selection-end="3344" vertical-scroll-proportion="0.41156068">
+          <folding />
         </state>
       </provider>
     </entry>

@@ -1,5 +1,3 @@
-#!/usr/bin/node-dev
-
 /**
  * Created with JetBrains WebStorm.
  * User: zpace
@@ -7,13 +5,7 @@
  * Time: 4:20 PM
  * To change this template use File | Settings | File Templates.
  */
-/**
- * Created with JetBrains WebStorm.
- * User: zpace
- * Date: 8/12/12
- * Time: 1:15 PM
- * To change this template use File | Settings | File Templates.
- */
+
 
 require('connect');
 require('jaydata');
@@ -23,12 +15,16 @@ require('q');
 function registerEdmTypes() {
 
     function Edm_Boolean() {
+
     }
+
     $data.Container.registerType('Edm.Boolean', Edm_Boolean);
     $data.Container.mapType(Edm_Boolean, $data.Boolean);
 
     function Edm_Binary() {
+
     }
+
     $data.Container.registerType('Edm.Binary', Edm_Binary);
     $data.Container.mapType(Edm_Binary, $data.Blob);
 
@@ -80,9 +76,20 @@ function registerEdmTypes() {
     $data.Container.registerType('Edm.String', Edm_String);
     $data.Container.mapType(Edm_String, $data.String);
 
-
 };
+
 registerEdmTypes();
+
+
+
+$data.Entity.extend('$data.JayStormAPI.TypeTemplate', {
+    'ID':{ key:true, type:'id', nullable:false, computed:true },
+     Name: { type:'string', required: true },
+     Description: {type: 'string' },
+     TypeName: { type: 'string' },
+     TypeDescriptor: {type: '$data.Object' },
+     HasElementType: { type: 'boolean' }
+});
 
 
 $data.Entity.extend('$data.JayStormAPI.EntityBase', {
@@ -91,6 +98,29 @@ $data.Entity.extend('$data.JayStormAPI.EntityBase', {
     constructor: function() {
         this.creationDate = new Date();
     }
+});
+
+$data.Entity.extend('$data.JayStormAPI.ObjectPointer', {
+    Collection: { type: 'id' },
+    ID: { type: 'id' },
+    Database: { type: 'string' }
+});
+
+$data.Entity.extend('$data.JayStormAPI.Permission', {
+    PermissionID: { type: 'id', key: true, computed: true },
+    DatabaseID: { type: 'id', required: 'true', $sourceTable: 'Databases', $sourceValue: 'DatabaseID', $sourceText: 'Name' },
+    EntitySetID: { type: 'id', required: 'true', $sourceTable: 'EntitySets', $sourceValue: 'EntitySetID', $sourceText: 'Name' },
+    GroupID: { type: 'id', required: true,$sourceTable: 'Groups', $sourceValue: 'GroupID', $sourceText: 'Name' } ,
+    Read: { type: 'boolean' },
+    Create: { type: 'boolean' },
+    Update: { type: 'boolean' },
+    Delete: { type: 'boolean' },
+    DeleteBatch: { type: 'boolean' },
+    Execute: { type: 'boolean' },
+    Manage: { type: 'boolean' },
+
+    //Fields: { type: 'Array', elementType: '$data.JayStormAPI.EntityField' },
+    CreationDate: { type: 'date'  }
 });
 
 $data.Entity.extend('$data.JayStormAPI.Entity', {
@@ -116,6 +146,7 @@ $data.Entity.extend('$data.JayStormAPI.XXX', {
 $data.Entity.extend('$data.JayStormAPI.EntityField', {
     'EntityFieldID': { type: 'id', key: true, computed: true },
     EntityID: { type: 'id', required: true },
+    Index: { type: 'number' },
     Name: { type: 'string', required: true },
     Type: { type: 'string', required: true },
     ElementType: { type: 'string' },
@@ -131,6 +162,7 @@ $data.Entity.extend('$data.JayStormAPI.EntityField', {
     MaxLength: { type: 'int' },
     Length: { type: 'int' },
     RegExp: { type: 'string' },
+    TypeTemplate: { type: 'string' },
     //ExtensionAttributes: { type: 'Array', elementType: '$data.JayStormAPI.KeyValuePair' },
     DatabaseID: {type: 'id', required: true}
 });
@@ -165,8 +197,9 @@ $data.Entity.extend('$data.JayStormAPI.ServiceOperation', {
 $data.Entity.extend('$data.JayStormAPI.EventHandler', {
     EventHandlerID: { type: 'id', key: true, computed: true },
     Type: { type: 'string', required: true },
-    Handler: { type: 'string', required: true }/*,
-     EntitySet: { type: '$data.ContextAPI.EntitySet', inverseProperty: 'EventHandlers', required: true }*/
+    Handler: { type: 'string', required: true },
+    EntitySetID: { type: 'id', required: true},
+    DatabaseID: { type: 'id', required: true}
 });
 
 
@@ -179,11 +212,9 @@ $data.Entity.extend('$data.JayStormAPI.Database', {
 $data.Entity.extend('$data.JayStormAPI.EntitySet', {
     EntitySetID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true, $displayName: 'Table name' },
-    ElementType: { type: 'string', required: true, $displayName: 'Table item name' },
-    //ElementTypeID: { type: 'id', required: true },
+    ElementType: { type: 'string' },
+    ElementTypeID: { type: 'id', required: true},
     TableName: { type: 'string' },
-    //EventHandlers: { type: 'Array', elementType: '$data.ContextAPI.EventHandler' },
-    //ElementType: { type: '$data.ContextAPI.Entity', required: true },
     Publish: { type: 'bool' },
     DatabaseID: {type: 'id', required: true}
 });
@@ -199,15 +230,12 @@ $data.Entity.extend('$data.JayStormAPI.Service', {
 
 });
 
-
-
-
-/*$data.Entity.extend('$data.ContextAPI.EntityContext', {
- EntityContextID: { type: 'id', key: true, computed: true },
- FullName: { type: 'string' },
- EntitySetID: { type: 'id' },
- EntitySet: { type: 'string' }
- })*/
+$data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
+    EntitySetPublicationID: { type: 'id', key: true, computed: true },
+    ServiceID: { type: 'id' },
+    EntitySetID: { type: 'id' },
+    Name: { type: 'string', required: true, $displayName: 'Service name' }
+});
 
 
 $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
@@ -218,43 +246,244 @@ $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
     LastName:  { type: 'Edm.String' },
     Enabled: { type: 'Edm.Boolean' },
     Password: { type: 'Edm.String' },
-    Roles: { type: 'Array', elementType: 'string', $source: 'Groups', $field: 'GroupID' },
+    Groups: { type: 'Array', elementType: 'id', $source: 'Groups', $field: 'GroupID' },
     CreationDate: { type: 'date'}
 });
 
 $data.Class.define('$data.JayStormAPI.Group', $data.Entity, null , {
     GroupID: { type: 'id', key: true, computed: true },
-    Name: { type: 'Edm.String' },
-    Database: { type : 'string', require: true},
-    CreationDate: { type: 'date', computed: true },
-    constructor: function() {
-        this.CreationDate = new Date();
-    }
+    Name: { type: 'Edm.String' }
 });
 
 
+$data.Class.define('$data.JayStormAPI.Test', $data.Entity, null , {
+    _id: { type: 'string', key: true },
+    Name: { type: 'Edm.String' }
+});
 
 
 $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.ServiceBase], null, {
 
 
+    constructor: function() {
+        var self = this;
+
+        this.Databases.afterRead = function(items) {
+            for(var i = 0; i < items.length; i++) {
+                items[i].someFunkyState = "!!!";
+            }
+        };
+
+        this.Databases.afterCreate = function(items) {
+
+            for(var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var svc = this.Services.add({
+                    DatabaseID: item.DatabaseID,
+                    Name: item.Name,
+                    Published: true
+                });
+            };
+            this.saveChanges();
+        };
+
+        this.EntitySets.afterCreate = function(entitySets) {
+            var itemsToCreate = [];
+            var itemIds = [];
+            var dbID = entitySets[0].DatabaseID;
+            if (entitySets.length > 1) {
+                for(var i = 0; i < entitySets.length; i++) {
+                    if (entitySets[i].DatabaseID !== dbID) {
+                        console.log("Batch create EntitySets for different DB-s are not allowed");
+                        return false;
+                    }
+                };
+            }
+
+            return function(cb) {
+                self.Services.filter("it.DatabaseID == this.dbID",{dbID: dbID}).toArray(
+                    function( services) {
+                        services.forEach(function(service) {
+                            entitySets.forEach( function(entitySet) {
+                                self.add( new self.EntitySetPublications.createNew({
+                                    ServiceID: service.ServiceID,
+                                    EntitySetID: entitySet.EntitySetID,
+                                    Name: entitySet.Name
+                                }));
+                            })
+
+                        });
+                        //todo replace to true
+                        self.saveChanges( function() {
+                            console.log('items saved');
+                            cb(false);
+                        })
+                    }
+                )
+            }
+
+        };
+
+        this.Entities.afterDelete = function(items) {
+        //TODO
+        };
+
+        this.Databases.beforeDelete = function(items) {
+//            var itemIds = [];
+//            for(var i = 0; i < items.length; i++) {
+//            }
+//            //TODO removeAll
+//            this.Services.filter("it.DatabaseID in this.ids", { ids: itemIds}).removeAll();
+        };
+
+        this.Databases.afterDelete = function(items) {
+            var itemIds = [];
+            for(var i = 0; i < items.length; i++) {
+
+            }
+            //TODO removeAll
+            this.Services
+                .filter("it.DatabaseID in this.ids", { ids: itemIds})
+                .forEach( function( service ) {
+                    this.remove(service);
+                });
+        };
+
+        this.Databases.beforeUpdate = function(items) {
+
+        };
+
+
+    },
+
+    Tests: { type: $data.EntitySet, elementType: $data.JayStormAPI.Test},
+    Permissions: { type: $data.EntitySet, elementType: $data.JayStormAPI.Permission},
     Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database},
     Entities: { type: $data.EntitySet, elementType: $data.JayStormAPI.Entity },
     EntityFields: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntityField },
     EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet },
+    EntitySetPublications: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySetPublication},
     Services: { type: $data.EntitySet, elementType: $data.JayStormAPI.Service },
     ServiceOperations: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperation },
-
+    TypeTemplates:  { type: $data.EntitySet, elementType: $data.JayStormAPI.TypeTemplate },
     Users: {type: $data.EntitySet, elementType: $data.JayStormAPI.User},
 
     Groups: { type: $data.EntitySet, elementType: $data.JayStormAPI.Group},
 
+    SystemTypes : { value: [
+        {
+            Name: 'Object identifier',
+            Description: 'A field that uniquely identifies an object',
+            TypeName: 'id',
+            TypeDescriptor: {
+                Type: 'id',
+                Key: true,
+                Computed: true
+            }
 
-    getGroups: $data.JayService.serviceFunction()
-        .param("userID", "Edm.String")
-        .returns("Edm.String")
+        },
+        {
+            Name: 'Short string',
+            Description: 'A line of text (max 200 letters)',
+            TypeName: 'string',
+            TypeDescriptor: {
+                Type: 'string',
+                MaxLength: 200
+            }
+        },
+        {
+            Name: 'Long string',
+            Description: 'A large block of text million',
+            TypeName: 'string',
+            TypeDescriptor: {
+                Type: 'string'
+            }
+        },
+        {
+            Name: 'Reference',
+            Description: 'A type to keep an id of another object',
+            TypeName: 'id',
+            TypeDescriptor: {
+                Type: 'id'
+            }
+
+        },
+        {
+            Name: 'International date',
+            Description: 'A datetime value stored in Zulu',
+            TypeName: 'date',
+            TypeDescriptor: {
+                Type: 'date'
+            }
+        },
+
+        {
+            Name: 'Number',
+            Description: 'A real number',
+            TypeName: 'number',
+            TypeDescriptor: {
+                Type: 'number'
+            }
+        },
+        {
+            Name: 'Boolean',
+            Description: 'A boolean field',
+            TypeName: 'boolean',
+            TypeDescriptor: {
+                Type: 'boolean'
+            }
+        },
+        {
+            Name: 'Array',
+            Description: 'A field for a collection of items of primitive and complex types',
+            TypeName: 'Array',
+            TypeDescriptor: {
+                Type: 'Array'
+            },
+            HasElementType: true
+        }
+    ]},
+
+
+    loadTypes: $data.JayService.serviceFunction()
+        .returnsArrayOf("$data.JayStormAPI.TypeTemplate")
         (
-            function(userID, password) { }
+            function() {
+                return function(pass, fail) {
+                    var self = this;
+                    for(var i = 0; i < this.context.SystemTypes.length; i++) {
+                        var tp = this.context.SystemTypes[i];
+                        this.context.TypeTemplates.add(tp);
+                    }
+
+                    this.context.saveChanges(function() {
+                        self.context.TypeTemplates.toArray( function(a) {
+                            self.success(a);
+                        })
+
+                    });
+
+
+                }
+            }
+        ),
+
+
+    test: $data.JayService.serviceFunction()
+        .returnsArrayOf("$data.JayStormAPI.Test")
+        (
+            function() {
+                return function(succ, err) {
+
+                    var s = this;
+//                    this.context.Tests.add({_id:'1'});
+//                    this.context.Tests.add({_id:'2'});
+                    this.context.Tests.toArray(function(items) {
+                        console.log("!");
+                        s.success(items);
+                    });
+                }
+            }
         ),
 
 
@@ -282,58 +511,12 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 });
 
 
-
-
-$data.Class.define('$data.DB2.User', $data.Entity, null, {
-    UserID: { type: 'id', key: true, computed: true },
-    Login: { type: 'Edm.String' },
-    Age: { type: 'Edm.Int32', required: true },
-    FirstName: { type: 'Edm.String' },
-    LastName:  { type: 'Edm.String' },
-    Enabled: { type: 'Edm.Boolean' },
-    Password: { type: 'Edm.String' },
-    Roles: { type: 'Array', elementType: 'string', $source: 'Groups', $field: 'GroupID' },
-    CreationDate: { type: 'date'}
-});
-
-$data.Class.define('$data.DB2.Account', $data.Entity, null, {
-    UserID: { type: 'id', key: true, computed: true },
-    Login: { type: 'Edm.String' },
-    FirstName: { type: 'Edm.String' },
-    LastName:  { type: 'Edm.String' },
-    Roles: { type: 'Array', elementType: 'string', $source: 'Groups', $field: 'GroupID' },
-    CreationDate: { type: 'date'}
-});
-
-$data.Class.defineEx('$data.DB2.Context', [$data.EntityContext, $data.ServiceBase], null, {
-   Users: { type: $data.EntitySet, elementType: $data.DB2.User },
-   Accounts: { type: $data.EntitySet, elementType: $data.DB2.Account }
-});
-
-//
-//$data.EntityContext.extend('My.Context', {
-//   Ents: {type: $data.EntitySet, elementType: My.Entity }
-//});
-
-//
-//
-//var context = new JayStormApplication.Context({name: "mongoDB", databaseName:"ApplicationDB"});
-//
-//context.onReady( function() {
-//    context.Users.add({login: "zpace"});
-//    context.saveChanges(function() {
-//        console.log("done");
-//        context.Users.length( function(x) {
-//            console.log("Total items: " + x);
-//        })
-//    })
-//});
-
 var c = require('connect');
 var app = c();
 
 app.use(c.query());
 app.use(function (req, res, next) {
+
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'X-PINGOTHER, Content-Type, MaxDataServiceVersion, DataServiceVersion');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, MERGE, DELETE');
@@ -343,12 +526,10 @@ app.use(function (req, res, next) {
         next();
     }
 });
-//app.use(function(req, res, next) {
-//   console.log("!!!");
-//    console.dir(req);
-//   next();
-//});
+
 app.use(c.bodyParser());
+
+
 
 app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);
 app.use("/db", $data.JayService.createAdapter($data.JayStormAPI.Context, function() {
@@ -356,11 +537,11 @@ app.use("/db", $data.JayService.createAdapter($data.JayStormAPI.Context, functio
 }));
 
 app.use("/db2", $data.JayService.OData.BatchProcessor.connectBodyReader);
-app.use("/db2", $data.JayService.createAdapter($data.DB2.Context, function() {
-    return new $data.DB2.Context({name: "mongoDB", databaseName:"DB2"});
+app.use("/db2", $data.JayService.createAdapter($data.JayStormAPI.Context, function() {
+    return new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB", responseLimit:-1});
 }));
 
 
-app.use("/", c.static("../client"));
+app.use("/", c.static("/home/zpace/jaystorm-useradmin/client"));
 app.listen(8181);
 console.log("end");

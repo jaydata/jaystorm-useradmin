@@ -76,20 +76,20 @@
 
     ko.bindingHandlers['readValue'] = {
         'update': function (element, valueAccessor) {
-            console.log("@@@@@readValue start");
             var v = valueAccessor();
             var eset = ko.utils.unwrapObservable(v.source);
             var key = ko.utils.unwrapObservable(v.key);
-            console.dir([v,key]);
+            if (!key) {
+                return;
+            }
 
-            var field = ko.utils.unwrapObservable(v.field);
+                var field = ko.utils.unwrapObservable(v.field);
             var keyField = eset.createNew.memberDefinitions.getKeyProperties()[0].name;
+
 
             eset.filter("it." + keyField.toString() + " == this.value", { value: key})
                 .map("it." + field)
                 .forEach(function(item) {
-
-                    console.log("@@@@@readValue rece");;
                     ko.utils.setTextContent(element, item);
                 }
             );
@@ -188,28 +188,56 @@
                     self.sortColumn('');
                 }, 'beforeChange');
 
-                self.items =  ko.observableArray([]);
+                self.items =  viewModel.items || ko.observableArray([]);
+
+                if (self.monitorItems) {
+                    self.monitorItems(self.items);
+                }
+
                 self.objectsToDelete = ko.observableArray([]);
                 self.objectsInEditMode = ko.observableArray([]);
 
 
 
                 self.save =  function() {
-                    console.dir(arguments);
+
+                    console.dir("Saving changes: " + arguments);
+
                     var source = ko.utils.unwrapObservable(self.source);
+                    console.log("Items in tracker:" + source.entityContext.stateManager.trackedEntities.length);
+                    ccc = source.entityContext;
                     for(var i = 0; i < self.objectsToDelete().length; i++) {
                         console.log("items found");
                         var item = self.objectsToDelete()[i];
                         source.remove(item);
                     }
-                    source.entityContext.saveChanges( function() {
-                      //console.log("saved");
-                        for(var i = 0; i < self.objectsToDelete().length; i++) {
-                            var item = self.objectsToDelete()[i];
-                            self.items.remove(item);
+                    function doSave() {
+                        source.entityContext.saveChanges( function() {
+                            console.log("Items in tracker #2:" + source.entityContext.stateManager.trackedEntities.length);
+                            self.refresh(Math.random());
+                            self.objectsToDelete.removeAll();
+                            self.objectsInEditMode.removeAll()
+                        })
+                    }
+
+                    if (self.beforeSave) {
+                        var r = self.beforeSave(source);
+                        if (typeof r === 'function') {
+                            r(
+                                function() {
+                                    doSave();
+                                },
+                                function() {
+                                    console.log("aborted by client code");
+                                }
+                            )
+                        } else {
+                            doSave();
                         }
-                      self.objectsInEditMode.removeAll()
-                    })
+
+                    } else {
+                        doSave();
+                    }
                 };
 
 
@@ -225,10 +253,52 @@
                     return "Number of tracked changes: " + es.entityContext.stateManager.trackedEntities.length;
                 }
 
+                self.removeAll = function() {
+                    var entitySet = ko.utils.unwrapObservable(self.source);
+//                    es.removeAll( function() {
+//                        alert("removed!");
+//                    })
+
+                    var keyname = entitySet.defaultType.memberDefinitions.getKeyProperties()[0].name;
+                    entitySet.map("it." + keyname).toArray(function(ids) {
+                        ids.forEach( function(id) {
+                            var obj = { };
+                            obj[keyname] = id;
+                            entitySet.remove(obj);
+                        });
+                        entitySet.entityContext.saveChanges( function() {
+                            self.refresh(Math.random());
+                        })
+                    });
+                    //alert("it." + );
+                };
+
                 self.addNew = function() {
                     var es = ko.utils.unwrapObservable(self.source);
                     var o = new es.createNew();
                     o = o.asKoObservable();
+                    var idx = self.items().length;
+
+
+
+                    o.getColumns = function() {
+                        var result = [];
+                        for (var i = 0; i < self.columns().length; i++) {
+                            var col = {
+                                rowIndex: idx,
+                                columnIndex: i,
+                                value: this[self.columns()[i].name],
+                                name: self.columns()[i].name,
+                                metadata: self.columns()[i],
+                                owner: this,
+                                itemCommands: itemCommands
+                            }
+                            result.push(col);
+                        }
+                        return result;
+                    }
+
+
                     var v = ko.utils.unwrapObservable(self.discriminatorValue),
                         f = ko.utils.unwrapObservable(self.discriminatorColumn);
                     if (v && f) {
@@ -242,7 +312,22 @@
                     }
                     self.objectsInEditMode.push(o);
                     ko.utils.unwrapObservable(source).add(o);
-                    self.items.push(o);
+
+                    if (self.afterAddNew) {
+                        var r = self.afterAddNew( o, self );
+                        if (typeof r === 'function') {
+                            r(function(ok) {
+                               ok(self.items.push(o));
+                            });
+                        } else {
+                            self.items.push(o);
+                        }
+                    } else {
+                        self.items.push(o);
+
+                    }
+
+
                 };
 
 
@@ -318,6 +403,31 @@
                 };
 
                 self.columns = ko.observableArray(cols);
+
+                function getKoItemColumns(rowIndex) {
+                    var result = [];
+                    for (var i = 0; i < self.columns().length; i++) {
+                        var col = {
+                            rowIndex: rowIndex,
+                            columnIndex: i,
+                            value: this[self.columns()[i].name],
+                            name: self.columns()[i].name,
+                            metadata: self.columns()[i],
+                            owner: this,
+                            itemCommands: itemCommands
+                        }
+                        result.push(col);
+                    }
+                    return result;
+                }
+
+                self.extendItem = function(koItem) {
+                    koItem.getColumns = getKoItemColumns;
+                    if( self.itemExtender ) {
+                        self.itemExtender( koItem );
+                    }
+                }
+
                 self.sortColumn = ko.observable(sortColName);
                 self.sortDirection = ko.observable(true);
 
@@ -330,20 +440,6 @@
 
                 self.selectedItem = ko.observable();
 
-//            if (source instanceof $data.EntitySet && receiveEvents) {
-//                source.entityContext.addEventListener("added", function(sender, itemInfo) {
-//                    if (itemInfo.data instanceof source.createNew) {
-//                        model.items.push( itemInfo.data.asKoObservable());
-//                    }
-//                });
-//                source.entityContext.addEventListener("deleted", function(sender, itemInfo) {
-//                    if (itemInfo.data instanceof source.createNew) {
-//                        model.items.remove( function(item) {
-//                            return item.innerInstance.equals(itemInfo.data);
-//                        });
-//                    }
-//                })
-//            }
                 self.pages = ko.computed( function() {
                     return ko.utils.range(0, this.itemCount() / this.pageSize());
                 }, this);
@@ -360,14 +456,19 @@
                 self.discriminatorColumn = viewModel.discriminatorColumn; // || ko.observable();
                 self.discriminatorValue = viewModel.discriminatorValue; //|| ko.observable();
 
+                self.refresh = ko.observable();
+
                 self.itemsTrigger = ko.computed( function(){
                     if (ko.utils.unwrapObservable(this.source) == null) {
                         return;
                     }
                     var q = this.source();
 
+                    var ref = this.refresh();
+
                     var column = ko.utils.unwrapObservable(this.discriminatorColumn);
                     var value = ko.utils.unwrapObservable(this.discriminatorValue);
+
                     if (column && !(value) ) {
                         return;
                     }
@@ -378,7 +479,7 @@
 
                     var sortColumn = this.sortColumn();
 
-                    if (!q.defaultType.memberDefinitions[sortColumn]) {
+                    if (!q.defaultType.memberDefinitions["$" + sortColumn]) {
                         sortColumn = '';
                     }
 
@@ -386,7 +487,18 @@
                         .order(sortColumn)
                         .skip(this.pageSize() * this.currentPage())
                         .take(this.pageSize())
-                        .toArray(self.items);
+                        .toArray(
+                        function (entities) {
+                            self.items.removeAll();
+                            for(var i = 0; i < entities.length; i++) {
+                                var item = entities[i];
+                                var koItem = item.asKoObservable();
+                                self.extendItem(koItem);
+                                self.items.push( koItem );
+                            }
+
+                        }
+                    );
                 }, this);
 
 

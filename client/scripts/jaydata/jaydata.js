@@ -8101,7 +8101,7 @@ JAYLINT = (function () {
                         self["create" + item.shortName] = creatorFnc;
                     }
                 } else {
-                    if (console) { console.warn("warning: short names overlap:" + item.shortName + ", Container.create" + item.shortName + " has not been updated"); }
+                    //if (console) { console.warn("warning: short names overlap:" + item.shortName + ", Container.create" + item.shortName + " has not been updated"); }
                 };
 
                 var typePos = classTypes.indexOf(type);
@@ -8113,7 +8113,7 @@ JAYLINT = (function () {
                 };
 
                 if (item.fullName in classNames) {
-                    console.warn("warning:!!! This typename has already been registered:" + item.fullName);
+                    //console.warn("warning:!!! This typename has already been registered:" + item.fullName);
                 };
                 classNames[item.fullName] = typePos;
             }
@@ -14707,6 +14707,21 @@ $data.Class.defineEx('$data.EntitySet',
             this[i] = eventHandlers[i];
         }
     },
+
+    find: function(keyValue, cb) {
+        //var callback = $data.typeSystem.createCallbackSetting(cb);
+        //todo multifield key support
+        var key = this.defaultType.memberDefinitions.getKeyProperties()[0];
+        return this.single("it." + key.name + " == this.value", { value: keyValue }, cb);
+    },
+
+    addNew: function(item, ncb) {
+        var callback = $data.typeSystem.createCallbackSetting(cb);
+        var _item = new this.createNew(item);
+        this.entityContext.saveChanges(cb);
+        return _item;
+    },
+
     executeQuery: function (expression, on_ready) {
         //var compiledQuery = this.entityContext
         var callBack = $data.typeSystem.createCallbackSetting(on_ready);
@@ -14728,6 +14743,9 @@ $data.Class.defineEx('$data.EntitySet',
         }
         trackedEntities.push({ entitySet: this, data: entity });
     },
+
+
+
     add: function (entity) {
         /// <signature>
         ///     <summary>Creates a typed entity and adds to the context.</summary>
@@ -14764,6 +14782,7 @@ $data.Class.defineEx('$data.EntitySet',
         data.changedProperties = undefined;
         data.context = this.entityContext;
         this._trackEntity(data);
+        return this;
     },
     remove: function (entity) {
         /// <signature>
