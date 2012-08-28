@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+
+<head>
+    <title></title>
+    <script src="/scripts/jquery-1.7.2.min.js"></script>
+    <script src="scripts/datajs-1.0.3.js"></script>
+    <!--<script type="text/javascript" src="scripts/q.js"></script>-->
+    <script src="/scripts/JayData-standalone.js"></script>
+    <!--<script src="scripts/jaydata/jaydataproviders/SqLiteProvider.js"></script>-->
+    <!--<script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>-->
+    <script src="/scripts/JaySvcUtil.js"></script>
+    <script src="scripts/knockout-2.1.0.debug.js"></script>
+    <!--<script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>-->
+    <script src="scripts/jaygrid-table-template.js"></script>
+    <script src="scripts/jaygrid.js"></script>
+    <script src="scripts/jay-property-editor.js"></script>
+    <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+
+
+    <script src="scripts/inflection.js"></script>
+</head>
+
+<script>
+    $data.Class.define("$org.types.AccountSubType", $data.Entity, null, {
+        Id : {
+            type : "int",
+            key : true,
+            computed : true
+        },
+        AccountType : {
+            type : "$org.types.AccountType",
+            inverseProperty : "AccountSubTypes"
+        },
+        Name : {
+            type : "string",
+            required : true
+        }
+    });
+    $data.Class.define("$org.types.AccountType", $data.Entity, null, {
+        Id : {
+            type : "int",
+            key : true,
+            computed : true
+        },
+        Name : {
+            type : "string",
+            required : true
+        },
+        AccountSubTypes : {
+            type : "Array",
+            elementType : "$org.types.AccountSubType",
+            inverseProperty : "AccountType"
+        }
+    });
+
+    $data.EntityContext.extend("$org.MyContext", {
+        AccountTypes: { type: $data.EntitySet, elementType: $org.types.AccountType },
+        AccountSubTypes: { type: $data.EntitySet, elementType: $org.types.AccountSubType }
+    });
+
+    var c = new $org.MyContext({ name: 'sqLite', databaseName: 'mydb'});
+    c.onReady(function(){
+        //var at = new $org.types.AccountType();
+        c.AccountSubTypes.include("AccountType").toArray(function() {
+            alert("!");
+        })
+//        at.Name = "asd";
+//        at.AccountSubTypes = [ new $org.types.AccountSubType({ Name:"x"}), new $org.types.AccountSubType({ Name:"z"})];
+//        c.add(at);
+//        c.saveChanges( function() {
+//            alert("!");
+//        })
+    })
+</script>
+<body>
+
+</body>
+</html>

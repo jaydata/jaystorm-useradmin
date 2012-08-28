@@ -95,7 +95,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
         xhttp.open("GET", cnf.metadataUri, true, cnf.user, cnf.password);
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState === 4) {
-                callback(xhttp.responseXML);
+                callback(xhttp.responseXML || xhttp.responseText);
             }
         };
         xhttp.send("");
@@ -163,7 +163,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
         } else if (typeof module !== 'undefined' && typeof require !== 'undefined') {
             var xslt = require('node_xslt');
             var libxml = require('libxmljs');
-
+console.log(metadata);
             return xslt.transform(xslt.readXsltString(transformXslt), xslt.readXmlString(metadata), [
                 'SerivceUri', "'" + cnf.SerivceUri + "'",
                 'EntityBaseClass', "'" + cnf.EntityBaseClass + "'",

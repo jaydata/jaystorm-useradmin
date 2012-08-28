@@ -22,6 +22,8 @@ function SecurityManager(factory){
     self.groups = ko.observableArray([]);
     self.databases = ko.observableArray([]);
 
+    self.rf = ko.observable({});
+
     var c = factory();
     c.Databases.toArray(self.databases);
     c.Groups.toArray(self.groups);
@@ -54,7 +56,9 @@ function SecurityManager(factory){
     self.selectedDatabase.subscribe(function(value) {
         console.log(value);
         var id = value.DatabaseID();
-        factory().EntitySets.filter("it.DatabaseID == this.id", {id: id }).toArray(self.tables);
+        factory().EntitySets
+            .filter(function(it) { return it.DatabaseID == this.id }, {id: id })
+            .toArray(self.tables);
     });
 
     self.selectedTable = ko.observable();
@@ -94,33 +98,19 @@ function SecurityManager(factory){
                                 p[self.tablePermissions[z].name] = self.tablePermissions[z].value();
                             }
                             c.add(p);
-                            //console.log("pushing");
                             var koItem = p.asKoObservable();
                             self.items.push(koItem);
-                            //self.items().push();
                             console.log("pushdone");
                         }
                     }
                 }
             }
             c.saveChanges( function() {
-                self.permissionRefresh(Math.random());
+                self.rf(Math.random());
                 console.log("saved!");
             })
         })
 
-//        var setID = self.selectedTable() ? self.selectedTable().EntitySetID() : "*";
-//        if (setID == "*") {
-//        }
-
-//        var p = new c.Permissions.createNew();
-//        var perms = self.tablePermissions;
-//        for(var i = 0; i < perms.length; i++) {
-//            p[perms[i].name] = perms[i].value();
-//        };
-//        p.EntitySetID = self.selectedTable().EntitySetID();
-//        p.PrincipalID = self.selectedGroup().GroupID();
-//        console.dir(p);
 
     }
 

@@ -10,7 +10,7 @@
 require('connect');
 require('jaydata');
 require('q');
-
+require('./contextapi-api.js');
 
 function registerEdmTypes() {
 
@@ -128,20 +128,11 @@ $data.Entity.extend('$data.JayStormAPI.Entity', {
     Name: { type: 'string', required: true },
     FullName: { type: 'string', required: true },
     Namespace: { type: 'string' },
-    //Fields: { type: 'Array', elementType: '$data.JayStormAPI.EntityField' },
-    CreationDate: { type: 'date'  },
     DatabaseID: {type: 'id', required: true}
 });
 
 
 $data.JayStormAPI.Entity.extend('$data.JayStormAPI.ComplexType', { });
-
-$data.Entity.extend('$data.JayStormAPI.XXX', {
-    ID: { type: 'id', key: true, computed: true },
-    EntityID: { type: 'id', required: true },
-    Name: { type: 'string', required: true }
-})
-
 
 $data.Entity.extend('$data.JayStormAPI.EntityField', {
     'EntityFieldID': { type: 'id', key: true, computed: true },
@@ -163,8 +154,7 @@ $data.Entity.extend('$data.JayStormAPI.EntityField', {
     Length: { type: 'int' },
     RegExp: { type: 'string' },
     TypeTemplate: { type: 'string' },
-    //ExtensionAttributes: { type: 'Array', elementType: '$data.JayStormAPI.KeyValuePair' },
-    DatabaseID: {type: 'id', required: true}
+    DatabaseID: {type: 'id', required: true} /* ?? */
 });
 
 $data.Entity.extend('$data.JayStormAPI.KeyValuePair', {
@@ -196,6 +186,7 @@ $data.Entity.extend('$data.JayStormAPI.ServiceOperation', {
 
 $data.Entity.extend('$data.JayStormAPI.EventHandler', {
     EventHandlerID: { type: 'id', key: true, computed: true },
+    Name: {type: 'string', required: true },
     Type: { type: 'string', required: true },
     Handler: { type: 'string', required: true },
     EntitySetID: { type: 'id', required: true},
@@ -206,6 +197,7 @@ $data.Entity.extend('$data.JayStormAPI.EventHandler', {
 $data.Entity.extend('$data.JayStormAPI.Database', {
     DatabaseID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true },
+    Namespace: { type: 'string', required: true },
     Publish: { type: 'bool' }
 });
 
@@ -223,7 +215,7 @@ $data.Entity.extend('$data.JayStormAPI.EntitySet', {
 $data.Entity.extend('$data.JayStormAPI.Service', {
     ServiceID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true, $displayName: 'Service name' },
-    DatabaseID: {type: 'id' },
+    DatabaseID: {type: 'id', $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name' },
     Sets: { type: 'array', elementType: 'string' },
     Published: { type: 'bool' },
     ServiceSource: { type: 'string' }
@@ -262,7 +254,7 @@ $data.Class.define('$data.JayStormAPI.Test', $data.Entity, null , {
 });
 
 
-$data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.ServiceBase], null, {
+$data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.JayStormAPI.ServiceFunctions], null, {
 
 
     constructor: function() {
@@ -359,10 +351,12 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
     Tests: { type: $data.EntitySet, elementType: $data.JayStormAPI.Test},
     Permissions: { type: $data.EntitySet, elementType: $data.JayStormAPI.Permission},
     Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database},
+    ComplexTypes: { type: $data.EntitySet, elementType: $data.JayStormAPI.ComplexType },
     Entities: { type: $data.EntitySet, elementType: $data.JayStormAPI.Entity },
     EntityFields: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntityField },
     EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet },
     EntitySetPublications: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySetPublication},
+    EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler},
     Services: { type: $data.EntitySet, elementType: $data.JayStormAPI.Service },
     ServiceOperations: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperation },
     TypeTemplates:  { type: $data.EntitySet, elementType: $data.JayStormAPI.TypeTemplate },
@@ -511,10 +505,12 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 });
 
 
-var c = require('connect');
+
+var c = require('express');
 var app = c();
 
 app.use(c.query());
+app.use(c.logger());
 app.use(function (req, res, next) {
 
     res.setHeader('Access-Control-Allow-Origin', '*');

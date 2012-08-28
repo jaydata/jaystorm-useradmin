@@ -1137,7 +1137,7 @@ $C('$data.sqLite.SqlCompiler', $data.Expressions.EntityExpressionVisitor, null, 
         var includeBuilder = Container.createSqlBuilder(this.sets, this.entityContext);
         this.Visit(expression.source, includeBuilder);
 
-        this.newFilters['include'] = projectionBuilder;
+        this.newFilters['include'] = includeBuilder ;
     },
     VisitEntitySetExpression: function (expression, sqlBuilder) {
         sqlBuilder.selectTextPart('from');

@@ -73,8 +73,9 @@ function SchemaManagerModel( contextFactory ) {
         function result(ok, error) {
             c.saveChanges( function() {
                 for(var i = 0; i < dbs.length; i++) {
-                    var item = dbs[i];
-                    item.ElementTypeID = newEntities[item.Name].EntityID;
+                    var db = dbs[i];
+
+                    db.ElementTypeID = newEntities[db.Name].EntityID;
 
                     var field = new c.EntityFields.createNew({
                         Name : 'id',
@@ -84,7 +85,7 @@ function SchemaManagerModel( contextFactory ) {
                         TypeTemplate: 'Object identifier',
                         DatabaseID : self.currentDatabaseID(),
                         Computed : true,
-                        EntityID : item.ElementTypeID
+                        EntityID : db.ElementTypeID
                     });
                     set.entityContext.add(field);
                 }
@@ -99,8 +100,16 @@ function SchemaManagerModel( contextFactory ) {
         item.Index( gridModel.items().length );
     };
 
+    self.currentEntitySet = ko.observable();
+
+    self.setCurrentEntitySet = function(item) {
+        self.currentEntitySet(item);
+    }
+
     self.selectedEntity = ko.observable();
     self.currentEntityID = ko.observable();
+
+    self.showTriggerManager = ko.observable(false);
 
     self.setCurrentEntity = function(entity) {
         self.selectedEntity(entity);
@@ -119,7 +128,19 @@ function SchemaManagerModel( contextFactory ) {
                     var entity = contextFactory().Entities.find(item.ElementTypeID());
                     entity.then(function(e) { self.setCurrentEntity(e.asKoObservable()) });
                 }
-            }
+            },
+            {
+                displayName: 'Edit ServerEvents',
+                commandName: 'editEvents',
+                visible: function( item ) {
+                    return true;
+                },
+                execute: function( item ) {
+                    self.currentEntitySet( item );
+                    self.showTriggerManager( true );
+                }
+            },
+
         ];
 
 

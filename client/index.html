@@ -8,7 +8,7 @@
         <script src="/scripts/jaydata/jaydata.js"></script>
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
         <script src="/scripts/JaySvcUtil.js"></script>
-        <script src="scripts/knockout-2.1.0.debug.js"></script>
+        <script src="scripts/knockout-latest.js"></script>
         <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
         <script src="scripts/jaygrid-table-template.js"></script>
         <script src="scripts/jaygrid.js"></script>
@@ -34,13 +34,15 @@
         </table>
     </script>
 
-
-    <ul id="MenuUI" data-bind="foreach:items">
+<table><tr><td>
+    <ul id="MenuUI" data-bind="foreach:items" >
         <li>
             <a href="#" data-bind="click: $root.show, text: Title"></a>
         </li>
     </ul>
-
+    </div>
+</td>
+<td>
     <div id="DataManagerUI" data-bind="if: visible">
         <h3>Manage data</h3>
 
@@ -98,6 +100,7 @@
 
                     </td>
                     <td>
+
                         <div data-bind="visible: selectedEntity">
                             <form data-bind="submit: saveEntity">
                                 <fieldset data-bind="with: selectedEntity">
@@ -108,7 +111,7 @@
                             <h5>List of FIELDS</h5>
                             <div data-bind="jayGrid: {
                                         source: context().EntityFields,
-                                        fields:['Index', 'Name','TypeTemplate','ElementType','Key','Computed','Required'],
+                                        fields:['Index', 'Name','TypeTemplate','ElementType','Key', 'Computed','Required'],
                                         sortColumn: 'Index',
                                         afterAddNew: afterAddNewEntityField,
                                         discriminatorColumn: 'EntityID',
@@ -140,6 +143,19 @@
                             </div>
                         </div>
 
+                        <div data-bind="visible: showTriggerManager">
+                            <div data-bind="text: currentDatabaseID"></div>
+                            <div data-bind="jayGrid: {
+                                    source: context().EventHandlers,
+                                    beforeSave: beforeDatabaseSave,
+                                    discriminatorColumn: 'EntitySetID',
+                                    pageSize: eSetsPageSize,
+                                    discriminatorValue: currentEntitySet() ? currentEntitySet().EntitySetID() : undefined,
+                                    defaultValues: { DatabaseID: currentDatabaseID }},
+                                    visible: currentEntitySet">
+
+                            </div>
+                        </div>
                     </td>
 
                 </tr>
@@ -162,15 +178,11 @@
                                                 databaseSet: context().Databases}">
 
             <!--, dbs: databases, databases: context().Databases-->
-            <script type="text/html" data-name-template="DatabaseID-editor">
-                <select data-bind="options: $root.allDatabases,
-                            optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                            optionsCaption: 'Select...' "></select>
-            </script>
-
-            <script type="text/html" data-name-template="DatabaseID-display">
-                <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
-            </script>
+            <!--<script type="text/html" data-name-template="DatabaseID-editor">-->
+                <!--<select data-bind="options: $root.allDatabases,-->
+                            <!--optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],-->
+                            <!--optionsCaption: 'Select...' "></select>-->
+            <!--</script>-->
 
             <script type="text/html" data-name-template="Sets-editor">
                 <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
@@ -235,7 +247,8 @@
         <h4>List of active permissions</h4>
 
         <div data-bind="jayGrid: {source: context().Permissions,
-                items: $root.items }">
+                                           fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
+                                          refresher: $root.rf }">
 
             <script type="text/html" data-name-template="DatabaseID-display">
                 <span data-bind="readValue: { source: $root.context().Databases, key: value, field: 'Name' }"></span>
@@ -248,6 +261,9 @@
             </script>
         </div>
     </div>
+</div>
 
+
+</td></tr></table>
 </body>
 </html>

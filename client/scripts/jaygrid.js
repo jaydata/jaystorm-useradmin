@@ -8,6 +8,25 @@
 (function() {
     var templateEngine = new ko.nativeTemplateEngine();
 
+    var i = 0;
+
+    if (! ($data.EntitySet.prototype.toKoArray) ) {
+
+
+        $data.EntitySet.prototype.toKoArray = function() {
+            if (this._cached_ko_array) {
+                return this._cached_ko_array;
+            }
+            var z = this._cached_ko_array = ko.observableArray([]);
+            this.toArray( function(items) {
+                items.forEach(function(item) {
+                    z.push(item);
+                })
+            });
+            return z;
+        }
+     }
+
     templateEngine.addTemplate = function(templateName, templateMarkup) {
         document.write("<script type='text/html' id='" + templateName + "'>" + templateMarkup + "<" + "/script>");
     };
@@ -77,7 +96,9 @@
     ko.bindingHandlers['readValue'] = {
         'update': function (element, valueAccessor) {
             var v = valueAccessor();
+            console.dir(v);
             var eset = ko.utils.unwrapObservable(v.source);
+
             var key = ko.utils.unwrapObservable(v.key);
             if (!key) {
                 return;
@@ -307,6 +328,7 @@
                     }
                     if (self.defaultValues) {
                         for(var m in self.defaultValues) {
+                            console.log("setting default: " + m +" " + self.defaultValues[m]);
                             o[m](ko.utils.unwrapObservable(self.defaultValues[m]));
                         }
                     }
@@ -456,7 +478,7 @@
                 self.discriminatorColumn = viewModel.discriminatorColumn; // || ko.observable();
                 self.discriminatorValue = viewModel.discriminatorValue; //|| ko.observable();
 
-                self.refresh = ko.observable();
+                self.refresh = viewModel.refresher || ko.observable();
 
                 self.itemsTrigger = ko.computed( function(){
                     if (ko.utils.unwrapObservable(this.source) == null) {
@@ -513,12 +535,14 @@
 
                     if (self.objectsInEditMode.indexOf(propertyOwner) > -1) {
                         var templateId;
-                        return element.nameTemplates[metadata.name + "-editor"] ||
+                        var result = element.nameTemplates[metadata.name + "-editor"] ||
                             element.typeTemplates[metadata.stringName + "-editor"] ||
                             element.typeTemplates[metadata.resolvedName + "-editor"] ||
-                            (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
+                            (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-editor' :
+                                    (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
                                             'jay-data-grid-' + metadata.resolvedName + '-editor' :
-                                            'jay-data-grid-generic-editor');
+                                            'jay-data-grid-generic-editor'));
+                        return result;
                         //nameSuffix = '-editor';
                     } else {
 
@@ -529,13 +553,15 @@
                     var named = metadata.name + '-display';
                     var f = element.nameTemplates[named] || 'xxx';
 
+                    console.dir(metadata);
                     var result = element.nameTemplates[metadata.name + '-display'] ||
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
+                                 (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
-                                'jay-data-grid-' + metadata.resolvedName + '-display' :
-                                'jay-data-grid-generic-display');
+                                'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));
 
+                    console.log(result);
 
                     return result;
 

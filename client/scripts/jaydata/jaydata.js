@@ -71,11 +71,11 @@ Guard.requireType = function (name, value, typeOrTypes) {
 
 Guard.raise = function(exception){
 	if (typeof intellisense === 'undefined') {
-		if (exception instanceof Exception){
+		/*if (exception instanceof Exception){
 			console.error(exception.name + ':', exception.message + '\n', exception);
 		}else{
 			console.error(exception);
-		}
+		}*/
 		throw exception;
 	}
 };
@@ -7129,6 +7129,7 @@ JAYLINT = (function () {
         }
     }
 
+
     function MemberDefinition(memberDefinitionData, definedClass) {
         
         ///<field name="name" type="String">*</field>
@@ -7368,6 +7369,18 @@ JAYLINT = (function () {
     MemberTypes.field = "field";
 
     $data.MemberTypes = MemberTypes;
+    
+    function classToJSON(){
+        var ret = {};
+        for (var i in this){
+            if (this.hasOwnProperty(i)){
+                ret[i] = this[i];
+            }
+        }
+        return ret;
+    }
+    
+    $data.Base.toJSON = classToJSON;
 
     function TypeCreator() {
 
@@ -7586,6 +7599,7 @@ JAYLINT = (function () {
         }
 
         root[shortClassName] = this.classNames[className] = classFunction;
+        classFunction.toJSON = classToJSON;
 
         //classFunction.prototype.constructor = instanceDefinition.constructor;
         //classFunction.constructor = instanceDefinition.constructor;
@@ -8101,7 +8115,7 @@ JAYLINT = (function () {
                         self["create" + item.shortName] = creatorFnc;
                     }
                 } else {
-                    //if (console) { console.warn("warning: short names overlap:" + item.shortName + ", Container.create" + item.shortName + " has not been updated"); }
+                    if (console) { console.warn("warning: short names overlap:" + item.shortName + ", Container.create" + item.shortName + " has not been updated"); }
                 };
 
                 var typePos = classTypes.indexOf(type);
@@ -8113,7 +8127,7 @@ JAYLINT = (function () {
                 };
 
                 if (item.fullName in classNames) {
-                    //console.warn("warning:!!! This typename has already been registered:" + item.fullName);
+                    console.warn("warning:!!! This typename has already been registered:" + item.fullName);
                 };
                 classNames[item.fullName] = typePos;
             }
@@ -8206,8 +8220,8 @@ $data.defaultErrorCallback = function () {
         console.log(arguments);*/
     Guard.raise(new Exception("DEFAULT ERROR CALLBACK!", "DefaultError", arguments));
 };
-$data.defaultSuccessCallback = function () { console.log('DEFAULT SUCCES CALLBACK'); };
-$data.defaultNotifyCallback = function () { console.log('DEFAULT NOTIFY CALLBACK'); };
+$data.defaultSuccessCallback = function () { /*console.log('DEFAULT SUCCES CALLBACK');*/ };
+$data.defaultNotifyCallback = function () { /*console.log('DEFAULT NOTIFY CALLBACK');*/ };
 
 $data.typeSystem = {
     __namespace: true,
@@ -13143,7 +13157,7 @@ $data.Class.define('$data.EntityContext', null, null,
                     },
                     error: clbWrapper.error
                 }, changedEntities);
-            }else clbWrapper.success(0);
+            }else clbWrapper.error(new Exception('Cancelled event in ' + cancelEvent, 'CancelEvent'));
             
             /*else if (cancelEvent) clbWrapper.error(new $data.Exception('saveChanges cancelled from event [' + cancelEvent + ']'));
             else Guard.raise('No changed entities');*/
@@ -13163,6 +13177,9 @@ $data.Class.define('$data.EntityContext', null, null,
             if (cancel){
                 cancelEvent = 'async';
                 changedEntities.length = 0;
+                
+                readyFn(cancel);
+                return;
             }
         
             var es = ctx._entitySetReferences[ies[i]];
@@ -14560,54 +14577,18 @@ $data.Class.define('$data.Queryable', null, null,
         var takeExp = Container.createIncludeExpression(this.expression, constExp);
         return Container.createQueryable(this, takeExp);
     },
-    removeAll: function (filterPredicate, thisArg, onResult) {
-        ///	<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
-        ///	<param name="onResult_items" type="Function">A callback function</param>
-        ///	<returns type="$data.Promise" />
-        ///	<signature>
-        ///		<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
-        ///		<param name="filterPredicate" type="string">
-        ///			Same as in filter.
-        ///		</param>
-        ///		<param name="onResult" type="Function">
-        ///			The callback function to handle the result, same as in toArray.
-        ///		</param>
-        ///		<returns type="$data.Promise" />
-        ///	</signature>
-        ///	<signature>
-        ///		<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
-        ///		<param name="filterPredicate" type="Function">
-        ///			Same as in filter.
-        ///		</param>
-        ///		<param name="onResult" type="Function">
-        ///			The callback function to handle the result, same as in toArray.
-        ///		</param>
-        ///		<returns type="$data.Promise" />
-        ///		<example>
-        ///			Get "George" from the Person entity set. &#10;
-        ///			Persons.single( function( person ) { return person.FirstName == this.name; }, { name: "George" }, {&#10;
-        ///				success: function ( result ){ ... },&#10;
-        ///				error: function () { ... }
-        ///			});
-        ///		</example>
-        ///	</signature>
-
+    removeAll: function (onResult) {
         this._checkOperation('batchDelete');
-        var q = this;
-        if (filterPredicate) {
-            q = this.filter(filterPredicate, thisArg);
-        }
-
         var pHandler = new $data.PromiseHandler();
         var cbWrapper = pHandler.createCallback(onResult);
 
-        var batchDeleteExpression = Container.createBatchDeleteExpression(q.expression);
-        var preparator = Container.createQueryExpressionCreator(q.entityContext);
+        var batchDeleteExpression = Container.createBatchDeleteExpression(this.expression);
+        var preparator = Container.createQueryExpressionCreator(this.entityContext);
         try {
             var expression = preparator.Visit(batchDeleteExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper);
+            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -14708,6 +14689,7 @@ $data.Class.defineEx('$data.EntitySet',
         }
     },
 
+
     find: function(keyValue, cb) {
         //var callback = $data.typeSystem.createCallbackSetting(cb);
         //todo multifield key support
@@ -14743,9 +14725,6 @@ $data.Class.defineEx('$data.EntitySet',
         }
         trackedEntities.push({ entitySet: this, data: entity });
     },
-
-
-
     add: function (entity) {
         /// <signature>
         ///     <summary>Creates a typed entity and adds to the context.</summary>
@@ -14782,7 +14761,6 @@ $data.Class.defineEx('$data.EntitySet',
         data.changedProperties = undefined;
         data.context = this.entityContext;
         this._trackEntity(data);
-        return this;
     },
     remove: function (entity) {
         /// <signature>
@@ -15271,10 +15249,10 @@ $data.FunctionImport.prototype = {
         });
     },
     webGet: function(){
-        return this.method('GET');
+        return this.httpMethod('GET');
     },
     webInvoke: function(){
-        return this.method('POST');
+        return this.httpMethod('POST');
     },
     authorize: function(roles, callback){
         var r = {};
