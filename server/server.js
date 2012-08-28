@@ -542,6 +542,6 @@ app.use("/db2", $data.JayService.createAdapter($data.JayStormAPI.Context, functi
 }));
 
 
-app.use("/", c.static("/home/zpace/jaystorm-useradmin/client"));
+app.use("/", c.static("/home/nochtap/GitRepo/jaystorm-useradmin/client"));
 app.listen(8181);
 console.log("end");
