@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayData-standalone.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/knockout-latest.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/theJSON.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server.js" afterPath="$PROJECT_DIR$/server/server.js" />
     </list>
@@ -25,59 +22,6 @@
   </component>
   <component name="DaemonCodeAnalyzer">
     <disable_hints />
-  </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file leaf-file-name="contextapi-context.js" pinned="false" current="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/server/contextapi-context.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state line="82" column="29" selection-start="3627" selection-end="3627" vertical-scroll-proportion="0.3384434">
-                    <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file leaf-file-name="knockout.js" pinned="false" current="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state line="392" column="0" selection-start="18196" selection-end="18196" vertical-scroll-proportion="0.32814372">
-                    <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-    <window id="2">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file leaf-file-name="knockout-2.1.0.debug.js" pinned="false" current="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state line="2261" column="59" selection-start="105989" selection-end="105989" vertical-scroll-proportion="0.020359281">
-                    <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="jaystorm-useradmin" />
@@ -125,19 +69,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="server.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="239" column="0" selection-start="8403" selection-end="8403" vertical-scroll-proportion="0.0">
+            <state line="94" column="0" selection-start="2859" selection-end="2859" vertical-scroll-proportion="0.8195755">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="theJSON.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="theJSON.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/theJSON.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="96" column="26" selection-start="2895" selection-end="2895" vertical-scroll-proportion="1.275">
+            <state line="51" column="28" selection-start="1479" selection-end="1479" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#3376#3533#0" expanded="false" />
               </folding>
@@ -210,8 +154,8 @@
         <option value="$PROJECT_DIR$/client/scripts/JayStormClient/access-manager.js" />
         <option value="$PROJECT_DIR$/client/sql.html" />
         <option value="$PROJECT_DIR$/client/index.html" />
-        <option value="$PROJECT_DIR$/server/server.js" />
         <option value="$PROJECT_DIR$/server/theJSON.js" />
+        <option value="$PROJECT_DIR$/server/server.js" />
       </list>
     </option>
   </component>
@@ -316,38 +260,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jaystorm-useradmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jaystorm-useradmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jaystorm-useradmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jaystorm-useradmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -495,18 +407,22 @@
       <created>1346244239387</created>
       <updated>1346244239387</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
+      <created>1346246083047</created>
+      <updated>1346246083047</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="72" y="24" width="1848" height="1029" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32951945" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32951945" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14536478" sideWeight="0.67048055" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2117389" sideWeight="0.67048055" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.5297419" sideWeight="0.99930316" order="3" side_tool="false" content_ui="tabs" x="2617" y="456" width="930" height="444" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28056768" sideWeight="0.07096774" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10169491" sideWeight="0.08314437" order="7" side_tool="true" content_ui="tabs" />
@@ -610,27 +526,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/contextapi-context.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="82" column="29" selection-start="3627" selection-end="3627" vertical-scroll-proportion="0.3384434">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2261" column="59" selection-start="105989" selection-end="105989" vertical-scroll-proportion="0.020359281">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="392" column="0" selection-start="18196" selection-end="18196" vertical-scroll-proportion="0.32814372">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="21" selection-start="331" selection-end="343" vertical-scroll-proportion="0.0">
@@ -729,19 +624,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/server.js">
+    <entry file="file://$PROJECT_DIR$/client/scripts/jaydata/jaydatamodules/knockout.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="239" column="0" selection-start="8403" selection-end="8403" vertical-scroll-proportion="0.0">
+        <state line="407" column="9" selection-start="18934" selection-end="18934" vertical-scroll-proportion="1.3664671">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2261" column="59" selection-start="105989" selection-end="105989" vertical-scroll-proportion="0.020359281">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/contextapi-context.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="76" column="44" selection-start="3297" selection-end="3297" vertical-scroll-proportion="1.523585">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server/theJSON.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="26" selection-start="2895" selection-end="2895" vertical-scroll-proportion="1.275">
+        <state line="51" column="28" selection-start="1479" selection-end="1479" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#3376#3533#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="94" column="0" selection-start="2859" selection-end="2859" vertical-scroll-proportion="0.8195755">
+          <folding />
         </state>
       </provider>
     </entry>
