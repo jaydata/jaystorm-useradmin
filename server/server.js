@@ -82,11 +82,15 @@ registerEdmTypes();
 
 $data.Entity.extend('$data.JayStormAPI.IngressRule', {
     ID: { type: 'id', key: true, computed: true },
-    ObjectType: { type: 'string' },
-    ObjectID: { type: 'string' },
-    IPAddress: { type: 'string' },
-    Port: { type: 'array', elementType: 'number' }
+    ObjectID: { type: 'id' },
+    SourceAddress: { type: 'string' },      //--> ipadd or network
+    SourceOrigin: { type: 'string' },       //--> hostname or *
+    Port: { type: 'int'  },
+    SSL: { type: 'boolean' },
+    Method: { type: 'Array', elementType:"string"}
 });
+
+
 
 $data.Entity.extend('$data.JayStormAPI.ApplicationMetadata', {
     ID: { type: 'id', key: true, computed: true },
@@ -228,13 +232,10 @@ $data.Entity.extend('$data.JayStormAPI.Service', {
     BaseServiceID: { type: 'id' },
     Sets: { type: 'array', elementType: 'string' },
     Published: { type: 'bool' },
-    ServiceSourceType: {type: 'string', $exclusiveValues: 'Alma; Korte; Citrom'},
+    ServiceSourceType: {type: 'string', $exclusiveValues: 'git; script; fuubar'},
     ServiceSource: { type: 'string' },
-    ServicePort: { type: 'number' },
-    AllowAllIPs: { type: 'boolean' },
-    SourceIPs: { type: 'array', elementType: 'string'},
-    AllowAllOrigins: { type: 'boolean' },
-    SourceOrigins: { type: 'array', elementType: 'string' }
+    AllowsAnonymous: { type: 'boolean' }
+
 });
 
 $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
