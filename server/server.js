@@ -384,7 +384,8 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Ja
     EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet },
     EntitySetPublications: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySetPublication },
     EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler },
-    IngressRules: { type: $data.EntitySet, elementType: $data.JayStormAPI.IngressRule },
+    IngressIPRules: { type: $data.EntitySet, elementType: $data.JayStormAPI.IngressIPRule },
+    IngressOriginRules: { type: $data.EntitySet, elementType: $data.JayStormAPI.IngressOriginRule },
     Services: { type: $data.EntitySet, elementType: $data.JayStormAPI.Service },
     ServiceOperations: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperation },
     TypeTemplates:  { type: $data.EntitySet, elementType: $data.JayStormAPI.TypeTemplate },
@@ -643,7 +644,7 @@ app.use('/make', function(req, res, next){
     
     var context = new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB" });
     var Q = require('q');
-    Q.allResolved([context.Services.toArray(), context.IngressRules.toArray(), context.Databases.toArray()]).then(function(v){
+    Q.allResolved([context.Services.toArray(), context.IngressIPRules.toArray(), context.Databases.toArray()]).then(function(v){
         var result = {
             Services: v[0].valueOf(),
             IngressRules: v[1].valueOf(),
