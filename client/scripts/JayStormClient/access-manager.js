@@ -1,4 +1,4 @@
-function accessManager(contextFactory) {
+function AccessManager(contextFactory) {
 
     var self = this;
 

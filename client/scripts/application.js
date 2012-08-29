@@ -63,12 +63,16 @@ $(function() {
         var secMan = new SecurityManager( factory );
         ko.applyBindings(secMan, document.getElementById("SecurityManagerUI"));
 
+        var accMan = new AccessManager( factory );
+        ko.applyBindings(accMan, document.getElementById("AccessManagerUI"));
+
         var items = [];
         var sections = [
             { Title: 'Manage data', Model: databaseManagerModel },
             { Title: 'Manage Schema', Model: schemaManagerModel },
             { Title: 'Manage Services', Model: svcMan },
-            { Title: 'Manage Security', Model: secMan }
+            { Title: 'Manage Security', Model: secMan },
+            { Title: 'Manage Access', Model: accMan }
         ];
 
         ko.applyBindings(new MenuModel(sections), document.getElementById("MenuUI"));

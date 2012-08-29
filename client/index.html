@@ -25,6 +25,7 @@
         <script src="scripts/JayStormClient/schema-manager.js"></script>
         <script src="scripts/JayStormClient/service-manager.js"></script>
         <script src="scripts/JayStormClient/security-manager.js"></script>
+        <script src="scripts/JayStormClient/access-manager.js"></script>
         <script src="scripts/application.js"></script>
 
         <script src="scripts/inflection.js"></script>
@@ -273,26 +274,16 @@
         <div id="AccessManagerUI" data-bind="if: context">
             <h1>Manage Access</h1>
             <h4>Control who can access your system</h4>
-            <div id="svcAccessGrid" data-bind="jayGrid: { source: context().Services,
-                                                    context: context,
-                                                    fields: ['Name','],
-                                                    allDatabases: allDatabases,
-                                                    databaseSet: context().Databases}">
+            <div id="svcAccessGrid" data-bind="jayGrid: {
+                            fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
+                            source: context().Services }">
 
-                <!--, dbs: databases, databases: context().Databases-->
-                <script type="text/html" data-name-template="DatabaseID-editor">
-                    <select data-bind="options: $root.allDatabases,
-                                optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                optionsCaption: 'Select...' "></select>
-                </script>
+            </div>
 
-                <script type="text/html" data-name-template="DatabaseID-display">
-                    <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
-                </script>
+            <div id="ingressIP" data-bind="jayGrid: {
+                            fields: ['Name', 'ObjectID'],
+                            source: context().IngressIPRules }">
 
-                <script type="text/html" data-name-template="Sets-editor">
-                    <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
-                </script>
             </div>
         </div>
     </div>

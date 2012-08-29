@@ -36,15 +36,17 @@ z = {
                     allowsAnonymous: true,
                     serviceName: "Database1Service",
                     database: "Database1",
-                    internalPort: 60080,
                     publish: false,
                     servicePath: "foobar",
                     allowedSubPathList:["*","Users","Orders"],
+                    internalPort: 60080,
+                    useDefaultPort : true,
+                    useSSL: true,
                     ingress: [{
                         type: "allow",
                         address: "195.7.12.12/12",
                         port: 80,
-                        ssl: true,
+                        ssl: true
                     }],
 
                     outgress: [{

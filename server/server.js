@@ -82,7 +82,8 @@ registerEdmTypes();
 
 $data.Entity.extend('$data.JayStormAPI.IngressIPRule', {
     ID: { type: 'id', key: true, computed: true },
-    ObjectID: { type: 'id' },
+    Name: { type: 'string' },
+    ObjectID: { type: 'id',$sourceTable: 'Services', $sourceKey: 'ServiceID', $sourceDisplay: 'Name' },
     SourceAddress: { type: 'string' },      //--> ipadd or network
     Port: { type: 'int'  },
     SSL: { type: 'boolean' }
@@ -240,7 +241,11 @@ $data.Entity.extend('$data.JayStormAPI.Service', {
     Published: { type: 'bool' },
     ServiceSourceType: {type: 'string', $exclusiveValues: 'git; script; fuubar'},
     ServiceSource: { type: 'string' },
-    AllowsAnonymous: { type: 'boolean' }
+    AllowAnonymous: { type: 'boolean' },
+    AllowAllIPs: { type: 'boolean'},
+    AllowAllOrigins: { type: 'boolean' },
+    UseDefaultPort: { type: 'boolean'},
+    UseSSL: { type: 'boolean'}
 
 });
 
@@ -369,6 +374,7 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Ja
     },
 
     Tests: { type: $data.EntitySet, elementType: $data.JayStormAPI.Test},
+    IngressIPRules: { type: $data.EntitySet, elementType: $data.JayStormAPI.IngressIPRule},
     Permissions: { type: $data.EntitySet, elementType: $data.JayStormAPI.Permission},
     Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database},
     ComplexTypes: { type: $data.EntitySet, elementType: $data.JayStormAPI.ComplexType },
