@@ -130,8 +130,6 @@ $data.Entity.extend('$data.JayStormAPI.Permission', {
     DeleteBatch: { type: 'boolean' },
     Execute: { type: 'boolean' },
     Manage: { type: 'boolean' },
-
-    //Fields: { type: 'Array', elementType: '$data.JayStormAPI.EntityField' },
     CreationDate: { type: 'date'  }
 });
 
@@ -147,7 +145,7 @@ $data.Entity.extend('$data.JayStormAPI.Entity', {
 $data.JayStormAPI.Entity.extend('$data.JayStormAPI.ComplexType', { });
 
 $data.Entity.extend('$data.JayStormAPI.EntityField', {
-    'EntityFieldID': { type: 'id', key: true, computed: true },
+    EntityFieldID: { type: 'id', key: true, computed: true },
     EntityID: { type: 'id', required: true },
     Index: { type: 'number' },
     Name: { type: 'string', required: true },
@@ -242,8 +240,7 @@ $data.Entity.extend('$data.JayStormAPI.Service', {
 $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
     EntitySetPublicationID: { type: 'id', key: true, computed: true },
     ServiceID: { type: 'id' },
-    EntitySetID: { type: 'id' },
-    Name: { type: 'string', required: true, $displayName: 'Service name' }
+    EntitySetID: { type: 'id' }
 });
 
 $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
