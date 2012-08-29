@@ -24,21 +24,6 @@
 </head>
 
 <script>
-    $data.Class.define("$org.types.AccountSubType", $data.Entity, null, {
-        Id : {
-            type : "int",
-            key : true,
-            computed : true
-        },
-        AccountType : {
-            type : "$org.types.AccountType",
-            inverseProperty : "AccountSubTypes"
-        },
-        Name : {
-            type : "string",
-            required : true
-        }
-    });
     $data.Class.define("$org.types.AccountType", $data.Entity, null, {
         Id : {
             type : "int",
@@ -48,31 +33,44 @@
         Name : {
             type : "string",
             required : true
+        }
+    });
+
+    $data.Class.define("$org2.types.AccountType", $data.Entity, null, {
+        Id : {
+            type : "int",
+            key : true,
+            computed : true
         },
-        AccountSubTypes : {
-            type : "Array",
-            elementType : "$org.types.AccountSubType",
-            inverseProperty : "AccountType"
+        Age: {
+            type : "number",
+            required : true
         }
     });
 
     $data.EntityContext.extend("$org.MyContext", {
-        AccountTypes: { type: $data.EntitySet, elementType: $org.types.AccountType },
-        AccountSubTypes: { type: $data.EntitySet, elementType: $org.types.AccountSubType }
+        AccountTypes: { type: $data.EntitySet, elementType: $org.types.AccountType }
+    });
+
+    $data.EntityContext.extend("$org2.MyContext", {
+        AccountTypes: { type: $data.EntitySet, elementType: $org2.types.AccountType }
     });
 
     var c = new $org.MyContext({ name: 'sqLite', databaseName: 'mydb'});
     c.onReady(function(){
-        //var at = new $org.types.AccountType();
-        c.AccountSubTypes.include("AccountType").toArray(function() {
-            alert("!");
+        var c2 = new $org2.MyContext({ name: 'sqLite', databaseName: 'mydb2'});
+        c2.onReady(function(){
+            c.AccountTypes.add({Name:"asdasd"});
+            c.saveChanges( function() {
+                console.log("done");
+            })
+
+            c2.AccountTypes.add({Age:12});
+            c2.saveChanges( function() {
+                console.log("done");
+            })
         })
-//        at.Name = "asd";
-//        at.AccountSubTypes = [ new $org.types.AccountSubType({ Name:"x"}), new $org.types.AccountSubType({ Name:"z"})];
-//        c.add(at);
-//        c.saveChanges( function() {
-//            alert("!");
-//        })
+
     })
 </script>
 <body>

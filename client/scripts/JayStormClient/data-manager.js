@@ -25,6 +25,7 @@ function DataManagerModel() {
             self.factory(factory);
         });
     })
+
     self.context = ko.observable();
 
     self.factory.subscribe( function(value) {

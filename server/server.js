@@ -80,7 +80,19 @@ function registerEdmTypes() {
 
 registerEdmTypes();
 
+$data.Entity.extend('$data.JayStormAPI.IngressRule', {
+    ID: { type: 'id', key: true, computed: true },
+    ObjectType: { type: 'string' },
+    ObjectID: { type: 'string' },
+    IPAddress: { type: 'string' },
+    Port: { type: 'array', elementType: 'number' }
+});
 
+$data.Entity.extend('$data.JayStormAPI.ApplicationMetadata', {
+    ID: { type: 'id', key: true, computed: true },
+    AppOwner: { type: 'string' },
+    AppItems: {type: 'array', elementType: '$data.Object'}
+});
 
 $data.Entity.extend('$data.JayStormAPI.TypeTemplate', {
     'ID':{ key:true, type:'id', nullable:false, computed:true },
@@ -189,8 +201,8 @@ $data.Entity.extend('$data.JayStormAPI.EventHandler', {
     Name: {type: 'string', required: true },
     Type: { type: 'string', required: true },
     Handler: { type: 'string', required: true },
-    EntitySetID: { type: 'id', required: true},
-    DatabaseID: { type: 'id', required: true}
+    EntitySetID: { type: 'id', required: true, $sourceTable: 'EntitySets', $sourceKey: 'EntitySetID', $sourceDisplay: 'Name'},
+    DatabaseID: { type: 'id', required: true, $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name'}
 });
 
 
@@ -211,15 +223,20 @@ $data.Entity.extend('$data.JayStormAPI.EntitySet', {
     DatabaseID: {type: 'id', required: true}
 });
 
-
 $data.Entity.extend('$data.JayStormAPI.Service', {
     ServiceID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true, $displayName: 'Service name' },
     DatabaseID: {type: 'id', $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name' },
+    BaseServiceID: { type: 'id' },
     Sets: { type: 'array', elementType: 'string' },
     Published: { type: 'bool' },
-    ServiceSource: { type: 'string' }
-
+    ServiceSourceType: {type: 'string', $exclusiveValues: 'Alma; Korte; Citrom'},
+    ServiceSource: { type: 'string' },
+    ServicePort: { type: 'number' },
+    AllowAllIPs: { type: 'boolean' },
+    SourceIPs: { type: 'array', elementType: 'string'},
+    AllowAllOrigins: { type: 'boolean' },
+    SourceOrigins: { type: 'array', elementType: 'string' }
 });
 
 $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
@@ -228,7 +245,6 @@ $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
     EntitySetID: { type: 'id' },
     Name: { type: 'string', required: true, $displayName: 'Service name' }
 });
-
 
 $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
     UserID: { type: 'id', key: true, computed: true },
@@ -538,6 +554,6 @@ app.use("/db2", $data.JayService.createAdapter($data.JayStormAPI.Context, functi
 }));
 
 
-app.use("/", c.static("/home/nochtap/GitRepo/jaystorm-useradmin/client"));
+app.use("/", c.static("/home/zpace/jaystorm-useradmin/client"));
 app.listen(8181);
 console.log("end");

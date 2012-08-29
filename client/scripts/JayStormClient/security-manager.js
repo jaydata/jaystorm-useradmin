@@ -45,6 +45,14 @@ function SecurityManager(factory){
         {
             name: 'Create',
             value: ko.observable()
+        },
+        {
+            name: 'Delete in a batch',
+            value: ko.observable()
+        },
+        {
+            name: 'Manage',
+            value: ko.observable()
         }
 
     ];

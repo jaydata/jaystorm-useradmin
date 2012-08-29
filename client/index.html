@@ -8,10 +8,8 @@
 
         <link href="styles/bootstrap.min.css" rel="stylesheet">
         <link href="styles/style.css" rel="stylesheet">
-                
         <script src="/scripts/jquery-1.7.2.min.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
-
         <script src="scripts/datajs-1.0.3.js"></script>
         <script type="text/javascript" src="scripts/q.js"></script>
         <script src="/scripts/jaydata/jaydata.js"></script>
@@ -165,6 +163,16 @@
                                     </script>
                                 </div>
                             </div>
+
+                            <div data-bind="visible: currentEntitySet">
+                                <div data-bind="jayGrid: {
+                                        source: context().EventHandlers,
+                                        discriminatorColumn: 'EntitySetID',
+                                        discriminatorValue: currentDatabaseID },
+                                        visible: currentDatabase">
+
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -262,6 +270,31 @@
             </div>
         </div>
 
+        <div id="AccessManagerUI" data-bind="if: context">
+            <h1>Manage Access</h1>
+            <h4>Control who can access your system</h4>
+            <div id="svcAccessGrid" data-bind="jayGrid: { source: context().Services,
+                                                    context: context,
+                                                    fields: ['Name','],
+                                                    allDatabases: allDatabases,
+                                                    databaseSet: context().Databases}">
+
+                <!--, dbs: databases, databases: context().Databases-->
+                <script type="text/html" data-name-template="DatabaseID-editor">
+                    <select data-bind="options: $root.allDatabases,
+                                optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                optionsCaption: 'Select...' "></select>
+                </script>
+
+                <script type="text/html" data-name-template="DatabaseID-display">
+                    <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                </script>
+
+                <script type="text/html" data-name-template="Sets-editor">
+                    <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
+                </script>
+            </div>
+        </div>
     </div>
 </div>
 

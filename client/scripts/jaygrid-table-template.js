@@ -32,14 +32,15 @@ var templateList = [
                         <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
                         <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges'/>\
                     </span>\
-                    <br \>\
+                    <br />\
                     <span class='iblock margint10'>\
                         <select class='input-small' data-bind='options: ko.utils.range(1,50), value: pageSize, visible: pageSize() > 0'></select>\
                         <span data-bind='visible: pendingChanges, text: pendingStatusInfo()' />\
                     </span>\
                     <div class='pagination pagination-centered'>\
                         <ul>\
-                        <li><a href='#' data-bind='click:goToPreviousPage'>&#171;</a>\</li>\
+                        <li><a href='#' data-bind='click:goToPreviousPage'>&#171;</a>\
+                        </li>\
                         <li><select class='input-mini' data-bind='options: pages, value: currentPage'></select></li>\
                         <li><a href='#' data-bind='click:goToNextPage'>&#187;</a></li>\
                         </ul>\
