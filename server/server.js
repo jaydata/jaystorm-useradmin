@@ -84,15 +84,21 @@ function registerEdmTypes() {
 
 registerEdmTypes();
 
-$data.Entity.extend('$data.JayStormAPI.IngressRule', {
+$data.Entity.extend('$data.JayStormAPI.IngressIPRule', {
     ID: { type: 'id', key: true, computed: true },
     ObjectID: { type: 'id' },
     SourceAddress: { type: 'string' },      //--> ipadd or network
-    SourceOrigin: { type: 'string' },       //--> hostname or *
     Port: { type: 'int'  },
-    SSL: { type: 'boolean' },
+    SSL: { type: 'boolean' }
+});
+
+$data.Entity.extend('$data.JayStormAPI.IngressOriginRule', {
+    ID: { type: 'id', key: true, computed: true },
+    ObjectID: { type: 'id' },
+    SourceOrigin: { type: 'string' },       //--> hostname or *
     Method: { type: 'Array', elementType:"string"}
 });
+
 
 
 
