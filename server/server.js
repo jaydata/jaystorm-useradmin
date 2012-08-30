@@ -134,8 +134,8 @@ $data.Entity.extend('$data.JayStormAPI.ObjectPointer', {
 
 $data.Entity.extend('$data.JayStormAPI.Permission', {
     PermissionID: { type: 'id', key: true, computed: true },
-    DatabaseID: { type: 'id', required: 'true', $sourceTable: 'Databases', $sourceValue: 'DatabaseID', $sourceText: 'Name' },
-    EntitySetID: { type: 'id', required: 'true', $sourceTable: 'EntitySets', $sourceValue: 'EntitySetID', $sourceText: 'Name' },
+    DatabaseID: { type: 'id', required: true, $sourceTable: 'Databases', $sourceValue: 'DatabaseID', $sourceText: 'Name' },
+    EntitySetID: { type: 'id', required: true, $sourceTable: 'EntitySets', $sourceValue: 'EntitySetID', $sourceText: 'Name' },
     GroupID: { type: 'id', required: true,$sourceTable: 'Groups', $sourceValue: 'GroupID', $sourceText: 'Name' } ,
     Read: { type: 'boolean' },
     Create: { type: 'boolean' },
@@ -210,11 +210,10 @@ $data.Entity.extend('$data.JayStormAPI.ServiceOperation', {
 
 $data.Entity.extend('$data.JayStormAPI.EventHandler', {
     EventHandlerID: { type: 'id', key: true, computed: true },
-    Name: {type: 'string', required: true },
     Type: { type: 'string', required: true },
     Handler: { type: 'string', required: true },
-    EntitySetID: { type: 'id', required: true, $sourceTable: 'EntitySets', $sourceKey: 'EntitySetID', $sourceDisplay: 'Name'},
-    DatabaseID: { type: 'id', required: true, $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name'}
+    EntitySetID: { type: 'id', required: true, $sourceTable: 'EntitySets', $sourceValue: 'EntitySetID', $sourceDisplay: 'Name', $displayName: 'Table name' },
+    DatabaseID: { type: 'id', required: true, $sourceTable: 'Databases', $sourceValue: 'DatabaseID', $sourceDisplay: 'Name', $displayName: 'Database' }
 });
 
 
@@ -562,7 +561,7 @@ app.use(c.cookieParser());
 app.use(c.methodOverride());
 app.use(c.session({ secret: 'keyboard cat' }));
 
-app.use($data.JayService.Middleware.appID());
+/*app.use($data.JayService.Middleware.appID());
 app.use($data.JayService.Middleware.databaseConnections({
     ApplicationDB: [{
         address: '127.0.0.1',
@@ -588,9 +587,9 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
-//app.use($data.JayService.Middleware.authentication());
-//app.use($data.JayService.Middleware.authenticationErrorHandler);
-//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
+app.use($data.JayService.Middleware.authentication());
+app.use($data.JayService.Middleware.authenticationErrorHandler);
+app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));*/
 //app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
 
 app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);

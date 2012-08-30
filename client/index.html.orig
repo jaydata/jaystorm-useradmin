@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        <title>JayStorm Admin</title>
+
+        <link href="styles/bootstrap.min.css" rel="stylesheet">
+        <link href="styles/style.css" rel="stylesheet">
+        <script src="/scripts/jquery-1.7.2.min.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <script src="scripts/datajs-1.0.3.js"></script>
+        <script type="text/javascript" src="scripts/q.js"></script>
+        <script src="/scripts/jaydata/jaydata.js"></script>
+        <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+        <script src="/scripts/JaySvcUtil.js"></script>
+        <script src="scripts/knockout-latest.js"></script>
+        <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
+        <script src="scripts/jaygrid-table-template.js"></script>
+        <script src="scripts/jaygrid.js"></script>
+        <script src="scripts/jay-property-editor.js"></script>
+        <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+        <script src="scripts/JayStormClient/service-app-base.js"></script>
+        <script src="scripts/JayStormClient/users-groups.js"></script>
+        <script src="scripts/JayStormClient/data-manager.js"></script>
+        <script src="scripts/JayStormClient/schema-manager.js"></script>
+        <script src="scripts/JayStormClient/service-manager.js"></script>
+        <script src="scripts/JayStormClient/security-manager.js"></script>
+        <script src="scripts/JayStormClient/access-manager.js"></script>
+        <script src="scripts/application.js"></script>
+
+        <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
+        <script src="scripts/codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
+        
+        <script src="scripts/codemirror/lib/util/simple-hint.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="scripts/codemirror/lib/util/simple-hint.css" type="text/css">
+        
+        <script src="scripts/codemirror/lib/util/javascript-hint.js" type="text/javascript"></script>
+        
+        <script src="scripts/codemirror/lib/util/searchcursor.js" type="text/javascript"></script>
+        <script src="scripts/codemirror/lib/util/match-highlighter.js" type="text/javascript"></script>
+        <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
+        
+        <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
+        
+        <style type="text/css">
+          .CodeMirror-fullscreen {
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            z-index: 9999;
+          }
+          .CodeMirror-scroll {
+              height: auto;
+              overflow-y: hidden;
+              overflow-x: auto;
+            }
+            .activeline {background: rgba(255, 255, 255, 0.2) !important;}
+            span.CodeMirror-matchhighlight { background: rgba(255, 255, 255, 0.2); }
+            .CodeMirror-focused span.CodeMirror-matchhighlight { background: rgba(255, 255, 255, 0.3) !important; }
+        </style>
+        <script type="text/javascript" language="javascript" charset="utf-8">
+            function getCompletions(token, context) {
+              var found = [], start = token.string;
+              function maybeAdd(str) {
+                if (str.indexOf(start) == 0) found.push(str);
+              }
+              function gatherCompletions(obj) {
+                if (typeof obj == "string") forEach(stringProps, maybeAdd);
+                else if (obj instanceof Array) forEach(arrayProps, maybeAdd);
+                else if (obj instanceof Function) forEach(funcProps, maybeAdd);
+                for (var name in obj) maybeAdd(name);
+              }
+
+              if (context) {
+                // If this is a property, see if it belongs to some object we can
+                // find in the current environment.
+                var obj = context.pop(), base;
+                if (obj.className == "js-variable")
+                  base = window[obj.string];
+                else if (obj.className == "js-string")
+                  base = "";
+                else if (obj.className == "js-atom")
+                  base = 1;
+                while (base != null && context.length)
+                  base = base[context.pop().string];
+                if (base != null) gatherCompletions(base);
+              }
+              else {
+                // If not, just look in the window object and any local scope
+                // (reading into JS mode internals to get at the local variables)
+                for (var v = token.state.localVars; v; v = v.next) maybeAdd(v.name);
+                gatherCompletions(window);
+                forEach(keywords, maybeAdd);
+              }
+              return found;
+            }
+            
+            CodeMirror.commands.autocomplete = function(cm) {
+                CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+            }
+            
+            function isFullScreen(cm) {
+              return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+            }
+            function winHeight() {
+              return window.innerHeight || (document.documentElement || document.body).clientHeight;
+            }
+            function setFullScreen(cm, full) {
+              var wrap = cm.getWrapperElement(), scroll = cm.getScrollerElement();
+              if (full) {
+                wrap.className += " CodeMirror-fullscreen";
+                scroll.style.height = winHeight() + "px";
+                document.documentElement.style.overflow = "hidden";
+              } else {
+                wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+                scroll.style.height = "";
+                document.documentElement.style.overflow = "";
+              }
+              cm.refresh();
+            }
+            CodeMirror.connect(window, "resize", function() {
+              var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
+              if (!showing) return;
+              showing.CodeMirror.getScrollerElement().style.height = winHeight() + "px";
+            });
+        </script>
+
+        <script src="scripts/inflection.js"></script>
+        <script type="text/javascript">
+            $("ul.nav > li > a").live('click', function () {
+                var $parent = $(this).parent();
+
+                $parent.parent().find("li.active").removeClass("active");
+                $parent.addClass("active");
+            });
+        </script>
+    </head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+
+                <a class="brand" href="/">JayStorm Admin</a>
+
+                <div class="nav-collapse collapse">
+                    <ul class="nav" id="MenuUI" data-bind="foreach:items">
+                        <li><a href="#" data-bind="click: $root.show, text: title"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container first">
+        <div id="output"></div>
+
+        <script type="text/html" id="foobar">
+            <table class="table">
+
+            </table>
+        </script>
+
+        <div id="UserManagerUI" data-bind="if: context">
+            <h1>Manage Users</h1>
+
+            <h4>Manage users</h4>
+
+            <div data-bind="jayGrid: { source: context().Users, fields: ['Login', 'FirstName','LastName','Enabled','Groups'] }">
+                <script type="text/html" data-name-template="Groups-editor">
+                    !!!
+                </script>
+            </div>
+            <h4>Manage groups</h4>
+
+            <div data-bind="jayGrid: { source: context().Groups }">
+            </div>
+
+        </div>
+
+        <div id="DataManagerUI" data-bind="if: visible">
+            <h1>Manage Data</h1>
+
+            <h4>Select database</h4>
+            <select data-bind="options: databases, value: serviceUrlSelected, optionsCaption:'Select database to manage'"></select>
+
+            <ul class="nav nav-tabs" data-bind="foreach: entitySets">
+                <li>
+                    <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
+                </li>
+            </ul>
+
+            <div data-bind="jayGrid: {
+                            source: collection,
+                            pageSize: esPageSize}">
+            </div>
+        </div>
+
+        <div id="SchemaManagerUI" data-bind="if: context">
+            <h1>Manage Database Schemas</h1>
+            <h4>Select database to manage:</h4>
+            <select data-bind="options: databases, optionsCaption: 'Select database',
+                                optionsText: 'Name',
+                                value: $root.selectedDatabase">
+
+            </select>
+
+            <ul data-bind="foreach: databases">
+                <li>
+                    <a href="#" data-bind="text: Name, click: $root.selectDatabase"></a>
+                </li>
+            </ul>
+            <h3>Tables | ComplexTypes</h3>
+
+            <div data-bind="if: currentDatabase">
+                <table class="table">
+                    <tr>
+                        <td>
+                            <h4>Database details</h4>
+
+                            <h5>List of tables</h5>
+                            <div data-bind="jayGrid: {
+                                        source: context().EntitySets,
+                                        itemCommands: tableCommands,
+                                        fields: ['Name','Published'],
+                                        discriminatorColumn: 'DatabaseID',
+                                        beforeSave: beforeDatabaseSave,
+                                        discriminatorValue: currentDatabaseID,
+                                        pageSize: eSetsPageSize},
+                                        visible: currentDatabase">
+
+                            </div>
+
+                        </td>
+                        <td>
+                            <div data-bind="visible: selectedEntity">
+                                <form data-bind="submit: saveEntity">
+                                    <fieldset data-bind="with: selectedEntity">
+                                        Table item name: <span data-bind="text: Name"></span>,
+                                        Namespace: <span data-bind="text: Namespace"></span>
+                                    </fieldset>
+                                </form>
+                                <h5>List of FIELDS</h5>
+                                <div data-bind="jayGrid: {
+                                            source: context().EntityFields,
+                                            fields:['Index', 'Name','TypeTemplate','ElementType','Key','Computed','Required'],
+                                            sortColumn: 'Index',
+                                            afterAddNew: afterAddNewEntityField,
+                                            discriminatorColumn: 'EntityID',
+                                            discriminatorValue: currentEntityID,
+                                            defaultValues: { 'DatabaseID' : currentDatabaseID },
+                                            pageSize: eSetsPageSize},
+                                            visible: currentDatabase">
+
+                                    <script type="text/html" data-name-template="TypeTemplate-editor">
+                                        <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
+                                                value: value,
+                                                optionsCaption: value() ? undefined : 'Select'"></select>
+                                    </script>
+
+                                    <script type="text/html" data-name-template="ElementType-editor">
+                                        <div data-bind="if: owner.TypeTemplate() === 'Array'">
+                                        <select data-bind="options:$root.elementTypes,
+                                                optionsText:'Name',
+                                                optionsValue: 'TypeName',
+                                                value:  value,
+                                                optionsCaption: value() ? undefined :  'Select...'"></select>
+                                        </div>
+
+                                    </script>
+
+                                    <script type="text/html" data-field-template="Roles">
+                                        <div data-bind="text: $data"></div>
+                                    </script>
+                                </div>
+                            </div>
+                            <h5>List of EVENTS</h5>
+                            <div data-bind="visible: currentEntitySet">
+                                <div data-bind="jayGrid: {
+<<<<<<< HEAD
+                                            source: context().EventHandlers,
+                                            fields:['Type', 'Handler'],
+                                            discriminatorColumn: 'EntitySetID',
+                                            discriminatorValue: currentEntitySetID,
+                                            defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
+                                            beforeSave: function(source){ console.log('source beforeSave', source); }
+=======
+                                        source: context().EventHandlers,
+                                        discriminatorColumn: 'EntitySetID',
+                                        discriminatorValue: currentEntitySet.EntitySetID,
+                                            defaultValues: { 'DatabaseID' : currentDatabaseID },
+>>>>>>> origin/master
+                                        },
+                                        visible: currentDatabase">
+                                    <script type="text/html" data-name-template="Type-editor">
+                                            <select data-bind="options:$root.eventTypes,
+                                                optionsText: 'name',
+                                                optionsValue: 'type',
+                                                value: value,
+                                                optionsCaption: value() ? undefined :  'Select...'"></select>
+                                    </script>
+                                    <script type="text/html" data-name-template="Handler-editor">
+                                        <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
+                                    </script>
+                                    <script type="text/html" data-name-template="Handler-display">
+                                        <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                                    </script>
+                                    <script type="text/html" data-name-template="EventHandlerID-editor">
+                                        <span data-bind="text: value"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="EntitySetID-editor">
+                                        <span data-bind="text: $root.currentEntitySetName"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="DatabaseID-editor">
+                                        <span data-bind="text: $root.currentDatabaseName"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="EntitySetID-display">
+                                        <span data-bind="text: $root.currentEntitySetName"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="DatabaseID-display">
+                                        <span data-bind="text: $root.currentDatabaseName"></span>
+                                    </script>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="ServiceManagerUI" data-bind="if: context">
+            <h1>Manage Services</h1>
+
+            <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
+                                                    context: context,
+                                                    fields: ['Name','DatabaseID'],
+                                                    allDatabases: allDatabases,
+                                                    databaseSet: context().Databases}">
+
+                <!--, dbs: databases, databases: context().Databases-->
+                <script type="text/html" data-name-template="DatabaseID-editor">
+                    <select data-bind="options: $root.allDatabases,
+                                optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                optionsCaption: 'Select...' "></select>
+                </script>
+
+                <script type="text/html" data-name-template="DatabaseID-display">
+                    <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                </script>
+
+                <script type="text/html" data-name-template="Sets-editor">
+                    <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
+                </script>
+            </div>
+
+            <div data-bind="if: selectedService">
+                <div id="entitySets" data-bind="jayGrid: {
+                                                        source: context().EntitySetPublications,
+                                                        context: context,
+                                                        fields: 'EntitySetID'
+                                                        discriminatorColumn: 'ServiceID',
+                                                        discriminatorValue: selectedService().ServiceID,
+                                                        allDatabases: allDatabases,
+                                                        databaseSet: context().Databases}">
+
+                    <script type="text/html" data-name-template="Publish-display">
+                        <span data-bind="text: $root.checkBoxStates().length"></span>
+                        <input type="checkbox"
+                               data-bind="click: $root.check,
+                                          checked: $root.checkBoxStates().length < 1" />
+                    </script>
+
+                    <!--, dbs: databases, databases: context().Databases-->
+                    <script type="text/html" data-name-template="DatabaseID-editor">
+                        <select data-bind="options: $root.allDatabases,
+                                    optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                    optionsCaption: 'Select...' "></select>
+                    </script>
+
+                    <script type="text/html" data-name-template="DatabaseID-display">
+                        <span data-bind="text: $parent[name]" />:
+                        <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div id="SecurityManagerUI" data-bind="if: context">
+            <h1>Manage Security</h1>
+            
+            <h4>Add new permission</h4>
+            <form class="form-inline" data-bind="submit: addPermission">
+                <select class="input-medium" data-bind="options: databases, optionsText:'Name', value: selectedDatabase, optionsCaption:'All databases'"></select>
+                <select class="input-medium" data-bind="options: tables, optionsText:'Name',  value: selectedTable, optionsCaption:'All tables'"></select>
+                <select class="input-medium" data-bind="options: groups, optionsText:'Name',  value: selectedGroup, optionsCaption:'All groups'"></select>
+
+                <span class="iblock actions" data-bind="foreach: tablePermissions">
+                    <label data-bind="text: name, attr: { for: name }"></label><input type="checkbox" data-bind="checked: value, attr: { id: name }" />
+                </span>
+
+                <input class="btn btn-info" type="submit" value="Add permission" />
+            </form>
+
+            <h4>List of active permissions</h4>
+
+            <div data-bind="jayGrid: {source: context().Permissions,
+                                           fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
+                                          refresher: $root.rf }">
+
+                <script type="text/html" data-name-template="DatabaseID-display">
+                    <span data-bind="readValue: { source: $root.context().Databases, key: value, field: 'Name' }"></span>
+                </script>
+                <script type="text/html" data-name-template="EntitySetID-display">
+                    <span data-bind="readValue: { source: $root.context().EntitySets, key: value, field: 'Name' }"></span>
+                </script>
+                <script type="text/html" data-name-template="GroupID-display">
+                    <span data-bind="readValue: { source: $root.context().Groups, key: value, field: 'Name' }"></span>
+                </script>
+            </div>
+        </div>
+
+        <div id="AccessManagerUI" data-bind="if: context">
+            <h1>Manage Access</h1>
+            <h4>Control who can access your system</h4>
+            <div id="svcAccessGrid" data-bind="jayGrid: {
+                            fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
+                            source: context().Services }">
+
+            </div>
+
+            <div id="ingressIP" data-bind="jayGrid: {
+                            fields: ['Name', 'ObjectID'],
+                            source: context().IngressIPRules }">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</td></tr></table>
+</body>
+</html>
