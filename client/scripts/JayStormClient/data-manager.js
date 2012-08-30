@@ -1,53 +1,50 @@
+$data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
 
-function DataManagerModel() {
+    constructor: function() {
+        var self = this;
+        self.databases = ['/db','/db2'];
+        self.visible = ko.observable(false);
 
-    var self = this;
-    self.databases = ['/db','' +
-        '              /db2'];
+        self.show = function() {
+            self.visible(true);
+        };
 
-    self.visible = ko.observable(false);
+        self.hide = function() {
+            self.visible(false);
+        };
 
-    self.show = function() {
-        self.visible(true);
-    };
+        self.factory = ko.observable();
 
-    self.hide = function() {
-        self.visible(false);
-//        self.context ( null );
-//        self.collection ( null );
-    };
+        self.serviceUrlSelected = ko.observable();
+        self.serviceUrlSelected.subscribe( function( value ) {
+            $data.MetadataLoader.load(value, function(factory) {
+                self.factory(factory);
+            });
+        })
 
-    self.factory = ko.observable();
+        self.context = ko.observable();
 
-    self.serviceUrlSelected = ko.observable();
-    self.serviceUrlSelected.subscribe( function( value ) {
-        $data.MetadataLoader.load(value, function(factory) {
-            self.factory(factory);
+        self.factory.subscribe( function(value) {
+            self.context( value() );
         });
-    })
-
-    self.context = ko.observable();
-
-    self.factory.subscribe( function(value) {
-        self.context( value() );
-    });
 
 
-    self.entitySets = ko.computed( function() {
-        var result = [];
-        for(var name in this.context()) {
-            //do not filter for ownProperties - they are not own
-            if (this.context()[name] instanceof $data.EntitySet) {
-                result.push(this.context()[name]);
+        self.entitySets = ko.computed( function() {
+            var result = [];
+            for(var name in this.context()) {
+                //do not filter for ownProperties - they are not own
+                if (this.context()[name] instanceof $data.EntitySet) {
+                    result.push(this.context()[name]);
+                }
             }
+            return result;
+        }, this);
+
+        self.selectSet = function(eSet) {
+            self.collection(eSet);
         }
-        return result;
-    }, this);
 
-    self.selectSet = function(eSet) {
-        self.collection(eSet);
+        self.esPageSize = ko.observable(30);
+        self.collection = ko.observable();
     }
-
-    self.esPageSize = ko.observable(30);
-    self.collection = ko.observable();
-}
+});

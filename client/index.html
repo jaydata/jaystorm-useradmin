@@ -21,6 +21,8 @@
         <script src="scripts/jaygrid.js"></script>
         <script src="scripts/jay-property-editor.js"></script>
         <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+        <script src="scripts/JayStormClient/service-app-base.js"></script>
+        <script src="scripts/JayStormClient/users-groups.js"></script>
         <script src="scripts/JayStormClient/data-manager.js"></script>
         <script src="scripts/JayStormClient/schema-manager.js"></script>
         <script src="scripts/JayStormClient/service-manager.js"></script>
@@ -52,7 +54,7 @@
 
                 <div class="nav-collapse collapse">
                     <ul class="nav" id="MenuUI" data-bind="foreach:items">
-                        <li><a href="#" data-bind="click: $root.show, text: Title"></a></li>
+                        <li><a href="#" data-bind="click: $root.show, text: title"></a></li>
                     </ul>
                 </div>
             </div>
@@ -68,6 +70,23 @@
             </table>
         </script>
 
+        <div id="UserManagerUI" data-bind="if: context">
+            <h1>Manage Users</h1>
+
+            <h4>Manage users</h4>
+
+            <div data-bind="jayGrid: { source: context().Users, fields: ['Login', 'FirstName','LastName','Enabled','Groups'] }">
+                <script type="text/html" data-name-template="Groups-editor">
+                    !!!
+                </script>
+            </div>
+            <h4>Manage groups</h4>
+
+            <div data-bind="jayGrid: { source: context().Groups }">
+            </div>
+
+        </div>
+
         <div id="DataManagerUI" data-bind="if: visible">
             <h1>Manage Data</h1>
 
@@ -80,7 +99,7 @@
                 </li>
             </ul>
 
-            <div id="x567" data-bind="jayGrid: {
+            <div data-bind="jayGrid: {
                             source: collection,
                             pageSize: esPageSize}">
             </div>
@@ -169,7 +188,9 @@
                                 <div data-bind="jayGrid: {
                                         source: context().EventHandlers,
                                         discriminatorColumn: 'EntitySetID',
-                                        discriminatorValue: currentDatabaseID },
+                                        discriminatorValue: currentEntitySet.EntitySetID,
+                                            defaultValues: { 'DatabaseID' : currentDatabaseID },
+                                        },
                                         visible: currentDatabase">
 
                                 </div>

@@ -259,8 +259,7 @@ $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
 
 $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
     UserID: { type: 'id', key: true, computed: true },
-    Login: { type: 'Edm.String' },
-    Age: { type: 'Edm.Int32', required: true },
+    Login: { type: 'Edm.String', required: true },
     FirstName: { type: 'Edm.String' },
     LastName:  { type: 'Edm.String' },
     Enabled: { type: 'Edm.Boolean' },
@@ -347,6 +346,13 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Ja
         //TODO
         };
 
+        var bc = require('bcrypt');
+        this.Users.beforeCreate = function(items) {
+            for(var i = 0; i < items.length;i++) {
+                var it = items[i];
+                it.Password = bc.hashSync(it.Password, 8);
+            }
+        }
         this.Databases.beforeDelete = function(items) {
 //            var itemIds = [];
 //            for(var i = 0; i < items.length; i++) {
@@ -580,14 +586,15 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
-app.use($data.JayService.Middleware.authentication());
-app.use($data.JayService.Middleware.authenticationErrorHandler);
-app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
-app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
+//app.use($data.JayService.Middleware.authentication());
+//app.use($data.JayService.Middleware.authenticationErrorHandler);
+//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
+//app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
 
 app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);
 app.use("/db", $data.JayService.createAdapter($data.JayStormAPI.Context, function(req, res) {
-    return new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB", responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
+    return new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB",
+        responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
 }));
 
 /*app.use("/db2", $data.JayService.Middleware.cache());

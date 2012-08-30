@@ -6,6 +6,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jaydata" level="application" />
     <orderEntry type="library" name="Node.js v0.8.5 Core Library" level="application" />
+    <orderEntry type="library" name="q" level="application" />
   </component>
 </module>
 

@@ -1,30 +1,15 @@
-/**
- * Created with JetBrains WebStorm.
- * User: zpace
- * Date: 8/26/12
- * Time: 9:27 PM
- * To change this template use File | Settings | File Templates.
- */
-function SecurityManager(factory){
+$data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
 
-    var self = this;
+    constructor: function( apiContextFactory )
+    {
+        var self = this;
 
-    self.show = function() {
-        self.context( factory() );
-    };
-
-    self.hide = function () {
-        self.context(null);
-    };
-
-    self.context = ko.observable();
-
-    self.groups = ko.observableArray([]);
+        self.groups = ko.observableArray([]);
     self.databases = ko.observableArray([]);
 
     self.rf = ko.observable({});
 
-    var c = factory();
+    var c = apiContextFactory();
     c.Databases.toArray(self.databases);
     c.Groups.toArray(self.groups);
 
@@ -64,7 +49,7 @@ function SecurityManager(factory){
     self.selectedDatabase.subscribe(function(value) {
         console.log(value);
         var id = value.DatabaseID();
-        factory().EntitySets
+        apiContextFactory().EntitySets
             .filter(function(it) { return it.DatabaseID == this.id }, {id: id })
             .toArray(self.tables);
     });
@@ -76,7 +61,7 @@ function SecurityManager(factory){
 
     self.addPermission = function() {
         //console.dir(p);
-        var c = factory();
+        var c = apiContextFactory();
 
         var dbIDs = self.selectedDatabase() ? [self.selectedDatabase().DatabaseID() ] :
                                               self.databases().map( function(db) { return db.DatabaseID() });
@@ -122,5 +107,5 @@ function SecurityManager(factory){
 
     }
 
-
 }
+});

@@ -1,38 +1,19 @@
-function ServiceManagerModel (contextFactory ) {
-    var self = this;
+$data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
 
-    var factory = contextFactory;
-    self.show = function() {
-        self.context( factory() );
-    };
+    constructor: function( apiContextFactory )
+     {
 
-    self.hide = function() {
-        self.context ( null );
-    }
+         var self = this;
+         self.allDatabases = ko.observableArray([]);
+        apiContextFactory().Databases.toArray(self.allDatabases);
 
-    self.context = ko.observable();
-    self.visible = ko.observable(false);
+        self.selectedService = ko.observable();
 
-    self.allDatabases = ko.observableArray([]);
-    contextFactory().Databases.toArray(self.allDatabases);
+        self.selectService = function(item) {
 
-    self.selectedService = ko.observable();
+            self.selectedService(item);
+            self.checkBoxStates.removeAll();
 
-
-    self.checkBoxStates = ko.observableArray([]);
-
-    self.check = function() {
-        console.log("checking!");
-        self.checkBoxStates.push({});
-    }
-
-    self.selectService = function(item) {
-
-        self.selectedService(item);
-        self.checkBoxStates.removeAll();
-
-        (item.Sets() || []).forEach(function(item) {
-            self.checkBoxStates.push(item);
-        });
-    }
-}
+        }
+     }
+});
