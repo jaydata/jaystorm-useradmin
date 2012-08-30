@@ -350,7 +350,9 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Ja
         this.Users.beforeCreate = function(items) {
             for(var i = 0; i < items.length;i++) {
                 var it = items[i];
-                it.Password = bc.hashSync(it.Password, 8);
+                it.Password = bc.hashSync(it.Password || Math.random().toString(), 8);
+                
+
             }
         }
         this.Databases.beforeDelete = function(items) {
@@ -709,6 +711,6 @@ app.use('/make', function(req, res, next){
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
 c.errorHandler.title = 'JayStorm API';
-app.listen(8181);
+app.listen(80);
 //console.log(app);
 console.log("end");
