@@ -28,7 +28,6 @@ function SecurityManager(factory){
     c.Databases.toArray(self.databases);
     c.Groups.toArray(self.groups);
 
-
     self.tablePermissions = [
         {
             name: 'Read',

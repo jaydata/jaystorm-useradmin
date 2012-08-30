@@ -16,7 +16,67 @@ function SchemaManagerModel( contextFactory ) {
 
     self.databases = ko.observableArray([]);
 
-
+    self.eventTypes = ko.observableArray([{
+        name: 'beforeCreate',
+        type: 'beforeCreate'
+    }, {
+        name: 'beforeRead',
+        type: 'beforeRead'
+    }, {
+        name: 'beforeUpdate',
+        type: 'beforeUpdate'
+    }, {
+        name: 'beforeDelete',
+        type: 'beforeDelete'
+    }, {
+        name: 'afterCreate',
+        type: 'afterCreate'
+    }, {
+        name: 'afterRead',
+        type: 'afterRead'
+    }, {
+        name: 'afterUpdate',
+        type: 'afterUpdate'
+    }, {
+        name: 'afterDelete',
+        type: 'afterDelete'
+    }]);
+    self.codeMirror = function(el, value){
+        setTimeout(function(){
+            if (!value()) value('function(items){\n  // code here...\n}');
+            var editor = CodeMirror(document.getElementById(el), {
+                value: value(),
+                mode: 'javascript',
+                lineNumbers: true,
+                theme: "night",
+                extraKeys: {
+                    'Ctrl-Space': 'autocomplete',
+                    "F11": function(cm) {
+                        setFullScreen(cm, !isFullScreen(cm));
+                    },
+                    "Esc": function(cm) {
+                        if (isFullScreen(cm)) setFullScreen(cm, false);
+                    }
+                },
+                onChange: function(editor){
+                    console.log(editor.getValue());
+                    value(editor.getValue());
+                },
+                onCursorActivity: function() {
+                    editor.setLineClass(hlLine, null, null);
+                    hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+                    editor.matchHighlight("CodeMirror-matchhighlight");
+                }
+            });
+            var hlLine = editor.setLineClass(0, "activeline");
+        }, 1);
+    };
+    self.codeHighlight = function(el, value){
+        setTimeout(function(){
+            if (!value()) value('function(items){\n  // code here...\n}');
+            CodeMirror.runMode(value(), 'text/javascript', document.getElementById(el));
+        }, 1);
+    };
 
     self.context.subscribe( function(value) {
         if (value) {
@@ -30,13 +90,13 @@ function SchemaManagerModel( contextFactory ) {
     self.visible = ko.observable(false);
 
     self.currentDatabase = ko.observable();
-
     self.currentDatabaseID = ko.observable();
+    self.currentDatabaseName = ko.observable();
 
     self.selectDatabase = function(db) {
         self.currentDatabase(db);
-        var dbID= ko.utils.unwrapObservable(db.DatabaseID);
-        self.currentDatabaseID(dbID);
+        self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
+        self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
     };
 
     self.beforeDatabaseSave = function(set) {
@@ -101,9 +161,13 @@ function SchemaManagerModel( contextFactory ) {
     };
 
     self.currentEntitySet = ko.observable();
+    self.currentEntitySetID = ko.observable();
+    self.currentEntitySetName = ko.observable();
 
     self.setCurrentEntitySet = function(item) {
         self.currentEntitySet(item);
+        self.currentEntitySetID(ko.utils.unwrapObservable(item.EntitySetID));
+        self.currentEntitySetName(ko.utils.unwrapObservable(item.Name));
     }
 
     self.selectedEntity = ko.observable();
@@ -136,7 +200,7 @@ function SchemaManagerModel( contextFactory ) {
                     return true;
                 },
                 execute: function( item ) {
-                    self.currentEntitySet( item );
+                    self.setCurrentEntitySet( item );
                     self.showTriggerManager( true );
                 }
             },
@@ -164,6 +228,7 @@ function SchemaManagerModel( contextFactory ) {
 
     contextFactory().TypeTemplates.toArray(self.typeTemplates);
 
+    
 
     var c = factory();
     c.EntityFields.defaultType.instancePropertyChanged = c.EntityFields.defaultType.instancePropertyChanged || new $data.Event("changed");

@@ -27,6 +27,105 @@
         <script src="scripts/JayStormClient/security-manager.js"></script>
         <script src="scripts/application.js"></script>
 
+        <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
+        <script src="scripts/codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
+        
+        <script src="scripts/codemirror/lib/util/simple-hint.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="scripts/codemirror/lib/util/simple-hint.css" type="text/css">
+        
+        <script src="scripts/codemirror/lib/util/javascript-hint.js" type="text/javascript"></script>
+        
+        <script src="scripts/codemirror/lib/util/searchcursor.js" type="text/javascript"></script>
+        <script src="scripts/codemirror/lib/util/match-highlighter.js" type="text/javascript"></script>
+        <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
+        
+        <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
+        
+        <style type="text/css">
+          .CodeMirror-fullscreen {
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            z-index: 9999;
+          }
+          .CodeMirror-scroll {
+              height: auto;
+              overflow-y: hidden;
+              overflow-x: auto;
+            }
+            .activeline {background: rgba(255, 255, 255, 0.2) !important;}
+            span.CodeMirror-matchhighlight { background: rgba(255, 255, 255, 0.2); }
+            .CodeMirror-focused span.CodeMirror-matchhighlight { background: rgba(255, 255, 255, 0.3) !important; }
+        </style>
+        <script type="text/javascript" language="javascript" charset="utf-8">
+            function getCompletions(token, context) {
+              var found = [], start = token.string;
+              function maybeAdd(str) {
+                if (str.indexOf(start) == 0) found.push(str);
+              }
+              function gatherCompletions(obj) {
+                if (typeof obj == "string") forEach(stringProps, maybeAdd);
+                else if (obj instanceof Array) forEach(arrayProps, maybeAdd);
+                else if (obj instanceof Function) forEach(funcProps, maybeAdd);
+                for (var name in obj) maybeAdd(name);
+              }
+
+              if (context) {
+                // If this is a property, see if it belongs to some object we can
+                // find in the current environment.
+                var obj = context.pop(), base;
+                if (obj.className == "js-variable")
+                  base = window[obj.string];
+                else if (obj.className == "js-string")
+                  base = "";
+                else if (obj.className == "js-atom")
+                  base = 1;
+                while (base != null && context.length)
+                  base = base[context.pop().string];
+                if (base != null) gatherCompletions(base);
+              }
+              else {
+                // If not, just look in the window object and any local scope
+                // (reading into JS mode internals to get at the local variables)
+                for (var v = token.state.localVars; v; v = v.next) maybeAdd(v.name);
+                gatherCompletions(window);
+                forEach(keywords, maybeAdd);
+              }
+              return found;
+            }
+            
+            CodeMirror.commands.autocomplete = function(cm) {
+                CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+            }
+            
+            function isFullScreen(cm) {
+              return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+            }
+            function winHeight() {
+              return window.innerHeight || (document.documentElement || document.body).clientHeight;
+            }
+            function setFullScreen(cm, full) {
+              var wrap = cm.getWrapperElement(), scroll = cm.getScrollerElement();
+              if (full) {
+                wrap.className += " CodeMirror-fullscreen";
+                scroll.style.height = winHeight() + "px";
+                document.documentElement.style.overflow = "hidden";
+              } else {
+                wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+                scroll.style.height = "";
+                document.documentElement.style.overflow = "";
+              }
+              cm.refresh();
+            }
+            CodeMirror.connect(window, "resize", function() {
+              var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];
+              if (!showing) return;
+              showing.CodeMirror.getScrollerElement().style.height = winHeight() + "px";
+            });
+        </script>
+
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
             $("ul.nav > li > a").live('click', function () {
@@ -163,14 +262,45 @@
                                     </script>
                                 </div>
                             </div>
-
+                            <h5>List of EVENTS</h5>
                             <div data-bind="visible: currentEntitySet">
                                 <div data-bind="jayGrid: {
-                                        source: context().EventHandlers,
-                                        discriminatorColumn: 'EntitySetID',
-                                        discriminatorValue: currentDatabaseID },
+                                            source: context().EventHandlers,
+                                            fields:['Type', 'Handler'],
+                                            discriminatorColumn: 'EntitySetID',
+                                            discriminatorValue: currentEntitySetID,
+                                            defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
+                                            beforeSave: function(source){ console.log('source beforeSave', source); }
+                                        },
                                         visible: currentDatabase">
-
+                                    <script type="text/html" data-name-template="Type-editor">
+                                            <select data-bind="options:$root.eventTypes,
+                                                optionsText: 'name',
+                                                optionsValue: 'type',
+                                                value: value,
+                                                optionsCaption: value() ? undefined :  'Select...'"></select>
+                                    </script>
+                                    <script type="text/html" data-name-template="Handler-editor">
+                                        <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
+                                    </script>
+                                    <script type="text/html" data-name-template="Handler-display">
+                                        <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                                    </script>
+                                    <script type="text/html" data-name-template="EventHandlerID-editor">
+                                        <span data-bind="text: value"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="EntitySetID-editor">
+                                        <span data-bind="text: $root.currentEntitySetName"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="DatabaseID-editor">
+                                        <span data-bind="text: $root.currentDatabaseName"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="EntitySetID-display">
+                                        <span data-bind="text: $root.currentEntitySetName"></span>
+                                    </script>
+                                    <script type="text/html" data-name-template="DatabaseID-display">
+                                        <span data-bind="text: $root.currentDatabaseName"></span>
+                                    </script>
                                 </div>
                             </div>
                         </td>
