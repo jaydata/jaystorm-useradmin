@@ -13,7 +13,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
     c.Databases.toArray(self.databases);
     c.Groups.toArray(self.groups);
 
-
     self.tablePermissions = [
         {
             name: 'Read',
@@ -107,6 +106,10 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
 
     }
 
+<<<<<<< HEAD
 
 }
+=======
+}
 });
+>>>>>>> origin/master

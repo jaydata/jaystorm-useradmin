@@ -585,9 +585,15 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
+<<<<<<< HEAD
 app.use($data.JayService.Middleware.authentication());
 app.use($data.JayService.Middleware.authenticationErrorHandler);
 app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));*/
+=======
+//app.use($data.JayService.Middleware.authentication());
+//app.use($data.JayService.Middleware.authenticationErrorHandler);
+//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
+>>>>>>> origin/master
 //app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
 
 app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);

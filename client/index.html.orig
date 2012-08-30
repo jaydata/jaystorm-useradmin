@@ -285,12 +285,19 @@
                             <h5>List of EVENTS</h5>
                             <div data-bind="visible: currentEntitySet">
                                 <div data-bind="jayGrid: {
+<<<<<<< HEAD
                                             source: context().EventHandlers,
                                             fields:['Type', 'Handler'],
                                             discriminatorColumn: 'EntitySetID',
                                             discriminatorValue: currentEntitySetID,
                                             defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
                                             beforeSave: function(source){ console.log('source beforeSave', source); }
+=======
+                                        source: context().EventHandlers,
+                                        discriminatorColumn: 'EntitySetID',
+                                        discriminatorValue: currentEntitySet.EntitySetID,
+                                            defaultValues: { 'DatabaseID' : currentDatabaseID },
+>>>>>>> origin/master
                                         },
                                         visible: currentDatabase">
                                     <script type="text/html" data-name-template="Type-editor">
