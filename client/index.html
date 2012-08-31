@@ -44,6 +44,9 @@
         <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
         
         <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
+        <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
+        
+        <script src="scripts/codemirror.js"></script>
         
         <style type="text/css">
           .CodeMirror-fullscreen {
@@ -230,15 +233,15 @@
             <h4>Select database to manage:</h4>
             <select data-bind="options: databases, optionsCaption: 'Select database',
                                 optionsText: 'Name',
-                                value: $root.selectedDatabase">
+                                value: $root.currentDatabase">
 
             </select>
 
-            <ul data-bind="foreach: databases">
-                <li>
-                    <a href="#" data-bind="text: Name, click: $root.selectDatabase"></a>
-                </li>
-            </ul>
+<!--            <ul data-bind="foreach: databases">-->
+<!--                <li>-->
+<!--                    <a href="#" data-bind="text: Name, click: $root.selectDatabase"></a>-->
+<!--                </li>-->
+<!--            </ul>-->
             <h3>Tables | ComplexTypes</h3>
 
             <div data-bind="if: currentDatabase">
@@ -292,7 +295,7 @@
                                         <select data-bind="options:$root.elementTypes,
                                                 optionsText:'Name',
                                                 optionsValue: 'TypeName',
-                                                value:  value,
+                                                value: value,
                                                 optionsCaption: value() ? undefined :  'Select...'"></select>
                                         </div>
 
@@ -355,16 +358,38 @@
 
             <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                     context: context,
-                                                    fields: ['Name','DatabaseID'],
+                                                    fields: [
+                                                        'Name',
+                                                        'DatabaseID',
+                                                        'BaseServiceID',
+                                                        'ServiceSourceType',
+                                                        'ServiceSource',
+                                                        'AllowAnonymous',
+                                                        'AllowAllIPs',
+                                                        'AllowAllOrigins',
+                                                        'UseDefaultPort',
+                                                        'UseSSL'
+                                                    ],
+                                                    beforeSave: function(){ $root.editingSource(false); },
                                                     allDatabases: allDatabases,
                                                     databaseSet: context().Databases}">
 
                 <!--, dbs: databases, databases: context().Databases-->
                 <script type="text/html" data-name-template="DatabaseID-editor">
+                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
                     <select data-bind="options: $root.allDatabases,
                                 optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                optionsCaption: 'Select...' "></select>
+                                optionsCaption: 'Select...',
+                                optionsCaptionValue: null"></select>
                 </script>
+                
+<!--                <script type="text/html" data-name-template="BaseServiceID-editor">-->
+<!--                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>-->
+<!--                    <select data-bind="options: $root.context().Services.filter(function(it){ return it.ServiceID != this.id; }, { id: $data.ServiceID() }).toKoArray(),-->
+<!--                                optionsValue: 'ServiceID', optionsText: 'Name', value: $parent[name],-->
+<!--                                optionsCaption: 'Select2...',-->
+<!--                                optionsCaptionValue: null"></select>-->
+<!--                </script>-->
 
                 <script type="text/html" data-name-template="DatabaseID-display">
                     <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
@@ -373,6 +398,31 @@
                 <script type="text/html" data-name-template="Sets-editor">
                     <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
                 </script>
+                
+                <script type="text/html" data-name-template="ServiceSourceType-editor">
+                    <select data-bind="options: $root.serviceSourceTypes,
+                                optionsValue: 'type', optionsText: 'name', value: value,
+                                optionsCaption: 'Select...' "></select>
+                </script>
+                
+                <script type="text/html" data-name-template="ServiceSourceType-display">
+                    <span data-bind="text: ($root.serviceSourceTypes().filter(function(it){ return it.type == value() })[0] || { name: '-' }).name"></span>
+                </script>
+                
+                <script type="text/html" data-name-template="ServiceSource-editor">
+                    <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                    <input type="text" data-bind="visible: owner.ServiceSourceType() == 'git', value: value"/>
+                </script>
+                
+                <script type="text/html" data-name-template="ServiceSource-display">
+                    <span data-bind="text: value, visible: owner.ServiceSourceType() == 'git'"></span>
+                    <pre data-bind="visible: owner.ServiceSourceType() == 'script', attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                </script>
+            </div>
+            
+            <div data-bind="if: editingSource">
+                <div id="service-codemirror">
+                </div>
             </div>
 
             <div data-bind="if: selectedService">

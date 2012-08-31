@@ -103,15 +103,17 @@ var templateList = [
 
     ["jay-data-grid-bound-field-display",
         "<span data-bind='readValue: { source: $root.context()[metadata[\"$sourceTable\"]], \
-                                                        key: owner[metadata[\"$sourceKey\"]], \
-                                                        field: metadata[\"$sourceDisplay\"] }'></span>"],
+                                        key: owner[metadata[\"$sourceKey\"]], \
+                                        field: metadata[\"$sourceDisplay\"] }'></span>"],
 
     ["jay-data-grid-bound-field-editor",
-        "<select data-bind='options: $root.context()[metadata[\"$sourceTable\"]].toKoArray(),\
+        "<a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>\
+        <select data-bind='options: $root.context()[metadata[\"$sourceTable\"]].toKoArray(),\
                             value: value,\
                             optionsText: metadata[\"$sourceDisplay\"],\
                             optionsValue: metadata[\"$sourceKey\"],\
-                            optionsCaption: \"Get some\"'></select>"],
+                            optionsCaption: \"Get some\",\
+                            optionsCaptionValue: null'></select>"],
 
     ["jay-data-grid-$data.Boolean-display",
         '<input type="checkbox" data-bind="checked: value" disabled />'],
