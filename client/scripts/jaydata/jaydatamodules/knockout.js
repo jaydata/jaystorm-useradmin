@@ -142,7 +142,7 @@
 					if (allBindings['optionsCaption']) {
 						var option = document.createElement("option");
 						ko.utils.setHtml(option, allBindings['optionsCaption']);
-						ko.selectExtensions.writeValue(option, allBindings['optionsCaptionValue'] || undefined);
+						ko.selectExtensions.writeValue(option, allBindings['optionsCaptionValue']);
 						element.appendChild(option);
 					}
 					for (var i = 0, j = value.length; i < j; i++) {

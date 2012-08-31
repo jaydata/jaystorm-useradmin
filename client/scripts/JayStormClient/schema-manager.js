@@ -33,40 +33,10 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             type: 'afterDelete'
         }]);
         self.codeMirror = function(el, value){
-            setTimeout(function(){
-                if (!value()) value('function(items){\n  // code here...\n}');
-                var editor = CodeMirror(document.getElementById(el), {
-                    value: value(),
-                    mode: 'javascript',
-                    lineNumbers: true,
-                    theme: "night",
-                    extraKeys: {
-                        'Ctrl-Space': 'autocomplete',
-                        "F11": function(cm) {
-                            setFullScreen(cm, !isFullScreen(cm));
-                        },
-                        "Esc": function(cm) {
-                            if (isFullScreen(cm)) setFullScreen(cm, false);
-                        }
-                    },
-                    onChange: function(editor){
-                        console.log(editor.getValue());
-                        value(editor.getValue());
-                    },
-                    onCursorActivity: function() {
-                        editor.setLineClass(hlLine, null, null);
-                        hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-                        editor.matchHighlight("CodeMirror-matchhighlight");
-                    }
-                });
-                var hlLine = editor.setLineClass(0, "activeline");
-            }, 1);
+            new $data.JayStormUI.CodeMirror(el, value);
         };
         self.codeHighlight = function(el, value){
-            setTimeout(function(){
-                if (!value()) value('function(items){\n  // code here...\n}');
-                CodeMirror.runMode(value(), 'text/javascript', document.getElementById(el));
-            }, 1);
+            new $data.JayStormUI.CodeHighlight(el, value);
         };
 
         self.context.subscribe( function(value) {
@@ -83,12 +53,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         self.currentDatabase = ko.observable();
         self.currentDatabaseID = ko.observable();
         self.currentDatabaseName = ko.observable();
-
-        self.selectDatabase = function(db) {
-            self.currentDatabase(db);
+        
+        self.currentDatabase.subscribe(function(db){
             self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
             self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
-        };
+        });
 
         self.beforeDatabaseSave = function(set) {
             //upon new table/entityset creation we provision a new entity as the item type
@@ -180,7 +149,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                         return true;
                     },
                     execute: function( item ) {
-                        var entity = contextFactory().Entities.find(item.ElementTypeID());
+                        var entity = apiContextFactory().Entities.find(item.ElementTypeID());
                         entity.then(function(e) { self.setCurrentEntity(e.asKoObservable()) });
                     }
                 },

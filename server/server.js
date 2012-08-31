@@ -237,17 +237,17 @@ $data.Entity.extend('$data.JayStormAPI.EntitySet', {
 $data.Entity.extend('$data.JayStormAPI.Service', {
     ServiceID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true, $displayName: 'Service name' },
-    DatabaseID: {type: 'id', $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name' },
-    BaseServiceID: { type: 'id' },
+    DatabaseID: {type: 'id', $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name', $displayName: 'Database' },
+    BaseServiceID: { type: 'id', $sourceTable: 'Services', $sourceKey: 'ServiceID', $sourceDisplay: 'Name', $displayName: 'Extends' },
     Sets: { type: 'array', elementType: 'string' },
     Published: { type: 'bool' },
-    ServiceSourceType: {type: 'string', $exclusiveValues: 'git; script; fuubar'},
-    ServiceSource: { type: 'string' },
-    AllowAnonymous: { type: 'boolean' },
-    AllowAllIPs: { type: 'boolean' },
-    AllowAllOrigins: { type: 'boolean' },
-    UseDefaultPort: { type: 'boolean' },
-    UseSSL: { type: 'boolean' }
+    ServiceSourceType: { type: 'string', $displayName: 'Source type' },
+    ServiceSource: { type: 'string', $displayName: 'Source' },
+    AllowAnonymous: { type: 'boolean', $displayName: 'Allow anonymous' },
+    AllowAllIPs: { type: 'boolean', $displayName: 'Allow all IPs' },
+    AllowAllOrigins: { type: 'boolean', $displayName: 'Allow all origins' },
+    UseDefaultPort: { type: 'boolean', $displayName: 'Use default port' },
+    UseSSL: { type: 'boolean', $displayName: 'Use SSL' }
 });
 
 $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
