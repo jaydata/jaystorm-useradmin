@@ -172,21 +172,42 @@
             </table>
         </script>
 
-        <div id="UserManagerUI" data-bind="if: context">
+
+        <div id="UserManagerUI" data-bind="if: visible">
+            <script type="text/html" id="GroupArrayEditor">
+                <div>
+                    <ul data-bind="foreach: Groups">
+                        <li>
+                            <span  data-bind="text: Name"></span>
+                            <input type="checkbox" data-bind="checked: selected"/>
+                        </li>
+                    </ul>
+                    <a href="#" data-bind="click: closeControlBox">close</a>
+                </div>
+            </script>
+
             <h1>Manage Users</h1>
+            <div data-bind="if: Users">
+                <h4>Manage users</h4>
+                <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
+                                            fields: ['Login', 'FirstName','LastName','Enabled','Groups'] }">
+                    <script type="text/html" data-name-template="Groups-editor">
+                        <div data-bind="foreach: value">
+                            <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
+                        </div>
+                        <a href="#" 
+                            data-bind="click: $data.showControls.bind({},'GroupArrayEditor', 
+                            GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Click me!</a>
+                    </script>
 
-            <h4>Manage users</h4>
 
-            <div data-bind="jayGrid: { source: context().Users, fields: ['Login', 'FirstName','LastName','Enabled','Groups'] }">
-                <script type="text/html" data-name-template="Groups-editor">
-                    !!!
-                </script>
+                </div>
             </div>
-            <h4>Manage groups</h4>
-
-            <div data-bind="jayGrid: { source: context().Groups }">
+            <div data-bind="if: Groups">
+                <h4>Manage groups</h4>
+                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }">
+                </div>
             </div>
-
         </div>
 
         <div id="DataManagerUI" data-bind="if: visible">

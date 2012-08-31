@@ -349,7 +349,9 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Ja
         this.Users.beforeCreate = function(items) {
             for(var i = 0; i < items.length;i++) {
                 var it = items[i];
-                it.Password = bc.hashSync(it.Password, 8);
+                it.Password = bc.hashSync(it.Password || Math.random().toString(), 8);
+                
+
             }
         }
         this.Databases.beforeDelete = function(items) {
@@ -546,6 +548,8 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'X-PINGOTHER, Content-Type, MaxDataServiceVersion, DataServiceVersion');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, MERGE, DELETE');
+    res.setHeader('Cache-Control', 'no-cache');
+
     if (req.method === 'OPTIONS') {
         res.end();
     } else {
@@ -708,6 +712,6 @@ app.use('/make', function(req, res, next){
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
 c.errorHandler.title = 'JayStorm API';
-app.listen(8181);
+app.listen(80);
 //console.log(app);
 console.log("end");

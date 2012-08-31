@@ -67,7 +67,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             var tracks = set.entityContext.stateManager.trackedEntities;
             var newEntities = { };
             var dbs = [];
-            var c = contextFactory();
+            var c = apiContextFactory();
             for(var i = 0; i < tracks.length; i++) {
                 var database = tracks[i].data;
 

@@ -60,10 +60,14 @@ var templateList = [
         "<tbody data-bind=\"template: {name: 'jay-data-grid-row', foreach: items}\"></tbody>"],
 
     ["jay-data-grid-row",
-        "<tr  data-bind='template: { foreach: $data.getColumns($index) } '>\
+        "<tr  data-bind='foreach: $data.getColumns($index) '>\
             <!-- ko template: { name: (metadata[\"isVirtual\"] ? 'jay-data-grid-control-cell' : 'jay-data-grid-data-cell') } -->\
             <!-- /ko -->\
-        </tr>"],
+        </tr>\
+        <tr data-bind='foreach: getControlCells'>\
+            <td data-bind='attr: { colspan: colspan }, template: { name: templateName, data: viewModel }'></td>\
+        </tr>\
+        "],
 
 
     ["jay-data-grid-data-cell",
