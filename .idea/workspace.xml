@@ -5,19 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee9d04c5-4064-40de-a27c-a4ab4931da4f" name="Default" comment="JayGrid: a dynamic grid for knockoutjs + jaydata entities">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/service-app-base.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/users-groups.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jaystorm-useradmin.iml" afterPath="$PROJECT_DIR$/.idea/jaystorm-useradmin.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaystorm-useradmin.v11.suo" afterPath="$PROJECT_DIR$/jaystorm-useradmin.v11.suo" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/index.html" afterPath="$PROJECT_DIR$/client/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JayStormClient/access-manager.js" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/access-manager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JayStormClient/data-manager.js" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/data-manager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js" afterPath="$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/scripts/application.js" afterPath="$PROJECT_DIR$/client/scripts/application.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server.js" afterPath="$PROJECT_DIR$/server/server.js" />
     </list>
     <ignored path="jaystorm-useradmin.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,112 +30,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="server.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/server.js">
+      <file leaf-file-name="BizWebMock.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/server/BizWebMock.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="262" column="0" selection-start="9179" selection-end="9179" vertical-scroll-proportion="0.0">
+            <state line="8" column="8" selection-start="154" selection-end="154" vertical-scroll-proportion="0.21020092">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jaygrid-table-template.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
+      <file leaf-file-name="http.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.WebIde40/system/extLibs/nodejs-v0.8.5-src/core-modules-sources/lib/http.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="93" column="82" selection-start="4522" selection-end="4522" vertical-scroll-proportion="0.0">
-              <folding>
-                <marker date="1346162219000" expanded="true" signature="266:2758" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="336:1143" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="375:861" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="911:1123" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="1258:1483" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="1557:2737" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="1600:1880" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="1961:2234" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="2300:2713" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="2330:2685" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="2360:2448" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="2836:3014" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="2887:2978" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="3245:3416" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="3718:4006" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="3772:3991" placeholder="..." />
-                <marker date="1346162219000" expanded="true" signature="5806:5929" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/client/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="214" column="33" selection-start="10115" selection-end="10115" vertical-scroll-proportion="0.028960818">
-              <folding>
-                <element signature="tag#script#22;tag#head#0;tag#html#0" expanded="false" />
-                <element signature="tag#td#0;tag#tr#0;tag#table#0;tag#div#0;tag#div#3;tag#div#1;tag#body#0;tag#html#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="application.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/application.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="0" selection-start="1881" selection-end="1881" vertical-scroll-proportion="0.0">
+            <state line="1792" column="0" selection-start="48663" selection-end="48663" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="security-manager.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js">
+      <file leaf-file-name="connect.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file:///usr/lib/node_modules/express/node_modules/connect/lib/connect.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="37" selection-start="115" selection-end="115" vertical-scroll-proportion="0.0">
+            <state line="65" column="0" selection-start="883" selection-end="883" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="users-groups.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/users-groups.js">
+      <file leaf-file-name="events.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.WebIde40/system/extLibs/nodejs-v0.8.5-src/core-modules-sources/lib/events.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="0" selection-start="286" selection-end="286" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="service-manager.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="0" selection-start="158" selection-end="158" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="access-manager.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/access-manager.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="0" selection-start="148" selection-end="148" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="schema-manager.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="130" column="44" selection-start="4766" selection-end="4766" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="service-app-base.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-app-base.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="8" selection-start="500" selection-end="500" vertical-scroll-proportion="0.0">
+            <state line="88" column="14" selection-start="3013" selection-end="3013" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -163,7 +79,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/client/scripts/knockout-2.1.0.debug.js" />
         <option value="$PROJECT_DIR$/client/scripts/jaygrid.js" />
         <option value="$PROJECT_DIR$/client/sql.html" />
         <option value="$PROJECT_DIR$/server/theJSON.js" />
@@ -179,6 +94,7 @@
         <option value="$PROJECT_DIR$/client/scripts/application.js" />
         <option value="$PROJECT_DIR$/server/server.js" />
         <option value="$PROJECT_DIR$/client/index.html" />
+        <option value="$PROJECT_DIR$/server/BizWebMock.js" />
       </list>
     </option>
   </component>
@@ -201,7 +117,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator proportions="" version="1" splitterProportion="0.5">
+    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -212,17 +128,80 @@
       <autoscrollFromSource />
       <sortByType />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="connect" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaystorm-useradmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="JavaScript.Libraries" />
     <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="JavaScript.Libraries" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -237,18 +216,21 @@
       <recent name="$PROJECT_DIR$/client/scripts" />
     </key>
   </component>
-  <component name="RunManager" selected="Node JS.server.js">
+  <component name="RunManager" selected="Node JS.xxx">
     <configuration default="false" name="test-server.js" type="NodeJSConfigurationType" factoryName="Node JS" temporary="true" path-to-node="/usr/bin/node" path-to-js-file="$PROJECT_DIR$/server/test-server.js" working-dir="$PROJECT_DIR$" coffeescript-run="false">
       <RunnerSettings RunnerId="NodeJS.debug" />
       <ConfigurationWrapper RunnerId="NodeJS.debug" />
       <method />
     </configuration>
-    <configuration default="false" name="server.js" type="NodeJSConfigurationType" factoryName="Node JS" temporary="true" path-to-node="/usr/bin/node" path-to-js-file="$PROJECT_DIR$/server/server.js" working-dir="$PROJECT_DIR$" coffeescript-run="false">
+    <configuration default="false" name="server.js" type="NodeJSConfigurationType" factoryName="Node JS" temporary="true" path-to-node="/usr/bin/node" path-to-js-file="server/server.js" working-dir="$PROJECT_DIR$">
       <RunnerSettings RunnerId="NodeJS.debug" />
       <ConfigurationWrapper RunnerId="NodeJS.debug" />
       <method />
     </configuration>
     <configuration default="true" type="NodeJSConfigurationType" factoryName="Node JS" working-dir="$PROJECT_DIR$" coffeescript-run="false">
+      <envs>
+        <env name="NODE_PATH" value="/usr/lib/node_modules:/usr/lib/nodejs:/usr/share/javascript" />
+      </envs>
       <method />
     </configuration>
     <configuration default="true" type="JSTestDriver:ConfigurationType" factoryName="JsTestDriver">
@@ -264,9 +246,18 @@
       </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
-    <list size="2">
+    <configuration default="false" name="xxx" type="NodeJSConfigurationType" factoryName="Node JS" path-to-node="/usr/bin/node" path-to-js-file="server/BizWebMock.js" working-dir="$PROJECT_DIR$">
+      <envs>
+        <env name="NODE_PATH" value="/usr/lib/node_modules:/usr/lib/nodejs:/usr/share/javascript" />
+      </envs>
+      <RunnerSettings RunnerId="NodeJS.debug" />
+      <ConfigurationWrapper RunnerId="NodeJS.debug" />
+      <method />
+    </configuration>
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Node JS.test-server.js" />
       <item index="1" class="java.lang.String" itemvalue="Node JS.server.js" />
+      <item index="2" class="java.lang.String" itemvalue="Node JS.xxx" />
     </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
@@ -376,8 +367,8 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32951945" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13549459" sideWeight="0.67048055" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.5297419" sideWeight="0.99930316" order="3" side_tool="false" content_ui="tabs" x="884" y="253" width="966" height="707" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13466334" sideWeight="0.67048055" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.5297419" sideWeight="0.99930316" order="3" side_tool="false" content_ui="tabs" x="554" y="199" width="966" height="707" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28056768" sideWeight="0.07096774" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.10169491" sideWeight="0.08314437" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -481,31 +472,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/node_modules/jaydata/lib/Types/Access.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="0" selection-start="3997" selection-end="3997" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/node_modules/mongodb/node_modules/bson/lib/bson/objectid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="131" column="0" selection-start="4128" selection-end="4128" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/node_modules/q/q.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="861" column="0" selection-start="26359" selection-end="26359" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/node_modules/mongodb/lib/mongodb/cursor.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="146" column="0" selection-start="5986" selection-end="5986" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/node_modules/mongodb/lib/mongodb/collection.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="0" selection-start="2391" selection-end="2391" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/data-manager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="2" column="0" selection-start="74" selection-end="74" vertical-scroll-proportion="0.0" />
@@ -513,58 +479,108 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="262" column="0" selection-start="9179" selection-end="9179" vertical-scroll-proportion="0.0" />
+        <state line="262" column="0" selection-start="9527" selection-end="9527" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/jaygrid-table-template.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="82" selection-start="4522" selection-end="4522" vertical-scroll-proportion="0.0" />
+        <state line="93" column="82" selection-start="4555" selection-end="4555" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/application.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="0" selection-start="1881" selection-end="1881" vertical-scroll-proportion="0.0" />
+        <state line="53" column="0" selection-start="1881" selection-end="1881" vertical-scroll-proportion="0.83360523">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/security-manager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="37" selection-start="115" selection-end="115" vertical-scroll-proportion="0.0" />
+        <state line="2" column="37" selection-start="115" selection-end="115" vertical-scroll-proportion="0.02681388">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/users-groups.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="0" selection-start="286" selection-end="286" vertical-scroll-proportion="0.0" />
+        <state line="11" column="0" selection-start="319" selection-end="319" vertical-scroll-proportion="0.026275115">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-manager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="158" selection-end="158" vertical-scroll-proportion="0.0" />
+        <state line="6" column="0" selection-start="158" selection-end="158" vertical-scroll-proportion="0.02681388">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/access-manager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="148" selection-end="148" vertical-scroll-proportion="0.0" />
+        <state line="4" column="0" selection-start="148" selection-end="148" vertical-scroll-proportion="0.10510046">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/schema-manager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="44" selection-start="4766" selection-end="4766" vertical-scroll-proportion="0.0">
+        <state line="130" column="9" selection-start="4839" selection-end="4839" vertical-scroll-proportion="0.02681388">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/scripts/JayStormClient/service-app-base.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="8" selection-start="500" selection-end="500" vertical-scroll-proportion="0.0" />
+        <state line="21" column="8" selection-start="500" selection-end="500" vertical-scroll-proportion="0.5517774">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="214" column="33" selection-start="10115" selection-end="10115" vertical-scroll-proportion="0.028960818">
+        <state line="214" column="0" selection-start="9819" selection-end="9819" vertical-scroll-proportion="0.028960818">
           <folding>
-            <element signature="tag#script#22;tag#head#0;tag#html#0" expanded="false" />
             <element signature="tag#td#0;tag#tr#0;tag#table#0;tag#div#0;tag#div#3;tag#div#1;tag#body#0;tag#html#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/node_modules/express/node_modules/connect/lib/proto.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="212" column="2" selection-start="5299" selection-end="5299" vertical-scroll-proportion="1.7882534">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.WebIde40/system/extLibs/nodejs-v0.8.5-src/core-modules-sources/lib/http.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1792" column="0" selection-start="48663" selection-end="48663" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.WebIde40/system/extLibs/nodejs-v0.8.5-src/core-modules-sources/lib/events.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="88" column="14" selection-start="3013" selection-end="3013" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/node_modules/express/node_modules/connect/lib/connect.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="65" column="0" selection-start="883" selection-end="883" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/BizWebMock.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="8" selection-start="154" selection-end="154" vertical-scroll-proportion="0.21020092">
+          <folding />
         </state>
       </provider>
     </entry>

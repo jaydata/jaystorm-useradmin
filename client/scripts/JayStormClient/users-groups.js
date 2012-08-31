@@ -31,10 +31,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
 
             var itemGroups = koItem.Groups() || [];
              
-            koItem.memberGroups = function () {
-                return ko.observableArray([]);
-            };
-
+            koItem.memberGroups =  ko.observableArray([]);
             koItem.nonmemberGroups = ko.observableArray([]);
 
             self.allGroups().forEach(function (group) {

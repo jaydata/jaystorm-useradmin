@@ -28,7 +28,6 @@
                     list.splice(list.indexOf(item.GroupID), 1);
                 }
                 self.value(list);
-                alert(list);
             });
             self.Groups.push(item);
             //self.Groups.
@@ -584,6 +583,7 @@
 
                         q.toArray(
                         function (entities) {
+                            $data.trace(1, "JayGrid data received:", entities);
                             self.items.removeAll();
                             for(var i = 0; i < entities.length; i++) {
                                 var item = entities[i];
@@ -591,6 +591,7 @@
                                 self.extendItem(koItem);
                                 self.items.push( koItem );
                             }
+                            $data.trace(1, "JayGrid data pushed to grid:", self.items());
 
                         }
                     );
