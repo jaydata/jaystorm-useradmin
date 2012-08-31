@@ -203,12 +203,13 @@
 
 
             function _model() {
-                for (var j in vModel) {
-                    this[j] = vModel[j];
-                };
 
                 for(var j in viewModel) {
                     this[j] = viewModel[j];
+                };
+
+                for (var j in vModel) {
+                    this[j] = vModel[j];
                 };
 
                 console.log("Grid model created");
@@ -216,7 +217,8 @@
 
                 self.pageSize = ko.isObservable(viewModel.pageSize) ? viewModel.pageSize : ko.observable(viewModel.pageSize || 10);
 
-                self.itemCount = ko.observable(100);
+                self.itemCount = ko.observable();
+
 
                 self.currentPage = ko.observable(0);
 
@@ -282,6 +284,11 @@
                         doSave();
                     }
                 };
+
+
+                self.showNewCommand = ("showNewCommand" in self) ? self.showNewCommand : ko.observable(true);
+                self.showRemoveAllCommand = ("showRemoveAllCommand" in self) ? self.showRemoveAllCommand : ko.observable(true);
+                self.showSaveCommand = ("showSaveCommand" in self) ? self.showSaveCommand : ko.observable(false);
 
 
 
@@ -567,15 +574,17 @@
                     if (!q.defaultType.memberDefinitions["$" + sortColumn]) {
                         sortColumn = '';
                     }
+                    q.length(function (x) {
+                        self.itemCount(x);
+                    });
 
-                    return q
-                        .order(sortColumn)
+                    q =q.order(sortColumn)
                         .skip(this.pageSize() * this.currentPage())
-                        .take(this.pageSize())
-                        .toArray(
+                        .take(this.pageSize());
+
+                        q.toArray(
                         function (entities) {
                             self.items.removeAll();
-                            console.log("items populating");
                             for(var i = 0; i < entities.length; i++) {
                                 var item = entities[i];
                                 var koItem = item.asKoObservable();

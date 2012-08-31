@@ -444,15 +444,20 @@
         <div id="AccessManagerUI" data-bind="if: context">
             <h1>Manage Access</h1>
             <h4>Control who can access your system</h4>
-            <div id="svcAccessGrid" data-bind="jayGrid: {
+            <h4>Application Rules</h4>
+            <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], 
+                                    source: context().IngressIPRules }">
+
+            </div>
+            <h4>Default service rules</h4>
+            <div id="svcAccessGrid" data-bind="jayGrid: { showNewCommand: false, showRemoveAllCommand: false,
                             fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
                             source: context().Services }">
 
             </div>
 
-            <div id="ingressIP" data-bind="jayGrid: {
-                            fields: ['Name', 'ObjectID'],
-                            source: context().IngressIPRules }">
+            <h4>Addition service rules</h4>
+            <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID'], source: context().IngressIPRules }">
 
             </div>
         </div>

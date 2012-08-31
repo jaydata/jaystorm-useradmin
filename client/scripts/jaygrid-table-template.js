@@ -10,11 +10,15 @@
 var templateList = [
     ["jay-data-grid",
         "<form data-bind='submit:save'>\
+<div data-bind='text: itemCount'></div>\
             <div data-bind='visible: source' class='action-buttons'>\
                 <span class='iblock'>\
-                    <span data-x-bind='text: $root.discriminatorValue'></span>\
+                    <!-- ko if: showNewCommand -->                             \
                     <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
+                     <!-- /ko --> \
+                    <!-- ko if: showRemoveAllCommand -->                             \
                     <a class='btn btn-danger' href='#' data-bind='click:removeAll'><i class='icon-trash icon-white'></i> Remove all</a>\
+                     <!-- /ko --> \
                     <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges' />\
                 </span>\
                 <span class='iblock pull-right'>\
@@ -29,15 +33,19 @@ var templateList = [
             </table>\
                 <div data-bind='visible: source' class='action-buttons'>\
                     <span class='iblock'>\
+<div data-bind='text: showNewCommand'></div>\
+                        <!-- ko if: showNewCommand -->  \
                         <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
+                        <!-- /ko -->\
                         <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges'/>\
                     </span>\
                     <br />\
                     <span class='iblock margint10'>\
-                        <select class='input-small' data-bind='options: ko.utils.range(1,50), value: pageSize, visible: pageSize() > 0'></select>\
+                        <select class='input-small' data-bind='options: [10,20,50,100], value: pageSize, visible: itemCount() > 10'></select>\
                         <span data-bind='visible: pendingChanges, text: pendingStatusInfo()' />\
                     </span>\
-                    <div class='pagination pagination-centered'>\
+                    <!-- ko if: pages().length > 1 -->\
+                    <div  class='pagination pagination-centered'>\
                         <ul>\
                         <li><a href='#' data-bind='click:goToPreviousPage'>&#171;</a>\
                         </li>\
@@ -45,6 +53,7 @@ var templateList = [
                         <li><a href='#' data-bind='click:goToNextPage'>&#187;</a></li>\
                         </ul>\
                     </div>\
+                    <!-- /ko -->\
                 </div>\
             </form>"],
 
