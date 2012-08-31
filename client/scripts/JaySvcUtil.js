@@ -176,7 +176,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
         }
     },
     _findVersion: function (metadata) {
-        if (metadata.getElementsByTagName){
+        if ("getElementsByTagName" in metadata){
             var version = 'http://schemas.microsoft.com/ado/2008/09/edm';
             var item = metadata.getElementsByTagName('Schema');
             if (item)

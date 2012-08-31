@@ -98,7 +98,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             var tracks = set.entityContext.stateManager.trackedEntities;
             var newEntities = { };
             var dbs = [];
-            var c = contextFactory();
+            var c = apiContextFactory();
             for(var i = 0; i < tracks.length; i++) {
                 var database = tracks[i].data;
 
@@ -180,7 +180,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                         return true;
                     },
                     execute: function( item ) {
-                        var entity = contextFactory().Entities.find(item.ElementTypeID());
+                        var entity = apiContextFactory().Entities.find(item.ElementTypeID());
                         entity.then(function(e) { self.setCurrentEntity(e.asKoObservable()) });
                     }
                 },

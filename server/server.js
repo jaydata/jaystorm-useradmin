@@ -548,6 +548,8 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'X-PINGOTHER, Content-Type, MaxDataServiceVersion, DataServiceVersion');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, MERGE, DELETE');
+    res.setHeader('Cache-Control', 'no-cache');
+
     if (req.method === 'OPTIONS') {
         res.end();
     } else {

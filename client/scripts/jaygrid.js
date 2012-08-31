@@ -5,7 +5,36 @@
  * Time: 12:39 PM
  * To change this template use File | Settings | File Templates.
  */
-(function() {
+(function ($data) {
+
+    $data.jayGrid = $data.jayGrid || {};
+    window['GroupEditor'] = function (viewModel) {
+        var self = this;
+        console.dir("groupEditor created");
+        $data.typeSystem.extend(this, viewModel);
+        self.Groups = ko.observableArray([]);
+        console.log(viewModel.context().Groups);
+        console.dir(viewModel);
+        var currentList = self.value() || [];
+        viewModel.context().Groups.forEach(function (item) {
+            
+
+            item.selected = ko.observable(currentList.indexOf(item.GroupID) > -1);
+            item.selected.subscribe(function (value) {
+                var list = self.value() || [];
+                if (value) {
+                    list.push(item.GroupID);
+                } else {
+                    list.splice(list.indexOf(item.GroupID), 1);
+                }
+                self.value(list);
+                alert(list);
+            });
+            self.Groups.push(item);
+            //self.Groups.
+        });
+
+    };
     var templateEngine = new ko.nativeTemplateEngine();
 
     var i = 0;
@@ -70,15 +99,6 @@
             }
             props = res;
         }
-//        props.push( {
-//            name: 'ValidationErrors',
-//            type: 'Array'
-//        });
-//
-//        props.push( {
-//            name: 'entityState',
-//            type: 'int'
-//        });
 
         if (itemCommands.length > 0) {
             var meta = {
@@ -96,7 +116,6 @@
     ko.bindingHandlers['readValue'] = {
         'update': function (element, valueAccessor) {
             var v = valueAccessor();
-            console.dir(v);
             var eset = ko.utils.unwrapObservable(v.source);
 
             var key = ko.utils.unwrapObservable(v.key);
@@ -209,6 +228,9 @@
                     self.sortColumn('');
                 }, 'beforeChange');
 
+                if (viewModel.items) {
+                    console.log("replacing items");
+                }
                 self.items =  viewModel.items || ko.observableArray([]);
 
                 if (self.monitorItems) {
@@ -301,23 +323,23 @@
                     var idx = self.items().length;
 
 
-
-                    o.getColumns = function() {
-                        var result = [];
-                        for (var i = 0; i < self.columns().length; i++) {
-                            var col = {
-                                rowIndex: idx,
-                                columnIndex: i,
-                                value: this[self.columns()[i].name],
-                                name: self.columns()[i].name,
-                                metadata: self.columns()[i],
-                                owner: this,
-                                itemCommands: itemCommands
-                            }
-                            result.push(col);
-                        }
-                        return result;
-                    }
+                    self.extendItem(o);
+                    //o.getColumns = function() {
+                    //    var result = [];
+                    //    for (var i = 0; i < self.columns().length; i++) {
+                    //        var col = {
+                    //            rowIndex: idx,
+                    //            columnIndex: i,
+                    //            value: this[self.columns()[i].name],
+                    //            name: self.columns()[i].name,
+                    //            metadata: self.columns()[i],
+                    //            owner: this,
+                    //            itemCommands: itemCommands
+                    //        }
+                    //        result.push(col);
+                    //    }
+                    //    return result;
+                    //}
 
 
                     var v = ko.utils.unwrapObservable(self.discriminatorValue),
@@ -426,7 +448,9 @@
 
                 self.columns = ko.observableArray(cols);
 
+                //a micro viewmodel for the cells, all necessary data collected
                 function getKoItemColumns(rowIndex) {
+                    var self2 = this;
                     var result = [];
                     for (var i = 0; i < self.columns().length; i++) {
                         var col = {
@@ -438,14 +462,53 @@
                             owner: this,
                             itemCommands: itemCommands
                         }
+                        col.showControls = (function(i, col) { 
+                            return function (template, viewModelType, viewModelData) {
+                                self2.showControlBox(i, col, template, viewModelType, viewModelData);
+                            }})(i, col)
+
                         result.push(col);
                     }
+                    
                     return result;
                 }
 
-                self.extendItem = function(koItem) {
+                self.extendItem = function (koItem) {
+                    console.log("extending item");
                     koItem.getColumns = getKoItemColumns;
-                    if( self.itemExtender ) {
+                    var koCells = ko.observableArray([]);
+                    koItem.getControlCells = koCells;
+
+
+                    koItem.showControlBox = function (index, data, template, viewModelType, viewModelData) {
+                        koCells.removeAll();
+                        console.log("showControlBox");
+                        viewModelData.closeControlBox = function () {
+                            koCells.removeAll();
+                        };
+                        var vm = new viewModelType(viewModelData);
+                        var colcount = self.columns().length;
+                        for (var i = 0; i < colcount; i++) {
+                            var item = { index : i, asked: index };
+                            item.colspan = 1;
+                            item.templateName = undefined;
+                            item.viewModel = {};
+                            item.data = {};
+                            if (index == i) {
+                                item.colspan = 2;
+                                item.templateName = template;
+                                item.data = data;
+                                item.viewModel = vm;
+                                i++;
+                            }
+                            koCells.push(item);
+                        }
+                        console.log(koCells().length);
+                        
+                    }
+
+                    if (self.itemExtender) {
+                        console.log("external extender");
                         self.itemExtender( koItem );
                     }
                 }
@@ -512,6 +575,7 @@
                         .toArray(
                         function (entities) {
                             self.items.removeAll();
+                            console.log("items populating");
                             for(var i = 0; i < entities.length; i++) {
                                 var item = entities[i];
                                 var koItem = item.asKoObservable();
@@ -553,15 +617,12 @@
                     var named = metadata.name + '-display';
                     var f = element.nameTemplates[named] || 'xxx';
 
-                    console.dir(metadata);
                     var result = element.nameTemplates[metadata.name + '-display'] ||
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
                                  (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
                                 'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));
-
-                    console.log(result);
 
                     return result;
 
@@ -596,4 +657,4 @@
 
     }
 
-})();
+})($data);
