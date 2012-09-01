@@ -468,4 +468,6 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 
 });
 
-exports.serviceType = $data.JayStormAPI.Context;
+require('../contextapi-api.js');
+$data.Class.defineEx('$data.JayStormAPI.Service', [$data.JayStormAPI.Context, $data.JayStormAPI.ServiceFunctions]);
+exports.serviceType = $data.JayStormAPI.Service;
