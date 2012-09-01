@@ -1,6 +1,8 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
 
-    constructor: function() {
+    constructor: function () {
+        ///gets an ApplicationDB contexFactory
+        ///lists databases 
         var self = this;
         self.databases = ['/db','/db2'];
         self.visible = ko.observable(false);
@@ -13,7 +15,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
             self.visible(false);
         };
 
-        self.factory = ko.observable();
+        self.dbContextFactory = ko.observable();
+        self.dbContext = ko.observable();
+        self.dbContextFactory.subscribe(function (value) {
+            self.dbContext(value());
+        });
+
 
         self.serviceUrlSelected = ko.observable();
         self.serviceUrlSelected.subscribe( function( value ) {
@@ -22,11 +29,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
             });
         })
 
-        self.context = ko.observable();
 
-        self.factory.subscribe( function(value) {
-            self.context( value() );
-        });
 
 
         self.entitySets = ko.computed( function() {

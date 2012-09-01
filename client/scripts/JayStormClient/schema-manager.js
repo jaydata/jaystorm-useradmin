@@ -1,9 +1,7 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
-    constructor:function (apiContextFactory) {
+    constructor:function () {
         var self = this;
-
-        self.context = ko.observable();
 
         self.databases = ko.observableArray([]);
 
@@ -67,7 +65,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             var tracks = set.entityContext.stateManager.trackedEntities;
             var newEntities = { };
             var dbs = [];
-            var c = apiContextFactory();
+            var c = self.createContext();
             for(var i = 0; i < tracks.length; i++) {
                 var database = tracks[i].data;
 
@@ -149,7 +147,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                         return true;
                     },
                     execute: function( item ) {
-                        var entity = apiContextFactory().Entities.find(item.ElementTypeID());
+                        var entity = self.createContext().Entities.find(item.ElementTypeID());
                         entity.then(function(e) { self.setCurrentEntity(e.asKoObservable()) });
                     }
                 },
@@ -186,29 +184,30 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             })
         })
 
-        apiContextFactory().TypeTemplates.toArray(self.typeTemplates);
+        self.contextFactory.subscribe(function (value) {
+            value().TypeTemplates.toArray(self.typeTemplates);
 
-        
+            var c = value();
+            c.EntityFields.defaultType.instancePropertyChanged = c.EntityFields.defaultType.instancePropertyChanged || new $data.Event("changed");
 
-        var c = apiContextFactory();
-        c.EntityFields.defaultType.instancePropertyChanged = c.EntityFields.defaultType.instancePropertyChanged || new $data.Event("changed");
-        c.EntityFields.defaultType.instancePropertyChanged.attach( function(holder, prop) {
-            if ('TypeTemplate' == prop.propertyName ) {
-                console.log("Template changed!");
-                var ttname = prop.newValue;
-                //console.log(id);
+            c.EntityFields.defaultType.instancePropertyChanged.attach(function (holder, prop) {
+                if ('TypeTemplate' == prop.propertyName) {
+                    console.log("Template changed!");
+                    var ttname = prop.newValue;
+                    //console.log(id);
 
-                for(var i = 0; i < self.typeTemplates().length;i++) {
-                    var t = self.typeTemplates()[i];
-                    if (t.Name() == ttname) {
+                    for (var i = 0; i < self.typeTemplates().length; i++) {
+                        var t = self.typeTemplates()[i];
+                        if (t.Name() == ttname) {
 
-                        for(var s in t.TypeDescriptor()) {
-                            holder[s] = t.TypeDescriptor()[s];
+                            for (var s in t.TypeDescriptor()) {
+                                holder[s] = t.TypeDescriptor()[s];
+                            }
+
                         }
-
                     }
                 }
-            }
+            });
         });
     }
 });

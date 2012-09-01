@@ -1,17 +1,26 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
-
-    constructor: function( apiContextFactory )
+    constructor: function()
     {
         var self = this;
 
         self.groups = ko.observableArray([]);
-    self.databases = ko.observableArray([]);
+        self.databases = ko.observableArray([]);
 
-    self.rf = ko.observable({});
+        self.rf = ko.observable({});
 
-    var c = apiContextFactory();
-    c.Databases.toArray(self.databases);
-    c.Groups.toArray(self.groups);
+        function initState(cf) {
+            var c = cf();
+            c.Databases.toArray(self.databases);
+            c.Groups.toArray(self.groups);
+        }
+
+        self.contextFactory.subscribe(function (value) {
+            initState(value);
+        });
+
+        if (self.contextFactory()) {
+            initState(self.contextFactory());
+        }
 
 
     self.tablePermissions = [

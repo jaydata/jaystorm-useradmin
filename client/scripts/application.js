@@ -9,7 +9,7 @@ $(function() {
         var modules = [
             { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Manage Users', path:'/Users' },
             { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Service Manager', path:'/Services' },
-            { type:$data.JayStormClient.DataManager, ui: "DataManagerUI", title:'Manage Data', path:'/Databases' },
+            //{ type:$data.JayStormClient.DataManager, ui: "DataManagerUI", title:'Manage Data', path:'/Databases' },
             { type:$data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title:'Manage Schema', path:'/Schema' },
             { type:$data.JayStormClient.SecurityManager, ui: "SecurityManagerUI",title:'Manage Security', path:'/Security' },
             { type:$data.JayStormClient.AccessManager, ui: "AccessManagerUI", title:'Manage Access', path:'/Access' }];
