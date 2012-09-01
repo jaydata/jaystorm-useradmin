@@ -563,7 +563,8 @@ app.use(c.cookieParser());
 app.use(c.methodOverride());
 app.use(c.session({ secret: 'keyboard cat' }));
 
-/*app.use($data.JayService.Middleware.appID());
+app.use($data.JayService.Middleware.appID({ appid: '' }));
+app.use($data.JayService.Middleware.superadmin({ superadmin: true }));
 app.use($data.JayService.Middleware.databaseConnections({
     ApplicationDB: [{
         address: '127.0.0.1',
@@ -591,10 +592,10 @@ app.use('/logout', function(req, res){
 
 app.use($data.JayService.Middleware.authentication());
 app.use($data.JayService.Middleware.authenticationErrorHandler);
-app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));*/
-//app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
+//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
+/*app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
 
-app.use("/db", $data.JayService.OData.BatchProcessor.connectBodyReader);
+app.use("/db", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/db", $data.JayService.createAdapter($data.JayStormAPI.Context, function(req, res) {
     return new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB",
         responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
@@ -654,11 +655,12 @@ app.use('/make', function(req, res, next){
     
     var context = new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB" });
     var Q = require('q');
-    Q.allResolved([context.Services.toArray(), context.IngressIPRules.toArray(), context.Databases.toArray()]).then(function(v){
+    Q.allResolved([context.Services.toArray(), context.IngressIPRules.toArray(), context.IngressOriginRules.toArray(), context.Databases.toArray()]).then(function(v){
         var result = {
             Services: v[0].valueOf(),
             IngressRules: v[1].valueOf(),
-            Databases: v[2].valueOf()
+            OutgressRules: v[2].valueOf(),
+            Databases: v[3].valueOf()
         };
         for (var i = 0; i < result.Services.length; i++){
             var r = result.Services[i];
@@ -671,18 +673,76 @@ app.use('/make', function(req, res, next){
             };
             if (r.DatabaseID) service.database = result.Databases.filter(function(it){ return it.DatabaseID == r.DatabaseID; })[0].Name;
             if (r.BaseServiceID) service.extend = result.Services.filter(function(it){ return it.ServiceID == r.ServiceID; })[0].Name;
+            if (r.ServiceSourceType && r.ServiceSource){
+                service.sourceType = r.ServiceSourceType;
+                service.source = r.ServiceSource;
+            }
             var rules = result.IngressRules.filter(function(it){ return it.ObjectID == r.ServiceID; });
             if (rules.length || r.UseDefaultPort || r.UseSSL) service.ingress = [];
-            for (var j = 0; j < rules.length; j++){
-                var ir = rules[j];
-                service.ingress.push({
-                    type: 'allow',
-                    address: ir.SourceAddress,
-                    port: ir.Port,
-                    ssl: ir.SSL
-                });
+            if (r.AllowAllIPs){
+                var ports = rules.map(function(it){ return it.Port; });
+                var processedPorts = [];
+                if (r.UseDefaultPort){
+                    service.ingress.push({
+                        type: 'allow',
+                        address: '*',
+                        port: 80
+                    });
+                    if (r.UseSSL){
+                        service.ingress.push({
+                            type: 'allow',
+                            address: '*',
+                            port: 443,
+                            ssl: true
+                        });
+                    }
+                }else{
+                    for (var i = 0; i < ports.length; i++){
+                        if (processedPorts.indexOf(ports[i]) < 0){
+                            processedPorts.push(ports[i]);
+                            service.ingress.push({
+                                type: 'allow',
+                                address: '*',
+                                port: ports[i]
+                            });
+                        }
+                    }
+                }
+            }else{
+                for (var j = 0; j < rules.length; j++){
+                    var ir = rules[j];
+                    service.ingress.push({
+                        type: 'allow',
+                        address: ir.SourceAddress,
+                        port: r.UseDefaultPort ? 80 : ir.Port,
+                        ssl: ir.SSL
+                    });
+                    if (r.UseSSL){
+                        service.ingress.push({
+                            type: 'allow',
+                            address: ir.SourceAddress,
+                            port: 443,
+                            ssl: true
+                        });
+                    }
+                }
             }
-            if (r.UseDefaultPort){
+            if (r.AllowAllOrigins){
+                service.outgress = [{
+                    type: 'allow',
+                    origin: '*'
+                }];
+            }else{
+                service.outgress = result.OutgressRules.map(function(it){
+                    return {
+                        type: 'allow',
+                        origin: it.SourceOrigin,
+                        method: it.Method || ['GET']
+                    };
+                });
+                if (!service.outgress.length) delete service.outgress;
+            }
+            /*if (r.UseDefaultPort){
                 service.ingress.push({
                     type: 'allow',
                     address: '*',
@@ -696,7 +756,7 @@ app.use('/make', function(req, res, next){
                     port: 443,
                     ssl: true
                 });
-            }
+            }*/
             json.application.serviceLayer.services.push(service);
         }
         
