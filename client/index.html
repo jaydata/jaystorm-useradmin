@@ -176,6 +176,7 @@
 
 
         <div id="UserManagerUI" data-bind="if: visible">
+
             <script type="text/html" id="GroupArrayEditor">
                 <div>
                     <ul data-bind="foreach: Groups">
@@ -202,7 +203,11 @@
                             GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Click me!</a>
                     </script>
 
-
+                    <script type="text/html" data-name-template="Groups-display">
+                        <div data-bind="foreach: value">
+                            <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
+                        </div>
+                    </script>
                 </div>
             </div>
             <div data-bind="if: Groups">
