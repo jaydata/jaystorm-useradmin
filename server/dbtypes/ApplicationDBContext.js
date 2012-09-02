@@ -299,10 +299,10 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 
 
         this.Databases.afterCreate = function (items) {
-            console.log("DB.afterCreate", this);
+
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
-                var svc = new this.Services.createNew({
+                var svc = this.Services.add({
                     DatabaseID: item.DatabaseID,
                     Name: item.Name,
                     Published: true

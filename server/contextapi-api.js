@@ -128,7 +128,7 @@ $data.ServiceBase.extend('$data.JayStormAPI.ServiceFunctions', {
                                                     if (r.InverseProperty) f.inverseProperty = r.InverseProperty;
                                                     if (r.Key) f.key = true;
                                                     if (r.Computed) f.computed = true;
-                                                    if (r.Nullable !== undefined && r.Nullable !== null) f.nullable = !!r.Nullable;
+                                                    if (r.Nullable !== undefined && r.Nullable !== null && r.Nullable) f.nullable = !!r.Nullable;
                                                     if (r.Required) f.required = true;
                                                     if (r.CustomValidator) f.customValidator = r.CustomValidator;
                                                     if (r.MinValue !== undefined && r.MinValue !== null) f.minValue = r.MinValue;
