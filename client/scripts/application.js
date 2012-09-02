@@ -10,9 +10,9 @@ $(function() {
     function ClientApplication() {
         var self = this;
 
-        self.applications = [{ title: 'App1', url: 'http://z.lan:2001' },
-                        { title: 'App2', url: 'http://z.lan:2002' },
-                        { title: 'MainApp', url: ' http://z.lan:8181' }];
+        self.applications = [{ title: 'App1', url: 'http://z.local:2001' },
+                        { title: 'App2', url: 'http://z.local:2002' },
+                        { title: 'MainApp', url: ' http://z.local:8181' }];
 
 
 

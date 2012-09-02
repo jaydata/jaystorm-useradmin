@@ -86,6 +86,19 @@ $data.Entity.extend('$data.JayStormAPI.IngressOriginRule', {
     Method: { type: 'Array', elementType: "string" }
 });
 
+$data.Entity.extend('$data.JayStormAPI.AppItem', {
+    AppItemID: { type: 'id', key: true, computed: true },
+    ID: { type: 'string' } ,
+    AppID: { type: 'string' },
+    Type: { type: 'string' },
+    Data: { type: '$data.Object' } //{ maxrecord: 'int', dbid:'guid', dbname:'string' }
+});
+
+$data.Entity.extend('$data.JayStormAPI.ApplicationMetadata', {
+    ID: { type: 'id', key: true, computed: true },
+    AppOwner: { type: 'string' },
+    AppItems: { type: 'array', elementType: '$data.Object' }
+});
 $data.Entity.extend('$data.JayStormAPI.ApplicationMetadata', {
     ID: { type: 'id', key: true, computed: true },
     AppOwner: { type: 'string' },
@@ -470,5 +483,5 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 });
 
 require('../contextapi-api.js');
-$data.Class.defineEx('$data.JayStormAPI.Service', [$data.JayStormAPI.Context, $data.JayStormAPI.ServiceFunctions]);
-exports.serviceType = $data.JayStormAPI.Service;
+$data.Class.defineEx('$data.JayStormAPI.ServiceContext', [$data.JayStormAPI.Context, $data.JayStormAPI.ServiceFunctions]);
+exports.serviceType = $data.JayStormAPI.ServiceContext;
