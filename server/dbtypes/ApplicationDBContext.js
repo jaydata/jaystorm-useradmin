@@ -186,7 +186,7 @@ $data.Entity.extend('$data.JayStormAPI.ServiceOperation', {
     ServiceOperationID: { type: 'id', key: true, computed: true },
     Name: { type: 'string', required: true },
     Method: { type: 'string' },
-    Returns: { type: '$data.JayStormAPI.ServiceOperationReturnType' },
+    //Returns: { type: '$data.JayStormAPI.ServiceOperationReturnType' },
     Promise: { type: 'bool' },
     Publish: { type: 'bool' }
 });
@@ -286,14 +286,15 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 
 
         this.Databases.afterCreate = function (items) {
-
+            console.log("DB.afterCreate", this);
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
-                var svc = this.Services.add({
+                var svc = new this.Services.createNew({
                     DatabaseID: item.DatabaseID,
                     Name: item.Name,
                     Published: true
                 });
+                var svc = this.Services.add(svc);
             };
             this.saveChanges();
         };

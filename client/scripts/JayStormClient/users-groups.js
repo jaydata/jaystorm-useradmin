@@ -14,6 +14,22 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
         }
 
 
+        function initState(cf) {
+            var cntx = cf();
+            self.Users(cf().Users);
+            self.Groups(cf().Groups);
+            self.context(cf());
+        }
+
+        self.contextFactory.subscribe(function (value) {
+            if (value) {
+                initState(value);
+            }
+        });
+
+        if (self.contextFactory()) {
+            initState(self.contextFactory());
+        }
         //override base show
         self.show = function () {
             self.context(self.createContext());

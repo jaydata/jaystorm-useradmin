@@ -58,6 +58,7 @@ app.use('/logout', function(req, res){
 
 app.use($data.JayService.Middleware.authentication());
 app.use($data.JayService.Middleware.authenticationErrorHandler);
+
 //app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
 /*app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
 
@@ -74,8 +75,8 @@ app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
 var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 
-app.use("/db", $data.JayService.OData.Utils.simpleBodyReader());
-app.use("/db", $data.JayService.createAdapter(appdbSvc, function(req, res) {
+app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
+app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
     return new appdbSvc({name: "mongoDB", databaseName:"ApplicationDB",
         responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
 }));

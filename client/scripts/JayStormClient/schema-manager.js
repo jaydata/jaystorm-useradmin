@@ -30,9 +30,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             name: 'afterDelete',
             type: 'afterDelete'
         }]);
-        self.codeMirror = function(el, value){
+
+        self.codeMirror = function (el, value) {
             new $data.JayStormUI.CodeMirror(el, value);
         };
+
         self.codeHighlight = function(el, value){
             new $data.JayStormUI.CodeHighlight(el, value);
         };
@@ -46,15 +48,19 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             }
         });
 
-        self.visible = ko.observable(false);
 
         self.currentDatabase = ko.observable();
         self.currentDatabaseID = ko.observable();
         self.currentDatabaseName = ko.observable();
         
-        self.currentDatabase.subscribe(function(db){
-            self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
-            self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
+        self.currentDatabase.subscribe(function (db) {
+            if (db) {
+                self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
+                self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
+            } else {
+                self.currentDatabaseID(null);
+                self.currentDatabaseName(null);
+            }
         });
 
         self.beforeDatabaseSave = function(set) {

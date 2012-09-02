@@ -1,8 +1,7 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.AccessManager", {
 
-    constructor:function (apiContextFactory) {
+    constructor:function () {
         var self = this;
-
     }
 
 
