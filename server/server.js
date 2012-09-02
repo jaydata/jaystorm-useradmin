@@ -56,10 +56,10 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
-app.use($data.JayService.Middleware.authentication());
+/*app.use($data.JayService.Middleware.authentication());
 app.use($data.JayService.Middleware.authenticationErrorHandler);
 app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
-app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
+app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
 
 
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
@@ -76,7 +76,7 @@ var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 app.use("/db", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/db", $data.JayService.createAdapter(appdbSvc, function(req, res) {
-    return new appdbSvc({name: "mongoDB", databaseName:"ApplicationDB",
+    return new appdbSvc({name: "mongoDB", databaseName:"NTA0MzQ1MWY0ZjRiNGQyYzA3MDAwMDAz_ApplicationDB", username: '5babb4f2-bd59-4096-bb5a-a249853fdb07', password: '5ebd8d4d-9c40-4181-9e26-3c064be03fa7',
         responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
 }));
 
@@ -124,137 +124,6 @@ app.use('/eval', function(req, res){
         res.write(JSON.stringify(err.toString()));
         res.end();
     }
-});
-
-app.use('/genservicelayer', function(req, res, next){
-    var json = req.body || { application: {} };
-    if (!json.application.appID){
-        next('Missing AppID');
-        return;
-    }
-    if (!json.application.dataLayer.databases.filter(function(it){ return it.name == 'ApplicationDB'; }).length){
-        next('Missing ApplicationDB');
-        return;
-    }
-    
-    json.application.serviceLayer = {
-        services: []
-    };
-    
-    var context = new $data.JayStormAPI.Context({name: "mongoDB", databaseName: "ApplicationDB" });
-    var Q = require('q');
-    Q.allResolved([context.Services.toArray(), context.IngressIPRules.toArray(), context.IngressOriginRules.toArray(), context.Databases.toArray()]).then(function(v){
-        var result = {
-            Services: v[0].valueOf(),
-            IngressRules: v[1].valueOf(),
-            OutgressRules: v[2].valueOf(),
-            Databases: v[3].valueOf()
-        };
-        for (var i = 0; i < result.Services.length; i++){
-            var r = result.Services[i];
-            var service = {
-                type: 'service',
-                allowAnonymous: r.AllowAnonymous,
-                serviceName: r.Name,
-                allowedSubPathList: r.Sets || ['*'],
-                internalPort: 60000 + (r.Port || 80)
-            };
-            if (r.DatabaseID) service.database = result.Databases.filter(function(it){ return it.DatabaseID == r.DatabaseID; })[0].Name;
-            if (r.BaseServiceID) service.extend = result.Services.filter(function(it){ return it.ServiceID == r.ServiceID; })[0].Name;
-            if (r.ServiceSourceType && r.ServiceSource){
-                service.sourceType = r.ServiceSourceType;
-                service.source = r.ServiceSource;
-            }
-            var rules = result.IngressRules.filter(function(it){ return it.ObjectID == r.ServiceID; });
-            if (rules.length || r.UseDefaultPort || r.UseSSL) service.ingress = [];
-            if (r.AllowAllIPs){
-                var ports = rules.map(function(it){ return it.Port; });
-                var processedPorts = [];
-                if (r.UseDefaultPort){
-                    service.ingress.push({
-                        type: 'allow',
-                        address: '*',
-                        port: 80
-                    });
-                    if (r.UseSSL){
-                        service.ingress.push({
-                            type: 'allow',
-                            address: '*',
-                            port: 443,
-                            ssl: true
-                        });
-                    }
-                }else{
-                    for (var i = 0; i < ports.length; i++){
-                        if (processedPorts.indexOf(ports[i]) < 0){
-                            processedPorts.push(ports[i]);
-                            service.ingress.push({
-                                type: 'allow',
-                                address: '*',
-                                port: ports[i]
-                            });
-                        }
-                    }
-                }
-            }else{
-                for (var j = 0; j < rules.length; j++){
-                    var ir = rules[j];
-                    service.ingress.push({
-                        type: 'allow',
-                        address: ir.SourceAddress,
-                        port: r.UseDefaultPort ? 80 : ir.Port,
-                        ssl: ir.SSL
-                    });
-                    if (r.UseSSL){
-                        service.ingress.push({
-                            type: 'allow',
-                            address: ir.SourceAddress,
-                            port: 443,
-                            ssl: true
-                        });
-                    }
-                }
-            }
-            if (r.AllowAllOrigins){
-                service.outgress = [{
-                    type: 'allow',
-                    origin: '*'
-                }];
-            }else{
-                service.outgress = result.OutgressRules.map(function(it){
-                    return {
-                        type: 'allow',
-                        origin: it.SourceOrigin,
-                        method: it.Method || ['GET']
-                    };
-                });
-                if (!service.outgress.length) delete service.outgress;
-            }
-            /*if (r.UseDefaultPort){
-                service.ingress.push({
-                    type: 'allow',
-                    address: '*',
-                    port: 80
-                });
-            }
-            if (r.UseSSL){
-                service.ingress.push({
-                    type: 'allow',
-                    address: '*',
-                    port: 443,
-                    ssl: true
-                });
-            }*/
-            json.application.serviceLayer.services.push(service);
-        }
-        
-        res.setHeader('content-type', 'application/json');
-        res.write(JSON.stringify(json.application.serviceLayer));
-        res.end();
-    }).fail(function(v){
-        console.log(v);
-        next('Make error.');
-    });
 });
 
 app.use("/", c.static(__dirname + "/../client"));
