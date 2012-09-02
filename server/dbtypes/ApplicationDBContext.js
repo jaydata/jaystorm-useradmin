@@ -469,5 +469,5 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 });
 
 require('../contextapi-api.js');
-$data.Class.defineEx('$data.JayStormAPI.Service', [$data.JayStormAPI.Context, $data.JayStormAPI.ServiceFunctions]);
-exports.serviceType = $data.JayStormAPI.Service;
+$data.Class.defineEx('$data.JayStormAPI.ServiceContext', [$data.JayStormAPI.Context, $data.JayStormAPI.ServiceFunctions]);
+exports.serviceType = $data.JayStormAPI.ServiceContext;

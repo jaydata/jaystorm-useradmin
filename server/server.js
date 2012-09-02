@@ -58,8 +58,8 @@ app.use('/logout', function(req, res){
 
 app.use($data.JayService.Middleware.authentication());
 app.use($data.JayService.Middleware.authenticationErrorHandler);
-//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
-/*app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
+app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
+app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));
 
 
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
@@ -126,13 +126,22 @@ app.use('/eval', function(req, res){
     }
 });
 
-app.use('/make', function(req, res, next){
-    var json = (req.body && req.body.application) ? req.body : { application: {} };
+app.use('/genservicelayer', function(req, res, next){
+    var json = req.body || { application: {} };
+    if (!json.application.appID){
+        next('Missing AppID');
+        return;
+    }
+    if (!json.application.dataLayer.databases.filter(function(it){ return it.name == 'ApplicationDB'; }).length){
+        next('Missing ApplicationDB');
+        return;
+    }
+    
     json.application.serviceLayer = {
         services: []
     };
     
-    var context = new $data.JayStormAPI.Context({name: "mongoDB", databaseName:"ApplicationDB" });
+    var context = new $data.JayStormAPI.Context({name: "mongoDB", databaseName: "ApplicationDB" });
     var Q = require('q');
     Q.allResolved([context.Services.toArray(), context.IngressIPRules.toArray(), context.IngressOriginRules.toArray(), context.Databases.toArray()]).then(function(v){
         var result = {
@@ -240,7 +249,7 @@ app.use('/make', function(req, res, next){
         }
         
         res.setHeader('content-type', 'application/json');
-        res.write(JSON.stringify(json));
+        res.write(JSON.stringify(json.application.serviceLayer));
         res.end();
     }).fail(function(v){
         console.log(v);
