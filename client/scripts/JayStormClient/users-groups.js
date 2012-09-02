@@ -1,12 +1,11 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
 
-    constructor: function (apiContextFactory) {
+    constructor: function () {
+        console.log("UserManager context:" + this.getType().fullName + " starting");
         var self = this;
 
         self.Users = ko.observable();
         self.Groups = ko.observable();
-
-        self.context(apiContextFactory());
 
         self.allGroups = ko.observableArray([]);
 
@@ -14,10 +13,29 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
             console.log("allGroups changed");
         }
 
+
+        function initState(cf) {
+            var cntx = cf();
+            self.Users(cf().Users);
+            self.Groups(cf().Groups);
+            self.context(cf());
+        }
+
+        self.contextFactory.subscribe(function (value) {
+            if (value) {
+                initState(value);
+            }
+        });
+
+        if (self.contextFactory()) {
+            initState(self.contextFactory());
+        }
+        //override base show
         self.show = function () {
+            self.context(self.createContext());
+            self.Users(self.createContext().Users);
+            self.Groups(self.createContext().Groups);
             self.visible(true);
-            self.Users(apiContextFactory().Users);
-            self.Groups(apiContextFactory().Groups);
         };
 
         self.hide = function () {

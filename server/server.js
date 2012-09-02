@@ -56,10 +56,11 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
-/*app.use($data.JayService.Middleware.authentication());
+app.use($data.JayService.Middleware.authentication());
 app.use($data.JayService.Middleware.authenticationErrorHandler);
-app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
-app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
+
+//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
+/*app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
 
 
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
@@ -74,9 +75,9 @@ app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
 var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 
-app.use("/db", $data.JayService.OData.Utils.simpleBodyReader());
-app.use("/db", $data.JayService.createAdapter(appdbSvc, function(req, res) {
-    return new appdbSvc({name: "mongoDB", databaseName:"NTA0MzQ1MWY0ZjRiNGQyYzA3MDAwMDAz_ApplicationDB", username: '5babb4f2-bd59-4096-bb5a-a249853fdb07', password: '5ebd8d4d-9c40-4181-9e26-3c064be03fa7',
+app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
+app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
+    return new appdbSvc({name: "mongoDB", databaseName:"ApplicationDB",
         responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
 }));
 
@@ -125,6 +126,7 @@ app.use('/eval', function(req, res){
         res.end();
     }
 });
+
 
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());

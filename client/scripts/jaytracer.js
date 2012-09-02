@@ -4,7 +4,7 @@
     };
 
     function debugTraceConsole() {
-        console.dir(arguments);
+        console.dir.apply(console, arguments);
     }
 
     $data.trace = debugTraceConsole;

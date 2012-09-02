@@ -22,6 +22,7 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
                         //complex type
                         builder.selectModelBinderProperty(prop.name);
                         builder.modelBinderConfig['$type'] = Container.resolveType(prop.dataType);
+                        
                         if (this._isoDataProvider) {
                             builder.modelBinderConfig['$selector'] = ['json:' + prop.name + '.results', 'json:' + prop.name];
                         } else {
@@ -85,10 +86,27 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
                 /*builder.modelBinderConfig[ct.FromPropertyName] = {};
                 builder.modelBinderConfig[ct.FromPropertyName].$type = ct.ToType;
                 builder.modelBinderConfig[ct.FromPropertyName].$source = ct.FromPropertyName;*/
-                $data.typeSystem.extend(builder.modelBinderConfig, {
-                    $type: ct.ToType,
-                    $source: ct.FromPropertyName
-                });
+                if (dt === $data.Array && et === $data.ObjectID){
+                    $data.typeSystem.extend(builder.modelBinderConfig, {
+                        $type: $data.Array,
+                        $selector: 'json:' + ct.FromPropertyName,
+                        $item: {
+                            $type: $data.ObjectID,
+                            $value: function(meta, data){
+                                var type = Container.resolveName(meta.$type);
+                                var converter = this.context.storageProvider.fieldConverter.fromDb;
+                                var converterFn = converter ? converter[type] : undefined;
+                                
+                                return converter && converter[type] ? converter[type](data) : new (Container.resolveType(type))(data);
+                            }
+                        }
+                    });
+                }else{
+                    $data.typeSystem.extend(builder.modelBinderConfig, {
+                        $type: ct.ToType,
+                        $source: ct.FromPropertyName
+                    });
+                }
             }
         }
     },
@@ -143,6 +161,7 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
         var type = Container.resolveType(expression.memberDefinition.type);
         var elementType = type === $data.Array && expression.memberDefinition.elementType ? Container.resolveType(expression.memberDefinition.elementType) : undefined;
         builder.modelBinderConfig['$type'] = type;
+        
         if (type === $data.Array && elementType && elementType.isAssignableTo && elementType.isAssignableTo($data.Entity)){
             this._addComplexType(expression.memberDefinition.storageModel.ComplexTypes[expression.memberName], builder);
         }else{
@@ -816,7 +835,7 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
         var self = this;
         callBack = $data.typeSystem.createCallbackSetting(callBack);
         
-        this.entitySet = query.context.getEntitySetFromElementType(query.defaultType);
+        var entitySet = query.context.getEntitySetFromElementType(query.defaultType);
         new $data.storageProviders.mongoDB.mongoDBCompiler().compile(query);
         
         var server = this._getServer();
@@ -826,7 +845,7 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                 return;
             }
             
-            var collection = new self.driver.Collection(client, self.entitySet.tableName);
+            var collection = new self.driver.Collection(client, entitySet.tableName);
             var find = query.find;
 
             var cb = function(error, results){
@@ -893,7 +912,17 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                     if (p.concurrencyMode === $data.ConcurrencyMode.Fixed){
                         d.data[p.name] = 0;
                     }else if (!p.computed){
-                        d.data[p.name] = self._typeFactory(p.type, d.data[p.name], self.fieldConverter.toDb);//self.fieldConverter.toDb[Container.resolveName(Container.resolveType(p.type))](d.data[p.name]);
+                        if (Container.resolveType(p.type) === $data.Array && p.elementType && Container.resolveType(p.elementType) === $data.ObjectID){
+                            d.data[p.name] = self._typeFactory(p.type, d.data[p.name], self.fieldConverter.toDb);
+                            var arr = d.data[p.name];
+                            if (arr){
+                                for (var k = 0; k < arr.length; k++){
+                                    arr[k] = self._typeFactory(p.elementType, arr[k], self.fieldConverter.toDb);
+                                }
+                            }
+                        }else{
+                            d.data[p.name] = self._typeFactory(p.type, d.data[p.name], self.fieldConverter.toDb);//self.fieldConverter.toDb[Container.resolveName(Container.resolveType(p.type))](d.data[p.name]);
+                        }
                         if (d.data[p.name] && d.data[p.name].initData) d.data[p.name] = d.data[p.name].initData;
                     }else if (typeof d.data[p.name] === 'string'){
                         d.data['_id'] = self._typeFactory(p.type, d.data[p.name], self.fieldConverter.toDb);
@@ -955,7 +984,17 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                         set.$inc[p.name] = 1;
                     }else if (!p.computed){
                         if (typeof u.entity[p.name] === 'undefined') continue;
-                        set[p.name] = self._typeFactory(p.type, u.entity[p.name], self.fieldConverter.toDb); //self.fieldConverter.toDb[Container.resolveName(Container.resolveType(p.type))](u.entity[p.name]);
+                        if (Container.resolveType(p.type) === $data.Array && p.elementType && Container.resolveType(p.elementType) === $data.ObjectID){
+                            set[p.name] = self._typeFactory(p.type, u.entity[p.name], self.fieldConverter.toDb);
+                            var arr = set[p.name];
+                            if (arr){
+                                for (var k = 0; k < arr.length; k++){
+                                    arr[k] = self._typeFactory(p.elementType, arr[k], self.fieldConverter.toDb);
+                                }
+                            }
+                        }else{
+                            set[p.name] = self._typeFactory(p.type, u.entity[p.name], self.fieldConverter.toDb); //self.fieldConverter.toDb[Container.resolveName(Container.resolveType(p.type))](u.entity[p.name]);
+                        }
                     }
                 }
                 
@@ -1018,13 +1057,13 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                 var props = Container.resolveType(r.type).memberDefinitions.getPublicMappedProperties();
                 for (var j = 0; j < props.length; j++){
                     var p = props[j];
-                    if (!p.computed){
+                    if (!p.computed) {
                         r.data[p.name] = self.fieldConverter.toDb[Container.resolveName(Container.resolveType(p.type))](r.data[p.name]);
                         if (typeof r.data[p.name] === 'undefined') delete r.data[p.name];
                     }
 
                     //TODO:
-                    if (!p.concurrencyMode === $data.ConcurrencyMode.Fixed) delete r.data[p.name];
+                    if (!(p.concurrencyMode === $data.ConcurrencyMode.Fixed)) delete r.data[p.name];
                 }
                 
                 collection.remove(r.data, { safe: true }, function(error, result){
@@ -1150,7 +1189,7 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
         return serializableObject;
     },
     
-    supportedDataTypes: { value: [$data.Integer, $data.String, $data.Number, $data.Blob, $data.Boolean, $data.Date, $data.ObjectID, $data.Object], writable: false },
+    supportedDataTypes: { value: [$data.Integer, $data.String, $data.Number, $data.Blob, $data.Boolean, $data.Date, $data.ObjectID, $data.Object, $data.Geography], writable: false },
     
     supportedBinaryOperators: {
         value: {
@@ -1336,7 +1375,8 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                 '$data.Blob': function (blob) { return blob; },
                 '$data.Object': function (o) { if (o === undefined) { return new $data.Object(); } return o; },
                 '$data.Array': function (o) { if (o === undefined) { return new $data.Array(); } return o; },
-                '$data.ObjectID': function(id){ return id ? new Buffer(id.toString(), 'ascii').toString('base64') : id; }
+                '$data.ObjectID': function (id) { return id ? new Buffer(id.toString(), 'ascii').toString('base64') : id; },
+                '$data.Geography': function (g) { if (g === undefined) { return new $data.Geography(); } return new $data.Geography(g[0], g[1]); }
             },
             toDb: {
                 '$data.Integer': function (number) { return number; },
@@ -1359,7 +1399,8 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                 '$data.Blob': function (blob) { return blob; },
                 '$data.Object': function (o) { return o; },
                 '$data.Array': function (o) { return o; },
-                '$data.ObjectID': function(id){ return id && typeof id === 'string' ? new $data.mongoDBDriver.ObjectID.createFromHexString(new Buffer(id, 'base64').toString('ascii')) : id; }
+                '$data.ObjectID': function (id) { return id && typeof id === 'string' ? new $data.mongoDBDriver.ObjectID.createFromHexString(new Buffer(id, 'base64').toString('ascii')) : id; },
+                '$data.Geography': function (g) { return g ? [g.longitude, g.latitude] : g; }
             }
         }
     }
@@ -1376,14 +1417,14 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
 if ($data.storageProviders.mongoDB.mongoDBProvider.isSupported){
     $data.StorageProviderBase.registerProvider('mongoDB', $data.storageProviders.mongoDB.mongoDBProvider);
 }
-if (typeof navigator === 'undefined') navigator = window.navigator = require('navigator');
+try { if (typeof navigator === 'undefined') navigator = window.navigator = require('navigator'); }catch(err){}
 if (typeof btoa === 'undefined') btoa = window.btoa = function(buffer){ return new Buffer(buffer, 'ascii').toString('base64'); };
 
 $data.Class.define('$data.storageProviders.mongoDB.mongoDBProvider.ClientObjectID', null, null, {
     constructor: function(){
         var time = Math.floor(new Date().getTime() / 1000).toString(16);
         
-        var b64ua = btoa(navigator.userAgent);
+        var b64ua = btoa(navigator ? navigator.userAgent : 'nodejs');
         var machine = (b64ua.charCodeAt(0) + b64ua.charCodeAt(1)).toString(16) + (b64ua.charCodeAt(2) + b64ua.charCodeAt(3)).toString(16) + (b64ua.charCodeAt(4) + b64ua.charCodeAt(5)).toString(16);
         
         var pid = ('0000' + Math.floor(Math.random() * 0xffff).toString(16)).slice(-4);

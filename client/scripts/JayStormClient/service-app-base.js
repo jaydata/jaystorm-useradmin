@@ -6,16 +6,47 @@
  * To change this template use File | Settings | File Templates.
  */
 $data.Base.extend("$data.JayStormUI.AdminModel",  {
-    constructor: function( apiContextFactory ) {
+    constructor: function (application) {
+
+        var apiContextFactory = application.currentAppDBContextFactory;
+
+
+        console.log("admin context:" + this.getType().fullName + " starting");
         var self = this;
 
-        var factory = apiContextFactory ;
+        self.application = application;
 
-        self.show = function() {
-            self.context( factory() );
+        self.context = ko.observable();
+
+        if (apiContextFactory()) {
+            self.context(apiContextFactory()());
+        }
+
+        self.contextFactory = apiContextFactory;
+
+        self.contextFactory.subscribe(function (value) {
+            self.context(value());
+        });
+
+        self.createContext = function () {
+            if (self.contextFactory()) {
+                return self.contextFactory()();
+            }
+            return null;
+        }
+
+
+        //var factory = apiContextFactory ;
+
+        self.show = function () {
+            if (self.contextFactory()) {
+                self.context( self.createContext() );
+            }
+            self.visible(true);
         };
 
-        self.hide = function() {
+        self.hide = function () {
+            self.visible(false);
             self.context ( null );
         }
 

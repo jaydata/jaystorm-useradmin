@@ -1,9 +1,33 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
 
-    constructor: function() {
+    constructor: function () {
+        ///gets an ApplicationDB contexFactory
+        ///lists databases 
         var self = this;
-        self.databases = ['/db','/db2'];
+
+        //self.databases = ['/db','/db2'];
+
         self.visible = ko.observable(false);
+        self.databases = ko.observableArray([]);
+
+        function initState(cf) {
+            console.log("db init state", self.application.currentApplication().url);
+            var c = cf();
+            self.databases.removeAll();
+            c.Databases.forEach(function (db) {
+                var appUrl = self.application.currentApplication().url;
+                appUrl = appUrl + "/" + db.Name;
+                self.databases.push(appUrl);
+            });
+        }
+
+        self.contextFactory.subscribe(function (value) {
+            initState(value);
+        });
+
+        if (self.contextFactory()) {
+            initState(self.contextFactory());
+        }
 
         self.show = function() {
             self.visible(true);
@@ -13,28 +37,29 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
             self.visible(false);
         };
 
-        self.factory = ko.observable();
+        self.dbContextFactory = ko.observable();
+        self.dbContext = ko.observable();
+        self.dbContextFactory.subscribe(function (value) {
+            self.dbContext(value());
+        });
+
 
         self.serviceUrlSelected = ko.observable();
         self.serviceUrlSelected.subscribe( function( value ) {
             $data.MetadataLoader.load(value, function(factory) {
-                self.factory(factory);
+                self.dbContextFactory(factory);
             });
         })
 
-        self.context = ko.observable();
 
-        self.factory.subscribe( function(value) {
-            self.context( value() );
-        });
 
 
         self.entitySets = ko.computed( function() {
             var result = [];
-            for(var name in this.context()) {
+            for (var name in this.dbContext()) {
                 //do not filter for ownProperties - they are not own
-                if (this.context()[name] instanceof $data.EntitySet) {
-                    result.push(this.context()[name]);
+                if (this.dbContext()[name] instanceof $data.EntitySet) {
+                    result.push(this.dbContext()[name]);
                 }
             }
             return result;

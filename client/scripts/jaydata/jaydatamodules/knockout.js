@@ -142,7 +142,7 @@
 					if (allBindings['optionsCaption']) {
 						var option = document.createElement("option");
 						ko.utils.setHtml(option, allBindings['optionsCaption']);
-						ko.selectExtensions.writeValue(option, allBindings['optionsCaptionValue']);
+						ko.selectExtensions.writeValue(option, allBindings['optionsCaptionValue'] || undefined);
 						element.appendChild(option);
 					}
 					for (var i = 0, j = value.length; i < j; i++) {
@@ -372,11 +372,9 @@
                 ObservableFactory(type, observableTypeName);
             }
             var observableType = Container.resolveType(observableTypeName);
-            if (!observableType) {
-                if(observableType.isAssignableTo && !observableType.isAssignableTo(type)){
-                    ObservableFactory(type, observableTypeName);
-                    observableType = Container.resolveType(observableTypeName);
-                }
+
+            if(observableType.isAssignableTo && !observableType.isAssignableTo(type)){
+                ObservableFactory(type, observableTypeName);
                 observableType = Container.resolveType(observableTypeName);
             }
 

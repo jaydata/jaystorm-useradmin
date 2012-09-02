@@ -1,14 +1,34 @@
 $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
 
-    constructor: function( apiContextFactory )
+    constructor: function()
      {
 
          var self = this;
          self.allDatabases = ko.observableArray([]);
-        apiContextFactory().Databases.toArray(self.allDatabases);
+         self.allServices = ko.observableArray([]);
+
+         
+         //apiContextFactory().Databases.toArray(self.allDatabases);
         
-        self.allServices = ko.observableArray([]);
-        apiContextFactory().Services.toArray(self.allServices);
+         function initState(cf) {
+             var cntx = cf();
+             cntx.Databases.toArray(self.allDatabases);
+             cntx.Services.toArray(self.allServices);
+             self.context(cf());
+        }
+
+         self.contextFactory.subscribe(function (value) {
+             if (value) {
+                 initState(value);
+             }
+         });
+
+         if (self.contextFactory()) {
+             initState(self.contextFactory());
+        }
+
+        
+        
         
         self.allServices.subscribe(function(value){
             console.log(value);
