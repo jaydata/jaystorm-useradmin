@@ -9,6 +9,7 @@ require('q');
 
 
 var app = c();
+app.use(c.compress());
 
 app.use(c.query());
 app.use(function (req, res, next) {
@@ -27,8 +28,7 @@ app.use(function (req, res, next) {
 app.use(c.bodyParser());
 app.use(c.cookieParser());
 app.use(c.methodOverride());
-app.use(c.session({ secret: 'keyboard cat' }));
-
+//app.use(c.session({ secret: 'keyboard cat' }));
 app.use($data.JayService.Middleware.appID({ appid: '' }));
 app.use($data.JayService.Middleware.superadmin({ superadmin: true }));
 app.use($data.JayService.Middleware.databaseConnections({
@@ -38,7 +38,7 @@ app.use($data.JayService.Middleware.databaseConnections({
     }]
 }));
 
-app.use($data.JayService.Middleware.cache());
+//app.use($data.JayService.Middleware.cache());
 app.use(passport.initialize());
 
 app.use('/debug', function(req, res){
@@ -81,6 +81,17 @@ app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req
         responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
 }));
 
+
+var provSvc = require('./dbtypes/AWSBroker.js').serviceType;
+
+
+app.use("/stormaws", $data.JayService.OData.Utils.simpleBodyReader());
+app.use("/stormaws", $data.JayService.createAdapter(provSvc, function (req, res) {
+    return new provSvc({
+        name: "mongoDB", databaseName: "SystemDB",
+        responseLimit: -1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission
+    });
+}));
 /*app.use("/db2", $data.JayService.Middleware.cache());
 app.use("/db2", $data.JayService.Middleware.authentication());
 app.use("/db2", $data.JayService.Middleware.authorization());

@@ -8110,14 +8110,13 @@ JAYLINT = (function () {
 
             for (var i = 0, l = nameOrNamesArray.length; i < l; i++) {
                 var item = nameOrNamesArray[i];
+                //if short name is available create a convenience function
                 if (!(("create" + item.shortName) in self)) {
                     if (typeof factoryFunc === 'function') {
                         self["create" + item.shortName] = factoryFunc;
                     } else {
                         self["create" + item.shortName] = creatorFnc;
                     }
-                } else {
-                    if (console) { console.warn("warning: short names overlap:" + item.shortName + ", Container.create" + item.shortName + " has not been updated"); }
                 };
 
                 var typePos = classTypes.indexOf(type);

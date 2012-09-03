@@ -200,6 +200,7 @@
             <h1>Manage Users</h1>
             <div data-bind="if: Users">
                 <h4>Manage users</h4>
+                <a href="#" data-bind="click: stress">Click for 1000 rows</a>
                 <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                             fields: ['Login', 'FirstName','LastName','Enabled','Groups'] }">
                     <script type="text/html" data-name-template="Groups-editor">
