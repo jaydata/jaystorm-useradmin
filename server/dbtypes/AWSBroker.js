@@ -84,7 +84,15 @@ $data.Class.define("JayStorm.Provision.CuInventory", $data.Entity, null, {
 }, null);
 
 $data.Class.defineEx("JayStorm.Provision.Store", [$data.EntityContext, $data.ServiceBase], null, {
-    CuInventories: { type: $data.EntitySet, elementType: JayStorm.Provision.CuInventory }
+    CuInventories: { type: $data.EntitySet, elementType: JayStorm.Provision.CuInventory },
+
+    MyFunction: $data.JayService.serviceFunction()
+                                .param("a","number")
+                                .returns("number")
+                                (function (a) {
+                                    return a;
+                                })
+   
 });
 
 exports.serviceType = JayStorm.Provision.Store;
