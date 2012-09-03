@@ -98,7 +98,6 @@ $data.Base.extend('$data.JayStormUI.CodeMirror', {
 $data.Base.extend('$data.JayStormUI.CodeHighlight', {
     constructor: function(el, value){
         setTimeout(function(){
-            if (!value()) value('function(items){\n  // code here...\n}');
             CodeMirror.runMode(value(), 'text/javascript', document.getElementById(el));
         }, 1);
     }
