@@ -29,8 +29,12 @@ app.use(c.cookieParser());
 app.use(c.methodOverride());
 app.use(c.session({ secret: 'keyboard cat' }));
 
-app.use($data.JayService.Middleware.appID({ appid: '' }));
-app.use($data.JayService.Middleware.superadmin({ superadmin: true }));
+app.use($data.JayService.Middleware.appID({ appid: '2e94391cd-7902-4c27-ab57-89b4dd2bdca7' }));
+//app.use($data.JayService.Middleware.superadmin({ superadmin: true }));
+app.use($data.JayService.Middleware.currentDatabase({
+    username: '5babb4f2-bd59-4096-bb5a-a249853fdb07',
+    password: '5ebd8d4d-9c40-4181-9e26-3c064be03fa7'
+}));
 app.use($data.JayService.Middleware.databaseConnections({
     ApplicationDB: [{
         address: '127.0.0.1',
@@ -39,7 +43,7 @@ app.use($data.JayService.Middleware.databaseConnections({
 }));
 
 app.use($data.JayService.Middleware.cache());
-app.use(passport.initialize());
+/*app.use(passport.initialize());
 
 app.use('/debug', function(req, res){
     res.write('DEBUG');
@@ -54,10 +58,10 @@ app.use('/logout', function(req, res){
         res.write('Logout was successful.');
     }else res.write('Logout failed.');
     res.end();
-});
+});*/
 
-app.use($data.JayService.Middleware.authentication());
-app.use($data.JayService.Middleware.authenticationErrorHandler);
+//app.use($data.JayService.Middleware.authentication());
+//app.use($data.JayService.Middleware.authenticationErrorHandler);
 
 //app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
 /*app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
@@ -77,7 +81,7 @@ var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
-    return new appdbSvc({name: "mongoDB", databaseName:"ApplicationDB",
+    return new appdbSvc({name: "mongoDB", databaseName: "2e94391cd-7902-4c27-ab57-89b4dd2bdca7_ApplicationDB", username: '5babb4f2-bd59-4096-bb5a-a249853fdb07', password: '5ebd8d4d-9c40-4181-9e26-3c064be03fa7',
         responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
 }));
 
