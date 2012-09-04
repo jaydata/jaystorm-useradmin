@@ -1,4 +1,6 @@
-$(function() {
+var globalAuthorization;
+
+$(function () {
 
     //$data.service('/db',
     //function (factory, type) {
@@ -22,6 +24,7 @@ $(function() {
                     if (xhr.status == 200) {
                         alert(xhr.responseText);
                         self.authorization(xhr.responseText);
+                        globalAuthorization = xhr.responseText;
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }

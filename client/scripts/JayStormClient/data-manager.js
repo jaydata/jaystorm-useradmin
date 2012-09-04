@@ -45,9 +45,20 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
 
 
         self.serviceUrlSelected = ko.observable();
-        self.serviceUrlSelected.subscribe( function( value ) {
-            $data.MetadataLoader.load(value, function(factory) {
-                self.dbContextFactory(factory);
+        self.serviceUrlSelected.subscribe(function (value) {
+            $data.MetadataLoader.load(value, function (factory) {
+                var appDBFactory = function () {
+                    var c = factory.apply({}, arguments);
+                    c.prepareRequest = function (req) {
+                        req[0].headers = req[0].headers || {};
+                        req[0].headers['X-Domain'] = 'jokerStorm';
+                        req[0].headers['Authorization'] = globalAuthorization;
+                    }
+                    return c;
+                }
+
+                self.dbContextFactory(appDBFactory);
+
             });
         })
 
