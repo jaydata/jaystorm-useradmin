@@ -63,8 +63,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
             name: 'Git URL',
             type: 'git'
         },*/ {
-            name: 'Script source',
+            name: 'Script',
             type: 'script'
+        }, {
+            name: 'Static',
+            type: 'static'
         }]);
      }
 });

@@ -361,11 +361,9 @@
                 
                 <script type="text/html" data-name-template="ServiceSource-editor">
                     <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
-                    <input type="text" data-bind="visible: owner.ServiceSourceType() == 'git', value: value"/>
                 </script>
                 
                 <script type="text/html" data-name-template="ServiceSource-display">
-                    <span data-bind="text: value, visible: owner.ServiceSourceType() == 'git'"></span>
                     <pre data-bind="visible: owner.ServiceSourceType() == 'script', attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
                 </script>
             </div>
