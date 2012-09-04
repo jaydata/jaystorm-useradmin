@@ -18,8 +18,13 @@ $(function() {
                 alert("could not connect to dashboard.jaystack.net for authorization");
             }
             xhr.onreadystatechange = function () {
-                if (xhr.status == 200 && xhr.readyState == 4) {
-                    self.authorization(xhr.responseText);
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        alert(xhr.responseText);
+                        self.authorization(xhr.responseText);
+                    } else {
+                        alert("not ok (200) response from getAuthorization:" + xhr.responseText);
+                    }
                 }
             }
             xhr.send();

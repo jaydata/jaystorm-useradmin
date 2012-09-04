@@ -4,6 +4,7 @@ require('jaydata');
 require('q');
 var app = c();
 app.use(c.query());
+app.use(c.logger());
 app.use(function (req, res, next) {
 
     res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
