@@ -94,6 +94,11 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
     _loadXMLDoc: function (cnf, callback) {
         var xhttp = new XMLHttpRequest();
         xhttp.open("GET", cnf.metadataUri, true, cnf.user, cnf.password);
+        if (cnf.httpHeaders) {
+            Object.keys(cnf.httpHeaders).forEach(function (header) {
+                xhttp.setRequestHeader(header, cnf.httpHeaders[header]);
+            });
+        }
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState === 4) {
                 callback(xhttp.responseXML);

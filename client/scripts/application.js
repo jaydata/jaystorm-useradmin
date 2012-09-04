@@ -47,7 +47,7 @@ $(function() {
                     return c;
                 }
                 self.currentAppDBContextFactory(appDBFactory);
-            });
+            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } });
         });
 
         self.currentAppDBContextFactory = ko.observable();

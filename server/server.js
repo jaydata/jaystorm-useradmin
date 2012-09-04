@@ -192,7 +192,7 @@ app.use('/logout', function(req, res){
 });
 
 app.use('/getAuthorization', function (req, res) {
-
+    res.setHeader("Content-Type", "text/plain;charset=UTF-8");
     res.end(req.headers.Authorization || req.headers.authorization);
 })
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
