@@ -274,6 +274,6 @@ app.use('/eval', function(req, res){
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
 c.errorHandler.title = 'JayStorm API';
-app.listen(8181);
+app.listen(80);
 //console.log(app);
 console.log("end");

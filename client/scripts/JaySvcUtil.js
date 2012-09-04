@@ -6,7 +6,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             EntityBaseClass: '$data.Entity',
             ContextBaseClass: '$data.EntityContext',
             AutoCreateContext: true,
-            DefaultNamespace: metadataUri.replace("http://","").replace("/","_").replace("/","_").replace(".","_").replace(".","_").replace(".","_").replace(":","_"),
+            DefaultNamespace: metadataUri.replace("http://","").replace("/","_").replace("/","_").replace(".","_").replace(".","_").replace(".","_").replace(":","_").replace(/\d/g,"").replace(/-/g,""),
             ContextInstanceName: 'context',
             EntitySetBaseClass: '$data.EntitySet',
             CollectionBaseClass: 'Array',
