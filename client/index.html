@@ -425,7 +425,7 @@
 
             <div data-bind="jayGrid: {source: context().Permissions,
                                            fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
-                                          refresher: $root.rf }l">
+                                          refresher: $root.rf }">
 
                 <script type="text/html" data-name-template="DatabaseID-display">
                     <span data-bind="readValue: { source: $root.context().Databases, key: value, field: 'Name' }"></span>
