@@ -10,16 +10,43 @@ $(function() {
     function ClientApplication() {
         var self = this;
         
-        self.applications = [{ title: 'App1', url: 'http://jay.local:2001' },
-                        { title: 'App2', url: 'http://jay.local:2002' },
-                        { title: 'MainApp', url: ' http://jay.local:8181' }];
-
-
-
+        self.authorization = ko.observable();
+        function getAuthroization() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "getAuthorization", true);
+            xhr.onerror = function () {
+                alert("could not connect to dashboard.jaystack.net for authorization");
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.status == 200 && xhr.readyState == 4) {
+                    self.authorization(xhr.responseText);
+                }
+            }
+            xhr.send();
+        }
+        getAuthroization();
+        self.applications = ko.observableArray([]);
         self.currentApplication = ko.observable();
+        self.applicationToAdd = ko.observable();
+
+        self.addApp = function () {
+            value = self.applicationToAdd();
+            self.applications.push({ url: value, title: value });
+            self.applicationToAdd(null);
+        }
+
         self.currentApplication.subscribe(function (value) {
             $data.service(value.url.trim() + "/ApplicationDB", function (factory) {
-                self.currentAppDBContextFactory(factory);
+                var appDBFactory = function () {
+                    var c = factory.apply({}, arguments);
+                    c.prepareRequest = function (req) {
+                        req[0].headers = req[0].headers || {};
+                        req[0].headers['X-Domain'] = 'jokerStorm';
+                        req[0].headers['Authorization'] = self.authorization();
+                    }
+                    return c;
+                }
+                self.currentAppDBContextFactory(appDBFactory);
             });
         });
 

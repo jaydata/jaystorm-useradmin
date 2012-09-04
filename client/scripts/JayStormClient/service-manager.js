@@ -59,10 +59,10 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
             }, 1);
         };
         
-        self.serviceSourceTypes = ko.observableArray([{
+        self.serviceSourceTypes = ko.observableArray([/*{
             name: 'Git URL',
             type: 'git'
-        }, {
+        },*/ {
             name: 'Script source',
             type: 'script'
         }]);

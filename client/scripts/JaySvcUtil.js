@@ -133,6 +133,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
                     xslproc.addParameter('ContextInstanceName', cnf.ContextInstanceName);
                     xslproc.addParameter('EntitySetBaseClass', cnf.EntitySetBaseClass);
                     xslproc.addParameter('CollectionBaseClass', cnf.CollectionBaseClass);
+                    xslproc.addParameter('DefaultNamespace', cnf.DefaultNamespace);
 
 
                     xslproc.transform();
@@ -173,7 +174,8 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
                 'AutoCreateContext', "'" + cnf.AutoCreateContext + "'",
                 'ContextInstanceName', "'" + cnf.ContextInstanceName + "'",
                 'EntitySetBaseClass', "'" + cnf.EntitySetBaseClass + "'",
-                'CollectionBaseClass', "'" + cnf.CollectionBaseClass + "'"
+                'CollectionBaseClass', "'" + cnf.CollectionBaseClass + "'",
+                'DefaultNamespace', "'" + cnf.DefaultNamespace + "'"
             ]);
         }
     },

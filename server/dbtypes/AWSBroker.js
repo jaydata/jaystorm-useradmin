@@ -90,7 +90,16 @@ $data.Class.defineEx("JayStorm.Provision.Store", [$data.EntityContext, $data.Ser
                                 .param("a","number")
                                 .returns("number")
                                 (function (a) {
-                                    return a;
+                                    var self = this;
+                                    return function (result, error) {
+                                        console.log(this);
+                                        self.CuInventories.add({ Type: 'adsasdasd' });
+                                        self.saveChanges().then(function () {
+                                            this.success(a);
+                                        }).fail(function() {
+                                            this.successerror("!");
+                                        });
+                                    }
                                 })
    
 });
