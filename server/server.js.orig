@@ -1,17 +1,15 @@
 process.env.NODE_ENV = 'test';
-
-//require('connect');
 var c = require('express');
 var passport = require('passport');
 require('jaydata');
 require('q');
 var uuid = require('node-uuid');
+var BasicStrategy = require('passport-http').BasicStrategy;
 var fs = require('fs');
 var util = require('util');
 var childProc = require('child_process');
-//require('./contextapi-api.js');
+var http = require('https');
 
-// Settings
 var settings = {
     node_port: process.argv[2] || 3000,
     uploadpath: __dirname + '/uploads/',
@@ -19,10 +17,49 @@ var settings = {
     file2Extract: __dirname + '/uploads/package2'
 };
 
+passport.use(new BasicStrategy({
+},
+  function (username, password, done) {
+
+      process.nextTick(function () {
+          var get_options = {
+              host: 'dashboard.jaystack.com',
+              port: 443,
+              path: '/auth.axd',
+              method: 'GET',
+              headers: {
+                  Authorization: 'Basic ' + new Buffer(username + ":" + password).toString('base64')
+              }
+          };
+
+          //console.dir(get_options);
+          var webReq = http.request(get_options, function (res) {
+              console.log("auth1");
+              res.setEncoding('utf8');
+              if (res.statusCode == 200) {
+                  console.log("auth2");
+                  done(null, { 'username': username, 'email': password });
+              } else {
+                  console.log("auth3");
+                  done(null, null);
+              }
+
+          });
+          webReq.end();
+          console.log("auth-1");
+          //console.dir(req);
+      });
+  }
+));
+
 var app = c();
 app.use(c.compress());
 
 app.use(c.query());
+app.use(c.bodyParser());
+app.use(c.cookieParser());
+app.use(c.methodOverride());
+
 app.use(function (req, res, next) {
 
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -36,6 +73,38 @@ app.use(function (req, res, next) {
         next();
     }
 });
+<<<<<<< HEAD
+passport.serializeUser(function (user, done) {
+    console.log("serialize user:" + user.username);
+    done(null, user.username);
+});
+
+passport.deserializeUser(function (username, done) {
+    console.log("deserialize user");
+    done(null, { username: username, email: 'foobar' });
+});
+
+app.use(c.bodyParser());
+
+app.use(c.cookieParser());
+app.use(c.session({ secret: 'keyboard cat' }));
+app.use(c.methodOverride());
+app.use($data.JayService.OData.Utils.simpleBodyReader());
+=======
+//passport.serializeUser(function (user, done) {
+//    done(null, user.username);
+//});
+
+//passport.deserializeUser(function (username, done) {
+        
+//        done(err, user);
+//});
+>>>>>>> c1293c009295e3abbe6491043678a3c3753f3fb7
+app.use(passport.initialize());
+app.use(passport.authenticate('basic', { session: false }));
+
+app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
+
 
 // Route that takes the post upload request and sends the server response
 app.post('/fileUpload', function(req, res) {
@@ -139,39 +208,10 @@ var moveFile = function(source, dest, callback) {
     });
 };
 
-app.use(c.bodyParser());
-app.use(c.cookieParser());
-app.use(c.methodOverride());
-//app.use(c.session({ secret: 'keyboard cat' }));
+<<<<<<< HEAD
 
-app.use($data.JayService.Middleware.appID({ appid: '' }));
-app.use($data.JayService.Middleware.superadmin({ superadmin: true }));
-app.use($data.JayService.Middleware.databaseConnections({
-    ApplicationDB: [{
-        address: '127.0.0.1',
-        port: 27017
-    }]
-}));
-
-app.use($data.JayService.Middleware.cache());
-/*app.use(passport.initialize());
-
-//app.use(c.session({ secret: 'keyboard cat' }));
-
-//app.use($data.JayService.Middleware.appID({ appid: '' }));
-//app.use($data.JayService.Middleware.superadmin({ superadmin: true }));
-//app.use($data.JayService.Middleware.databaseConnections({
-//    ApplicationDB: [{
-//        address: '127.0.0.1',
-//        port: 27017
-//    }]
-//}));
-
-
-//app.use($data.JayService.Middleware.cache());
-app.use(passport.initialize());
-
-
+=======
+>>>>>>> c1293c009295e3abbe6491043678a3c3753f3fb7
 app.use('/debug', function(req, res){
     res.write('DEBUG');
     res.end();
@@ -187,20 +227,13 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
-
-
-
-//app.use($data.JayService.Middleware.authentication());
-//app.use($data.JayService.Middleware.authenticationErrorHandler);
-
-//app.use($data.JayService.Middleware.ensureAuthenticated({ message: 'JayStorm API' }));
-/*app.use($data.JayService.Middleware.authorization({ databaseName: 'ApplicationDB' }));*/
-
-
-
+app.use('/getAuthorization', function (req, res) {
+    res.setHeader("Content-Type", "text/plain;charset=UTF-8");
+    res.end(req.headers.Authorization || req.headers.authorization);
+})
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
 
-app.use("/dbz", $data.JayService.OData.Utils.simpleBodyReader());
+//app.use("/dbz", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
     return new db2Svc({
         name: "mongoDB", databaseName: "ApplicationDBX",
@@ -210,12 +243,9 @@ app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
 var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 
-app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
+//app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
-    return new appdbSvc({name: "mongoDB", databaseName:"ApplicationDB",
-
-
-        responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
+    return new appdbSvc({ name: "mongoDB", databaseName: "ApplicationDB"  });
 }));
 
 
@@ -279,6 +309,6 @@ app.use('/eval', function(req, res){
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
 c.errorHandler.title = 'JayStorm API';
-app.listen(8181);
+app.listen(8000);
 //console.log(app);
 console.log("end");

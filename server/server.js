@@ -65,17 +65,26 @@ app.use(function (req, res, next) {
         next();
     }
 });
-//passport.serializeUser(function (user, done) {
-//    done(null, user.username);
-//});
+passport.serializeUser(function (user, done) {
+    console.log("serialize user:" + user.username);
+    done(null, user.username);
+});
 
-//passport.deserializeUser(function (username, done) {
-        
-//        done(err, user);
-//});
+passport.deserializeUser(function (username, done) {
+    console.log("deserialize user");
+    done(null, { username: username, email: 'foobar' });
+});
+
+app.use(c.bodyParser());
+
+app.use(c.cookieParser());
+app.use(c.session({ secret: 'keyboard cat' }));
+app.use(c.methodOverride());
+app.use($data.JayService.OData.Utils.simpleBodyReader());
 app.use(passport.initialize());
 app.use(passport.authenticate('basic', { session: false }));
-//app.get('/getAuthorization', passport.authenticate('basic', { session: false }));
+
+app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
 
 
 // Route that takes the post upload request and sends the server response
@@ -180,9 +189,6 @@ var moveFile = function(source, dest, callback) {
     });
 };
 
-app.use(c.bodyParser());
-app.use(c.cookieParser());
-app.use(c.methodOverride());
 
 app.use('/debug', function(req, res){
     res.write('DEBUG');
@@ -205,7 +211,7 @@ app.use('/getAuthorization', function (req, res) {
 })
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
 
-app.use("/dbz", $data.JayService.OData.Utils.simpleBodyReader());
+//app.use("/dbz", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
     return new db2Svc({
         name: "mongoDB", databaseName: "ApplicationDBX",
@@ -215,7 +221,7 @@ app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
 var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 
-app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
+//app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
     return new appdbSvc({ name: "mongoDB", databaseName: "ApplicationDB"  });
 }));
