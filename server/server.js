@@ -33,20 +33,16 @@ passport.use(new BasicStrategy({
           };
 
           //console.dir(get_options);
-          var webReq = http.request(get_options, function (res) {
-              console.log("auth1");
+          var req = http.request(get_options, function (res) {
               res.setEncoding('utf8');
               if (res.statusCode == 200) {
-                  console.log("auth2");
                   done(null, { 'username': username, 'email': password });
               } else {
-                  console.log("auth3");
                   done(null, null);
               }
 
           });
-          webReq.end();
-          console.log("auth-1");
+          req.end();
           //console.dir(req);
       });
   }

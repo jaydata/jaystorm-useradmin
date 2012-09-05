@@ -16,7 +16,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
             self.databases.removeAll();
             c.Databases.forEach(function (db) {
                 var appUrl = self.application.currentApplication().url;
-                appUrl = appUrl + "/" + db.Name;
+                appUrl = appUrl + db.Name;
                 self.databases.push(appUrl);
             });
         }
