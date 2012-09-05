@@ -25,6 +25,10 @@ $(function () {
                         alert(xhr.responseText);
                         self.authorization(xhr.responseText);
                         globalAuthorization = xhr.responseText;
+                        var app = { url: window.location.href, title: window.location.href };
+                        self.applications.push(app);
+                        self.currentApplication(app);
+
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }
@@ -36,7 +40,6 @@ $(function () {
         self.applications = ko.observableArray([]);
         self.currentApplication = ko.observable();
         self.applicationToAdd = ko.observable();
-
         self.addApp = function () {
             value = self.applicationToAdd();
             self.applications.push({ url: value, title: value });
@@ -44,7 +47,7 @@ $(function () {
         }
 
         self.currentApplication.subscribe(function (value) {
-            $data.service(value.url.trim() + "/ApplicationDB", function (factory) {
+            $data.service(value.url.trim() + "ApplicationDB", function (factory) {
                 var appDBFactory = function () {
                     var c = factory.apply({}, arguments);
                     c.prepareRequest = function (req) {

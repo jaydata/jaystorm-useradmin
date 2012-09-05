@@ -65,6 +65,14 @@ app.use(function (req, res, next) {
         next();
     }
 });
+//passport.serializeUser(function (user, done) {
+//    done(null, user.username);
+//});
+
+//passport.deserializeUser(function (username, done) {
+        
+//        done(err, user);
+//});
 app.use(passport.initialize());
 app.use(passport.authenticate('basic', { session: false }));
 //app.get('/getAuthorization', passport.authenticate('basic', { session: false }));
@@ -209,8 +217,7 @@ var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
 
 app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
-    return new appdbSvc({name: "mongoDB", databaseName:"ApplicationDB",
-        responseLimit:-1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission });
+    return new appdbSvc({ name: "mongoDB", databaseName: "ApplicationDB"  });
 }));
 
 
@@ -274,6 +281,6 @@ app.use('/eval', function(req, res){
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
 c.errorHandler.title = 'JayStorm API';
-app.listen(80);
+app.listen(8000);
 //console.log(app);
 console.log("end");

@@ -29,14 +29,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
             initState(self.contextFactory());
         }
 
-        self.show = function() {
-            self.visible(true);
-        };
-
-        self.hide = function() {
-            self.visible(false);
-        };
-
         self.dbContextFactory = ko.observable();
         self.dbContext = ko.observable();
         self.dbContextFactory.subscribe(function (value) {

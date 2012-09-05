@@ -8,17 +8,15 @@
 (function ($data) {
 
     $data.jayGrid = $data.jayGrid || {};
+
     window['GroupEditor'] = function (viewModel) {
         var self = this;
         console.dir("groupEditor created");
         $data.typeSystem.extend(this, viewModel);
         self.Groups = ko.observableArray([]);
-        console.log(viewModel.context().Groups);
-        console.dir(viewModel);
+
         var currentList = self.value() || [];
         viewModel.context().Groups.forEach(function (item) {
-            
-
             item.selected = ko.observable(currentList.indexOf(item.GroupID) > -1);
             item.selected.subscribe(function (value) {
                 var list = self.value() || [];
@@ -30,10 +28,10 @@
                 self.value(list);
             });
             self.Groups.push(item);
-            //self.Groups.
         });
 
     };
+
     var templateEngine = new ko.nativeTemplateEngine();
 
     var i = 0;
@@ -304,21 +302,21 @@
 
                 self.removeAll = function() {
                     var entitySet = ko.utils.unwrapObservable(self.source);
-//                    es.removeAll( function() {
-//                        alert("removed!");
-//                    })
+                    entitySet.removeAll(function () {
+                        self.refresh(Math.random());
+                    })
 
-                    var keyname = entitySet.defaultType.memberDefinitions.getKeyProperties()[0].name;
-                    entitySet.map("it." + keyname).toArray(function(ids) {
-                        ids.forEach( function(id) {
-                            var obj = { };
-                            obj[keyname] = id;
-                            entitySet.remove(obj);
-                        });
-                        entitySet.entityContext.saveChanges( function() {
-                            self.refresh(Math.random());
-                        })
-                    });
+                    //var keyname = entitySet.defaultType.memberDefinitions.getKeyProperties()[0].name;
+                    //entitySet.map("it." + keyname).toArray(function(ids) {
+                    //    ids.forEach( function(id) {
+                    //        var obj = { };
+                    //        obj[keyname] = id;
+                    //        entitySet.remove(obj);
+                    //    });
+                    //    entitySet.entityContext.saveChanges( function() {
+                    //        self.refresh(Math.random());
+                    //    })
+                    //});
                     //alert("it." + );
                 };
 
@@ -330,23 +328,6 @@
 
 
                     self.extendItem(o);
-                    //o.getColumns = function() {
-                    //    var result = [];
-                    //    for (var i = 0; i < self.columns().length; i++) {
-                    //        var col = {
-                    //            rowIndex: idx,
-                    //            columnIndex: i,
-                    //            value: this[self.columns()[i].name],
-                    //            name: self.columns()[i].name,
-                    //            metadata: self.columns()[i],
-                    //            owner: this,
-                    //            itemCommands: itemCommands
-                    //        }
-                    //        result.push(col);
-                    //    }
-                    //    return result;
-                    //}
-
 
                     var v = ko.utils.unwrapObservable(self.discriminatorValue),
                         f = ko.utils.unwrapObservable(self.discriminatorColumn);
@@ -480,7 +461,6 @@
                 }
 
                 self.extendItem = function (koItem) {
-                    console.log("extending item");
                     koItem.getColumns = getKoItemColumns;
                     var koCells = ko.observableArray([]);
                     koItem.getControlCells = koCells;
@@ -514,7 +494,6 @@
                     }
 
                     if (self.itemExtender) {
-                        console.log("external extender");
                         self.itemExtender( koItem );
                     }
                 }

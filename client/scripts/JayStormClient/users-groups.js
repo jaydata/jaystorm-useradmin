@@ -32,16 +32,16 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
         }
         //override base show
         self.show = function () {
-            self.context(self.createContext());
-            self.Users(self.createContext().Users);
-            self.Groups(self.createContext().Groups);
+            //self.context(self.createContext());
+            //self.Users(self.createContext().Users);
+            //self.Groups(self.createContext().Groups);
             self.visible(true);
         };
 
         self.hide = function () {
             self.visible(false);
-            self.Users(null);
-            self.Groups(null);
+            //self.Users(null);
+            //self.Groups(null);
         }
 
         self.extendUserItem = function (koItem) {

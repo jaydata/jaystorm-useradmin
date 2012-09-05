@@ -39,15 +39,15 @@ $data.Base.extend("$data.JayStormUI.AdminModel",  {
         //var factory = apiContextFactory ;
 
         self.show = function () {
-            if (self.contextFactory()) {
-                self.context( self.createContext() );
-            }
+            //if (self.contextFactory()) {
+            //    self.context( self.createContext() );
+            //}
             self.visible(true);
         };
 
         self.hide = function () {
             self.visible(false);
-            self.context ( null );
+            //self.context ( null );
         }
 
         self.context = ko.observable();

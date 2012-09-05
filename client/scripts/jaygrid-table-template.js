@@ -16,7 +16,7 @@ var templateList = [
                     <!-- ko if: showNewCommand -->                             \
                     <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
                      <!-- /ko --> \
-                    <!-- ko if: showRemoveAllCommand -->                             \
+                    <!-- ko if: showRemoveAllCommand && (itemCount() > 3) -->                             \
                     <a class='btn btn-danger' href='#' data-bind='click:removeAll'><i class='icon-trash icon-white'></i> Remove all</a>\
                      <!-- /ko --> \
                     <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges' />\
