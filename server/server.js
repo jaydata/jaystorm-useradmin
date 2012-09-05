@@ -50,7 +50,6 @@ passport.use(new BasicStrategy({
 
 var app = c();
 app.use(c.compress());
-
 app.use(c.query());
 app.use(function (req, res, next) {
 
@@ -69,22 +68,20 @@ passport.serializeUser(function (user, done) {
     console.log("serialize user:" + user.username);
     done(null, user.username);
 });
-
 passport.deserializeUser(function (username, done) {
     console.log("deserialize user");
     done(null, { username: username, email: 'foobar' });
 });
-
 app.use(c.bodyParser());
-
 app.use(c.cookieParser());
 app.use(c.session({ secret: 'keyboard cat' }));
 app.use(c.methodOverride());
 app.use($data.JayService.OData.Utils.simpleBodyReader());
-app.use(passport.initialize());
-app.use(passport.authenticate('basic', { session: false }));
 
-app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
+app.use('/getAuthorization', passport.initialize());
+app.use('/getAuthorization', passport.authenticate('basic', { session: false }));
+
+//app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
 
 
 // Route that takes the post upload request and sends the server response
