@@ -9,6 +9,7 @@
         <link href="styles/bootstrap.min.css" rel="stylesheet">
         <link href="styles/style.css" rel="stylesheet">
         <link href="styles/fileuploader.css" rel="stylesheet">
+
         <script src="/scripts/jquery-1.7.2.min.js"></script>
         <script src="/scripts/fileuploader.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
@@ -24,7 +25,7 @@
         <script src="scripts/jaygrid-table-template.js"></script>
         <script src="scripts/jaygrid.js"></script>
         <script src="scripts/jay-property-editor.js"></script>
-
+        
         <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
         <script src="scripts/JayStormClient/service-app-base.js"></script>
         <script src="scripts/JayStormClient/users-groups.js"></script>
@@ -53,6 +54,7 @@
         <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
         
         <script src="scripts/codemirror.js"></script>
+        <script src="scripts/iscroll.js"></script>
         
         <style type="text/css">
           .CodeMirror-fullscreen {
@@ -80,9 +82,67 @@
                 $parent.parent().find("li.active").removeClass("active");
                 $parent.addClass("active");
             });
+
+            var hScroll, vScrolls = [], currentId;
+            function loaded() {
+                // ISCROLL
+                var screens = document.getElementById('screens'),
+                    screenWidth = screens.children[0].offsetWidth,
+                    screenItems = screens.children.length,
+                    scroller = document.getElementById('scroller');
+
+                for (var i = 0; i < screenItems; i++) {
+                    currentId = "screen-" + (i + 1);
+                    screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
+
+                    // VERTICAL SCROLL
+                    vScrolls.push(new iScroll(currentId, {
+                        checkDOMChanges: true,
+                        hScroll: false,
+                        hScrollbar: false,
+                        vScroll: true,
+                        vScrollbar: true,
+                        lockDirection: true
+                    }));
+                }
+
+                scroller.style.width = (screenItems * screenWidth) + 'px';
+
+                // HORIZONTAL SCROLL
+                hScroll = new iScroll('wrapper', {
+                    checkDOMChanges: true,
+                    snap: 'li',
+                    momentum: false,
+                    hScroll: true,
+                    hScrollbar: false,
+                    vScroll: false,
+                    vScrollbar: false,
+                    lockDirection: true,
+                    onBeforeScrollEnd: function () {
+                        console.log('horizontal scroll - BeforeScrollEnd');
+                    },
+                    onScrollEnd: function () {
+                        console.log('horizontal scroll - ScrollEnd');
+                    }
+                });
+
+                // MENU ITEMS
+                var menuItems = document.body.querySelectorAll("ul.nav li a");
+                for (var i = 0; i < menuItems.length; i++) {
+                    menuItems[i].addEventListener("click", function () {
+                        var scrollTo = this.getAttribute("id");
+
+                        hScroll.scrollToPage(scrollTo, 200);
+                    }, false);
+                }
+            }
+
+            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+            document.addEventListener('DOMContentLoaded', loaded, false);
         </script>
     </head>
 <body>
+    <!-- HEADER -->
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div id="AppUI" class="navbar-inner">
             <div class="container">
@@ -96,394 +156,439 @@
 
                 <div class="nav-collapse collapse">
                     <ul class="nav" data-bind="foreach:menuItems">
-                        <li><a href="#" data-bind="click: $root.show, text: title"></a></li>
+                        <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
                     </ul>
                 </div>
             </div>
-            <div>
+            <div class="container">
                 <div data-bind="if :authorization">
-                    Application Selector <select data-bind="options: applications, 
-                                                            value: currentApplication, 
-                                                            optionsText: 'title',
-                                                            optionsCaption:'Select App To Manage'"></select>
+                    <form class="form-inline">
+                        <label>Application Selector:</label>
+                        <select data-bind="options: applications, 
+                                            value: currentApplication, 
+                                            optionsText: 'title',
+                                            optionsCaption:'Select App To Manage'"></select>
 
-                    App Url: <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" />
+                        <label>App Url:</label>
+                        <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
+                    </form>
                 </div>
                 <div data-bind="ifnot: authorization">
-                    Collecting apps and getting authorization... wait
+                    <p>Collecting apps and getting authorization. Please wait...</p>
                 </div>
             </div>
         </div>
-        
     </div>
+    <!-- HEADER -->
 
-    <div class="container first">
-        <div id="output"></div>
+    <!-- ISCROLL CONTAINER -->
+    <div id="wrapper" class="container first">
+        <div id="scroller">
+            
+            <div id="output"></div>
 
-        <script type="text/html" id="foobar">
-            <table class="table">
+            <script type="text/html" id="foobar">
+                <table class="table">
 
-            </table>
-        </script>
-
-
-        <div id="UserManagerUI" data-bind="if: visible">
-
-            <script type="text/html" id="GroupArrayEditor">
-                <div>
-                    <ul data-bind="foreach: Groups">
-                        <li>
-                            <span  data-bind="text: Name"></span>
-                            <input type="checkbox" data-bind="checked: selected"/>
-                        </li>
-                    </ul>
-                    <a href="#" data-bind="click: closeControlBox">close</a>
-                </div>
+                </table>
             </script>
 
-            <h1>Manage Users</h1>
-            <div data-bind="if: Users">
-                <h4>Manage users</h4>
-                <a href="#" data-bind="click: stress">Click for 1000 rows</a>
-                <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
-                                            fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
-                    <script type="text/html" data-name-template="Groups-editor">
-                        <div data-bind="foreach: value">
-                            <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
-                        </div>
-                        <a href="#" 
-                            data-bind="click: $data.showControls.bind({},'GroupArrayEditor', 
-                            GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Click me!</a>
-                    </script>
-
-                    <script type="text/html" data-name-template="Groups-display">
-                        <div data-bind="foreach: value">
-                            <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
-                        </div>
-                    </script>
-                </div>
-            </div>
-            <div data-bind="if: Groups">
-                <h4>Manage groups</h4>
-                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }">
-                </div>
-            </div>
-        </div>
-
-        <div id="DataManagerUI" data-bind="if: visible">
-            <h1>Manage Data</h1>
-
-            <h4>Select database</h4>
-            <select data-bind="options: databases, value: serviceUrlSelected, optionsCaption:'Select database to manage'"></select>
-
-            <ul class="nav nav-tabs" data-bind="foreach: entitySets">
+            <ul id="screens">
                 <li>
-                    <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
-                </li>
-            </ul>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="UserManagerUI" data-bind="if: visible">
+                <script type="text/html" id="GroupArrayEditor">
+                    <div>
+                        <ul data-bind="foreach: Groups">
+                            <li>
+                                <span  data-bind="text: Name"></span>
+                                <input type="checkbox" data-bind="checked: selected"/>
+                            </li>
+                        </ul>
+                        <a href="#" data-bind="click: closeControlBox">close</a>
+                    </div>
+                </script>
 
-            <div data-bind="jayGrid: {
-                            source: collection,
-                            pageSize: esPageSize}">
-            </div>
-        </div>
-
-        <div id="SchemaManagerUI" data-bind="if: visible">
-            <h1>Manage Database Schemas</h1>
-            <h4>Select database to manage:</h4>
-            <select data-bind="options: databases, optionsCaption: 'Select database',
-                                optionsText: 'Name',
-                                value: $root.currentDatabase">
-
-            </select>
-
-            <h3>Tables | ComplexTypes</h3>
-
-            <div data-bind="if: currentDatabase">
-                <table class="table">
-                    <tr>
-                        <td>
-                            <h4>Database details</h4>
-
-                            <h5>List of tables</h5>
-                            <div data-bind="jayGrid: {
-                                        source: context().EntitySets,
-                                        itemCommands: tableCommands,
-                                        fields: ['Name','Published'],
-                                        discriminatorColumn: 'DatabaseID',
-                                        beforeSave: beforeDatabaseSave,
-                                        discriminatorValue: currentDatabaseID,
-                                        pageSize: eSetsPageSize},
-                                        visible: currentDatabase">
-
+                <h1>Manage Users</h1>
+                <div data-bind="if: Users">
+                    <h4>Manage users</h4>
+                    <a href="#" data-bind="click: stress">Click for 1000 rows</a>
+                    <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
+                                                fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
+                        <script type="text/html" data-name-template="Groups-editor">
+                            <div data-bind="foreach: value">
+                                <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
                             </div>
+                            <a href="#" 
+                                data-bind="click: $data.showControls.bind({},'GroupArrayEditor', 
+                                GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Click me!</a>
+                        </script>
 
-                        </td>
-                        <td>
-                            <div data-bind="visible: selectedEntity">
-                                <form data-bind="submit: saveEntity">
-                                    <fieldset data-bind="with: selectedEntity">
-                                        Table item name: <span data-bind="text: Name"></span>,
-                                        Namespace: <span data-bind="text: Namespace"></span>
-                                    </fieldset>
-                                </form>
-                                <h5>List of FIELDS</h5>
-                                <div data-bind="jayGrid: {
-                                            source: context().EntityFields,
-                                            fields:['Index', 'Name','TypeTemplate','ElementType','Key','Computed','Required'],
-                                            sortColumn: 'Index',
-                                            afterAddNew: afterAddNewEntityField,
-                                            discriminatorColumn: 'EntityID',
-                                            discriminatorValue: currentEntityID,
-                                            defaultValues: { 'DatabaseID' : currentDatabaseID },
-                                            pageSize: eSetsPageSize},
-                                            visible: currentDatabase">
-
-                                    <script type="text/html" data-name-template="TypeTemplate-editor">
-                                        <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
-                                                value: value,
-                                                optionsCaption: value() ? undefined : 'Select'"></select>
-                                    </script>
-
-                                    <script type="text/html" data-name-template="ElementType-editor">
-                                        <div data-bind="if: owner.TypeTemplate() === 'Array'">
-                                        <select data-bind="options:$root.elementTypes,
-                                                optionsText:'Name',
-                                                optionsValue: 'TypeName',
-                                                value: value,
-                                                optionsCaption: value() ? undefined :  'Select...'"></select>
-                                        </div>
-
-                                    </script>
-
-                                    <script type="text/html" data-field-template="Roles">
-                                        <div data-bind="text: $data"></div>
-                                    </script>
-                                </div>
+                        <script type="text/html" data-name-template="Groups-display">
+                            <div data-bind="foreach: value">
+                                <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
                             </div>
-                            <h5>List of EVENTS</h5>
-                            <div data-bind="visible: currentEntitySet">
-                                <div data-bind="jayGrid: {
-                                            source: context().EventHandlers,
-                                            fields:['Type', 'Handler'],
-                                            discriminatorColumn: 'EntitySetID',
-                                            discriminatorValue: currentEntitySetID,
-                                            defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
-                                            beforeSave: function(source){ console.log('source beforeSave', source); }
-                                        },
-                                        visible: currentDatabase">
-                                    <script type="text/html" data-name-template="Type-editor">
-                                            <select data-bind="options:$root.eventTypes,
-                                                optionsText: 'name',
-                                                optionsValue: 'type',
-                                                value: value,
-                                                optionsCaption: value() ? undefined :  'Select...'"></select>
-                                    </script>
-                                    <script type="text/html" data-name-template="Handler-editor">
-                                        <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
-                                    </script>
-                                    <script type="text/html" data-name-template="Handler-display">
-                                        <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
-                                    </script>
-                                    <script type="text/html" data-name-template="EventHandlerID-editor">
-                                        <span data-bind="text: value"></span>
-                                    </script>
-                                    <script type="text/html" data-name-template="EntitySetID-editor">
-                                        <span data-bind="text: $root.currentEntitySetName"></span>
-                                    </script>
-                                    <script type="text/html" data-name-template="DatabaseID-editor">
-                                        <span data-bind="text: $root.currentDatabaseName"></span>
-                                    </script>
-                                    <script type="text/html" data-name-template="EntitySetID-display">
-                                        <span data-bind="text: $root.currentEntitySetName"></span>
-                                    </script>
-                                    <script type="text/html" data-name-template="DatabaseID-display">
-                                        <span data-bind="text: $root.currentDatabaseName"></span>
-                                    </script>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <div id="ServiceManagerUI" data-bind="if: visible">
-            <h1>Manage Services</h1>
-
-            <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
-                                                    context: context,
-                                                    fields: [
-                                                        'Name',
-                                                        'DatabaseID',
-                                                        'BaseServiceID',
-                                                        'ServiceSourceType',
-                                                        'ServiceSource'
-                                                    ],
-                                                    beforeSave: function(){ $root.editingSource(false); },
-                                                    allDatabases: allDatabases,
-                                                    databaseSet: context().Databases}">
-
-                <!--, dbs: databases, databases: context().Databases-->
-                <script type="text/html" data-name-template="DatabaseID-editor">
-                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
-                    <select data-bind="options: $root.allDatabases,
-                                optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                optionsCaption: 'Select...',
-                                optionsCaptionValue: null"></select>
-                </script>
-                
-<!--                <script type="text/html" data-name-template="BaseServiceID-editor">-->
-<!--                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>-->
-<!--                    <select data-bind="options: $root.context().Services.filter(function(it){ return it.ServiceID != this.id; }, { id: $data.ServiceID() }).toKoArray(),-->
-<!--                                optionsValue: 'ServiceID', optionsText: 'Name', value: $parent[name],-->
-<!--                                optionsCaption: 'Select2...',-->
-<!--                                optionsCaptionValue: null"></select>-->
-<!--                </script>-->
-
-                <script type="text/html" data-name-template="DatabaseID-display">
-                    <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
-                </script>
-
-                <script type="text/html" data-name-template="Sets-editor">
-                    <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
-                </script>
-                
-                <script type="text/html" data-name-template="ServiceSourceType-editor">
-                    <select data-bind="options: $root.serviceSourceTypes,
-                                optionsValue: 'type', optionsText: 'name', value: value,
-                                optionsCaption: 'Select...' "></select>
-                </script>
-                
-                <script type="text/html" data-name-template="ServiceSourceType-display">
-                    <span data-bind="text: ($root.serviceSourceTypes().filter(function(it){ return it.type == value() })[0] || { name: '-' }).name"></span>
-                </script>
-                
-                <script type="text/html" data-name-template="ServiceSource-editor">
-                    <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
-                </script>
-                
-                <script type="text/html" data-name-template="ServiceSource-display">
-                    <pre data-bind="visible: owner.ServiceSourceType() == 'script', attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
-                </script>
-            </div>
-            
-            <div data-bind="if: editingSource">
-                <div id="service-codemirror">
+                        </script>
+                    </div>
+                </div>
+                <div data-bind="if: Groups">
+                    <h4>Manage groups</h4>
+                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }"></div>
                 </div>
             </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="ServiceManagerUI" data-bind="if: visible">
+                <h1>Manage Services</h1>
 
-            <div data-bind="if: selectedService">
-                <div id="entitySets" data-bind="jayGrid: {
-                                                        source: context().EntitySetPublications,
+                <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
-                                                        fields: 'EntitySetID'
-                                                        discriminatorColumn: 'ServiceID',
-                                                        discriminatorValue: selectedService().ServiceID,
+                                                        fields: [
+                                                            'Name',
+                                                            'DatabaseID',
+                                                            'BaseServiceID',
+                                                            'ServiceSourceType',
+                                                            'ServiceSource'
+                                                        ],
+                                                        beforeSave: function(){ $root.editingSource(false); },
                                                         allDatabases: allDatabases,
                                                         databaseSet: context().Databases}">
 
-                    <script type="text/html" data-name-template="Publish-display">
-                        <span data-bind="text: $root.checkBoxStates().length"></span>
-                        <input type="checkbox"
-                               data-bind="click: $root.check,
-                                          checked: $root.checkBoxStates().length < 1" />
-                    </script>
-
                     <!--, dbs: databases, databases: context().Databases-->
                     <script type="text/html" data-name-template="DatabaseID-editor">
+                        <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
                         <select data-bind="options: $root.allDatabases,
                                     optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                    optionsCaption: 'Select...' "></select>
+                                    optionsCaption: 'Select...',
+                                    optionsCaptionValue: null"></select>
                     </script>
+                
+    <!--                <script type="text/html" data-name-template="BaseServiceID-editor">-->
+    <!--                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>-->
+    <!--                    <select data-bind="options: $root.context().Services.filter(function(it){ return it.ServiceID != this.id; }, { id: $data.ServiceID() }).toKoArray(),-->
+    <!--                                optionsValue: 'ServiceID', optionsText: 'Name', value: $parent[name],-->
+    <!--                                optionsCaption: 'Select2...',-->
+    <!--                                optionsCaptionValue: null"></select>-->
+    <!--                </script>-->
 
                     <script type="text/html" data-name-template="DatabaseID-display">
-                        <span data-bind="text: $parent[name]" />:
                         <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                    </script>
+
+                    <script type="text/html" data-name-template="Sets-editor">
+                        <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
+                    </script>
+                
+                    <script type="text/html" data-name-template="ServiceSourceType-editor">
+                        <select data-bind="options: $root.serviceSourceTypes,
+                                    optionsValue: 'type', optionsText: 'name', value: value,
+                                    optionsCaption: 'Select...' "></select>
+                    </script>
+                
+                    <script type="text/html" data-name-template="ServiceSourceType-display">
+                        <span data-bind="text: ($root.serviceSourceTypes().filter(function(it){ return it.type == value() })[0] || { name: '-' }).name"></span>
+                    </script>
+                
+                    <script type="text/html" data-name-template="ServiceSource-editor">
+                        <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                    </script>
+                
+                    <script type="text/html" data-name-template="ServiceSource-display">
+                        <pre data-bind="visible: owner.ServiceSourceType() == 'script', attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                    </script>
+                </div>
+            
+                <div data-bind="if: editingSource">
+                    <div id="service-codemirror">
+                    </div>
+                </div>
+
+                <div data-bind="if: selectedService">
+                    <div id="entitySets" data-bind="jayGrid: {
+                                                            source: context().EntitySetPublications,
+                                                            context: context,
+                                                            fields: 'EntitySetID'
+                                                            discriminatorColumn: 'ServiceID',
+                                                            discriminatorValue: selectedService().ServiceID,
+                                                            allDatabases: allDatabases,
+                                                            databaseSet: context().Databases}">
+
+                        <script type="text/html" data-name-template="Publish-display">
+                            <span data-bind="text: $root.checkBoxStates().length"></span>
+                            <input type="checkbox"
+                                   data-bind="click: $root.check,
+                                              checked: $root.checkBoxStates().length < 1" />
+                        </script>
+
+                        <!--, dbs: databases, databases: context().Databases-->
+                        <script type="text/html" data-name-template="DatabaseID-editor">
+                            <select data-bind="options: $root.allDatabases,
+                                        optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                        optionsCaption: 'Select...' "></select>
+                        </script>
+
+                        <script type="text/html" data-name-template="DatabaseID-display">
+                            <span data-bind="text: $parent[name]" />:
+                            <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                        </script>
+                    </div>
+                </div>
+            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="DataManagerUI" data-bind="if: visible">
+                <h1>Manage Data</h1>
+
+                <h4>Select database</h4>
+                <select data-bind="options: databases, value: serviceUrlSelected, optionsCaption:'Select database to manage'"></select>
+
+                <ul class="nav nav-tabs" data-bind="foreach: entitySets">
+                    <li>
+                        <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
+                    </li>
+                </ul>
+
+                <div data-bind="jayGrid: {
+                                source: collection,
+                                pageSize: esPageSize}">
+                </div>
+            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="SchemaManagerUI" data-bind="if: visible">
+                <h1>Manage Database Schemas</h1>
+                <h4>Select database to manage:</h4>
+                <select data-bind="options: databases, optionsCaption: 'Select database',
+                                    optionsText: 'Name',
+                                    value: $root.currentDatabase">
+                </select>
+
+                <h3>Tables | ComplexTypes</h3>
+
+                <div data-bind="if: currentDatabase">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <h4>Database details</h4>
+
+                                <h5>List of tables</h5>
+                                <div data-bind="jayGrid: {
+                                            source: context().EntitySets,
+                                            itemCommands: tableCommands,
+                                            fields: ['Name','Published'],
+                                            discriminatorColumn: 'DatabaseID',
+                                            beforeSave: beforeDatabaseSave,
+                                            discriminatorValue: currentDatabaseID,
+                                            pageSize: eSetsPageSize},
+                                            visible: currentDatabase">
+
+                                </div>
+
+                            </td>
+                            <td>
+                                <div data-bind="visible: selectedEntity">
+                                    <form data-bind="submit: saveEntity">
+                                        <fieldset data-bind="with: selectedEntity">
+                                            Table item name: <span data-bind="text: Name"></span>,
+                                            Namespace: <span data-bind="text: Namespace"></span>
+                                        </fieldset>
+                                    </form>
+                                    <h5>List of FIELDS</h5>
+                                    <div data-bind="jayGrid: {
+                                                source: context().EntityFields,
+                                                fields:['Index', 'Name','TypeTemplate','ElementType','Key','Computed','Required'],
+                                                sortColumn: 'Index',
+                                                afterAddNew: afterAddNewEntityField,
+                                                discriminatorColumn: 'EntityID',
+                                                discriminatorValue: currentEntityID,
+                                                defaultValues: { 'DatabaseID' : currentDatabaseID },
+                                                pageSize: eSetsPageSize},
+                                                visible: currentDatabase">
+
+                                        <script type="text/html" data-name-template="TypeTemplate-editor">
+                                            <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
+                                                    value: value,
+                                                    optionsCaption: value() ? undefined : 'Select'"></select>
+                                        </script>
+
+                                        <script type="text/html" data-name-template="ElementType-editor">
+                                            <div data-bind="if: owner.TypeTemplate() === 'Array'">
+                                            <select data-bind="options:$root.elementTypes,
+                                                    optionsText:'Name',
+                                                    optionsValue: 'TypeName',
+                                                    value: value,
+                                                    optionsCaption: value() ? undefined :  'Select...'"></select>
+                                            </div>
+
+                                        </script>
+
+                                        <script type="text/html" data-field-template="Roles">
+                                            <div data-bind="text: $data"></div>
+                                        </script>
+                                    </div>
+                                </div>
+                                <h5>List of EVENTS</h5>
+                                <div data-bind="visible: currentEntitySet">
+                                    <div data-bind="jayGrid: {
+                                                source: context().EventHandlers,
+                                                fields:['Type', 'Handler'],
+                                                discriminatorColumn: 'EntitySetID',
+                                                discriminatorValue: currentEntitySetID,
+                                                defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
+                                                beforeSave: function(source){ console.log('source beforeSave', source); }
+                                            },
+                                            visible: currentDatabase">
+                                        <script type="text/html" data-name-template="Type-editor">
+                                                <select data-bind="options:$root.eventTypes,
+                                                    optionsText: 'name',
+                                                    optionsValue: 'type',
+                                                    value: value,
+                                                    optionsCaption: value() ? undefined :  'Select...'"></select>
+                                        </script>
+                                        <script type="text/html" data-name-template="Handler-editor">
+                                            <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
+                                        </script>
+                                        <script type="text/html" data-name-template="Handler-display">
+                                            <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                                        </script>
+                                        <script type="text/html" data-name-template="EventHandlerID-editor">
+                                            <span data-bind="text: value"></span>
+                                        </script>
+                                        <script type="text/html" data-name-template="EntitySetID-editor">
+                                            <span data-bind="text: $root.currentEntitySetName"></span>
+                                        </script>
+                                        <script type="text/html" data-name-template="DatabaseID-editor">
+                                            <span data-bind="text: $root.currentDatabaseName"></span>
+                                        </script>
+                                        <script type="text/html" data-name-template="EntitySetID-display">
+                                            <span data-bind="text: $root.currentEntitySetName"></span>
+                                        </script>
+                                        <script type="text/html" data-name-template="DatabaseID-display">
+                                            <span data-bind="text: $root.currentDatabaseName"></span>
+                                        </script>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="SecurityManagerUI" data-bind="if: visible">
+                <h1>Manage Security</h1>
+            
+                <h4>Add new permission</h4>
+                <form class="form-inline" data-bind="submit: addPermission">
+                    <select class="input-medium" data-bind="options: databases, optionsText:'Name', value: selectedDatabase, optionsCaption:'All databases'"></select>
+                    <select class="input-medium" data-bind="options: tables, optionsText:'Name',  value: selectedTable, optionsCaption:'All tables'"></select>
+                    <select class="input-medium" data-bind="options: groups, optionsText:'Name',  value: selectedGroup, optionsCaption:'All groups'"></select>
+
+                    <span class="iblock actions" data-bind="foreach: tablePermissions">
+                        <label data-bind="text: name, attr: { for: name }"></label><input type="checkbox" data-bind="checked: value, attr: { id: name }" />
+                    </span>
+
+                    <input class="btn btn-info" type="submit" value="Add permission" />
+                </form>
+
+                <h4>List of active permissions</h4>
+
+                <div data-bind="jayGrid: {source: context().Permissions,
+                                               fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
+                                              refresher: $root.rf }">
+
+                    <script type="text/html" data-name-template="DatabaseID-display">
+                        <span data-bind="readValue: { source: $root.context().Databases, key: value, field: 'Name' }"></span>
+                    </script>
+                    <script type="text/html" data-name-template="EntitySetID-display">
+                        <span data-bind="readValue: { source: $root.context().EntitySets, key: value, field: 'Name' }"></span>
+                    </script>
+                    <script type="text/html" data-name-template="GroupID-display">
+                        <span data-bind="readValue: { source: $root.context().Groups, key: value, field: 'Name' }"></span>
                     </script>
                 </div>
             </div>
-        </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="AccessManagerUI" data-bind="if: visible">
+                <h1>Manage Access</h1>
+                <h4>Control who can access your system</h4>
+                <h4>Application Rules</h4>
+                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], 
+                                        source: context().IngressIPRules }">
 
-        <div id="SecurityManagerUI" data-bind="if: visible">
-            <h1>Manage Security</h1>
-            
-            <h4>Add new permission</h4>
-            <form class="form-inline" data-bind="submit: addPermission">
-                <select class="input-medium" data-bind="options: databases, optionsText:'Name', value: selectedDatabase, optionsCaption:'All databases'"></select>
-                <select class="input-medium" data-bind="options: tables, optionsText:'Name',  value: selectedTable, optionsCaption:'All tables'"></select>
-                <select class="input-medium" data-bind="options: groups, optionsText:'Name',  value: selectedGroup, optionsCaption:'All groups'"></select>
-
-                <span class="iblock actions" data-bind="foreach: tablePermissions">
-                    <label data-bind="text: name, attr: { for: name }"></label><input type="checkbox" data-bind="checked: value, attr: { id: name }" />
-                </span>
-
-                <input class="btn btn-info" type="submit" value="Add permission" />
-            </form>
-
-            <h4>List of active permissions</h4>
-
-            <div data-bind="jayGrid: {source: context().Permissions,
-                                           fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
-                                          refresher: $root.rf }">
-
-                <script type="text/html" data-name-template="DatabaseID-display">
-                    <span data-bind="readValue: { source: $root.context().Databases, key: value, field: 'Name' }"></span>
-                </script>
-                <script type="text/html" data-name-template="EntitySetID-display">
-                    <span data-bind="readValue: { source: $root.context().EntitySets, key: value, field: 'Name' }"></span>
-                </script>
-                <script type="text/html" data-name-template="GroupID-display">
-                    <span data-bind="readValue: { source: $root.context().Groups, key: value, field: 'Name' }"></span>
-                </script>
-            </div>
-        </div>
-
-        <div id="AccessManagerUI" data-bind="if: visible">
-            <h1>Manage Access</h1>
-            <h4>Control who can access your system</h4>
-            <h4>Application Rules</h4>
-            <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], 
-                                    source: context().IngressIPRules }">
-
-            </div>
-            <h4>Default service rules</h4>
-            <div id="svcAccessGrid" data-bind="jayGrid: { showNewCommand: false, showRemoveAllCommand: false,
-                            fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
-                            source: context().Services }">
-
-            </div>
-
-            <h4>Addition service rules</h4>
-            <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID'], source: context().IngressIPRules }">
-
-            </div>
-        </div>
-        <div id="StaticFileUI" data-bind="if: visible">
-            <h1>Manage static files</h1>
-
-            <form id="fileUpload" action="fileUpload" action="post">
-                <h4>Folder1 zip</h4>
-                <div id="file-uploader1">
-                    <noscript>
-                        <p>Please enable JavaScript to use file uploader.</p>
-                        <!-- or put a simple form for upload here -->
-                    </noscript>
                 </div>
-                <div class="qq-upload-extra-drop-area1">Drop files here too</div>
+                <h4>Default service rules</h4>
+                <div id="svcAccessGrid" data-bind="jayGrid: { showNewCommand: false, showRemoveAllCommand: false,
+                                fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
+                                source: context().Services }">
 
-                <h4>Folder2 zip</h4>
-                <div id="file-uploader2">
-                    <noscript>
-                        <p>Please enable JavaScript to use file uploader.</p>
-                        <!-- or put a simple form for upload here -->
-                    </noscript>
                 </div>
-                <div class="qq-upload-extra-drop-area2">Drop files here too</div>
-            </form>
 
+                <h4>Addition service rules</h4>
+                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID'], source: context().IngressIPRules }">
+
+                </div>
+            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper">
+                        <div class="inscroller">
+                            <div id="StaticFileUI" data-bind="if: visible">
+                    <h1>Manage static files</h1>
+
+                    <form id="fileUpload" action="fileUpload" action="post">
+                        <h4>Folder1 zip</h4>
+                        <div id="file-uploader1">
+                            <noscript>
+                                <p>Please enable JavaScript to use file uploader.</p>
+                                <!-- or put a simple form for upload here -->
+                            </noscript>
+                        </div>
+                        <div class="qq-upload-extra-drop-area1">Drop files here too</div>
+
+                        <h4>Folder2 zip</h4>
+                        <div id="file-uploader2">
+                            <noscript>
+                                <p>Please enable JavaScript to use file uploader.</p>
+                                <!-- or put a simple form for upload here -->
+                            </noscript>
+                        </div>
+                        <div class="qq-upload-extra-drop-area2">Drop files here too</div>
+                    </form>
+
+                </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
+    <!-- ISCROLL CONTAINER -->
+
 <!--</div>
 
 
