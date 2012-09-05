@@ -52,6 +52,10 @@ var app = c();
 app.use(c.compress());
 
 app.use(c.query());
+app.use(c.bodyParser());
+app.use(c.cookieParser());
+app.use(c.methodOverride());
+
 app.use(function (req, res, next) {
 
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -179,10 +183,6 @@ var moveFile = function(source, dest, callback) {
         });
     });
 };
-
-app.use(c.bodyParser());
-app.use(c.cookieParser());
-app.use(c.methodOverride());
 
 app.use('/debug', function(req, res){
     res.write('DEBUG');
