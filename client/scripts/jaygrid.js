@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: peterzentai
- * Date: 8/16/12
- * Time: 12:39 PM
- * To change this template use File | Settings | File Templates.
- */
 (function ($data) {
 
     $data.jayGrid = $data.jayGrid || {};
@@ -239,12 +232,12 @@
                 self.objectsToDelete = ko.observableArray([]);
                 self.objectsInEditMode = ko.observableArray([]);
 
-
+                self.saving = ko.observable(false);
 
                 self.save =  function() {
 
                     console.dir("Saving changes: " + arguments);
-
+                    self.saving(true);
                     var source = ko.utils.unwrapObservable(self.source);
                     console.log("Items in tracker:" + source.entityContext.stateManager.trackedEntities.length);
                     ccc = source.entityContext;
@@ -258,7 +251,9 @@
                             console.log("Items in tracker #2:" + source.entityContext.stateManager.trackedEntities.length);
                             self.refresh(Math.random());
                             self.objectsToDelete.removeAll();
-                            self.objectsInEditMode.removeAll()
+                            self.objectsInEditMode.removeAll();
+                            self.saving(false);
+
                         })
                     }
 
