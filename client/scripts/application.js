@@ -81,9 +81,9 @@ $(function () {
         self.menuItems = modules;
 
         self.show = function (item) {
-            self.menuItems.forEach(function (item) {
-                item.Model.hide();
-            });
+            //self.menuItems.forEach(function (item) {
+            //    item.Model.hide();
+            //});
 
             item.Model.show();
         }
