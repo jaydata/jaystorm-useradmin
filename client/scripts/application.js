@@ -22,12 +22,20 @@ $(function () {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
-                        alert(xhr.responseText);
-                        self.authorization(xhr.responseText);
-                        globalAuthorization = xhr.responseText;
-                        var app = { url: window.location.href, title: window.location.href };
-                        self.applications.push(app);
-                        self.currentApplication(app);
+                        var result = JSON.parse(xhr.responseText);
+                        if (!(result.authorization && result.apps)) {
+                            alert("invalid authorization result");
+                        }
+                        self.authorization(result.authorization);
+                        globalAuthorization = result.authorization;
+                        var apps = result.apps.map(function (item) {
+                            return {
+                                url: 'http://' + item.appid + '.jaystack.net/',
+                                title: item.name
+                            }
+                        });
+                        self.applications(apps);
+                        //self.currentApplication
 
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);

@@ -36,10 +36,19 @@ passport.use(new BasicStrategy({
           var req = http.request(get_options, function (res) {
               res.setEncoding('utf8');
               if (res.statusCode == 200) {
-                  done(null, { 'username': username, 'email': password });
+                  var data = '';
+                  res.on("data", function (d) {
+                      data += d;
+                  });
+                  res.on("end", function () {
+                      var apps = JSON.parse(data);
+                      done(null, { 'username': username, 'apps': apps});
+                  });
+
               } else {
                   done(null, null);
               }
+              
 
           });
           req.end();
@@ -74,7 +83,7 @@ passport.deserializeUser(function (username, done) {
 });
 app.use(c.bodyParser());
 app.use(c.cookieParser());
-app.use(c.session({ secret: 'keyboard cat' }));
+//app.use(c.session({ secret: 'keyboard cat' }));
 app.use(c.methodOverride());
 app.use($data.JayService.OData.Utils.simpleBodyReader());
 
@@ -203,8 +212,12 @@ app.use('/logout', function(req, res){
 });
 
 app.use('/getAuthorization', function (req, res) {
-    res.setHeader("Content-Type", "text/plain;charset=UTF-8");
-    res.end(req.headers.Authorization || req.headers.authorization);
+    res.setHeader("Content-Type", "application/json;charset=UTF-8");
+    var result = {
+        authorization: req.headers.Authorization || req.headers.authorization,
+        apps: req.user.apps
+    };
+    res.end(JSON.stringify(result));
 })
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
 
