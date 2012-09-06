@@ -68,9 +68,10 @@ function registerEdmTypes() {
 
 registerEdmTypes();
 
+
 $data.Entity.extend('$data.JayStormAPI.IngressIPRule', {
     ID: { type: 'id', key: true, computed: true },
-    ObjectID: { type: 'id' },
+    ObjectID: { type: 'id', $sourceTable: 'Services', $sourceValue: 'ServiceID', $sourceText: 'Name' , $displayName: 'Service'},
     SourceAddress: { type: 'string' },      //--> ipadd or network
     Port: { type: 'int' },
     SSL: { type: 'boolean' }

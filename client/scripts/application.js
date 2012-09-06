@@ -13,6 +13,7 @@ $(function () {
         var self = this;
         
         self.authorization = ko.observable();
+
         function getAuthroization() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "getAuthorization", true);
@@ -30,6 +31,7 @@ $(function () {
                         globalAuthorization = result.authorization;
                         var apps = result.apps.map(function (item) {
                             return {
+                                appid: item.appid,
                                 url: 'http://' + item.appid + '.jaystack.net/',
                                 title: item.name
                             }
@@ -94,6 +96,30 @@ $(function () {
             //});
 
             item.Model.show();
+        }
+        self.launchResult = ko.observable();
+        function launchApplication( appid, ondone ) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "launch", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onerror = function () {
+                alert("could not connect to dashboard.jaystack.net for launch");
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        self.launchResult(xhr.responseText);
+                    } else {
+                        alert("not ok (200) response from getAuthorization:" + xhr.responseText);
+                    }
+                }
+            }
+            xhr.send(JSON.stringify({appid: appid}));
+        }
+
+        self.launchCurrentApplication = function () {
+            var appid = self.currentApplication().appid;
+            launchApplication(appid);
         }
 
     }
