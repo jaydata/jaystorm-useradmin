@@ -541,7 +541,7 @@
                 <h1>Manage Access</h1>
                 <h4>Control who can access your system</h4>
                 <h4>Application Rules</h4>
-                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], 
+                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'],filter: 'it.ObjectID == null'
                                         source: context().IngressIPRules }">
 
                 </div>
@@ -558,7 +558,8 @@
 
 
                     <script type="text/html" data-name-template="ObjectID-editor">
-                        <select data-bind="options: $root.context().Services.toKoArray(), value: value, optionsText:'Name', optionsValue:'ServiceID' "></select>
+                        <select data-bind="options: $root.context().Services.toKoArray(), value: value, 
+                                            optionsText:'Name', optionsValue:'ServiceID' "></select>
                     </script>
                     <script type="text/html" data-name-template="ObjectID-display">
                         <span data-bind="readValue: { source: $root.context().Services, key: value, field: 'Name' }"></span>

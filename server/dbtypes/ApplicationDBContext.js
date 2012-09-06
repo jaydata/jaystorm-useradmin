@@ -160,7 +160,8 @@ $data.Entity.extend('$data.JayStormAPI.EntityField', {
     Length: { type: 'int' },
     RegExp: { type: 'string' },
     TypeTemplate: { type: 'string' },
-    DatabaseID: { type: 'id', required: true } /* ?? */
+    DatabaseID: { type: 'id', required: true },
+    ExtendedProperties: { type: 'Array', elementType: '$data.JayStormAPI.KeyValuePair' }
 });
 
 $data.Entity.extend('$data.JayStormAPI.KeyValuePair', {
