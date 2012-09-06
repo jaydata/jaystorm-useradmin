@@ -3,15 +3,31 @@ var store = require('./storeContext.js');
 store.storeContext({
     providerConfiguration: {
         name: 'mongoDB',
-        databaseName: 'NTA0MzQ1MWY0ZjRiNGQyYzA3MDAwMDAz_ApplicationDB',
+        databaseName: 'ApplicationDB',
         address: '127.0.0.1',
-        port: 27017,
-        username: '5babb4f2-bd59-4096-bb5a-a249853fdb07',
-        password: '5ebd8d4d-9c40-4181-9e26-3c064be03fa7'
-        
+        port: 27017
     },
     databaseName: 'ApplicationDB',
     type: $data.JayStormAPI.Context
-}, function(){
-    console.log('end.');
+}, function(ctx){
+    var adminGroup = new $data.JayStormAPI.Group({ Name: 'admin' });
+    var anonymousGroup = new $data.JayStormAPI.Group({ Name: 'anonymous' });
+    
+    ctx.Groups.add(adminGroup);
+    ctx.Groups.add(anonymousGroup);
+    ctx.saveChanges(function(){
+        var admin = new $data.JayStormAPI.User({ Login: 'admin', Password: 'admin', Groups: [adminGroup.GroupID] });
+        var anonymous = new $data.JayStormAPI.User({ Login: 'anonymous', Groups: [anonymousGroup.GroupID] });
+        
+        ctx.Users.add(admin);
+        ctx.Users.add(anonymous);
+        
+        for (var i = 0; i < ctx.SystemTypes.length; i++){
+            ctx.TypeTemplates.add(new $data.JayStormAPI.TypeTemplate(ctx.SystemTypes[i]));
+        }
+        
+        ctx.saveChanges(function(){
+            console.log('end.');
+        });
+    });
 });
