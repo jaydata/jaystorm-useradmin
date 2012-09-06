@@ -1,4 +1,66 @@
-.container.first { margin-top: 60px; }
+/*#region ISCROLL */
+body {
+    -webkit-text-size-adjust:none;
+}
+
+#wrapper {
+	position:absolute; z-index:1;
+	top: 90px; bottom:0; left:0; right: 0;
+	background:#aaa;
+	overflow:auto;
+}
+
+#scroller {
+	height:100%;
+	float:left;
+	padding:0;
+}
+
+#scroller > ul {
+	list-style:none;
+	display:block;
+	background: #fff;
+	float:left;
+	width:100%;
+	height:100%;
+	padding:0;
+	margin:0;
+	text-align:left;
+}
+
+#scroller > ul > li {
+	display:block;
+	position: relative;
+	vertical-align:middle;
+	float:left;
+	padding:0 10px;
+	min-height:100%;
+    width: 768px;
+	/*border-left:1px solid #ccc;
+	border-right:1px solid #ccc;
+	background-color:#fafafa;*/
+	font-size:14px;
+	
+    -webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.inwrapper {
+	position:absolute; z-index:1;
+	top: 0; bottom: 0; left: 0; right: 0;
+	overflow:auto;
+}
+
+.inscroller {
+	width: 100%;
+	padding: 10px;
+	
+    -webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+/*#endregion ISCROLL */
 
 .nav-tabs > li > a, .nav-pills > li > a { padding-left: 11px !important; padding-right: 11px !important; }
 
@@ -48,6 +110,22 @@
 select:hover, label:hover { cursor: pointer; }
 
 form { overflow-x: auto; }
+.navbar 
+{
+    ul li
+    {
+        &:first-child a { padding-left: 0; }
+        &:last-child a  { padding-right: 0; }
+    }
+    
+    form 
+    {
+        margin: 10px 0;
+    
+        select { margin-right: 15px; }
+        .btn { margin-top: 0; }
+    }
+}
 
 label  
 {
@@ -55,3 +133,56 @@ label
 }
 
 input[type='checkbox']{ margin: 0 10px 0 0; }
+
+
+/*#region MEDIA QUERIES */
+
+/*#region Screen (-480) */
+@media only screen and (max-width : 480px), (max-device-width : 480px) {
+
+}
+/*#endregion Screen (-480) */
+
+@media only screen and (min-width: 481px) and (max-width : 640px){
+
+}
+
+/*#region Screen (480-768) */
+@media only screen and (min-width: 481px) and (max-width : 768px), (min-device-width : 480px) and (max-device-width : 768px) {
+	
+}
+/*#endregion Screen (480-768) */
+
+/*#region Screen iPad Portrait */
+@media only screen and (max-width: 768px) and (min-width: 768px) and (orientation:portrait){
+
+}
+/*#endregion Screen iPad Portrait */
+
+/*#region Screen (768+) */
+@media only screen and (min-width: 769px){
+    #wrapper { top: 130px; }
+    ul#screens 
+    {
+        > li { width: 940px; }
+    }
+}
+/*#endregion  Screen (768+) */
+    
+/*#region Screen (1024+) */
+@media only screen and (min-width:1025px) {
+    
+}
+/*#endregion Screen (1024+) */
+
+/*#region Screen (1024+) */
+@media only screen and (min-width:1200px) {
+    #wrapper { top: 90px; }
+    ul#screens 
+    {
+        > li { width: 1170px; }
+    }
+}
+/*#endregion Screen (1024+) */
+
+/*#endregion MEDIA QUERIES */

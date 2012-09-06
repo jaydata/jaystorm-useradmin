@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: peterzentai
- * Date: 8/16/12
- * Time: 12:39 PM
- * To change this template use File | Settings | File Templates.
- */
 (function ($data) {
 
     $data.jayGrid = $data.jayGrid || {};
@@ -239,12 +232,12 @@
                 self.objectsToDelete = ko.observableArray([]);
                 self.objectsInEditMode = ko.observableArray([]);
 
-
+                self.saving = ko.observable(false);
 
                 self.save =  function() {
 
                     console.dir("Saving changes: " + arguments);
-
+                    self.saving(true);
                     var source = ko.utils.unwrapObservable(self.source);
                     console.log("Items in tracker:" + source.entityContext.stateManager.trackedEntities.length);
                     ccc = source.entityContext;
@@ -258,7 +251,9 @@
                             console.log("Items in tracker #2:" + source.entityContext.stateManager.trackedEntities.length);
                             self.refresh(Math.random());
                             self.objectsToDelete.removeAll();
-                            self.objectsInEditMode.removeAll()
+                            self.objectsInEditMode.removeAll();
+                            self.saving(false);
+
                         })
                     }
 
@@ -528,14 +523,17 @@
 
                 self.refresh = viewModel.refresher || ko.observable();
 
-                self.itemsTrigger = ko.computed( function(){
+                //self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
+                
+
+                self.itemsTrigger = ko.computed(function () {
+
                     if (ko.utils.unwrapObservable(this.source) == null) {
                         return;
                     }
                     var q = this.source();
 
                     var ref = this.refresh();
-
                     var column = ko.utils.unwrapObservable(this.discriminatorColumn);
                     var value = ko.utils.unwrapObservable(this.discriminatorValue);
 
@@ -556,6 +554,9 @@
                         self.itemCount(x);
                     });
 
+                    if (self.filter) {
+                        q = q.filter(ko.utils.unwrapObservable(self.filter));
+                    };
                     q =q.order(sortColumn)
                         .skip(this.pageSize() * this.currentPage())
                         .take(this.pageSize());

@@ -58,7 +58,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
     self.selectedDatabase.subscribe(function(value) {
         console.log(value);
         var id = value.DatabaseID();
-        apiContextFactory().EntitySets
+        self.contextFactory().EntitySets
             .filter(function(it) { return it.DatabaseID == this.id }, {id: id })
             .toArray(self.tables);
     });
@@ -70,7 +70,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
 
     self.addPermission = function() {
         //console.dir(p);
-        var c = apiContextFactory();
+        var c = self.contextFactory();
 
         var dbIDs = self.selectedDatabase() ? [self.selectedDatabase().DatabaseID() ] :
                                               self.databases().map( function(db) { return db.DatabaseID() });

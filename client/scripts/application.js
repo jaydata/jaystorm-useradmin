@@ -13,6 +13,7 @@ $(function () {
         var self = this;
         
         self.authorization = ko.observable();
+
         function getAuthroization() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "getAuthorization", true);
@@ -22,12 +23,21 @@ $(function () {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
-                        alert(xhr.responseText);
-                        self.authorization(xhr.responseText);
-                        globalAuthorization = xhr.responseText;
-                        var app = { url: window.location.href, title: window.location.href };
-                        self.applications.push(app);
-                        self.currentApplication(app);
+                        var result = JSON.parse(xhr.responseText);
+                        if (!(result.authorization && result.apps)) {
+                            alert("invalid authorization result");
+                        }
+                        self.authorization(result.authorization);
+                        globalAuthorization = result.authorization;
+                        var apps = result.apps.map(function (item) {
+                            return {
+                                appid: item.appid,
+                                url: 'http://' + item.appid + '.jaystack.net/',
+                                title: item.name
+                            }
+                        });
+                        self.applications(apps);
+                        //self.currentApplication
 
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
@@ -81,11 +91,35 @@ $(function () {
         self.menuItems = modules;
 
         self.show = function (item) {
-            self.menuItems.forEach(function (item) {
-                item.Model.hide();
-            });
+            //self.menuItems.forEach(function (item) {
+            //    item.Model.hide();
+            //});
 
             item.Model.show();
+        }
+        self.launchResult = ko.observable();
+        function launchApplication( appid, ondone ) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "launch", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onerror = function () {
+                alert("could not connect to dashboard.jaystack.net for launch");
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        self.launchResult(xhr.responseText);
+                    } else {
+                        alert("not ok (200) response from getAuthorization:" + xhr.responseText);
+                    }
+                }
+            }
+            xhr.send(JSON.stringify({appid: appid}));
+        }
+
+        self.launchCurrentApplication = function () {
+            var appid = self.currentApplication().appid;
+            launchApplication(appid);
         }
 
     }
