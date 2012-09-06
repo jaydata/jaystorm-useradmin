@@ -8,7 +8,8 @@ var BasicStrategy = require('passport-http').BasicStrategy;
 var fs = require('fs');
 var util = require('util');
 var childProc = require('child_process');
-var http = require('https');
+var https = require('https');
+var http = require('http');
 
 var settings = {
     node_port: process.argv[2] || 3000,
@@ -33,13 +34,22 @@ passport.use(new BasicStrategy({
           };
 
           //console.dir(get_options);
-          var req = http.request(get_options, function (res) {
+          var req = https.request(get_options, function (res) {
               res.setEncoding('utf8');
               if (res.statusCode == 200) {
-                  done(null, { 'username': username, 'email': password });
+                  var data = '';
+                  res.on("data", function (d) {
+                      data += d;
+                  });
+                  res.on("end", function () {
+                      var apps = JSON.parse(data);
+                      done(null, { 'username': username, 'apps': apps});
+                  });
+
               } else {
                   done(null, null);
               }
+              
 
           });
           req.end();
@@ -74,13 +84,57 @@ passport.deserializeUser(function (username, done) {
 });
 app.use(c.bodyParser());
 app.use(c.cookieParser());
-app.use(c.session({ secret: 'keyboard cat' }));
+//app.use(c.session({ secret: 'keyboard cat' }));
 app.use(c.methodOverride());
-app.use($data.JayService.OData.Utils.simpleBodyReader());
 
 app.use('/getAuthorization', passport.initialize());
 app.use('/getAuthorization', passport.authenticate('basic', { session: false }));
+app.use('/getAuthorization', function (req, res) {
+    res.setHeader("Content-Type", "application/json;charset=UTF-8");
+    var result = {
+        authorization: req.headers.Authorization || req.headers.authorization,
+        apps: req.user.apps
+    };
+    res.end(JSON.stringify(result));
+});
 
+app.use('/launch', passport.initialize());
+app.use('/launch', passport.authenticate('basic', { session: false }));
+app.use('/launch', function (req, res, next) {
+    var appId = req.body.appid;
+    var get_options = {
+        host: 'admin.storm.jaystack.com',
+        port: 3000,
+        path: '/launch',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    //console.dir(get_options);
+    var launchReq = http.request(get_options, function (launchRes) {
+        launchRes.setEncoding('utf8');
+        if (launchRes.statusCode == 200) {
+            var data = '';
+            launchRes.on("data", function (d) {
+                data += d;
+            });
+            launchRes.on("end", function () {
+                console.dir("launch finished");
+                console.log(data);
+                res.end(data);
+            });
+
+        } else {
+            done(null, null);
+        }
+
+
+    });
+    console.log("sending: " + JSON.stringify(req.body));
+    launchReq.end(JSON.stringify(req.body));
+});
 //app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
 
 
@@ -202,10 +256,7 @@ app.use('/logout', function(req, res){
     res.end();
 });
 
-app.use('/getAuthorization', function (req, res) {
-    res.setHeader("Content-Type", "text/plain;charset=UTF-8");
-    res.end(req.headers.Authorization || req.headers.authorization);
-})
+
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
 
 //app.use("/dbz", $data.JayService.OData.Utils.simpleBodyReader());
@@ -284,6 +335,6 @@ app.use('/eval', function(req, res){
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
 c.errorHandler.title = 'JayStorm API';
-app.listen(8000);
+app.listen(60443);
 //console.log(app);
 console.log("end");

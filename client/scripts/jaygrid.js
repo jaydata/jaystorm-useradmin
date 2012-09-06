@@ -523,14 +523,17 @@
 
                 self.refresh = viewModel.refresher || ko.observable();
 
-                self.itemsTrigger = ko.computed( function(){
+                //self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
+                
+
+                self.itemsTrigger = ko.computed(function () {
+
                     if (ko.utils.unwrapObservable(this.source) == null) {
                         return;
                     }
                     var q = this.source();
 
                     var ref = this.refresh();
-
                     var column = ko.utils.unwrapObservable(this.discriminatorColumn);
                     var value = ko.utils.unwrapObservable(this.discriminatorValue);
 
@@ -551,6 +554,9 @@
                         self.itemCount(x);
                     });
 
+                    if (self.filter) {
+                        q = q.filter(ko.utils.unwrapObservable(self.filter));
+                    };
                     q =q.order(sortColumn)
                         .skip(this.pageSize() * this.currentPage())
                         .take(this.pageSize());

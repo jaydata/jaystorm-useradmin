@@ -3,7 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <title>JayStorm Admin</title>
 
         <link href="styles/bootstrap.min.css" rel="stylesheet">
@@ -171,6 +172,11 @@
 
                         <label>App Url:</label>
                         <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
+
+                        <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />
+                        <div id="launchResult" data-bind="text:launchResult">
+
+                        </div>
                     </form>
                 </div>
                 <div data-bind="ifnot: authorization">
@@ -535,7 +541,7 @@
                 <h1>Manage Access</h1>
                 <h4>Control who can access your system</h4>
                 <h4>Application Rules</h4>
-                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], 
+                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'],filter: 'it.ObjectID == null'
                                         source: context().IngressIPRules }">
 
                 </div>
@@ -547,8 +553,17 @@
                 </div>
 
                 <h4>Addition service rules</h4>
-                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID'], source: context().IngressIPRules }">
+                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceAddress','Port','SSL'], 
+                                                source: context().IngressIPRules, filter: 'it.ObjectID != null' }">
 
+
+                    <script type="text/html" data-name-template="ObjectID-editor">
+                        <select data-bind="options: $root.context().Services.toKoArray(), value: value, 
+                                            optionsText:'Name', optionsValue:'ServiceID' "></select>
+                    </script>
+                    <script type="text/html" data-name-template="ObjectID-display">
+                        <span data-bind="readValue: { source: $root.context().Services, key: value, field: 'Name' }"></span>
+                    </script>
                 </div>
             </div>
                         </div>
