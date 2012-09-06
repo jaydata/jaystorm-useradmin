@@ -16,9 +16,10 @@ body {
 	padding:0;
 }
 
-#scroller ul {
+#scroller > ul {
 	list-style:none;
 	display:block;
+	background: #fff;
 	float:left;
 	width:100%;
 	height:100%;
@@ -27,7 +28,7 @@ body {
 	text-align:left;
 }
 
-#scroller li {
+#scroller > ul > li {
 	display:block;
 	position: relative;
 	vertical-align:middle;
@@ -163,7 +164,7 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
     #wrapper { top: 130px; }
     ul#screens 
     {
-        li { width: 940px; }
+        > li { width: 940px; }
     }
 }
 /*#endregion  Screen (768+) */
@@ -179,7 +180,7 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
     #wrapper { top: 90px; }
     ul#screens 
     {
-        li { width: 1170px; }
+        > li { width: 1170px; }
     }
 }
 /*#endregion Screen (1024+) */
