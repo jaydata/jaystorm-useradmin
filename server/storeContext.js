@@ -43,7 +43,7 @@ function storeContext(config, callback){
                             DatabaseID: database.DatabaseID
                         }));
                         db.saveChanges(function(){
-                            if (callback) callback();
+                            if (callback) callback(context);
                         });
                     }
                     return;
@@ -97,7 +97,7 @@ function storeContext(config, callback){
                                 DatabaseID: database.DatabaseID
                             }));
                             db.saveChanges(function(){
-                                if (callback) callback();
+                                if (callback) callback(context);
                             });
                         }
                     });

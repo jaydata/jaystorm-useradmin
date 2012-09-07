@@ -266,11 +266,55 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
 
     Tests: { type: $data.EntitySet, elementType: $data.JayStormAPI.Test },
     Permissions: { type: $data.EntitySet, elementType: $data.JayStormAPI.Permission },
-    Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database },
+    Databases: { type: $data.EntitySet, elementType: $data.JayStormAPI.Database, afterCreate: function (items) {
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var svc = this.Services.add({
+                DatabaseID: item.DatabaseID,
+                Name: item.Name,
+                Published: true
+            });
+        };
+        this.saveChanges();
+    } },
     ComplexTypes: { type: $data.EntitySet, elementType: $data.JayStormAPI.ComplexType },
     Entities: { type: $data.EntitySet, elementType: $data.JayStormAPI.Entity },
     EntityFields: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntityField },
-    EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet },
+    EntitySets: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySet, afterCreate: function (entitySets) {
+        var itemsToCreate = [];
+        var itemIds = [];
+        var dbID = entitySets[0].DatabaseID;
+        if (entitySets.length > 1) {
+            for (var i = 0; i < entitySets.length; i++) {
+                if (entitySets[i].DatabaseID !== dbID) {
+                    console.log("Batch create EntitySets for different DB-s are not allowed");
+                    return false;
+                }
+            };
+        }
+        
+        var self = this;
+
+        return function (cb) {
+            self.Services
+                .filter("it.DatabaseID == this.dbID", { dbID: dbID })
+                .forEach(function (service) {
+                    entitySets.forEach(function (entitySet) {
+                        self.EntitySetPublications.add({
+                            ServiceID: service.ServiceID,
+                            EntitySetID: entitySet.EntitySetID,
+                            Name: entitySet.Name
+                        });
+                    })
+                })
+                .then(function () {
+                    self.saveChanges(function () {
+                        console.log('items saved');
+                        cb(false);
+                    })
+                });
+        }
+    } },
     EntitySetPublications: { type: $data.EntitySet, elementType: $data.JayStormAPI.EntitySetPublication },
     EventHandlers: { type: $data.EntitySet, elementType: $data.JayStormAPI.EventHandler },
     IngressIPRules: { type: $data.EntitySet, elementType: $data.JayStormAPI.IngressIPRule },
@@ -278,70 +322,14 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
     Services: { type: $data.EntitySet, elementType: $data.JayStormAPI.Service },
     //ServiceOperations: { type: $data.EntitySet, elementType: $data.JayStormAPI.ServiceOperation },
     TypeTemplates: { type: $data.EntitySet, elementType: $data.JayStormAPI.TypeTemplate },
-    Users: { type: $data.EntitySet, elementType: $data.JayStormAPI.User },
-    Groups: { type: $data.EntitySet, elementType: $data.JayStormAPI.Group },
-
-    constructor: function () {
-        var self = this;
-
-
-        this.Databases.afterCreate = function (items) {
-
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                var svc = this.Services.add({
-                    DatabaseID: item.DatabaseID,
-                    Name: item.Name,
-                    Published: true
-                });
-            };
-            this.saveChanges();
-        };
-
-        this.EntitySets.afterCreate = function (entitySets) {
-            var itemsToCreate = [];
-            var itemIds = [];
-            var dbID = entitySets[0].DatabaseID;
-            if (entitySets.length > 1) {
-                for (var i = 0; i < entitySets.length; i++) {
-                    if (entitySets[i].DatabaseID !== dbID) {
-                        console.log("Batch create EntitySets for different DB-s are not allowed");
-                        return false;
-                    }
-                };
-            }
-
-            return function (cb) {
-                self.Services
-                    .filter("it.DatabaseID == this.dbID", { dbID: dbID })
-                    .forEach(function (service) {
-                        entitySets.forEach(function (entitySet) {
-                            self.EntitySetPublications.add({
-                                ServiceID: service.ServiceID,
-                                EntitySetID: entitySet.EntitySetID,
-                                Name: entitySet.Name
-                            });
-                        })
-                    })
-                    .then(function () {
-                        self.saveChanges(function () {
-                            console.log('items saved');
-                            cb(false);
-                        })
-                    });
-            }
-        };
-
+    Users: { type: $data.EntitySet, elementType: $data.JayStormAPI.User, beforeCreate: function (items) {
         var bc = require('bcrypt');
-
-        this.Users.beforeCreate = function (items) {
-            for (var i = 0; i < items.length; i++) {
-                var it = items[i];
-                it.Password = bc.hashSync(it.Password || Math.random().toString(), 8);
-            }
-        };
-
-    },
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            it.Password = bc.hashSync(it.Password || Math.random().toString(), 8);
+        }
+    } },
+    Groups: { type: $data.EntitySet, elementType: $data.JayStormAPI.Group },
 
     SystemTypes: {
         value: [
