@@ -100,6 +100,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
     },
     _loadXMLDoc: function (cnf, callback) {
         var xhttp = new XMLHttpRequest();
+        //xhttp.withCredentials = true;
         xhttp.open("GET", cnf.metadataUri, true, cnf.user, cnf.password);
         if (cnf.httpHeaders) {
             Object.keys(cnf.httpHeaders).forEach(function (header) {

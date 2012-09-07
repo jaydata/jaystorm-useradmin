@@ -58,9 +58,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
                 groupCollection.push(group);
             });
 
-            //koItem.addToGroup = function (g) {
-
-            //}
         }
 
 

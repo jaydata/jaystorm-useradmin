@@ -155,6 +155,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                     execute: function( item ) {
                         var entity = self.createContext().Entities.find(item.ElementTypeID());
                         entity.then(function(e) { self.setCurrentEntity(e.asKoObservable()) });
+                        console.log(item);
+                        //item.showControlBox("inrowFieldsEditor", {}, {});
                     }
                 },
                 {
@@ -217,3 +219,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         });
     }
 });
+
+function FieldsEditorModel(vm) {
+    
+
+    this.closeControlBox = function () {
+        vm.closeControlBox();
+    }
+}

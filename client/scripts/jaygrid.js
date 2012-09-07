@@ -73,15 +73,35 @@
         var props = [].concat(entityType.memberDefinitions.getPublicMappedProperties());
         if (fields.length > 0) {
             var res = [];
-            for(var i = 0; i < fields.length; i++) {
-                var propname = fields[i].name || fields[i];
+            for (var i = 0; i < fields.length; i++) {
                 var prop = null;
-                j = 0;
-                while(!prop && j < props.length) {
-                    if (props[j].name === propname) {
-                        prop = props[j];
+                var propname = fields[i];
+                if (typeof propname === 'string') {
+                    j = 0;
+                    while (!prop && j < props.length) {
+                        if (props[j].name === propname) {
+                            prop = props[j];
+                        }
+                        j++;
                     }
-                    j++;
+                } else {
+                    //if object then is a memDef
+                    console.log("fakefield");
+                    if (fields[i].isVirtual) {
+                        prop = fields[i];
+                    } else {
+                        var propname = fields[i].name;
+                        var j = 0;
+                        while (!prop && j < props.length) {
+                            if (props[j].name === propname) {
+                                prop = props[j];
+                            }
+                            j++;
+                        }
+                        if (prop) {
+                            $data.typeSystem.extend(fields[i], prop);
+                        }
+                    }
                 }
                 if (prop) {
                     res.push(prop);
@@ -456,11 +476,10 @@
                 }
 
                 self.extendItem = function (koItem) {
+                    
                     koItem.getColumns = getKoItemColumns;
                     var koCells = ko.observableArray([]);
                     koItem.getControlCells = koCells;
-
-
                     koItem.showControlBox = function (index, data, template, viewModelType, viewModelData) {
                         koCells.removeAll();
                         console.log("showControlBox");
