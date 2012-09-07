@@ -29,13 +29,15 @@ $(function () {
                         }
                         self.authorization(result.authorization);
                         globalAuthorization = result.authorization;
-                        var apps = result.apps.map(function (item) {
-                            return {
-                                appid: item.appid,
-                                url: 'http://' + item.appid + '.jaystack.net/',
-                                title: item.name
-                            }
-                        });
+                        var apps = result.apps
+                                        .filter(function(item) { return item.status != 'Cancelled'})
+                                        .map(function (item) {
+                                                return {
+                                                    appid: item.appid,
+                                                    url: 'http://' + item.appid + '.jaystack.net/',
+                                                    title: item.name
+                                                }
+                                        });
                         self.applications(apps);
                         //self.currentApplication
 
