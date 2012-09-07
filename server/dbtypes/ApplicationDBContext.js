@@ -70,7 +70,7 @@ registerEdmTypes();
 
 
 $data.Entity.extend('$data.JayStormAPI.IngressIPRule', {
-    ID: { type: 'id', key: true, computed: true },
+    ID: { type: 'id', key: true, computed: true, nullable: false },
     ObjectID: { type: 'id', $sourceTable: 'Services', $sourceValue: 'ServiceID', $sourceText: 'Name' , $displayName: 'Service'},
     SourceAddress: { type: 'string' },      //--> ipadd or network
     Port: { type: 'int' },
@@ -78,14 +78,14 @@ $data.Entity.extend('$data.JayStormAPI.IngressIPRule', {
 });
 
 $data.Entity.extend('$data.JayStormAPI.IngressOriginRule', {
-    ID: { type: 'id', key: true, computed: true },
+    ID: { type: 'id', key: true, computed: true, nullable: false },
     ObjectID: { type: 'id' },
     SourceOrigin: { type: 'string' },       //--> hostname or *
     Method: { type: 'Array', elementType: "string" }
 });
 
 $data.Entity.extend('$data.JayStormAPI.ApplicationMetadata', {
-    ID: { type: 'id', key: true, computed: true },
+    ID: { type: 'id', key: true, computed: true, nullable: false },
     AppOwner: { type: 'string' },
     AppItems: { type: 'array', elementType: '$data.Object' }
 });
@@ -108,14 +108,14 @@ $data.Entity.extend('$data.JayStormAPI.EntityBase', {
     }
 });
 
-$data.Entity.extend('$data.JayStormAPI.ObjectPointer', {
-    Collection: { type: 'id' },
-    ID: { type: 'id' },
-    Database: { type: 'string' }
-});
+//$data.Entity.extend('$data.JayStormAPI.ObjectPointer', {
+//    Collection: { type: 'id' },
+//    ID: { type: 'id' },
+//    Database: { type: 'string' }
+//});
 
 $data.Entity.extend('$data.JayStormAPI.Permission', {
-    PermissionID: { type: 'id', key: true, computed: true },
+    PermissionID: { type: 'id', key: true, computed: true, nullable: false },
     DatabaseID: { type: 'id', required: true, $sourceTable: 'Databases', $sourceValue: 'DatabaseID', $sourceText: 'Name' },
     EntitySetID: { type: 'id', required: true, $sourceTable: 'EntitySets', $sourceValue: 'EntitySetID', $sourceText: 'Name' },
     GroupID: { type: 'id', required: true, $sourceTable: 'Groups', $sourceValue: 'GroupID', $sourceText: 'Name' },
@@ -130,7 +130,7 @@ $data.Entity.extend('$data.JayStormAPI.Permission', {
 });
 
 $data.Entity.extend('$data.JayStormAPI.Entity', {
-    EntityID: { type: 'id', key: true, computed: true },
+    EntityID: { type: 'id', key: true, computed: true, nullable: false },
     Name: { type: 'string', required: true },
     FullName: { type: 'string', required: true },
     Namespace: { type: 'string' },
@@ -141,7 +141,7 @@ $data.Entity.extend('$data.JayStormAPI.Entity', {
 $data.JayStormAPI.Entity.extend('$data.JayStormAPI.ComplexType', {});
 
 $data.Entity.extend('$data.JayStormAPI.EntityField', {
-    EntityFieldID: { type: 'id', key: true, computed: true },
+    EntityFieldID: { type: 'id', key: true, computed: true, nullable: false },
     EntityID: { type: 'id', required: true },
     Index: { type: 'number' },
     Name: { type: 'string', required: true },
@@ -191,7 +191,7 @@ $data.Entity.extend('$data.JayStormAPI.ServiceOperation', {
 });*/
 
 $data.Entity.extend('$data.JayStormAPI.EventHandler', {
-    EventHandlerID: { type: 'id', key: true, computed: true },
+    EventHandlerID: { type: 'id', key: true, computed: true, nullable: false },
     Type: { type: 'string', required: true },
     Handler: { type: 'string', required: true },
     EntitySetID: { type: 'id', required: true, $sourceTable: 'EntitySets', $sourceValue: 'EntitySetID', $sourceDisplay: 'Name', $displayName: 'Table name' },
@@ -200,14 +200,14 @@ $data.Entity.extend('$data.JayStormAPI.EventHandler', {
 
 
 $data.Entity.extend('$data.JayStormAPI.Database', {
-    DatabaseID: { type: 'id', key: true, computed: true },
+    DatabaseID: { type: 'id', key: true, computed: true, nullable: false },
     Name: { type: 'string', required: true },
     Namespace: { type: 'string', required: true },
     Publish: { type: 'bool' }
 });
 
 $data.Entity.extend('$data.JayStormAPI.EntitySet', {
-    EntitySetID: { type: 'id', key: true, computed: true },
+    EntitySetID: { type: 'id', key: true, computed: true, nullable: false },
     Name: { type: 'string', required: true, $displayName: 'Table name' },
     ElementType: { type: 'string' },
     ElementTypeID: { type: 'id', required: true },
@@ -217,7 +217,7 @@ $data.Entity.extend('$data.JayStormAPI.EntitySet', {
 });
 
 $data.Entity.extend('$data.JayStormAPI.Service', {
-    ServiceID: { type: 'id', key: true, computed: true },
+    ServiceID: { type: 'id', key: true, computed: true, nullable: false },
     Name: { type: 'string', required: true, $displayName: 'Service name' },
     DatabaseID: { type: 'id', $sourceTable: 'Databases', $sourceKey: 'DatabaseID', $sourceDisplay: 'Name', $displayName: 'Database' },
     BaseServiceID: { type: 'id', $sourceTable: 'Services', $sourceKey: 'ServiceID', $sourceDisplay: 'Name', $displayName: 'Extends' },
@@ -233,14 +233,14 @@ $data.Entity.extend('$data.JayStormAPI.Service', {
 });
 
 $data.Entity.extend('$data.JayStormAPI.EntitySetPublication', {
-    EntitySetPublicationID: { type: 'id', key: true, computed: true },
+    EntitySetPublicationID: { type: 'id', key: true, computed: true, nullable: false },
     ServiceID: { type: 'id',  $sourceTable: 'Services', $sourceKey: 'ServiceID', $sourceDisplay: 'Name' },
     EntitySetID: { type: 'id', $sourceTable: 'EntitySets', $sourceKey: 'EntitySetID', $sourceDisplay: 'Name'},
     Publishe: { type: 'boolean' }
 });
 
 $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
-    UserID: { type: 'id', key: true, computed: true },
+    UserID: { type: 'id', key: true, computed: true, nullable: false },
     Login: { type: 'Edm.String', required: true },
     FirstName: { type: 'Edm.String' },
     LastName: { type: 'Edm.String' },
@@ -251,13 +251,13 @@ $data.Class.define('$data.JayStormAPI.User', $data.Entity, null, {
 });
 
 $data.Class.define('$data.JayStormAPI.Group', $data.Entity, null, {
-    GroupID: { type: 'id', key: true, computed: true },
+    GroupID: { type: 'id', key: true, computed: true, nullable: false },
     Name: { type: 'Edm.String' }
 });
 
 
 $data.Class.define('$data.JayStormAPI.Test', $data.Entity, null, {
-    _id: { type: 'string', key: true },
+    _id: { type: 'string', key: true, nullable: false },
     Name: { type: 'Edm.String' }
 });
 
@@ -340,7 +340,8 @@ $data.Class.defineEx('$data.JayStormAPI.Context', [$data.EntityContext, $data.Se
                 TypeDescriptor: {
                     Type: 'id',
                     Key: true,
-                    Computed: true
+                    Computed: true,
+                    Nullable: false,
                 }
 
             },

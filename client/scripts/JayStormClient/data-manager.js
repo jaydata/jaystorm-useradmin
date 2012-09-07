@@ -51,7 +51,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
 
                 self.dbContextFactory(appDBFactory);
 
-            });
+            }, { httpHeaders: { 'Authorization': globalAuthorization, 'X-Domain': 'jokerStorm' } } );
         })
 
 
