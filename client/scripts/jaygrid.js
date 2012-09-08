@@ -463,6 +463,21 @@
 
                 self.columns = ko.observableArray(cols);
 
+                self.resolveEditorModel = function (colData) {
+                    var editorModel;
+                    if (colData.metadata instanceof $data.MemberDefinition) {
+                        var defaultEditorModelResolver;
+                        if (viewModel.EditorModelTemplate && viewModel.EditorModelTemplate.isAssignableTo && viewModel.EditorModelTemplate.isAssignableTo($data.JayStormClient.EditorModelBase)) {
+                            defaultEditorModelResolver = new viewModel.EditorModelTemplate();
+                        } else {
+                            defaultEditorModelResolver = new $data.JayStormClient.EditorModelBase();
+                        }
+                        colData.Model = defaultEditorModelResolver.getModel(colData);
+                    }
+                    
+                    return colData;
+                }
+
                 //a micro viewmodel for the cells, all necessary data collected
                 function getKoItemColumns(rowIndex) {
                     var self2 = this;
@@ -482,7 +497,7 @@
                                 self2.showControlBox(i, col, template, viewModelType, viewModelData);
                             }})(i, col)
 
-                        result.push(col);
+                        result.push(self.resolveEditorModel(col));
                     }
                     
                     return result;
@@ -618,7 +633,7 @@
 
 
 
-                self.getTemplate =  function(propertyOwner, metadata) {
+                self.getTemplate =  function(propertyOwner, metadata, customModel) {
                     var nameSuffix = '';
 
                     if (! (metadata.resolvedName && metadata.stringName)) {
@@ -626,11 +641,14 @@
                         metadata.resolvedName = Container.resolveName(metadata.type);
                     };
 
+                    if (!customModel) customModel = {};
+
                     if (self.objectsInEditMode.indexOf(propertyOwner) > -1 && metadata['$editable'] !== false) {
                         var templateId;
                         var result = element.nameTemplates[metadata.name + "-editor"] ||
                             element.typeTemplates[metadata.stringName + "-editor"] ||
                             element.typeTemplates[metadata.resolvedName + "-editor"] ||
+                            (document.getElementById(customModel.templateName + '-editor') ? customModel.templateName + '-editor' : undefined) ||
                             (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-editor' :
                                     (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
                                             'jay-data-grid-' + metadata.resolvedName + '-editor' :
@@ -649,6 +667,7 @@
                     var result = element.nameTemplates[metadata.name + '-display'] ||
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
+                                 (document.getElementById(customModel.templateName + '-display') ? customModel.templateName + '-editor' : undefined) ||
                                  (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
                                 'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));
