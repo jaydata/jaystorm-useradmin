@@ -89,8 +89,8 @@ $data.Entity.extend('$data.JayStormAPI.IngressIPRule', {
 $data.Entity.extend('$data.JayStormAPI.IngressOriginRule', {
     ID: { type: 'id', key: true, computed: true, nullable: false },
     ObjectID: { type: 'id' },
-    SourceOrigin: { type: 'string' },       //--> hostname or *
-    Method: { type: 'Array', elementType: "string" }
+    SourceOrigin: { type: 'string' }/*,       //--> hostname or *
+    Method: { type: 'Array', elementType: "string" }*/
 });
 
 $data.Entity.extend('$data.JayStormAPI.ApplicationMetadata', {
