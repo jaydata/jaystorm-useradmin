@@ -159,6 +159,9 @@
             this.x += 1;
             console.dir(this);
             //console.dir(vModel);
+            if (element["jaystate"] && element["jaystate"]["dispose"]) {
+                element["jaystate"].dispose();
+            }
             var viewModel = viewModelAccessor(), allBindings = allBindingsAccessor();
 
             var source = null, fields = [];
@@ -558,11 +561,13 @@
                 }, this);
 
                 self.goToNextPage = function() {
-                    self.currentPage( self.currentPage() + 1);
+                    self.currentPage(self.currentPage() + 1);
+                    self.refresh(Math.random());
                 };
 
                 self.goToPreviousPage = function() {
-                    self.currentPage( self.currentPage() - 1);
+                    self.currentPage(self.currentPage() - 1);
+                    self.refresh(Math.random());
                 }
 
                 //console.log("model builder:" + viewModel.discriminatorColumn);
@@ -571,15 +576,22 @@
 
                 self.refresh = viewModel.refresher || ko.observable();
 
-                //self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
+                self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
                 
 
+                console.dir("@@@@@@@@@@@");
+                //console.dir(ko.contextFor(container));
 
                 self.itemsTrigger = ko.computed({
-                    disposeWhenNodeIsRemoved: container,
-
+                    //disposeWhenNodeIsRemoved: container,
                     read: function () {
+
+                        var v = this.pageSize();
+                        var z = this.currentPage();
+                        var w = this.sortColumn();
+
                         if (ko.utils.unwrapObservable(this.source) == null) {
+                            console.log("quitting without anything...");
                             return;
                         }
                         var q = this.source();
@@ -588,50 +600,51 @@
                         var column = ko.utils.unwrapObservable(this.discriminatorColumn);
                         var value = ko.utils.unwrapObservable(this.discriminatorValue);
 
-                        if (column && !(value) ) {
+                        if (column && !(value)) {
                             return;
                         }
 
-                        if (value  && column) {
+                        if (value && column) {
                             q = q.filter("it." + column + " == '" + value + "'");
                         }
 
-                        //var sortColumn = this.sortColumn();
+                        var sortColumn = this.sortColumn();
 
-                        //if (!q.defaultType.memberDefinitions["$" + sortColumn]) {
-                        //    sortColumn = '';
-                        //}
-                        //q.length(function (x) {
-                        //    self.itemCount(x);
-                        //});
+                        if (!q.defaultType.memberDefinitions["$" + sortColumn]) {
+                            sortColumn = '';
+                        }
+                        //get length of current selection;
 
-                        if (self.filter) {
+                        if (this.filter()) {
                             q = q.filter(ko.utils.unwrapObservable(self.filter));
                         };
-                        q = //q.order(sortColumn)
-                            q
+
+                        q.length(function (x) {
+                            self.itemCount(x);
+                        });
+
+                        q = q.order(sortColumn)
                             .skip(this.pageSize() * this.currentPage())
-                            .take(this.pageSize());
+                            .take(this.pageSize())
+                            .toArray(
+                                function (entities) {
+                                    $data.trace(1, "JayGrid data received:", entities);
+                                    self.items.removeAll();
+                                    for (var i = 0; i < entities.length; i++) {
+                                        var item = entities[i];
+                                        var koItem = item.asKoObservable();
+                                        self.extendItem(koItem);
+                                        self.items.push(koItem);
+                                    }
+                                    $data.trace(1, "JayGrid data pushed to grid:", self.items());
+                        }
+                    );
+                    },
+                    owner: this
 
-                            q.toArray(
-                            function (entities) {
-                                $data.trace(1, "JayGrid data received:", entities);
-                                self.items.removeAll();
-                                for(var i = 0; i < entities.length; i++) {
-                                    var item = entities[i];
-                                    var koItem = item.asKoObservable();
-                                    self.extendItem(koItem);
-                                    self.items.push( koItem );
-                                }
-                                $data.trace(1, "JayGrid data pushed to grid:", self.items());
+                });
 
-                            }
-                        );
-                    }
-                }
-                , this);
-
-
+                element["jaystate"] = self.itemsTrigger;
 
                 self.getTemplate =  function(propertyOwner, metadata, customModel) {
                     var nameSuffix = '';
@@ -680,19 +693,21 @@
 
             }
 
-
+            zzzzzzz = element;
             var receiveEvents = viewModel.receiveEvents !== false;
 
 
-            while(element.firstChild) {
+            while (element.firstChild) {
+                ko.cleanNode(element.firstChild);
                 ko.removeNode(element.firstChild);
             }
 
             var gridTemplateName = allBindings.gridTemplate || "jay-data-grid";
 
             var container = element.appendChild( document.createElement("div"));
+            ccccccc = container;
 
-            ko.renderTemplate(  gridTemplateName,
+            ssss = ko.renderTemplate(  gridTemplateName,
                                 new _model(container),
                                 {templateEngine: templateEngine},
                                 container,
