@@ -82,8 +82,13 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
 });
 
 function SetPasswordModel(model) {
+    var self = this;
+    var user = model.user;
+
+    this.validation = ko.observable();
     this.savePassword = function () {
 
+        this.close();
     }
     this.close = function () {
         model.closeControlBox();
