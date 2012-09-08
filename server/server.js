@@ -135,6 +135,17 @@ app.use('/launch', function (req, res, next) {
     console.log("sending: " + JSON.stringify(req.body));
     launchReq.end(JSON.stringify(req.body));
 });
+
+app.use('/crypt', passport.initialize());
+app.use('/crypt', passport.authenticate('basic', { session: false }));
+app.use('/crypt', function (req, res) {
+    res.setHeader("Content-Type", "application/json;charset=UTF-8");
+    //var result = {
+    //    authorization: 
+    //};
+    res.end(JSON.stringify(result));
+});
+
 //app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
 
 
@@ -258,26 +269,13 @@ app.use('/logout', function(req, res){
 
 
 var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
+require('./stormAdminAPI');
+app.use('/adminapi', passport.initialize());
+app.use('/adminapi', passport.authenticate('basic', { session: false }));
+app.use("/adminapi", $data.JayService.createAdapter(JayStorm.AdminAPI));
 
-//app.use("/dbz", $data.JayService.OData.Utils.simpleBodyReader());
-app.use("/dbz", $data.JayService.createAdapter(db2Svc, function (req, res) {
-    return new db2Svc({
-        name: "mongoDB", databaseName: "ApplicationDBX",
-    });
-}));
  
-var appdbSvc = require('./dbtypes/ApplicationDBContext.js').serviceType;
-
-
-//app.use("/ApplicationDB", $data.JayService.OData.Utils.simpleBodyReader());
-app.use("/ApplicationDB", $data.JayService.createAdapter(appdbSvc, function (req, res) {
-    return new appdbSvc({ name: "mongoDB", databaseName: "ApplicationDB"  });
-}));
-
-
 var provSvc = require('./dbtypes/AWSBroker.js').serviceType;
-
-
 app.use("/stormaws", $data.JayService.OData.Utils.simpleBodyReader());
 app.use("/stormaws", $data.JayService.createAdapter(provSvc, function (req, res) {
     return new provSvc({
@@ -285,6 +283,7 @@ app.use("/stormaws", $data.JayService.createAdapter(provSvc, function (req, res)
         responseLimit: -1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission
     });
 }));
+
 /*app.use("/db2", $data.JayService.Middleware.cache());
 app.use("/db2", $data.JayService.Middleware.authentication());
 app.use("/db2", $data.JayService.Middleware.authorization());

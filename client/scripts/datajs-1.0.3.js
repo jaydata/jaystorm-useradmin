@@ -1027,7 +1027,7 @@
             var callbackParameterName = defined(request.callbackParameterName, this.callbackParameterName);
             var formatQueryString = defined(request.formatQueryString, this.formatQueryString);
             if (!enableJsonpCallback || isLocalUrl(url)) {
-
+                console.log("create xhr");
                 xhr = createXmlHttpRequest();
                 xhr.onreadystatechange = function () {
                     if (done || xhr === null || xhr.readyState !== 4) {

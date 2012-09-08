@@ -80,3 +80,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
 
     }
 });
+
+function SetPasswordModel(model) {
+    this.savePassword = function () {
+
+    }
+    this.close = function () {
+        model.closeControlBox();
+    }
+}

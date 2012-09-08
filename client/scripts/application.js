@@ -1,4 +1,5 @@
 var globalAuthorization;
+var adminApiClient;
 
 $(function () {
 
@@ -12,6 +13,12 @@ $(function () {
     function ClientApplication() {
         var self = this;
         
+        self.adminApi = ko.observable();
+        
+        $data.service("/adminapi", function (f) {
+            self.adminApi(f());
+        });
+
         self.authorization = ko.observable();
 
         function getAuthroization() {
@@ -130,7 +137,7 @@ $(function () {
     }
 
 
-    ko.applyBindings(new ClientApplication(), document.getElementById("AppUI"));
+    ko.applyBindings(adminApiClient = new ClientApplication(), document.getElementById("AppUI"));
 
 });
 

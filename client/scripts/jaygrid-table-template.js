@@ -10,18 +10,17 @@
 var templateList = [
     ["jay-data-grid",
         "<form data-bind='submit:save'>\
-<div data-bind='text: itemCount'></div>\
             <div data-bind='visible: source' class='action-buttons'>\
                 <span class='iblock'>\
-                    <!-- ko if: showNewCommand -->                             \
+                    <!-- ko if: showNewCommandTop && itemCount() > 7-->                             \
                     <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
                      <!-- /ko --> \
                     <!-- ko if: showRemoveAllCommand && (itemCount() > 3) -->                             \
                     <a class='btn btn-danger' href='#' data-bind='click:removeAll'><i class='icon-trash icon-white'></i> Remove all</a>\
                      <!-- /ko --> \
-                    <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges' />\
+                    <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges() && itemCount() > 7' />\
                 </span>\
-                <span class='iblock pull-right'>\
+                <span data-bind=\"if: showSort\" class='iblock pull-right'>\
                     <span class='title'>Sort:</span><select class='input-medium' data-bind='options: columns, optionsValue: \"name\", optionsText: \"name\", value: sortColumn'></select>\
                 </span>\
             </div>\
@@ -33,8 +32,7 @@ var templateList = [
             </table>\
                 <div data-bind='visible: source' class='action-buttons'>\
                     <span class='iblock'>\
-<div data-bind='text: showNewCommand'></div>\
-                        <!-- ko if: showNewCommand -->  \
+                        <!-- ko if: showNewCommandBottom -->  \
                         <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
                         <!-- /ko -->\
                         <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges'/>\

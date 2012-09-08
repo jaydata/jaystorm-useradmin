@@ -147,19 +147,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         self.tableCommands =
             [
                 {
-                    displayName: 'Manage fields',
-                    commandName: 'manageFields',
-                    visible: function( item ) {
-                        return true;
-                    },
-                    execute: function( item ) {
-                        var entity = self.createContext().Entities.find(item.ElementTypeID());
-                        entity.then(function(e) { self.setCurrentEntity(e.asKoObservable()) });
-                        console.log(item);
-                        //item.showControlBox("inrowFieldsEditor", {}, {});
-                    }
-                },
-                {
                     displayName: 'Edit ServerEvents',
                     commandName: 'editEvents',
                     visible: function( item ) {
@@ -182,6 +169,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         }
 
 
+        //TODO refactor to fields editor!!!
         self.typeTemplates = ko.observableArray([]);
 
         var primitiveTypes  = { 'string' : 1,'number' :1,'boolean':1,'id':1,'date':1};
@@ -192,6 +180,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             })
         })
 
+        //TODO refactor to fields editor!!!
         self.contextFactory.subscribe(function (value) {
             value().TypeTemplates.toArray(self.typeTemplates);
 
@@ -221,7 +210,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 });
 
 function FieldsEditorModel(vm) {
-    
+    this.data = vm;
 
     this.closeControlBox = function () {
         vm.closeControlBox();

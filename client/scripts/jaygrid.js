@@ -101,6 +101,7 @@
                         if (prop) {
                             $data.typeSystem.extend(fields[i], prop);
                         }
+                        prop = fields[i];
                     }
                 }
                 if (prop) {
@@ -153,7 +154,10 @@
             return { 'controlsDescendantBindings': true };
         },
 
-        update: function(element, viewModelAccessor, allBindingsAccessor, vModel) {
+        update: function (element, viewModelAccessor, allBindingsAccessor, vModel) {
+            this.x = this.x || 1;
+            this.x += 1;
+            console.dir(this);
             //console.dir(vModel);
             var viewModel = viewModelAccessor(), allBindings = allBindingsAccessor();
 
@@ -180,7 +184,8 @@
                     if (child.nodeType == 1) {
                         tmpName = child.getAttribute("data-type-template");
                         if (tmpName) {
-                            var rndId = Math.random().toString().replace(".","").replace(",","");
+                            var rndId = Math.random().toString().replace(".", "").replace(",", "");
+
                             child.setAttribute("id", rndId);
                             element.typeTemplates[tmpName] = rndId;
                             document.body.appendChild(child);
@@ -212,8 +217,9 @@
             fields = viewModel.fields || [];
 
 
-            function _model() {
-
+            console.dir(element);
+            function _model(container) {
+                
                 for(var j in viewModel) {
                     this[j] = viewModel[j];
                 };
@@ -225,7 +231,8 @@
                 console.log("Grid model created");
                 var self = this;
 
-                self.pageSize = ko.isObservable(viewModel.pageSize) ? viewModel.pageSize : ko.observable(viewModel.pageSize || 10);
+                self.pageSize = ko.isObservable(viewModel.pageSize) ?
+                                viewModel.pageSize : ko.observable(viewModel.pageSize || 10);
 
                 self.itemCount = ko.observable();
 
@@ -236,9 +243,9 @@
 
 
 
-                self.source.subscribe( function(){
-                    self.sortColumn('');
-                }, 'beforeChange');
+                //self.source.subscribe( function(){
+                //    self.sortColumn('');
+                //}, 'beforeChange');
 
                 if (viewModel.items) {
                     console.log("replacing items");
@@ -269,12 +276,14 @@
                     function doSave() {
                         source.entityContext.saveChanges( function() {
                             console.log("Items in tracker #2:" + source.entityContext.stateManager.trackedEntities.length);
-                            self.refresh(Math.random());
+                            if (self.objectsToDelete().length > 0) {
+                                self.refresh(Math.random());
+                            }
                             self.objectsToDelete.removeAll();
                             self.objectsInEditMode.removeAll();
                             self.saving(false);
 
-                        })
+                        }).fail( function() { console.dir(arguments); })
                     }
 
                     if (self.beforeSave) {
@@ -299,9 +308,11 @@
 
 
                 self.showNewCommand = ("showNewCommand" in self) ? self.showNewCommand : ko.observable(true);
+                self.showNewCommandTop = ("showNewCommandTop" in self) ? self.showNewCommandTop : ko.observable(true);
+                self.showNewCommandBottom = ("showNewCommandBottom" in self) ? self.showNewCommandBottom : ko.observable(true);
                 self.showRemoveAllCommand = ("showRemoveAllCommand" in self) ? self.showRemoveAllCommand : ko.observable(true);
                 self.showSaveCommand = ("showSaveCommand" in self) ? self.showSaveCommand : ko.observable(false);
-
+                self.showSort = ("showSort" in self) ? self.showSort: ko.observable(true);
 
 
                 self.pendingChanges = ko.computed( function() {
@@ -545,56 +556,62 @@
                 //self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
                 
 
-                self.itemsTrigger = ko.computed(function () {
 
-                    if (ko.utils.unwrapObservable(this.source) == null) {
-                        return;
-                    }
-                    var q = this.source();
+                self.itemsTrigger = ko.computed({
+                    disposeWhenNodeIsRemoved: container,
 
-                    var ref = this.refresh();
-                    var column = ko.utils.unwrapObservable(this.discriminatorColumn);
-                    var value = ko.utils.unwrapObservable(this.discriminatorValue);
-
-                    if (column && !(value) ) {
-                        return;
-                    }
-
-                    if (value  && column) {
-                        q = q.filter("it." + column + " == '" + value + "'");
-                    }
-
-                    var sortColumn = this.sortColumn();
-
-                    if (!q.defaultType.memberDefinitions["$" + sortColumn]) {
-                        sortColumn = '';
-                    }
-                    q.length(function (x) {
-                        self.itemCount(x);
-                    });
-
-                    if (self.filter) {
-                        q = q.filter(ko.utils.unwrapObservable(self.filter));
-                    };
-                    q =q.order(sortColumn)
-                        .skip(this.pageSize() * this.currentPage())
-                        .take(this.pageSize());
-
-                        q.toArray(
-                        function (entities) {
-                            $data.trace(1, "JayGrid data received:", entities);
-                            self.items.removeAll();
-                            for(var i = 0; i < entities.length; i++) {
-                                var item = entities[i];
-                                var koItem = item.asKoObservable();
-                                self.extendItem(koItem);
-                                self.items.push( koItem );
-                            }
-                            $data.trace(1, "JayGrid data pushed to grid:", self.items());
-
+                    read: function () {
+                        if (ko.utils.unwrapObservable(this.source) == null) {
+                            return;
                         }
-                    );
-                }, this);
+                        var q = this.source();
+
+                        var ref = this.refresh();
+                        var column = ko.utils.unwrapObservable(this.discriminatorColumn);
+                        var value = ko.utils.unwrapObservable(this.discriminatorValue);
+
+                        if (column && !(value) ) {
+                            return;
+                        }
+
+                        if (value  && column) {
+                            q = q.filter("it." + column + " == '" + value + "'");
+                        }
+
+                        //var sortColumn = this.sortColumn();
+
+                        //if (!q.defaultType.memberDefinitions["$" + sortColumn]) {
+                        //    sortColumn = '';
+                        //}
+                        //q.length(function (x) {
+                        //    self.itemCount(x);
+                        //});
+
+                        if (self.filter) {
+                            q = q.filter(ko.utils.unwrapObservable(self.filter));
+                        };
+                        q = //q.order(sortColumn)
+                            q
+                            .skip(this.pageSize() * this.currentPage())
+                            .take(this.pageSize());
+
+                            q.toArray(
+                            function (entities) {
+                                $data.trace(1, "JayGrid data received:", entities);
+                                self.items.removeAll();
+                                for(var i = 0; i < entities.length; i++) {
+                                    var item = entities[i];
+                                    var koItem = item.asKoObservable();
+                                    self.extendItem(koItem);
+                                    self.items.push( koItem );
+                                }
+                                $data.trace(1, "JayGrid data pushed to grid:", self.items());
+
+                            }
+                        );
+                    }
+                }
+                , this);
 
 
 
@@ -606,7 +623,7 @@
                         metadata.resolvedName = Container.resolveName(metadata.type);
                     };
 
-                    if (self.objectsInEditMode.indexOf(propertyOwner) > -1) {
+                    if (self.objectsInEditMode.indexOf(propertyOwner) > -1 && metadata['$editable'] !== false) {
                         var templateId;
                         var result = element.nameTemplates[metadata.name + "-editor"] ||
                             element.typeTemplates[metadata.stringName + "-editor"] ||
@@ -654,7 +671,7 @@
             var container = element.appendChild( document.createElement("div"));
 
             ko.renderTemplate(  gridTemplateName,
-                                new _model(),
+                                new _model(container),
                                 {templateEngine: templateEngine},
                                 container,
                                 "replaceNode");

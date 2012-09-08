@@ -77,6 +77,7 @@
         
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
+
             $("ul.nav > li > a").live('click', function () {
                 var $parent = $(this).parent();
 
@@ -132,7 +133,6 @@
                 for (var i = 0; i < menuItems.length; i++) {
                     menuItems[i].addEventListener("click", function () {
                         var scrollTo = this.getAttribute("id");
-
                         hScroll.scrollToPage(scrollTo, 200);
                     }, false);
                 }
@@ -216,12 +216,31 @@
                                 </div>
                             </script>
 
+                            <script type="text/html" id="setPasswordUI">
+                                <form data-bind="submit: savePassword">
+                                <div>
+                                    Password: <input type="password" required/><br />
+                                    Retype: <input type="password" required/>
+                                </div>
+                                    <input type="submit" />
+                                </form>
+                                <a href="#" data-bind="click: close">close</a>
+                            </script>
+
                 <h1>Manage Users</h1>
                 <div data-bind="if: Users">
                     <h4>Manage users</h4>
                     <a href="#" data-bind="click: stress">Click for 1000 rows</a>
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                                 fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
+
+                        <script type="text/html" data-name-template="Password-editor">
+                            <a href="#">!!</a>
+                        </script>
+                        <script type="text/html" data-name-template="Password-display">
+                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
+                        </script>
+
                         <script type="text/html" data-name-template="Groups-editor">
                             <div data-bind="foreach: value">
                                 <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
@@ -237,10 +256,11 @@
                             </div>
                         </script>
                     </div>
+
                 </div>
                 <div data-bind="if: Groups">
                     <h4>Manage groups</h4>
-                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }"></div>
+                    <div data-bind="jayGrid: {  source: Groups, items: allGroups, fields:['Name'] }"></div>
                 </div>
             </div>
                         </div>
@@ -378,87 +398,87 @@
 
                                 <script type="text/html" id="insideEditor">
                                     <div>
-                                        <div data-bind="text: console.log($data)"></div>
+<!--                                        <div data-bind="visible: selectedEntity">
+                                            <form data-bind="submit: saveEntity">
+                                                <fieldset data-bind="with: selectedEntity">
+                                                    <legend>Table item props</legend>
+                                                    Table item name: <span data-bind="text: Name"></span>,
+                                                    Namespace: <span data-bind="text: Namespace"></span>
+                                                </fieldset>
+                                            </form>
+                                            <h5>List of FIELDS</h5>
+                                        </div>-->
+
                                         <a href="#" data-bind="click: closeControlBox">Close</a>
+                                        <div data-bind="jayGrid: {
+                                                    source: $root.createContext().EntityFields,
+                                                    showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
+                                                    discriminatorColumn:'EntityID',
+                                                    afterAddNew: $root.afterAddNewEntityField,
+                                                    typeTemplates: $root.typeTemplates,
+                                                    elementTypes: $root.elementTypes,
+                                                    defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
+                                                    discriminatorValue:$data.data.owner.ElementTypeID(),
+                                                    fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 'Name','TypeTemplate','ElementType','Key','Required']}">
+
+                                                <div data-name-template="TypeTemplate-editor">
+                                                    <div data-bind="text: console.log($root)"></div>
+                                                    <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
+                                                            value: value,
+                                                            optionsCaption: value() ? undefined : 'Select'"></select>
+                                                </div>
+                                                <div data-name-template="ElementType-editor">
+                                                <div data-bind="if: owner.TypeTemplate() === 'Array'">
+                                                <select data-bind="options:$root.elementTypes,
+                                                        optionsText:'Name',
+                                                        optionsValue: 'TypeName',
+                                                        value: value,
+                                                        optionsCaption: value() ? undefined :  'Select...'"></select>
+                                                    </div>
+                                                </div>
+                                        </div>
                                     </div>
                                 </script>
                                 
-                                <script type="text/html" id="fucker">
+                                <script type="text/html" id="editFieldsCell">
                                     <div>
-                                        <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel,{ a:1})">Click for editor</a>
+                                        <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, $data)">Click for editor</a>
                                     </div>
                                 </script>
 
                                 <h1>Manage Database Schemas</h1>
-                                <h4>Select database to manage:</h4>
-                                <select data-bind="options: databases, optionsCaption: 'Select database',
+                                <h4 style="float:left">Select database to manage:</h4>
+<!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
-                                                    value: $root.currentDatabase"></select>
+                                                    value: $root.currentDatabase"></select>-->
 
+                                <ul class="nav nav-tabs" data-bind="foreach:databases">
+                                    <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data)"></a></li>
+                                </ul>
                                 <h3>Tables | ComplexTypes</h3>
 
                                 <div data-bind="if: currentDatabase">
-                                    <table class="table">
+                                    <h4>Database details</h4>
+
+                                    <h5>List of tables</h5>
+                                    <div data-bind="jayGrid: {
+                                                source: context().EntitySets,
+                                                XitemCommands: tableCommands,
+                                                fields: [{name: 'Name', '$width':'200px'}, { name: 'XXX', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 'Published'],
+                                                discriminatorColumn: 'DatabaseID',
+                                                beforeSave: beforeDatabaseSave,
+                                                discriminatorValue: currentDatabaseID,
+                                                pageSize: eSetsPageSize},
+                                                visible: currentDatabase">
+
+                                    </div>
+
+<!--                                    <table class="table">
                                         <tr>
                                             <td>
-                                                <h4>Database details</h4>
-
-                                                <h5>List of tables</h5>
-                                                <div data-bind="jayGrid: {
-                                                            source: context().EntitySets,
-                                                            itemCommands: tableCommands,
-                                                            fields: [{name: 'Name'},{ name: 'XXX', isVirtual: true, type:'string', '$width':'200px', '$template':'fucker'}, 'Published'],
-                                                            discriminatorColumn: 'DatabaseID',
-                                                            beforeSave: beforeDatabaseSave,
-                                                            discriminatorValue: currentDatabaseID,
-                                                            pageSize: eSetsPageSize},
-                                                            visible: currentDatabase">
-
-                                                </div>
 
                                             </td>
                                             <td>
-                                                <div data-bind="visible: selectedEntity">
-                                                    <form data-bind="submit: saveEntity">
-                                                        <fieldset data-bind="with: selectedEntity">
-                                                            Table item name: <span data-bind="text: Name"></span>,
-                                                            Namespace: <span data-bind="text: Namespace"></span>
-                                                        </fieldset>
-                                                    </form>
-                                                    <h5>List of FIELDS</h5>
-                                                    <div data-bind="jayGrid: {
-                                                                source: context().EntityFields,
-                                                                fields:['Index', 'Name','TypeTemplate','ElementType','Key','Computed','Required'],
-                                                                sortColumn: 'Index',
-                                                                afterAddNew: afterAddNewEntityField,
-                                                                discriminatorColumn: 'EntityID',
-                                                                discriminatorValue: currentEntityID,
-                                                                defaultValues: { 'DatabaseID' : currentDatabaseID },
-                                                                pageSize: eSetsPageSize},
-                                                                visible: currentDatabase">
-
-                                                        <script type="text/html" data-name-template="TypeTemplate-editor">
-                                                            <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
-                                                                    value: value,
-                                                                    optionsCaption: value() ? undefined : 'Select'"></select>
-                                                        </script>
-
-                                                        <script type="text/html" data-name-template="ElementType-editor">
-                                                            <div data-bind="if: owner.TypeTemplate() === 'Array'">
-                                                            <select data-bind="options:$root.elementTypes,
-                                                                    optionsText:'Name',
-                                                                    optionsValue: 'TypeName',
-                                                                    value: value,
-                                                                    optionsCaption: value() ? undefined :  'Select...'"></select>
-                                                            </div>
-
-                                                        </script>
-
-                                                        <script type="text/html" data-field-template="Roles">
-                                                            <div data-bind="text: $data"></div>
-                                                        </script>
-                                                    </div>
-                                                </div>
                                                 <h5>List of EVENTS</h5>
                                                 <div data-bind="visible: currentEntitySet">
                                                     <div data-bind="jayGrid: {
@@ -502,7 +522,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    </table>
+                                    </table>-->
                                 </div>
                             </div>
                         </div>
