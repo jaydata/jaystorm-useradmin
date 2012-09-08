@@ -39,7 +39,7 @@ $(function () {
                                                 }
                                         });
                         self.applications(apps);
-                        //self.currentApplication
+                        self.currentApplication(apps[0]);
 
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
@@ -70,7 +70,10 @@ $(function () {
                     return c;
                 }
                 self.currentAppDBContextFactory(appDBFactory);
-            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } });
+            }
+            //, { user: 'guest', password: 'guest' }
+            , { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
+            );
         });
 
         self.currentAppDBContextFactory = ko.observable();

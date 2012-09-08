@@ -55,11 +55,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
         self.tables = ko.observableArray([]);
 
         self.selectedDatabase.subscribe(function (value) {
-            //console.log(value);
-            //var id = value.DatabaseID();
-            //self.contextFactory().EntitySets
-            //    .filter(function (it) { return it.DatabaseID == this.id }, { id: id })
-            //    .toArray(self.tables);
+            console.log(value);
+            var id = value.DatabaseID();
+            self.createContext().EntitySets
+                .filter(function (it) { return it.DatabaseID == this.id }, { id: id })
+                .toArray(self.tables);
         });
 
         self.selectedTable = ko.observable();
@@ -74,9 +74,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
             var dbIDs = self.selectedDatabase() ? [self.selectedDatabase().DatabaseID()] :
                                                   self.databases().map(function (db) { return db.DatabaseID() });
 
-            //var setIDs = self.selectedTable() ?
-            //                    Q.fcall(function() { return [{setID: self.selectedTable().EntitySetID(), dbID: dbIDs[0] }] }):
-            //                    c.EntitySets.filter("it.DatabaseID in this.ids",{ids: dbIDs}).map("{ setID: it.EntitySetID, dbID: it.DatabaseID}").toArray();
 
             var groupIDs = self.selectedGroup() ? [self.selectedGroup().GroupID()] :
                 self.groups().map(function (group) { return group.GroupID() });
@@ -85,15 +82,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
 
 
             var permissions = [];
-            //        Q.when(setIDs).then(function(setIDs) {
-            //console.log(dbIDs, setIDs, groupIDs);
+
             for (var j = 0; j < dbIDs.length; j++) {
-                //                for(var k = 0; k < setIDs.length; k++) {
-                //if (setIDs[k].dbID == dbIDs[j]) {
                 for (var l = 0; l < groupIDs.length; l++) {
                     var p = new c.Permissions.createNew({
                         DatabaseID: dbIDs[j],
-                        EntitySetID: 'NTA0NjMzOTdkNzJmMWMxOTdhMDAwMDA0',//setIDs[k].setID,
+                        EntitySetID: self.selectedTable().EntitySetID(),
                         GroupID: groupIDs[l]
                     });
                     for (var z = 0; z < self.tablePermissions.length; z++) {

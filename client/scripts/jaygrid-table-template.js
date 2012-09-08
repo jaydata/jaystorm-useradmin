@@ -70,7 +70,7 @@ var templateList = [
 
     ["jay-data-grid-row",
         "<tr  data-bind='foreach: $data.getColumns($index) '>\
-            <!-- ko template: { name: (metadata[\"isVirtual\"] ? 'jay-data-grid-control-cell' : 'jay-data-grid-data-cell') } -->\
+            <!-- ko template: { name: (metadata[\"type\"] === \"itemCommands\" ? 'jay-data-grid-control-cell' : 'jay-data-grid-data-cell') } -->\
             <!-- /ko -->\
         </tr>\
         <tr data-bind='foreach: getControlCells'>\
@@ -80,7 +80,7 @@ var templateList = [
 
 
     ["jay-data-grid-data-cell",
-        "<td data-bind='template: $root.getTemplate($data.owner,$data.metadata)'></td>"],
+        "<td data-bind='template: $data.metadata[\"$template\"] ? $data.metadata[\"$template\"] : $root.getTemplate($data.owner,$data.metadata), style:{ width: $data.metadata[\"$width\"]}'></td>"],
 
 
 //    visible: visible($parents[1]), \
