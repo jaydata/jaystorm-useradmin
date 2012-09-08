@@ -86,13 +86,13 @@ $(function () {
         self.currentAppDBContextFactory = ko.observable();
 
         var modules = [
-            { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Manage Users', path: '/Users' },
+            { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
             { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Service Manager', path: '/Services' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Manage Data', path: '/Databases' },
-            { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: 'Manage Schema', path: '/Schema' },
-            { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Manage Security', path: '/Security' },
-            { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Manage Access', path: '/Access' },
-            { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Manage Static files', path: '/FileManager' }];
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Data Manager', path: '/Databases' },
+            { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: 'Schemas', path: '/Schema' },
+            { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security' },
+            { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Manager', path: '/Access' },
+            { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'File Manager', path: '/FileManager' }];
 
         
 

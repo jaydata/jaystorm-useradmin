@@ -62,6 +62,60 @@ body {
 }
 /*#endregion ISCROLL */
 
+/*#region HEADER */
+.navbar-inverse .navbar-inner {
+    height: auto;
+    border-bottom:1px solid #202224;
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat, #404244;
+    background-position: bottom center;
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat,-moz-linear-gradient(top,  #404244 0%, #202224 100%);
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat,-webkit-gradient(linear, left top, left bottom, color-stop(0%,#404244), color-stop(100%,#202224));
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat,-webkit-linear-gradient(top,  #404244 0%,#202224 100%);
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat,-o-linear-gradient(top,  #404244 0%,#202224 100%);
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat,-ms-linear-gradient(top,  #404244 0%,#202224 100%);
+    background: url('../images/nav_bg_wide.png') bottom center no-repeat,linear-gradient(to bottom,  #404244 0%,#202224 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404244', endColorstr='#202224',GradientType=0 );
+}
+
+.storm-header {
+    background: #101214;
+    background: -moz-linear-gradient(top, #101214 0%, black 280px);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#101214), color-stop(280px,black));
+    background: -webkit-linear-gradient(top, #101214 0%,black 280px);
+    background: -o-linear-gradient(top, #101214 0%,black 280px);
+    background: -ms-linear-gradient(top, #101214 0%,black 280px);
+    background: linear-gradient(to bottom, #101214 0%,black 280px);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#101214', endColorstr='#000000',GradientType=0 );
+    
+    position: fixed; top: 41px; left: 0; right: 0; width: 100%; line-height: 47px;
+    
+    label  { color: #999; }
+    select { margin-right: 10px; }
+}
+
+.navbar-inverse .nav .active > a, .navbar-inverse .nav .active > a:hover, .navbar-inverse .nav .active > a:focus 
+{
+    background: transparent;
+    
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.navbar-inverse .nav .active > a, .navbar-inverse .nav .active > a:hover { color: #00AFF0; }
+
+.navbar .nav { float: none !important; }
+
+.brand 
+{
+    display: inline-block; width: 142px; height: 28px; margin: 8px 15px 0 0 !important; padding: 0 !important; text-indent: -205px; overflow: hidden;
+    background: url(../img/logo_jaystorm.png) top left no-repeat;
+}
+/*#endregion HEADER */
+
+h1 { font-size: 30px; }
+H4 { font-size: 22px; }
+
 .nav-tabs > li > a, .nav-pills > li > a { padding-left: 11px !important; padding-right: 11px !important; }
 
 .pagination select {
@@ -100,7 +154,17 @@ body {
     
     tr, th, td { vertical-align: middle; }
     
+    th, td               
+    {
+        max-width: 120px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+        
+        /*span { text-overflow: ellipsis; }*/
+        
+        input[type="text"]  { max-width: 90%; }
+    }
+    
     select, textarea, input { margin-bottom: 0; width: auto; }
+    select { display: block; width: 100%; }
     
     .btn { margin-bottom: 5px; }
 }
@@ -143,10 +207,6 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
 }
 /*#endregion Screen (-480) */
 
-@media only screen and (min-width: 481px) and (max-width : 640px){
-
-}
-
 /*#region Screen (480-768) */
 @media only screen and (min-width: 481px) and (max-width : 768px), (min-device-width : 480px) and (max-device-width : 768px) {
 	
@@ -155,13 +215,13 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
 
 /*#region Screen iPad Portrait */
 @media only screen and (max-width: 768px) and (min-width: 768px) and (orientation:portrait){
-
+    #wrapper { top: 140px; }
 }
 /*#endregion Screen iPad Portrait */
 
 /*#region Screen (768+) */
 @media only screen and (min-width: 769px){
-    #wrapper { top: 130px; }
+    /*#wrapper { top: 130px; }*/
     ul#screens 
     {
         > li { width: 940px; }
@@ -175,12 +235,15 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
 }
 /*#endregion Screen (1024+) */
 
-/*#region Screen (1024+) */
-@media only screen and (min-width:1200px) {
-    #wrapper { top: 90px; }
+/*#region Screen (1200+) */
+@media only screen and (min-width:1200px) 
+{
+    @screen-width: 1200px;
+    
+    #wrapper { top: 90px; min-width: @screen-width; }
     ul#screens 
     {
-        > li { width: 1170px; }
+        > li { min-width: @screen-width; }
     }
 }
 /*#endregion Screen (1024+) */

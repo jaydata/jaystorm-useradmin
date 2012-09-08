@@ -58,26 +58,41 @@
         <script src="scripts/iscroll.js"></script>
         
         <style type="text/css">
-          .CodeMirror-fullscreen {
-            display: block;
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%;
-            z-index: 9999;
-          }
-          .CodeMirror-scroll {
-              height: auto;
-              overflow-y: hidden;
-              overflow-x: auto;
+            .CodeMirror-fullscreen
+            {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 9999;
             }
-            .activeline {background: rgba(255, 255, 255, 0.2) !important;}
-            span.CodeMirror-matchhighlight { background: rgba(255, 255, 255, 0.2); }
-            .CodeMirror-focused span.CodeMirror-matchhighlight { background: rgba(255, 255, 255, 0.3) !important; }
+
+            .CodeMirror-scroll
+            {
+                height: auto;
+                overflow-y: hidden;
+                overflow-x: auto;
+            }
+
+            .activeline
+            {
+                background: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            span.CodeMirror-matchhighlight
+            {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .CodeMirror-focused span.CodeMirror-matchhighlight
+            {
+                background: rgba(255, 255, 255, 0.3) !important;
+            }
         </style>
         
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
-
             $("ul.nav > li > a").live('click', function () {
                 var $parent = $(this).parent();
 
@@ -89,12 +104,14 @@
             function loaded() {
                 // ISCROLL
                 var screens = document.getElementById('screens'),
-                    screenWidth = screens.children[0].offsetWidth,
+                    screenWidth = $(window).innerWidth(),
                     screenItems = screens.children.length,
-                    scroller = document.getElementById('scroller');
+                    scroller = document.getElementById('scroller'),
+                    wrapper = document.getElementById('wrapper');
 
                 for (var i = 0; i < screenItems; i++) {
                     currentId = "screen-" + (i + 1);
+                    screens.children[i].style.width = screenWidth + 'px';
                     screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
 
                     // VERTICAL SCROLL
@@ -108,6 +125,8 @@
                     }));
                 }
 
+                // ISCOLL HORIZONTAL CONTAINER
+                wrapper.style.width = screenWidth + 'px';
                 scroller.style.width = (screenItems * screenWidth) + 'px';
 
                 // HORIZONTAL SCROLL
@@ -121,10 +140,10 @@
                     vScrollbar: false,
                     lockDirection: true,
                     onBeforeScrollEnd: function () {
-                        console.log('horizontal scroll - BeforeScrollEnd');
+                        //console.log('horizontal scroll - BeforeScrollEnd');
                     },
                     onScrollEnd: function () {
-                        console.log('horizontal scroll - ScrollEnd');
+                        //console.log('horizontal scroll - ScrollEnd');
                     }
                 });
 
@@ -133,6 +152,7 @@
                 for (var i = 0; i < menuItems.length; i++) {
                     menuItems[i].addEventListener("click", function () {
                         var scrollTo = this.getAttribute("id");
+
                         hScroll.scrollToPage(scrollTo, 200);
                     }, false);
                 }
@@ -140,27 +160,27 @@
 
             document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
             document.addEventListener('DOMContentLoaded', loaded, false);
+
+            window.onresize = function () {
+                loaded();
+            }
         </script>
     </head>
 <body>
     <!-- HEADER -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div id="AppUI" class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
+    <div id="AppUI">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="/">JayStorm Admin</a>
 
-                <a class="brand" href="/">JayStorm Admin</a>
-
-                <div class="nav-collapse collapse">
                     <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
                         <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
                     </ul>
                 </div>
             </div>
+        </div>
+        <div class="storm-header">
             <div class="container">
                 <div data-bind="if :authorization">
                     <form class="form-inline">
@@ -236,6 +256,11 @@
 
                         <script type="text/html" data-name-template="Password-editor">
                             <a href="#">!!</a>
+
+<!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
+
+                            </div>-->
+
                         </script>
                         <script type="text/html" data-name-template="Password-display">
                             <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
@@ -260,7 +285,7 @@
                 </div>
                 <div data-bind="if: Groups">
                     <h4>Manage groups</h4>
-                    <div data-bind="jayGrid: {  source: Groups, items: allGroups, fields:['Name'] }"></div>
+                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }"></div>
                 </div>
             </div>
                         </div>
@@ -473,12 +498,67 @@
 
                                     </div>
 
-<!--                                    <table class="table">
+                                    <table class="table">
                                         <tr>
                                             <td>
+                                                <h4>Database details</h4>
+
+                                                <h5>List of tables</h5>
+                                                <div data-bind="jayGrid: {
+                                                            source: context().EntitySets,
+                                                            itemCommands: tableCommands,
+                                                            fields: [{name: 'Name'},{ name: 'XXX', isVirtual: true, type:'string', '$width':'200px', '$template':'fucker'}, 'Published'],
+                                                            discriminatorColumn: 'DatabaseID',
+                                                            beforeSave: beforeDatabaseSave,
+                                                            discriminatorValue: currentDatabaseID,
+                                                            pageSize: eSetsPageSize},
+                                                            visible: currentDatabase">
+
+                                                </div>
 
                                             </td>
                                             <td>
+                                                <div data-bind="visible: selectedEntity">
+                                                    <form data-bind="submit: saveEntity">
+                                                        <fieldset data-bind="with: selectedEntity">
+                                                            Table item name: <span data-bind="text: Name"></span>,
+                                                            Namespace: <span data-bind="text: Namespace"></span>
+                                                        </fieldset>
+                                                    </form>
+                                                    <h5>List of FIELDS</h5>
+                                                    <div data-bind="jayGrid: {
+                                                                source: context().EntityFields,
+                                                                fields:['Index', 'Name','TypeTemplate','ElementType','Key','Computed','Required'],
+                                                                sortColumn: 'Index',
+                                                                afterAddNew: afterAddNewEntityField,
+                                                                discriminatorColumn: 'EntityID',
+                                                                discriminatorValue: currentEntityID,
+                                                                defaultValues: { 'DatabaseID' : currentDatabaseID },
+                                                                pageSize: eSetsPageSize},
+                                                                visible: currentDatabase">
+
+                                                        <script type="text/html" data-name-template="TypeTemplate-editor">
+                                                            <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
+                                                                    value: value,
+                                                                    optionsCaption: value() ? undefined : 'Select'"></select>
+                                                        </script>
+
+                                                        <script type="text/html" data-name-template="ElementType-editor">
+                                                            <div data-bind="if: owner.TypeTemplate() === 'Array'">
+                                                            <select data-bind="options:$root.elementTypes,
+                                                                    optionsText:'Name',
+                                                                    optionsValue: 'TypeName',
+                                                                    value: value,
+                                                                    optionsCaption: value() ? undefined :  'Select...'"></select>
+                                                            </div>
+
+                                                        </script>
+
+                                                        <script type="text/html" data-field-template="Roles">
+                                                            <div data-bind="text: $data"></div>
+                                                        </script>
+                                                    </div>
+                                                </div>
                                                 <h5>List of EVENTS</h5>
                                                 <div data-bind="visible: currentEntitySet">
                                                     <div data-bind="jayGrid: {
@@ -522,7 +602,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    </table>-->
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -578,6 +658,10 @@
                                         source: context().IngressIPRules }">
 
                 </div>
+                <div data-bind="jayGrid: { fields: ['SourceOrigin'],filter: 'it.ObjectID == null',
+                                        source: context().IngressOriginRules }">
+
+                </div>
                 <h4>Default service rules</h4>
                 <div id="svcAccessGrid" data-bind="jayGrid: { showNewCommand: false, showRemoveAllCommand: false,
                                 fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
@@ -588,6 +672,18 @@
                 <h4>Addition service rules</h4>
                 <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceAddress','Port','SSL'], 
                                                 source: context().IngressIPRules, filter: 'it.ObjectID != null' }">
+
+
+                    <script type="text/html" data-name-template="ObjectID-editor">
+                        <select data-bind="options: $root.context().Services.toKoArray(), value: value, 
+                                            optionsText:'Name', optionsValue:'ServiceID' "></select>
+                    </script>
+                    <script type="text/html" data-name-template="ObjectID-display">
+                        <span data-bind="readValue: { source: $root.context().Services, key: value, field: 'Name' }"></span>
+                    </script>
+                </div>
+                <div id="ingressOrigin" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceOrigin'], 
+                                                source: context().IngressOriginRules, filter: 'it.ObjectID != null' }">
 
 
                     <script type="text/html" data-name-template="ObjectID-editor">
