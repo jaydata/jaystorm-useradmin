@@ -335,12 +335,18 @@
                     //alert("it." + );
                 };
 
-                self.addNew = function() {
+                var click = 0,
+                    ipad = navigator.userAgent.toString().toLowerCase().match(/ipad/i) != null;
+
+                self.addNew = function () {
+                    // iPad double click fix
+                    click++;
+                    if (ipad && click % 2) return;
+
                     var es = ko.utils.unwrapObservable(self.source);
                     var o = new es.createNew();
                     o = o.asKoObservable();
                     var idx = self.items().length;
-
 
                     self.extendItem(o);
 
@@ -370,12 +376,8 @@
                         }
                     } else {
                         self.items.push(o);
-
                     }
-
-
                 };
-
 
 
                 var itemCommands = [

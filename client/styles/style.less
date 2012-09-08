@@ -64,7 +64,7 @@ body {
 
 /*#region HEADER */
 .navbar-inverse .navbar-inner {
-    min-height: 90px; height: auto;
+    height: auto;
     border-bottom:1px solid #202224;
     background: url('../images/nav_bg_wide.png') bottom center no-repeat, #404244;
     background-position: bottom center;
@@ -77,6 +77,22 @@ body {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404244', endColorstr='#202224',GradientType=0 );
 }
 
+.storm-header {
+    background: #101214;
+    background: -moz-linear-gradient(top, #101214 0%, black 280px);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#101214), color-stop(280px,black));
+    background: -webkit-linear-gradient(top, #101214 0%,black 280px);
+    background: -o-linear-gradient(top, #101214 0%,black 280px);
+    background: -ms-linear-gradient(top, #101214 0%,black 280px);
+    background: linear-gradient(to bottom, #101214 0%,black 280px);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#101214', endColorstr='#000000',GradientType=0 );
+    
+    position: fixed; top: 41px; left: 0; right: 0; width: 100%; line-height: 47px;
+    
+    label  { color: #999; }
+    select { margin-right: 10px; }
+}
+
 .navbar-inverse .nav .active > a, .navbar-inverse .nav .active > a:hover, .navbar-inverse .nav .active > a:focus 
 {
     background: transparent;
@@ -86,8 +102,19 @@ body {
     box-shadow: none;
 }
 
+.navbar-inverse .nav .active > a, .navbar-inverse .nav .active > a:hover { color: #00AFF0; }
+
 .navbar .nav { float: none !important; }
+
+.brand 
+{
+    display: inline-block; width: 142px; height: 28px; margin: 8px 15px 0 0 !important; padding: 0 !important; text-indent: -205px; overflow: hidden;
+    background: url(../img/logo_jaystorm.png) top left no-repeat;
+}
 /*#endregion HEADER */
+
+h1 { font-size: 30px; }
+H4 { font-size: 22px; }
 
 .nav-tabs > li > a, .nav-pills > li > a { padding-left: 11px !important; padding-right: 11px !important; }
 
