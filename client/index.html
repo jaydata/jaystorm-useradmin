@@ -88,12 +88,14 @@
             function loaded() {
                 // ISCROLL
                 var screens = document.getElementById('screens'),
-                    screenWidth = screens.children[0].offsetWidth,
+                    screenWidth = $(window).innerWidth(),
                     screenItems = screens.children.length,
-                    scroller = document.getElementById('scroller');
-
+                    scroller = document.getElementById('scroller'),
+                    wrapper = document.getElementById('wrapper');
+                                
                 for (var i = 0; i < screenItems; i++) {
                     currentId = "screen-" + (i + 1);
+                    screens.children[i].style.width = screenWidth + 'px';
                     screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
 
                     // VERTICAL SCROLL
@@ -107,6 +109,8 @@
                     }));
                 }
 
+                // ISCOLL HORIZONTAL CONTAINER
+                wrapper.style.width = screenWidth + 'px';
                 scroller.style.width = (screenItems * screenWidth) + 'px';
 
                 // HORIZONTAL SCROLL
@@ -120,10 +124,10 @@
                     vScrollbar: false,
                     lockDirection: true,
                     onBeforeScrollEnd: function () {
-                        console.log('horizontal scroll - BeforeScrollEnd');
+                        //console.log('horizontal scroll - BeforeScrollEnd');
                     },
                     onScrollEnd: function () {
-                        console.log('horizontal scroll - ScrollEnd');
+                        //console.log('horizontal scroll - ScrollEnd');
                     }
                 });
 
@@ -140,6 +144,10 @@
 
             document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
             document.addEventListener('DOMContentLoaded', loaded, false);
+
+            window.onresize = function () {
+                loaded();
+            }
         </script>
     </head>
 <body>
@@ -147,19 +155,17 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div id="AppUI" class="navbar-inner">
             <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<!--                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </a>
+                </a>-->
 
                 <a class="brand" href="/">JayStorm Admin</a>
 
-                <div class="nav-collapse collapse">
-                    <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
-                        <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
-                    </ul>
-                </div>
+                <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
+                    <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
+                </ul>
             </div>
             <div class="container">
                 <div data-bind="if :authorization">
