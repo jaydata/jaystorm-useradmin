@@ -141,17 +141,29 @@ var templateList = [
         "<input type='number' \
             data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
+    ["jay-data-grid-$data.Number-default-editor",
+        "<input type='number' \
+            data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
+
     ["jay-data-grid-$data.Geography-default-editor",
         "<input type='number' \
             data-bind='value: Model.Longitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /> / \
         <input type='number' \
             data-bind='value: Model.Latitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
+    ["jay-data-grid-$data.Geography-default-display",
+        "<span data-bind='text: Model.Longitude'></span> / <span data-bind='text: Model.Latitude'></span>"],
+
     ["jay-data-grid-$data.Date-default-editor",
-        "<input type='text' \
-            data-bind='value: Model.Date, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /> \
+        "a<input type='date' \
+            data-bind='value: Model.Date, attr: { required: metadata.required }' /> \
         <input type='text' \
-            data-bind='value: Model.Time, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
+            data-bind='value: Model.Time, attr: { required: metadata.required }' />"],
+
+    ["jay-data-grid-$data.Date-default-display",
+        "<span data-bind='text: Model.Display.Date'></span> \
+        <span data-bind='text: Model.Display.Time'></span> \
+        (GMT <span data-bind='text: Model.Display.OffsetPoz'></span><span data-bind='text: Model.Display.Offset'></span>)"],
 
 ];
     $data.jayGridTemplates = $data.jayGridTemplates || {};

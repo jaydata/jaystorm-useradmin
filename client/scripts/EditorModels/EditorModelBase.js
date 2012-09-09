@@ -16,25 +16,58 @@
         }
 
         model.Value.subscribe(function (val) {
-            columnInfo.Value(parseInt(val));
+            columnInfo.value(parseInt(val));
+        });
+
+        return model;
+    },
+    '$data.Number': function (columnInfo) {
+        var model = {
+            Value: ko.observable(columnInfo.value()),
+            templateName: 'jay-data-grid-$data.Number-default'
+        }
+
+        model.Value.subscribe(function (val) {
+            columnInfo.value(parseFloat(val));
         });
 
         return model;
     },
     '$data.Date': function (columnInfo) {
-        var dateVal = columnInfo.value() || new Date(0);
-        var dateStr = dateVal.getFullYear() + "/" + (dateVal.getMonth() + 1) + "/" + dateVal.getDate();
-        var timeStr = dateVal.getHours() + ":" + dateVal.getMinutes() + ":" + dateVal.getSeconds() + "." + dateVal.getMilliseconds();
+        var dateVal = columnInfo.value() || new Date();
+        var dateStr = this.numComplete(dateVal.getFullYear()) + "-" + this.numComplete(dateVal.getMonth() + 1) + "-" + this.numComplete(dateVal.getDate());
+        //var timeStr = this.numComplete(dateVal.getHours()) + ":" + this.numComplete(dateVal.getMinutes()) + ":" + this.numComplete(dateVal.getSeconds());
+        var timeStr = dateVal.toLocaleTimeString();
 
-
+        var dispDate = this.displayDate(dateVal);
         var model = {
             Date: ko.observable(dateStr),
             Time: ko.observable(timeStr),
+            Display: {
+                Date: ko.observable(dispDate.Date),
+                Time: ko.observable(dispDate.Time),
+                Offset: ko.observable(dispDate.Offset),
+                OffsetPoz: ko.observable(dateVal.getTimezoneOffset() <= 0 ? '+' : '')
+            },
             templateName: 'jay-data-grid-$data.Date-default'
         }
 
+        columnInfo.value.subscribe(function (val) {
+            var newDate = this.displayDate(val);
+            model.Display.Date = ko.observable(newDate.Date);
+            model.Display.Time = ko.observable(newDate.Time);
+            model.Display.Offset = ko.observable(newDate.Offset);
+            model.Display.OffsetPoz = ko.observable(val.getTimezoneOffset() <= 0 ? '+' : '');
+        });
+
         model.Date.subscribe(function (val) {
-            var date = new Date(val);
+            var date = columnInfo.value();
+            var newdate = new Date(val);
+
+            date.setYear(newdate.getFullYear());
+            date.setMonth(newdate.getMonth());
+            date.setDate(newdate.getDate());
+
             columnInfo.value(date);
         });
 
@@ -45,13 +78,32 @@
             date.setHours(time.getHours());
             date.setMinutes(time.getMinutes());
             date.setSeconds(time.getSeconds());
-            date.setMilliseconds(time.getMilliseconds());
 
             columnInfo.value(date);
         });
 
         return model;
     },
+    numComplete: function (int) {
+        switch (true) {
+            case int < 10 && int >= 0:
+                return '0' + int;
+            case int > -10 && int < 0:
+                return '-0' + int*(-1);
+            default:
+                return int;
+
+        }
+        return int < 10 ? '0' + int : int;
+    },
+    displayDate: function(date){
+        return {
+            Date: this.numComplete(date.getMonth() + 1) + "/" + this.numComplete(date.getDate()) + "/" + this.numComplete(date.getFullYear()),
+            Time: date.toLocaleTimeString(),
+            Offset: this.numComplete(Math.round(date.getTimezoneOffset() / -60)) + ":" + this.numComplete(date.getTimezoneOffset() % -60)
+        }
+    },
+
     '$data.Geography': function (columnInfo) {
         var geoVal = columnInfo.value() || new $data.Geography(0,0);
         var model = {

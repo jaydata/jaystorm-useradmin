@@ -680,7 +680,7 @@
                     var result = element.nameTemplates[metadata.name + '-display'] ||
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
-                                 (document.getElementById(customModel.templateName + '-display') ? customModel.templateName + '-editor' : undefined) ||
+                                 (document.getElementById(customModel.templateName + '-display') ? customModel.templateName + '-display' : undefined) ||
                                  (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
                                 'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));
