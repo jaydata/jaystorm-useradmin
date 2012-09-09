@@ -76,6 +76,29 @@
                 height: auto;
                 overflow-y: hidden;
                 overflow-x: auto;
+                margin: 0 0 20px 0;
+                border: 10px solid #F0F1F2;
+                position: relative;
+            }
+
+            .CodeMirror-scroll:after
+            {
+                pointer-events: none;
+                border: 1px solid #DEDEDE;
+                position: absolute; top: 0; bottom: 0; right: 0; left: 0;
+                content: '';
+            }
+
+            .CodeMirror-gutter-text
+            {
+                border-bottom: 1px solid #DEDEDE;
+                position: relative; bottom: 2px;
+            }
+            
+            .CodeMirror-gutter
+            {
+                border-top: 1px solid #DEDEDE;
+                border-left: 1px solid #DEDEDE;
             }
 
             .activeline
@@ -96,6 +119,10 @@
         
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
+            function is_touch_device() {
+                return !!('ontouchstart' in window);
+            }
+
             $("ul.nav > li > a").live('click', function () {
                 var $parent = $(this).parent();
 
@@ -105,9 +132,11 @@
 
             var hScroll, vScrolls = [], currentId;
             function loaded() {
+
                 // ISCROLL
                 var screens = document.getElementById('screens'),
                     screenWidth = $(window).innerWidth(),
+                    screenHeight = $(window).innerHeight(),
                     screenItems = screens.children.length,
                     scroller = document.getElementById('scroller'),
                     wrapper = document.getElementById('wrapper');
@@ -117,15 +146,17 @@
                     screens.children[i].style.width = screenWidth + 'px';
                     screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
 
-                    // VERTICAL SCROLL
-                    vScrolls.push(new iScroll(currentId, {
-                        checkDOMChanges: true,
-                        hScroll: false,
-                        hScrollbar: false,
-                        vScroll: true,
-                        vScrollbar: true,
-                        lockDirection: true
-                    }));
+                    if (is_touch_device()) {
+                        // VERTICAL SCROLL
+                        vScrolls.push(new iScroll(currentId, {
+                            checkDOMChanges: true,
+                            hScroll: false,
+                            hScrollbar: false,
+                            vScroll: true,
+                            vScrollbar: true,
+                            lockDirection: true
+                        }));
+                    }
                 }
 
                 // ISCOLL HORIZONTAL CONTAINER
@@ -149,13 +180,18 @@
                         //console.log('horizontal scroll - ScrollEnd');
                     }
                 });
+                if (!is_touch_device()) {
+                    hScroll.disable();
+                }
 
                 // MENU ITEMS
-                var menuItems = document.body.querySelectorAll("ul.nav li a");
+                var menuItems = document.body.querySelectorAll("ul.nav li a"),
+                    welcome = document.getElementById("welcome");
+
                 for (var i = 0; i < menuItems.length; i++) {
                     menuItems[i].addEventListener("click", function () {
-                        var scrollTo = this.getAttribute("id");
-
+                        var scrollTo = parseInt(this.getAttribute("id"));
+                        welcome.style.display = "none";
                         hScroll.scrollToPage(scrollTo, 200);
                     }, false);
                 }
@@ -167,12 +203,20 @@
             window.onresize = function () {
                 loaded();
             }
+
+            function slideclick(e, element) {
+                e.preventDefault();
+                document.getElementById("welcome").style.display = "none";
+                var id = element.getAttribute("id");
+                $("ul.nav > li > a[id='" + id + "']").trigger("click");
+                hScroll.scrollToPage(id, 200);
+            }
         </script>
     </head>
 <body>
     <!-- HEADER -->
     <div id="AppUI">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="brand" href="/">JayStorm Admin</a>
@@ -203,12 +247,70 @@
                     </form>
                 </div>
                 <div data-bind="ifnot: authorization">
-                    <p>Collecting apps and getting authorization. Please wait...</p>
+                    <p style="color: #fff;">Collecting apps and getting authorization. Please wait...</p>
                 </div>
             </div>
         </div>
     </div>
     <!-- HEADER -->
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcome" class="container" data-bind="if :authorization">
+        <ul id="feature-list-left" class="feature left">
+            <li>
+                <div class="icon user">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="0" href="#">Users</a></h2>
+                    <p>Manage your users and security groups of your app</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon service">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
+                    <p>Publish your databases or JavaScript API via OData</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon data">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="2" href="#">Data manager</a></h2>
+                    <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. Read Application customization blogpost to learn the customization opportunities</p>
+                </div>
+            </li>
+        </ul>
+        <ul id="feature-list-right" class="feature right">
+            <li>
+                <div class="icon schema">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="3" href="#">Schemas</a></h2>
+                    <p>Manage the schema of your tables, add, edit columns, change field types</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon security">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="4" href="#">Security</a></h2>
+                    <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon access">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="5" href="#">Access Manager / Firewall</a></h2>
+                    <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon file">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);"  id="6" href="#">File manager</a></h2>
+                    <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- WELCOME SCREEN -->
 
     <!-- ISCROLL CONTAINER -->
     <div id="wrapper" class="container first">
@@ -217,17 +319,16 @@
             <div id="output"></div>
 
             <script type="text/html" id="foobar">
-                <table class="table">
-
-                </table>
+                <table class="table"></table>
             </script>
 
             <ul id="screens">
-                <li id="usersScreen">
-                    <div class="inwrapper">
+                <li id="usersScreen2">
+                    <div class="inwrapper container">
                         <div class="inscroller">
+                            
                             <div id="UserManagerUI" data-bind="if: visible">
-                            <script type="text/html" id="GroupArrayEditor">
+                                <script type="text/html" id="GroupArrayEditor">
                                 <div>
                                     <ul data-bind="foreach: Groups">
                                         <li>
@@ -239,7 +340,7 @@
                                 </div>
                             </script>
 
-                            <script type="text/html" id="setPasswordUI">
+                                <script type="text/html" id="setPasswordUI">
                                 <form data-bind="submit: savePassword">
                                 <div>
                                     Password: <input type="password" required/><br />
@@ -251,8 +352,14 @@
                             </script>
 
                 <h1>Manage Users</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
+
                 <div data-bind="if: Users">
                     <h4>Manage users</h4>
+
                     <a href="#" data-bind="click: stress">Click for 1000 rows</a>
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                                 fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
@@ -294,11 +401,15 @@
                         </div>
                     </div>
                 </li>
-                <li id="servicesScreen">
-                    <div class="inwrapper">
+                <li id="servicesScreen2">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="ServiceManagerUI" data-bind="if: visible">
-                <h1>Manage Services</h1>
+                            <h1>Manage Services</h1>
+                            <div class="alert alert-info fade in">
+                                <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                            </div>
 
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
@@ -358,6 +469,8 @@
                 </div>
             
                 <div data-bind="if: editingSource">
+                    <h2>Edit source</h2>
+
                     <div id="service-codemirror">
                     </div>
                 </div>
@@ -396,11 +509,15 @@
                         </div>
                     </div>
                 </li>
-                <li id="dataScreen">
+                <li id="dataScreen2">
                     <div class="inwrapper">
                         <div class="inscroller">
                             <div id="DataManagerUI" data-bind="if: visible">
                 <h1>Manage Data</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
 
                 <h4>Select database</h4>
                 <ul class="nav nav-tabs" data-bind="foreach: $root.databases">
@@ -419,8 +536,8 @@
                         </div>
                     </div>
                 </li>
-                <li id="schemaScreen">
-                    <div class="inwrapper">
+                <li id="schemaScreen2">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="SchemaManagerUI" data-bind="if: visible">
 
@@ -476,6 +593,11 @@
                                 </script>
 
                                 <h1>Manage Database Schemas</h1>
+                                <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                </div>
+
                                 <h4 style="float:left">Select database to manage:</h4>
 <!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
@@ -549,10 +671,14 @@
                     </div>
                 </li>
                 <li>
-                    <div class="inwrapper">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="SecurityManagerUI" data-bind="if: visible">
                 <h1>Manage Security</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
             
                 <h4>Add new permission</h4>
                 <form class="form-inline" data-bind="submit: addPermission">
@@ -588,10 +714,15 @@
                     </div>
                 </li>
                 <li>
-                    <div class="inwrapper">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="AccessManagerUI" data-bind="if: visible">
                 <h1>Manage Access</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
+
                 <h4>Control who can access your system</h4>
                 <h4>Application Rules</h4>
                 <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], filter: 'it.ObjectID == null',
@@ -637,10 +768,14 @@
                     </div>
                 </li>
                 <li>
-                    <div class="inwrapper">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="StaticFileUI" data-bind="if: visible">
                     <h1>Manage static files</h1>
+                    <div class="alert alert-info fade in">
+                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                    </div>
 
                     <form id="fileUpload" action="fileUpload" action="post">
                         <h4>Folder1 zip</h4>
@@ -670,10 +805,5 @@
         </div>
     </div>
     <!-- ISCROLL CONTAINER -->
-
-<!--</div>
-
-
-</td></tr></table>-->
 </body>
 </html>
