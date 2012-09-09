@@ -45,14 +45,12 @@
             };
         }
 
-        if (!Container.isTypeRegistered(observableClassNem)) {
-            $data.Class.defineEx(
-                observableClassNem,
-                [{ type: $data.KoObservableEntity, params: [new ConstructorParameter(0), function () { return originalType }] }],
-                null,
-                instanceDefinition,
-                null);
-        }
+        $data.Class.defineEx(
+            observableClassNem,
+            [{ type: $data.KoObservableEntity, params: [new ConstructorParameter(0), function () { return originalType }] }],
+            null,
+            instanceDefinition,
+            null);
     };
 
     if (typeof ko !== 'undefined') {

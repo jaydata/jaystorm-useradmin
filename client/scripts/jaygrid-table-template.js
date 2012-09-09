@@ -78,7 +78,7 @@ var templateList = [
 
 
     ["jay-data-grid-data-cell",
-        "<td data-bind='template: $data.metadata[\"$template\"] ? $data.metadata[\"$template\"] : $root.getTemplate($data.owner,$data.metadata), style:{ width: $data.metadata[\"$width\"]}'></td>"],
+        "<td data-bind='template: $data.metadata[\"$template\"] ? $data.metadata[\"$template\"] : $root.getTemplate($data.owner,$data.metadata,$data.Model), style:{ width: $data.metadata[\"$width\"]}'></td>"],
 
 
 //    visible: visible($parents[1]), \
@@ -133,7 +133,37 @@ var templateList = [
 
     ["jay-data-grid-Edm.Int32-editor",
         "<input type='range' min=1 max=10 \
-            data-bind='value: value, attr: { required: $data[\"required\"] }, css: { verror: owner.ValidationErrors }' />" ]
+            data-bind='value: value, attr: { required: $data[\"required\"] }, css: { verror: owner.ValidationErrors }' />"],
+
+
+    //
+    ["jay-data-grid-$data.Integer-default-editor",
+        "<input type='number' \
+            data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
+
+    ["jay-data-grid-$data.Number-default-editor",
+        "<input type='number' \
+            data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
+
+    ["jay-data-grid-$data.Geography-default-editor",
+        "<input type='number' \
+            data-bind='value: Model.Longitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /> / \
+        <input type='number' \
+            data-bind='value: Model.Latitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
+
+    ["jay-data-grid-$data.Geography-default-display",
+        "<span data-bind='text: Model.Longitude'></span> / <span data-bind='text: Model.Latitude'></span>"],
+
+    ["jay-data-grid-$data.Date-default-editor",
+        "<input type='date' \
+            data-bind='value: Model.Date, attr: { required: metadata.required }' /> \
+        <input type='text' \
+            data-bind='value: Model.Time, attr: { required: metadata.required }' />"],
+
+    ["jay-data-grid-$data.Date-default-display",
+        "<span data-bind='text: Model.Display.Date'></span> \
+        <span data-bind='text: Model.Display.Time'></span> \
+        (GMT <span data-bind='text: Model.Display.OffsetPoz'></span><span data-bind='text: Model.Display.Offset'></span>)"],
 
 ];
     $data.jayGridTemplates = $data.jayGridTemplates || {};
