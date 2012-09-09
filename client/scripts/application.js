@@ -65,8 +65,70 @@ $(function () {
             self.applicationToAdd(null);
         }
 
+        function syncAppItemsWithDatabases(appDBFactory) {
+            console.log("syncAppItems");
+            var c = appDBFactory();
+            var items = c.AppItems.filter("it.Type == 'QueryableDB'").toArray();
+            var dbs = c.Databases.toArray();
+            Q.allResolved([items, dbs]).then(function () {
+                console.log("sync app items loaded...");
+                var i = items.valueOf();
+                var ds = dbs.valueOf();
+                var syncOps = [];
+                var nuDbs = [];
+                var _c = appDBFactory();
+                for (var j = 0; j < i.length; j++) {
+                    var item = i[j];
+                    console.log("processing appitem: " + item.Id);
+                    var dbName = item.Data.dbname;
+                    var hasDbRecord = ds.some(function (db) { return db.Name == dbName; });
+                    if (!hasDbRecord) {
+                        var newDbRecord = new c.Databases.createNew({ Name: dbName, Namespace: dbName, Published: true });
+                        nuDbs.push(newDbRecord);
+                        _c.add(newDbRecord);
+                    }
+                };
+                
+                if (nuDbs.length > 0) {
+                    _c.saveChanges()
+                        .then(function () {
+                            var nuServices = [];
+                            nuDbs.forEach( function(nuDB)  {
+                                var service = new _c.Services.createNew({ 
+                                    DatabaseID: nuDB.DatabaseID, 
+                                    Name: nuDB.Name,
+                                    Published: true,
+                                    AllowAnonymous: true,
+                                    AllowAllOrigins: false,
+                                    UseDefaultPort: true,
+                                    UseSSL: true,
+                                    AllowAllIPs: false
+                                });
+                                _c.add(service);
+                                nuServices.push(service);
+                            });
+                            _c.saveChanges()
+                                .then(function () { console.log("   services initialized"); })
+                                .fail(function () { console.log("   could not initialize services:", arguments); });
+                        }).fail(function () { alert("could not sync db records!"); });
+                }
+
+                Q.allResolved(syncOps).then(function () {
+                    if (nuDbs.length > 0) {
+                        console.log("  syncing service records");
+                        nuDbs.forEach(function (nuDB) {
+                            console.dir(nuDB);
+                        });
+                    }
+                });
+
+            });
+
+        };
+
         self.currentApplication.subscribe(function (value) {
-            $data.service(value.url.trim() + "ApplicationDB", function (factory) {
+            var serviceUri = value.url.trim() + "ApplicationDB";
+            $data.service(serviceUri, function (factory) {
                 var appDBFactory = function () {
                     var c = factory.apply({}, arguments);
                     c.prepareRequest = function (req) {
@@ -76,9 +138,9 @@ $(function () {
                     }
                     return c;
                 }
+                syncAppItemsWithDatabases(appDBFactory);
                 self.currentAppDBContextFactory(appDBFactory);
             }
-            //, { user: 'guest', password: 'guest' }
             , { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
             );
         });
@@ -88,8 +150,8 @@ $(function () {
         var modules = [
             { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
             { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Service Manager', path: '/Services' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Data Manager', path: '/Databases' },
-            { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: 'Schemas', path: '/Schema' },
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: '(2) Data Manager', path: '/Databases' },
+            { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: '(1) Schemas', path: '/Schema' },
             { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security' },
             { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Manager', path: '/Access' },
             { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'File Manager', path: '/FileManager' }];

@@ -1,7 +1,7 @@
 ﻿
 $data.Class.define('$data.MetadataLoaderClass', null, null, {
     load: function (metadataUri, callBack, config) {
-
+        console.log("requesting: " + metadataUri);
         var cnf = {
             EntityBaseClass: '$data.Entity',
             ContextBaseClass: '$data.EntityContext',
@@ -29,7 +29,6 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
         callBack = $data.typeSystem.createCallbackSetting(callBack);
 
         if (metadataUri in this.factoryCache) {
-
             console.log("served from cache");
             console.dir(this.factoryCache[metadataUri]);
             callBack.success.apply({}, this.factoryCache[metadataUri]);
@@ -88,6 +87,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
     _transform: function (callBack, versionInfo, xml, xsl, cnf) {
         var self = this;
         var codeText = self._processResults(cnf.url, versionInfo, xml, xsl, cnf);
+        console.log("creating client from: " + cnf.metadataUri);
         eval(codeText);
         var ctxType = $data.generatedContexts.pop();
         var factoryFn = self.createFactoryFunc(ctxType, cnf);
@@ -109,6 +109,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
         }
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState === 4) {
+                //console.dir(xhttp);
                 callback(xhttp.responseXML);
             }
         };

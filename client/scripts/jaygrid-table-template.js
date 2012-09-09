@@ -155,7 +155,7 @@ var templateList = [
         "<span data-bind='text: Model.Longitude'></span> / <span data-bind='text: Model.Latitude'></span>"],
 
     ["jay-data-grid-$data.Date-default-editor",
-        "a<input type='date' \
+        "<input type='date' \
             data-bind='value: Model.Date, attr: { required: metadata.required }' /> \
         <input type='text' \
             data-bind='value: Model.Time, attr: { required: metadata.required }' />"],
