@@ -7,6 +7,7 @@ require('./TypeSystem/TypeSystem.js');
 require('./TypeSystem/Trace/Trace.js');
 require('./TypeSystem/Trace/Logger.js');
 require('./TypeSystem/Types/Geography.js');
+require('./TypeSystem/Types/EdmTypes.js');
 require('./Types/Expressions/ASTParser.js');
 require('./Types/Expressions/ExpressionNode2.js');
 require('./Types/Expressions/ArrayLiteralExpression.js');
