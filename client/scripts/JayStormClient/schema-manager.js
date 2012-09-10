@@ -223,7 +223,7 @@ function FieldsEditorModel(vm) {
         context.attach(self.selectedEntity());
         self.selectedEntity().HasChanges(true);
         context.attach(db);
-        db.HasChanges(true);
+        db.HasChanges = true;
         context.saveChanges();
     }
     this.selectedEntity = ko.observable();
