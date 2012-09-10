@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,9 +18,8 @@
         <script type="text/javascript" src="scripts/q.js"></script>
         <script src="/scripts/jaytracer.js"></script>
         <script src="/scripts/jaydata/jaydata.js"></script>
-
+        
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
-        <script src="/scripts/JaySvcUtil.js"></script>
         <script src="scripts/knockout-latest.js"></script>
         <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
         <script src="scripts/jaygrid-table-template.js"></script>
@@ -38,9 +36,13 @@
         <script src="scripts/JayStormClient/access-manager.js"></script>
         <script src="scripts/JayStormClient/staticfile-manager.js"></script>
         <script src="scripts/application.js"></script>
+<<<<<<< HEAD
 
         <script type="text/javascript" src="scripts/EditorModels/EditorModelBase.js"></script>
 
+=======
+
+>>>>>>> 748c3b3fa93d9fd398a26cd90c7c6477999b5005
 
         <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
         <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
@@ -256,60 +258,62 @@
     <!-- HEADER -->
 
     <!-- WELCOME SCREEN -->
-    <div id="welcome" class="container" data-bind="if :authorization">
-        <ul id="feature-list-left" class="feature left">
-            <li>
-                <div class="icon user">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="0" href="#">Users</a></h2>
-                    <p>Manage your users and security groups of your app</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon service">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
-                    <p>Publish your databases or JavaScript API via OData</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon data">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="2" href="#">Data manager</a></h2>
-                    <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. Read Application customization blogpost to learn the customization opportunities</p>
-                </div>
-            </li>
-        </ul>
-        <ul id="feature-list-right" class="feature right">
-            <li>
-                <div class="icon schema">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="3" href="#">Schemas</a></h2>
-                    <p>Manage the schema of your tables, add, edit columns, change field types</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon security">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="4" href="#">Security</a></h2>
-                    <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon access">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="5" href="#">Access Manager / Firewall</a></h2>
-                    <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon file">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);"  id="6" href="#">File manager</a></h2>
-                    <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
-                </div>
-            </li>
-        </ul>
+    <div id="welcome">
+        <div class="container" data-bind="if :authorization">
+            <ul id="feature-list-left" class="feature left">
+                <li>
+                    <div class="icon user">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="0" href="#">Users</a></h2>
+                        <p>Manage your users and security groups of your app</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon service">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
+                        <p>Publish your databases or JavaScript API via OData</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon data">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="2" href="#">Data manager</a></h2>
+                        <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. Read Application customization blogpost to learn the customization opportunities</p>
+                    </div>
+                </li>
+            </ul>
+            <ul id="feature-list-right" class="feature right">
+                <li>
+                    <div class="icon schema">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="3" href="#">Schemas</a></h2>
+                        <p>Manage the schema of your tables, add, edit columns, change field types</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon security">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="4" href="#">Security</a></h2>
+                        <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon access">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="5" href="#">Access Manager / Firewall</a></h2>
+                        <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon file">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);"  id="6" href="#">File manager</a></h2>
+                        <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
     <!-- WELCOME SCREEN -->
 
@@ -324,7 +328,16 @@
             </script>
 
             <ul id="screens">
-                <li id="usersScreen2">
+                <li id="usersScreen">
+                    <div class="todo-list">
+                        <h3>Todo list</h3>
+                        <dl>
+                            <dd>todo item 1</dd>
+                            <dd>todo item 2</dd>
+                            <dd>todo item 3</dd>
+                        </dl>
+                    </div>
+
                     <div class="inwrapper container">
                         <div class="inscroller">
                             
@@ -352,6 +365,10 @@
                                 <a href="#" data-bind="click: close">close</a>
                             </script>
 
+                <div class="alert alert-danger fright iblock">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p><strong>Attention!</strong> Refresh the page to see the changes!</p>
+                </div>
                 <h1>Manage Users</h1>
                 <div class="alert alert-info fade in">
                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
@@ -368,269 +385,6 @@
                         <script type="text/html" data-name-template="Password-editor">
                             <a href="#">!!</a>
 
-=======
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <title>JayStorm Admin</title>
-
-        <link href="styles/bootstrap.min.css" rel="stylesheet" />
-        <link href="styles/style.css" rel="stylesheet" />
-        <link href="styles/fileuploader.css" rel="stylesheet" />
-
-        <script src="/scripts/jquery-1.7.2.min.js"></script>
-        <script src="/scripts/fileuploader.js"></script>
-        <script src="scripts/bootstrap.min.js"></script>
-        <script src="scripts/datajs-1.0.3.js"></script>
-        <script type="text/javascript" src="scripts/q.js"></script>
-        <script src="/scripts/jaytracer.js"></script>
-        <script src="/scripts/jaydata/jaydata.js"></script>
-
-        <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
-        <script src="scripts/knockout-latest.js"></script>
-        <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
-        <script src="scripts/jaygrid-table-template.js"></script>
-        <script src="scripts/jaygrid.js"></script>
-        <script src="scripts/jay-property-editor.js"></script>
-        
-        <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
-        <script src="scripts/JayStormClient/service-app-base.js"></script>
-        <script src="scripts/JayStormClient/users-groups.js"></script>
-        <script src="scripts/JayStormClient/data-manager.js"></script>
-        <script src="scripts/JayStormClient/schema-manager.js"></script>
-        <script src="scripts/JayStormClient/service-manager.js"></script>
-        <script src="scripts/JayStormClient/security-manager.js"></script>
-        <script src="scripts/JayStormClient/access-manager.js"></script>
-        <script src="scripts/JayStormClient/staticfile-manager.js"></script>
-        <script src="scripts/application.js"></script>
-
-        <script type="text/javascript" src="scripts/EditorModels/EditorModelBase.js"></script>
-
-
-        <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
-        <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
-        <script src="scripts/codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
-        
-        <script src="scripts/codemirror/lib/util/simple-hint.js" type="text/javascript"></script>
-        <link rel="stylesheet" href="scripts/codemirror/lib/util/simple-hint.css" type="text/css">
-        
-        <script src="scripts/codemirror/lib/util/javascript-hint.js" type="text/javascript"></script>
-        
-        <script src="scripts/codemirror/lib/util/searchcursor.js" type="text/javascript"></script>
-        <script src="scripts/codemirror/lib/util/match-highlighter.js" type="text/javascript"></script>
-        <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
-        
-        <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
-        <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
-        
-        <script src="scripts/codemirror.js"></script>
-        <script src="scripts/iscroll.js"></script>
-        
-        <style type="text/css">
-            .CodeMirror-fullscreen
-            {
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 9999;
-            }
-
-            .CodeMirror-scroll
-            {
-                height: auto;
-                overflow-y: hidden;
-                overflow-x: auto;
-            }
-
-            .activeline
-            {
-                background: rgba(255, 255, 255, 0.2) !important;
-            }
-
-            span.CodeMirror-matchhighlight
-            {
-                background: rgba(255, 255, 255, 0.2);
-            }
-
-            .CodeMirror-focused span.CodeMirror-matchhighlight
-            {
-                background: rgba(255, 255, 255, 0.3) !important;
-            }
-        </style>
-        
-        <script src="scripts/inflection.js"></script>
-        <script type="text/javascript">
-            $("ul.nav > li > a").live('click', function () {
-                var $parent = $(this).parent();
-
-                $parent.parent().find("li.active").removeClass("active");
-                $parent.addClass("active");
-            });
-
-            var hScroll, vScrolls = [], currentId;
-            function loaded() {
-                // ISCROLL
-                var screens = document.getElementById('screens'),
-                    screenWidth = $(window).innerWidth(),
-                    screenItems = screens.children.length,
-                    scroller = document.getElementById('scroller'),
-                    wrapper = document.getElementById('wrapper');
-
-                for (var i = 0; i < screenItems; i++) {
-                    currentId = "screen-" + (i + 1);
-                    screens.children[i].style.width = screenWidth + 'px';
-                    screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
-
-                    // VERTICAL SCROLL
-                    vScrolls.push(new iScroll(currentId, {
-                        checkDOMChanges: true,
-                        hScroll: false,
-                        hScrollbar: false,
-                        vScroll: true,
-                        vScrollbar: true,
-                        lockDirection: true
-                    }));
-                }
-
-                // ISCOLL HORIZONTAL CONTAINER
-                wrapper.style.width = screenWidth + 'px';
-                scroller.style.width = (screenItems * screenWidth) + 'px';
-
-                // HORIZONTAL SCROLL
-                hScroll = new iScroll('wrapper', {
-                    checkDOMChanges: true,
-                    snap: 'li',
-                    momentum: false,
-                    hScroll: true,
-                    hScrollbar: false,
-                    vScroll: false,
-                    vScrollbar: false,
-                    lockDirection: true,
-                    onBeforeScrollEnd: function () {
-                        //console.log('horizontal scroll - BeforeScrollEnd');
-                    },
-                    onScrollEnd: function () {
-                        //console.log('horizontal scroll - ScrollEnd');
-                    }
-                });
-
-                // MENU ITEMS
-                var menuItems = document.body.querySelectorAll("ul.nav li a");
-                for (var i = 0; i < menuItems.length; i++) {
-                    menuItems[i].addEventListener("click", function () {
-                        var scrollTo = this.getAttribute("id");
-
-                        hScroll.scrollToPage(scrollTo, 200);
-                    }, false);
-                }
-            }
-
-            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-            document.addEventListener('DOMContentLoaded', loaded, false);
-
-            window.onresize = function () {
-                loaded();
-            }
-        </script>
-    </head>
-<body>
-    <!-- HEADER -->
-    <div id="AppUI">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="brand" href="/">JayStorm Admin</a>
-
-                    <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
-                        <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="storm-header">
-            <div class="container">
-                <div data-bind="if :authorization">
-                    <form class="form-inline">
-                        <label>Application Selector:</label>
-                        <select data-bind="options: applications, 
-                                            value: currentApplication, 
-                                            optionsText: 'title',
-                                            optionsCaption:'Select App To Manage'"></select>
-
-                        <label>App Url:</label>
-                        <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
-
-                        <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />
-                        <div id="launchResult" data-bind="text:launchResult">
-
-                        </div>
-                    </form>
-                </div>
-                <div data-bind="ifnot: authorization">
-                    <p>Collecting apps and getting authorization. Please wait...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- HEADER -->
-
-    <!-- ISCROLL CONTAINER -->
-    <div id="wrapper" class="container first">
-        <div id="scroller">
-            
-            <div id="output"></div>
-
-            <script type="text/html" id="foobar">
-                <table class="table">
-
-                </table>
-            </script>
-
-            <ul id="screens">
-                <li id="usersScreen">
-                    <div class="inwrapper">
-                        <div class="inscroller">
-                            <div id="UserManagerUI" data-bind="if: visible">
-                            <script type="text/html" id="GroupArrayEditor">
-                                <div>
-                                    <ul data-bind="foreach: Groups">
-                                        <li>
-                                            <span  data-bind="text: Name"></span>
-                                            <input type="checkbox" data-bind="checked: selected"/>
-                                        </li>
-                                    </ul>
-                                    <a href="#" data-bind="click: closeControlBox">close</a>
-                                </div>
-                            </script>
-
-                            <script type="text/html" id="setPasswordUI">
-                                <form data-bind="submit: savePassword">
-                                <div>
-                                    Password: <input type="password" required/><br />
-                                    Retype: <input type="password" required/>
-                                </div>
-                                    <input type="submit" />
-                                </form>
-                                <a href="#" data-bind="click: close">close</a>
-                            </script>
-
-                <h1>Manage Users</h1>
-                <div data-bind="if: Users">
-                    <h4>Manage users</h4>
-                    <a href="#" data-bind="click: stress">Click for 1000 rows</a>
-                    <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
-                                                fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
-
-                        <script type="text/html" data-name-template="Password-editor">
-                            <a href="#">!!</a>
-
->>>>>>> d60da3be36f0fd0464746e5b498cea22027e998a
 <!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
 
                             </div>-->
@@ -665,7 +419,7 @@
                         </div>
                     </div>
                 </li>
-                <li id="servicesScreen2">
+                <li id="servicesScreen">
                     <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="ServiceManagerUI" data-bind="if: visible">
@@ -679,31 +433,33 @@
                                                         context: context,
                                                         fields: [
                                                             'Name',
+                                                            {name: 'ServiceType', $width:'200px'},
                                                             'DatabaseID',
-                                                            'BaseServiceID',
-                                                            'ServiceSourceType',
                                                             'ServiceSource'
                                                         ],
+                                                        defaultValues: { 'ServiceSourceType': 'script'},
                                                         beforeSave: function(){ $root.editingSource(false); },
                                                         allDatabases: allDatabases,
                                                         databaseSet: context().Databases}">
 
                     <!--, dbs: databases, databases: context().Databases-->
-                    <script type="text/html" data-name-template="DatabaseID-editor">
-                        <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
-                        <select data-bind="options: $root.allDatabases,
-                                    optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                    optionsCaption: 'Select...',
-                                    optionsCaptionValue: null"></select>
+                    <script type="text/html" data-name-template="ServiceType-editor">
+                        <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
                     </script>
-                
-    <!--                <script type="text/html" data-name-template="BaseServiceID-editor">-->
-    <!--                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>-->
-    <!--                    <select data-bind="options: $root.context().Services.filter(function(it){ return it.ServiceID != this.id; }, { id: $data.ServiceID() }).toKoArray(),-->
-    <!--                                optionsValue: 'ServiceID', optionsText: 'Name', value: $parent[name],-->
-    <!--                                optionsCaption: 'Select2...',-->
-    <!--                                optionsCaptionValue: null"></select>-->
-    <!--                </script>-->
+
+                    <script type="text/html" data-name-template="ServiceType-display">
+                        <div data-bind="text: value() ? value() : 'JavaScript Data Service'" />
+                    </script>
+
+                    <script type="text/html" data-name-template="DatabaseID-editor">
+                        <div data-bind='if: owner.ServiceType() !== "JavaScript API Service"'>
+                            <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
+                            <select data-bind="options: $root.allDatabases,
+                                        optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                        optionsCaption: 'Select...',
+                                        optionsCaptionValue: null"></select>
+                        </div>
+                    </script>
 
                     <script type="text/html" data-name-template="DatabaseID-display">
                         <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
@@ -724,7 +480,7 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                        <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                            <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
@@ -773,7 +529,7 @@
                         </div>
                     </div>
                 </li>
-                <li id="dataScreen2">
+                <li id="dataScreen">
                     <div class="inwrapper">
                         <div class="inscroller">
                             <div id="DataManagerUI" data-bind="if: visible">
@@ -800,28 +556,21 @@
                         </div>
                     </div>
                 </li>
-                <li id="schemaScreen2">
+                <li id="schemaScreen">
                     <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="SchemaManagerUI" data-bind="if: visible">
 
                                 <script type="text/html" id="insideEditor">
                                     <div>
-                                        <!--
-<!--                                        <div data-bind="visible: selectedEntity">
-                                            <form data-bind="submit: saveEntity">
-                                                <fieldset data-bind="with: selectedEntity">
-                                                    <legend>Table item props</legend>
-                                                    Table item name: <span data-bind="text: Name"></span>,
-                                                    Namespace: <span data-bind="text: Namespace"></span>
-                                                </fieldset>
-                                            </form>
-                                            <h5>List of FIELDS</h5>
-                                        </div>-->
-
-                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+                                        <h4 style="display:inline">Add or remove fields</h4>
+                                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <div data-bind="with: selectedEntity">
+                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
+                                        </div>
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,
+                                                    beforeSave: beforeSaveField,
                                                     showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
                                                     discriminatorColumn:'EntityID',
                                                     afterAddNew: $root.afterAddNewEntityField,
@@ -829,7 +578,10 @@
                                                     elementTypes: $root.elementTypes,
                                                     defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
                                                     discriminatorValue:$data.data.owner.ElementTypeID(),
-                                                    fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 'Name','TypeTemplate','ElementType','Key','Required']}">
+                                                    fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
+                                                            { name: 'Name', 'hint': 'Field name'},
+                                                            'TypeTemplate',
+                                                            'ElementType','Key','Required']}">
 
                                                 <div data-name-template="TypeTemplate-editor">
                                                     <div data-bind="text: console.log($root)"></div>
@@ -847,12 +599,22 @@
                                                     </div>
                                                 </div>
                                         </div>
+                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+
                                     </div>
                                 </script>
                                 
                                 <script type="text/html" id="editFieldsCell">
                                     <div>
-                                        <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, $data)">Click for editor</a>
+                                    <div data-bind="if: owner.EntitySetID()">
+                                    <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, 
+                                                                    { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
+                                            Manage fields
+                                     
+                                    </a>
+                                    </div>
+                                    <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
+
                                     </div>
                                 </script>
 
@@ -862,7 +624,7 @@
                                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                                 </div>
 
-                                <h4 style="float:left">Select database to manage:</h4>
+                                <h4 style="float:left">Select database schema to edit:</h4>
 <!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
                                                     value: $root.currentDatabase"></select>-->
@@ -870,16 +632,15 @@
                                 <ul class="nav nav-tabs" data-bind="foreach:databases">
                                     <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data)"></a></li>
                                 </ul>
-                                <h3>Tables | ComplexTypes</h3>
 
                                 <div data-bind="if: currentDatabase">
-                                    <h4>Database details</h4>
-
-                                    <h5>List of tables</h5>
+                                    <h3>List of tables</h3>
                                     <div data-bind="jayGrid: {
                                                 source: context().EntitySets,
                                                 XitemCommands: tableCommands,
-                                                fields: [{name: 'Name', '$width':'200px'}, { name: 'XXX', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 'Published'],
+                                                fields: [{name: 'Name', '$width':'200px', 'hint':'Tablename'}, 
+                                                         { name: 'Table fields', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 
+                                                        'Published'],
                                                 discriminatorColumn: 'DatabaseID',
                                                 beforeSave: beforeDatabaseSave,
                                                 discriminatorValue: currentDatabaseID,
