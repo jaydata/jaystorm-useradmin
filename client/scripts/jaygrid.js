@@ -725,7 +725,7 @@
 
             var typeName = Container.resolveName(columnInfo.metadata.type)
             if (typeName in this) {
-                return this[typeName].call(this, columnInfo);
+                return this[typeName].call(this, columnInfo) || {};
             }
 
             return {};
