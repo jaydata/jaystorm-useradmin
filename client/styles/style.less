@@ -132,8 +132,13 @@ body {
 /*#region WELCOME PAGE */
 #welcome 
 {
-    position: absolute; top: 90px; bottom: 0; left: 0; right: 0;
-    max-width: 940px; min-height: 500px; height: 100%; margin: 0 auto; z-index: 1500;
+    position: absolute; top: 90px; bottom: 0; left: 0; right: 0; 
+    background: #fff; z-index: 1500;
+    
+    .container 
+    {
+        max-width: 940px; min-height: 500px; height: 100%; margin: 0 auto; 
+    }
     
     ul 
     {
@@ -176,6 +181,53 @@ body {
 	background: rgba(0, 0, 0, 0.3);
 }
 /*#endregion SCROLLBAR */
+
+/*#region ALERT */
+.alert
+{
+    &.alert-info { margin-top: 30px; }
+    
+    &.alert-danger
+    {
+        min-width: 420px; width: auto; float: right;
+    
+        p { font-size: 18px; line-height: 24px; }
+    }
+    
+    p { margin: 0; }
+}
+/*#endregion ALERT */
+
+/*#region TODO LIST */
+.todo-list {
+    display: none; background: #FFC;
+    text-decoration: none;
+    color: black;
+    min-height: 10em; height: auto;
+    min-width: 10em; width: auto; max-width: 170px;
+    padding: 1em;
+    position: relative; top: 25px; left: 10px;
+    border: 1px solid #F0F0F0;
+    -moz-box-shadow: 5px 5px 5px rgba(143, 143, 143, 0.3);
+    -webkit-box-shadow: 5px 5px 5px rgba(143, 143, 143, 0.3);
+    box-shadow: 5px 5px 5px rgba(143, 143, 143, 0.3);
+    
+    h3 { font-size: 21px; line-height: 21px; margin: 3px 0 5px; }
+    
+    dl 
+    {
+        margin-left: 10px;
+
+        dd 
+        {
+            display: list-item;
+            list-style-type: disc;
+            margin-bottom: 2px;
+        }
+    }
+
+}
+/*#endregion TODO LIST */
 
 h1 { font-size: 30px; }
 H4 { font-size: 22px; }
@@ -309,11 +361,21 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
     @screen-width: 1200px;
     
     #wrapper { top: 90px; min-width: @screen-width; }
-    ul#screens 
-    {
-        /*> li { min-width: @screen-width; }*/
-    }
 }
-/*#endregion Screen (1024+) */
+/*#endregion Screen (1200+) */
+
+/*#region Screen (1600+) */
+@media only screen and (min-width:1600px) 
+{
+    .todo-list { display: block; }
+}
+/*#endregion Screen (1600+) */
+
+/*#region Screen (1800+) */
+@media only screen and (min-width:1800px) 
+{
+    .todo-list { max-width: 250px; }
+}
+/*#endregion Screen (1800+) */
 
 /*#endregion MEDIA QUERIES */
