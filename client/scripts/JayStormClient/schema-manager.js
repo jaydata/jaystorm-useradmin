@@ -210,7 +210,27 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 });
 
 function FieldsEditorModel(vm) {
-    this.data = vm;
+    console.log("!!!!!:", vm);
+    var self = this;
+    this.data = vm.entitySet;
+    
+    var entitySet = vm.entitySet.owner;
+    var context = vm.factory()();
+    var db = vm.currentDB();
+    this.beforeSaveField = function () {
+        context.attach(entitySet);
+        entitySet.HasChanges(true);
+        context.attach(self.selectedEntity());
+        self.selectedEntity().HasChanges(true);
+        context.attach(db);
+        db.HasChanges(true);
+        context.saveChanges();
+    }
+    this.selectedEntity = ko.observable();
+
+    context.Entities
+        .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() }, ko.observableHere)
+        .then(function (entity) { self.selectedEntity(entity.asKoObservable()) });
 
     this.closeControlBox = function () {
         vm.closeControlBox();

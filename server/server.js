@@ -257,6 +257,8 @@ app.use('/debug', function(req, res){
     res.end();
 });
 
+app.use('/logout', passport.initialize());
+app.use('/logout', passport.authenticate('basic', { session: false }));
 app.use('/logout', function(req, res){
     if (req.logOut){
         req.logOut();
@@ -275,14 +277,14 @@ app.use('/adminapi', passport.authenticate('basic', { session: false }));
 app.use("/adminapi", $data.JayService.createAdapter(JayStorm.AdminAPI));
 
  
-var provSvc = require('./dbtypes/AWSBroker.js').serviceType;
-app.use("/stormaws", $data.JayService.OData.Utils.simpleBodyReader());
-app.use("/stormaws", $data.JayService.createAdapter(provSvc, function (req, res) {
-    return new provSvc({
-        name: "mongoDB", databaseName: "SystemDB",
-        responseLimit: -1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission
-    });
-}));
+//var provSvc = require('./dbtypes/AWSBroker.js').serviceType;
+//app.use("/stormaws", $data.JayService.OData.Utils.simpleBodyReader());
+//app.use("/stormaws", $data.JayService.createAdapter(provSvc, function (req, res) {
+//    return new provSvc({
+//        name: "mongoDB", databaseName: "SystemDB",
+//        responseLimit: -1, user: req.getUser ? req.getUser() : undefined, checkPermission: req.checkPermission
+//    });
+//}));
 
 /*app.use("/db2", $data.JayService.Middleware.cache());
 app.use("/db2", $data.JayService.Middleware.authentication());
