@@ -69,7 +69,7 @@ function registerEdmTypes() {
 
 registerEdmTypes();
 
-$data.Class.define("JayStorm.Provision.CuInventory", $data.Entity, null, {
+$data.Entity.extend("JayStorm.Provision.CuInventory", {
     Id: { type: "id", key: true, computed: true },
     AppId: { type: "string" },
     PublicAddress: { type: "string" },
@@ -81,27 +81,30 @@ $data.Class.define("JayStorm.Provision.CuInventory", $data.Entity, null, {
     Type: { type: "string" }, // reserved, ondemand, spot
     Used: { type: "boolean" },
     LastModified: { type: "datetime" }
-}, null);
-
-$data.Class.defineEx("JayStorm.Provision.Store", [$data.EntityContext, $data.ServiceBase], null, {
-    CuInventories: { type: $data.EntitySet, elementType: JayStorm.Provision.CuInventory },
-
-    MyFunction: $data.JayService.serviceFunction()
-                                .param("a","number")
-                                .returns("number")
-                                (function (a) {
-                                    var self = this;
-                                    return function (result, error) {
-                                        console.log(this);
-                                        self.CuInventories.add({ Type: 'adsasdasd' });
-                                        self.saveChanges().then(function () {
-                                            this.success(a);
-                                        }).fail(function() {
-                                            this.successerror("!");
-                                        });
-                                    }
-                                })
-   
 });
 
-exports.serviceType = JayStorm.Provision.Store;
+
+$data.ServiceBase.extend("FuubarService", {
+
+    myfunky: function () {
+        return 5;
+    }
+});
+//    MyFunction: $data.JayService.serviceFunction()
+//                                .param("a","number")
+//                                .returns("number")
+//                                (function (a) {
+//                                    var self = this;
+//                                    return function (result, error) {
+//                                        console.log(this);
+//                                        self.CuInventories.add({ Type: 'adsasdasd' });
+//                                        self.saveChanges().then(function () {
+//                                            this.success(a);
+//                                        }).fail(function() {
+//                                            this.successerror("!");
+//                                        });
+//                                    }
+//                                })
+   
+//});
+

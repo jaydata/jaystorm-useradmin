@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
     <head>
@@ -37,6 +38,378 @@
         <script src="scripts/JayStormClient/access-manager.js"></script>
         <script src="scripts/JayStormClient/staticfile-manager.js"></script>
         <script src="scripts/application.js"></script>
+
+        <script type="text/javascript" src="scripts/EditorModels/EditorModelBase.js"></script>
+
+
+        <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
+        <script src="scripts/codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
+        
+        <script src="scripts/codemirror/lib/util/simple-hint.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="scripts/codemirror/lib/util/simple-hint.css" type="text/css">
+        
+        <script src="scripts/codemirror/lib/util/javascript-hint.js" type="text/javascript"></script>
+        
+        <script src="scripts/codemirror/lib/util/searchcursor.js" type="text/javascript"></script>
+        <script src="scripts/codemirror/lib/util/match-highlighter.js" type="text/javascript"></script>
+        <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
+        
+        <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
+        <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
+        
+        <script src="scripts/codemirror.js"></script>
+        <script src="scripts/iscroll.js"></script>
+        
+        <style type="text/css">
+            .CodeMirror-fullscreen
+            {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 9999;
+            }
+
+            .CodeMirror-scroll
+            {
+                height: auto;
+                overflow-y: hidden;
+                overflow-x: auto;
+                margin: 0 0 20px 0;
+                border: 10px solid #F0F1F2;
+                position: relative;
+            }
+
+            .CodeMirror-scroll:after
+            {
+                pointer-events: none;
+                border: 1px solid #DEDEDE;
+                position: absolute; top: 0; bottom: 0; right: 0; left: 0;
+                content: '';
+            }
+
+            .CodeMirror-gutter-text
+            {
+                border-bottom: 1px solid #DEDEDE;
+                position: relative; bottom: 2px;
+            }
+            
+            .CodeMirror-gutter
+            {
+                border-top: 1px solid #DEDEDE;
+                border-left: 1px solid #DEDEDE;
+            }
+
+            .activeline
+            {
+                background: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            span.CodeMirror-matchhighlight
+            {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .CodeMirror-focused span.CodeMirror-matchhighlight
+            {
+                background: rgba(255, 255, 255, 0.3) !important;
+            }
+        </style>
+        
+        <script src="scripts/inflection.js"></script>
+        <script type="text/javascript">
+            function is_touch_device() {
+                return !!('ontouchstart' in window);
+            }
+
+            $("ul.nav > li > a").live('click', function () {
+                var $parent = $(this).parent();
+
+                $parent.parent().find("li.active").removeClass("active");
+                $parent.addClass("active");
+            });
+
+            var hScroll, vScrolls = [], currentId;
+            function loaded() {
+
+                // ISCROLL
+                var screens = document.getElementById('screens'),
+                    screenWidth = $(window).innerWidth(),
+                    screenHeight = $(window).innerHeight(),
+                    screenItems = screens.children.length,
+                    scroller = document.getElementById('scroller'),
+                    wrapper = document.getElementById('wrapper');
+
+                for (var i = 0; i < screenItems; i++) {
+                    currentId = "screen-" + (i + 1);
+                    screens.children[i].style.width = screenWidth + 'px';
+                    screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
+
+                    if (is_touch_device()) {
+                        // VERTICAL SCROLL
+                        vScrolls.push(new iScroll(currentId, {
+                            checkDOMChanges: true,
+                            hScroll: false,
+                            hScrollbar: false,
+                            vScroll: true,
+                            vScrollbar: true,
+                            lockDirection: true
+                        }));
+                    }
+                }
+
+                // ISCOLL HORIZONTAL CONTAINER
+                wrapper.style.width = screenWidth + 'px';
+                scroller.style.width = (screenItems * screenWidth) + 'px';
+
+                // HORIZONTAL SCROLL
+                hScroll = new iScroll('wrapper', {
+                    checkDOMChanges: true,
+                    snap: 'li',
+                    momentum: false,
+                    hScroll: true,
+                    hScrollbar: false,
+                    vScroll: false,
+                    vScrollbar: false,
+                    lockDirection: true,
+                    onBeforeScrollEnd: function () {
+                        //console.log('horizontal scroll - BeforeScrollEnd');
+                    },
+                    onScrollEnd: function () {
+                        //console.log('horizontal scroll - ScrollEnd');
+                    }
+                });
+                if (!is_touch_device()) {
+                    hScroll.disable();
+                }
+
+                // MENU ITEMS
+                var menuItems = document.body.querySelectorAll("ul.nav li a"),
+                    welcome = document.getElementById("welcome");
+
+                for (var i = 0; i < menuItems.length; i++) {
+                    menuItems[i].addEventListener("click", function () {
+                        var scrollTo = parseInt(this.getAttribute("id"));
+                        welcome.style.display = "none";
+                        hScroll.scrollToPage(scrollTo, 200);
+                    }, false);
+                }
+            }
+
+            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+            document.addEventListener('DOMContentLoaded', loaded, false);
+
+            window.onresize = function () {
+                loaded();
+            }
+
+            function slideclick(e, element) {
+                e.preventDefault();
+                document.getElementById("welcome").style.display = "none";
+                var id = element.getAttribute("id");
+                $("ul.nav > li > a[id='" + id + "']").trigger("click");
+                hScroll.scrollToPage(id, 200);
+            }
+        </script>
+    </head>
+<body>
+    <!-- HEADER -->
+    <div id="AppUI">
+            <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="/">JayStorm Admin</a>
+
+                    <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
+                        <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="storm-header">
+            <div class="container">
+                <div data-bind="if :authorization">
+                    <form class="form-inline">
+                        <label>Application Selector:</label>
+                        <select data-bind="options: applications, 
+                                            value: currentApplication, 
+                                            optionsText: 'title',
+                                            optionsCaption:'Select App To Manage'"></select>
+
+                        <label>App Url:</label>
+                        <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
+
+                        <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />
+                        <div id="launchResult" data-bind="text:launchResult">
+
+                        </div>
+                    </form>
+                </div>
+                <div data-bind="ifnot: authorization">
+                    <p style="color: #fff;">Collecting apps and getting authorization. Please wait...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- HEADER -->
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcome" class="container" data-bind="if :authorization">
+        <ul id="feature-list-left" class="feature left">
+            <li>
+                <div class="icon user">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="0" href="#">Users</a></h2>
+                    <p>Manage your users and security groups of your app</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon service">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
+                    <p>Publish your databases or JavaScript API via OData</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon data">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="2" href="#">Data manager</a></h2>
+                    <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. Read Application customization blogpost to learn the customization opportunities</p>
+                </div>
+            </li>
+        </ul>
+        <ul id="feature-list-right" class="feature right">
+            <li>
+                <div class="icon schema">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="3" href="#">Schemas</a></h2>
+                    <p>Manage the schema of your tables, add, edit columns, change field types</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon security">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="4" href="#">Security</a></h2>
+                    <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon access">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);" id="5" href="#">Access Manager / Firewall</a></h2>
+                    <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon file">&nbsp;</div>
+                <div class="item-content">
+                    <h2><a onclick="slideclick(event, this);"  id="6" href="#">File manager</a></h2>
+                    <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- WELCOME SCREEN -->
+
+    <!-- ISCROLL CONTAINER -->
+    <div id="wrapper" class="container first">
+        <div id="scroller">
+            
+            <div id="output"></div>
+
+            <script type="text/html" id="foobar">
+                <table class="table"></table>
+            </script>
+
+            <ul id="screens">
+                <li id="usersScreen2">
+                    <div class="inwrapper container">
+                        <div class="inscroller">
+                            
+                            <div id="UserManagerUI" data-bind="if: visible">
+                                <script type="text/html" id="GroupArrayEditor">
+                                <div>
+                                    <ul data-bind="foreach: Groups">
+                                        <li>
+                                            <span  data-bind="text: Name"></span>
+                                            <input type="checkbox" data-bind="checked: selected"/>
+                                        </li>
+                                    </ul>
+                                    <a href="#" data-bind="click: closeControlBox">close</a>
+                                </div>
+                            </script>
+
+                                <script type="text/html" id="setPasswordUI">
+                                <form data-bind="submit: savePassword">
+                                <div>
+                                    Password: <input type="password" required/><br />
+                                    Retype: <input type="password" required/>
+                                </div>
+                                    <input type="submit" />
+                                </form>
+                                <a href="#" data-bind="click: close">close</a>
+                            </script>
+
+                <h1>Manage Users</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
+
+                <div data-bind="if: Users">
+                    <h4>Manage users</h4>
+
+                    <a href="#" data-bind="click: stress">Click for 1000 rows</a>
+                    <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
+                                                fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
+
+                        <script type="text/html" data-name-template="Password-editor">
+                            <a href="#">!!</a>
+
+=======
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <title>JayStorm Admin</title>
+
+        <link href="styles/bootstrap.min.css" rel="stylesheet" />
+        <link href="styles/style.css" rel="stylesheet" />
+        <link href="styles/fileuploader.css" rel="stylesheet" />
+
+        <script src="/scripts/jquery-1.7.2.min.js"></script>
+        <script src="/scripts/fileuploader.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <script src="scripts/datajs-1.0.3.js"></script>
+        <script type="text/javascript" src="scripts/q.js"></script>
+        <script src="/scripts/jaytracer.js"></script>
+        <script src="/scripts/jaydata/jaydata.js"></script>
+
+        <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+        <script src="scripts/knockout-latest.js"></script>
+        <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
+        <script src="scripts/jaygrid-table-template.js"></script>
+        <script src="scripts/jaygrid.js"></script>
+        <script src="scripts/jay-property-editor.js"></script>
+        
+        <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+        <script src="scripts/JayStormClient/service-app-base.js"></script>
+        <script src="scripts/JayStormClient/users-groups.js"></script>
+        <script src="scripts/JayStormClient/data-manager.js"></script>
+        <script src="scripts/JayStormClient/schema-manager.js"></script>
+        <script src="scripts/JayStormClient/service-manager.js"></script>
+        <script src="scripts/JayStormClient/security-manager.js"></script>
+        <script src="scripts/JayStormClient/access-manager.js"></script>
+        <script src="scripts/JayStormClient/staticfile-manager.js"></script>
+        <script src="scripts/application.js"></script>
+
+        <script type="text/javascript" src="scripts/EditorModels/EditorModelBase.js"></script>
+
 
         <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
         <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
@@ -93,12 +466,7 @@
         
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
-<<<<<<< HEAD
-
             $("ul.nav > li > a").live('click', function () {
-=======
-            $("ul.nav > li > a").live('click', function () {
->>>>>>> 6c4e8462221629b61550a4403c961903d0bebeaf
                 var $parent = $(this).parent();
 
                 $parent.parent().find("li.active").removeClass("active");
@@ -157,16 +525,10 @@
                 for (var i = 0; i < menuItems.length; i++) {
                     menuItems[i].addEventListener("click", function () {
                         var scrollTo = this.getAttribute("id");
-<<<<<<< HEAD
-                        hScroll.scrollToPage(scrollTo, 200);
-                    }, false);
-                }
-=======
 
                         hScroll.scrollToPage(scrollTo, 200);
                     }, false);
                 }
->>>>>>> 6c4e8462221629b61550a4403c961903d0bebeaf
             }
 
             document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
@@ -267,6 +629,12 @@
 
                         <script type="text/html" data-name-template="Password-editor">
                             <a href="#">!!</a>
+
+>>>>>>> d60da3be36f0fd0464746e5b498cea22027e998a
+<!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
+
+                            </div>-->
+
                         </script>
                         <script type="text/html" data-name-template="Password-display">
                             <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
@@ -291,17 +659,21 @@
                 </div>
                 <div data-bind="if: Groups">
                     <h4>Manage groups</h4>
-                    <div data-bind="jayGrid: {  source: Groups, items: allGroups, fields:['Name'] }"></div>
+                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }"></div>
                 </div>
             </div>
                         </div>
                     </div>
                 </li>
-                <li id="servicesScreen">
-                    <div class="inwrapper">
+                <li id="servicesScreen2">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="ServiceManagerUI" data-bind="if: visible">
-                <h1>Manage Services</h1>
+                            <h1>Manage Services</h1>
+                            <div class="alert alert-info fade in">
+                                <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                            </div>
 
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
@@ -361,6 +733,8 @@
                 </div>
             
                 <div data-bind="if: editingSource">
+                    <h2>Edit source</h2>
+
                     <div id="service-codemirror">
                     </div>
                 </div>
@@ -399,36 +773,41 @@
                         </div>
                     </div>
                 </li>
-                <li id="dataScreen">
+                <li id="dataScreen2">
                     <div class="inwrapper">
                         <div class="inscroller">
                             <div id="DataManagerUI" data-bind="if: visible">
                 <h1>Manage Data</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
 
                 <h4>Select database</h4>
-                <select data-bind="options: databases, value: serviceUrlSelected, optionsCaption:'Select database to manage'"></select>
+                <ul class="nav nav-tabs" data-bind="foreach: $root.databases">
+                    <li>
+                        <a href="#"  data-bind="click: $root.serviceUrlSelected.bind($data), text: $data"></a>
+                    </li>
+                </ul>
 
                 <ul class="nav nav-tabs" data-bind="foreach: entitySets">
                     <li>
                         <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
                     </li>
                 </ul>
-
-                <div data-bind="jayGrid: {
-                                source: collection,
-                                pageSize: esPageSize}">
-                </div>
+                    <div data-bind="jayGrid: { source: collection }"></div>
             </div>
                         </div>
                     </div>
                 </li>
-                <li id="schemaScreen">
-                    <div class="inwrapper">
+                <li id="schemaScreen2">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="SchemaManagerUI" data-bind="if: visible">
 
                                 <script type="text/html" id="insideEditor">
                                     <div>
+                                        <!--
 <!--                                        <div data-bind="visible: selectedEntity">
                                             <form data-bind="submit: saveEntity">
                                                 <fieldset data-bind="with: selectedEntity">
@@ -478,6 +857,11 @@
                                 </script>
 
                                 <h1>Manage Database Schemas</h1>
+                                <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                </div>
+
                                 <h4 style="float:left">Select database to manage:</h4>
 <!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
@@ -504,66 +888,61 @@
 
                                     </div>
 
-<!--                                    <table class="table">
-                                        <tr>
-                                            <td>
-
-                                            </td>
-                                            <td>
-                                                <h5>List of EVENTS</h5>
-                                                <div data-bind="visible: currentEntitySet">
-                                                    <div data-bind="jayGrid: {
-                                                                source: context().EventHandlers,
-                                                                fields:['Type', 'Handler'],
-                                                                discriminatorColumn: 'EntitySetID',
-                                                                discriminatorValue: currentEntitySetID,
-                                                                defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
-                                                                beforeSave: function(source){ console.log('source beforeSave', source); }
-                                                            },
-                                                            visible: currentDatabase">
-                                                        <script type="text/html" data-name-template="Type-editor">
-                                                                <select data-bind="options:$root.eventTypes,
-                                                                    optionsText: 'name',
-                                                                    optionsValue: 'type',
-                                                                    value: value,
-                                                                    optionsCaption: value() ? undefined :  'Select...'"></select>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="Handler-editor">
-                                                            <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="Handler-display">
-                                                            <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="EventHandlerID-editor">
-                                                            <span data-bind="text: value"></span>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="EntitySetID-editor">
-                                                            <span data-bind="text: $root.currentEntitySetName"></span>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="DatabaseID-editor">
-                                                            <span data-bind="text: $root.currentDatabaseName"></span>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="EntitySetID-display">
-                                                            <span data-bind="text: $root.currentEntitySetName"></span>
-                                                        </script>
-                                                        <script type="text/html" data-name-template="DatabaseID-display">
-                                                            <span data-bind="text: $root.currentDatabaseName"></span>
-                                                        </script>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>-->
+                                        <h5>List of EVENTS</h5>
+                                        <div data-bind="visible: currentEntitySet">
+                                            <div data-bind="jayGrid: {
+                                                        source: context().EventHandlers,
+                                                        fields:['Type', 'Handler'],
+                                                        discriminatorColumn: 'EntitySetID',
+                                                        discriminatorValue: currentEntitySetID,
+                                                        defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
+                                                        beforeSave: function(source){ console.log('source beforeSave', source); }
+                                                    },
+                                                    visible: currentDatabase">
+                                                <script type="text/html" data-name-template="Type-editor">
+                                                        <select data-bind="options:$root.eventTypes,
+                                                            optionsText: 'name',
+                                                            optionsValue: 'type',
+                                                            value: value,
+                                                            optionsCaption: value() ? undefined :  'Select...'"></select>
+                                                </script>
+                                                <script type="text/html" data-name-template="Handler-editor">
+                                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
+                                                </script>
+                                                <script type="text/html" data-name-template="Handler-display">
+                                                    <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                                                </script>
+                                                <script type="text/html" data-name-template="EventHandlerID-editor">
+                                                    <span data-bind="text: value"></span>
+                                                </script>
+                                                <script type="text/html" data-name-template="EntitySetID-editor">
+                                                    <span data-bind="text: $root.currentEntitySetName"></span>
+                                                </script>
+                                                <script type="text/html" data-name-template="DatabaseID-editor">
+                                                    <span data-bind="text: $root.currentDatabaseName"></span>
+                                                </script>
+                                                <script type="text/html" data-name-template="EntitySetID-display">
+                                                    <span data-bind="text: $root.currentEntitySetName"></span>
+                                                </script>
+                                                <script type="text/html" data-name-template="DatabaseID-display">
+                                                    <span data-bind="text: $root.currentDatabaseName"></span>
+                                                </script>
+                                            </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="inwrapper">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="SecurityManagerUI" data-bind="if: visible">
                 <h1>Manage Security</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
             
                 <h4>Add new permission</h4>
                 <form class="form-inline" data-bind="submit: addPermission">
@@ -599,15 +978,19 @@
                     </div>
                 </li>
                 <li>
-                    <div class="inwrapper">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="AccessManagerUI" data-bind="if: visible">
                 <h1>Manage Access</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
+
                 <h4>Control who can access your system</h4>
                 <h4>Application Rules</h4>
-                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'],filter: 'it.ObjectID == null',
+                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], filter: 'it.ObjectID == null',
                                         source: context().IngressIPRules }">
-
                 </div>
                 <div data-bind="jayGrid: { fields: ['SourceOrigin'],filter: 'it.ObjectID == null',
                                         source: context().IngressOriginRules }">
@@ -623,7 +1006,6 @@
                 <h4>Addition service rules</h4>
                 <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceAddress','Port','SSL'], 
                                                 source: context().IngressIPRules, filter: 'it.ObjectID != null' }">
-
 
                     <script type="text/html" data-name-template="ObjectID-editor">
                         <select data-bind="options: $root.context().Services.toKoArray(), value: value, 
@@ -650,10 +1032,14 @@
                     </div>
                 </li>
                 <li>
-                    <div class="inwrapper">
+                    <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="StaticFileUI" data-bind="if: visible">
                     <h1>Manage static files</h1>
+                    <div class="alert alert-info fade in">
+                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                    </div>
 
                     <form id="fileUpload" action="fileUpload" action="post">
                         <h4>Folder1 zip</h4>
@@ -683,10 +1069,5 @@
         </div>
     </div>
     <!-- ISCROLL CONTAINER -->
-
-<!--</div>
-
-
-</td></tr></table>-->
 </body>
 </html>

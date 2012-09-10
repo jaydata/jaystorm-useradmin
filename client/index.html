@@ -18,7 +18,7 @@
         <script type="text/javascript" src="scripts/q.js"></script>
         <script src="/scripts/jaytracer.js"></script>
         <script src="/scripts/jaydata/jaydata.js"></script>
-
+        
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
         <script src="scripts/knockout-latest.js"></script>
         <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
@@ -254,60 +254,62 @@
     <!-- HEADER -->
 
     <!-- WELCOME SCREEN -->
-    <div id="welcome" class="container" data-bind="if :authorization">
-        <ul id="feature-list-left" class="feature left">
-            <li>
-                <div class="icon user">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="0" href="#">Users</a></h2>
-                    <p>Manage your users and security groups of your app</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon service">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
-                    <p>Publish your databases or JavaScript API via OData</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon data">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="2" href="#">Data manager</a></h2>
-                    <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. Read Application customization blogpost to learn the customization opportunities</p>
-                </div>
-            </li>
-        </ul>
-        <ul id="feature-list-right" class="feature right">
-            <li>
-                <div class="icon schema">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="3" href="#">Schemas</a></h2>
-                    <p>Manage the schema of your tables, add, edit columns, change field types</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon security">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="4" href="#">Security</a></h2>
-                    <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon access">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);" id="5" href="#">Access Manager / Firewall</a></h2>
-                    <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
-                </div>
-            </li>
-            <li>
-                <div class="icon file">&nbsp;</div>
-                <div class="item-content">
-                    <h2><a onclick="slideclick(event, this);"  id="6" href="#">File manager</a></h2>
-                    <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
-                </div>
-            </li>
-        </ul>
+    <div id="welcome">
+        <div class="container" data-bind="if :authorization">
+            <ul id="feature-list-left" class="feature left">
+                <li>
+                    <div class="icon user">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="0" href="#">Users</a></h2>
+                        <p>Manage your users and security groups of your app</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon service">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
+                        <p>Publish your databases or JavaScript API via OData</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon data">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="2" href="#">Data manager</a></h2>
+                        <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. Read Application customization blogpost to learn the customization opportunities</p>
+                    </div>
+                </li>
+            </ul>
+            <ul id="feature-list-right" class="feature right">
+                <li>
+                    <div class="icon schema">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="3" href="#">Schemas</a></h2>
+                        <p>Manage the schema of your tables, add, edit columns, change field types</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon security">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="4" href="#">Security</a></h2>
+                        <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon access">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);" id="5" href="#">Access Manager / Firewall</a></h2>
+                        <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon file">&nbsp;</div>
+                    <div class="item-content">
+                        <h2><a onclick="slideclick(event, this);"  id="6" href="#">File manager</a></h2>
+                        <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
     <!-- WELCOME SCREEN -->
 
@@ -323,6 +325,15 @@
 
             <ul id="screens">
                 <li id="usersScreen">
+                    <div class="todo-list">
+                        <h3>Todo list</h3>
+                        <dl>
+                            <dd>todo item 1</dd>
+                            <dd>todo item 2</dd>
+                            <dd>todo item 3</dd>
+                        </dl>
+                    </div>
+
                     <div class="inwrapper container">
                         <div class="inscroller">
                             
@@ -350,6 +361,10 @@
                                 <a href="#" data-bind="click: close">close</a>
                             </script>
 
+                <div class="alert alert-danger fright iblock">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p><strong>Attention!</strong> Refresh the page to see the changes!</p>
+                </div>
                 <h1>Manage Users</h1>
                 <div class="alert alert-info fade in">
                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
@@ -414,16 +429,24 @@
                                                         context: context,
                                                         fields: [
                                                             'Name',
+                                                            {name: 'ServiceType', $width:'200px'},
                                                             'DatabaseID',
-                                                            'BaseServiceID',
-                                                            'ServiceSourceType',
                                                             'ServiceSource'
                                                         ],
+                                                        defaultValues: { 'ServiceSourceType': 'script'},
                                                         beforeSave: function(){ $root.editingSource(false); },
                                                         allDatabases: allDatabases,
                                                         databaseSet: context().Databases}">
 
                     <!--, dbs: databases, databases: context().Databases-->
+                    <script type="text/html" data-name-template="ServiceType-editor">
+                        <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
+                    </script>
+
+                    <script type="text/html" data-name-template="ServiceType-display">
+                        <div data-bind="text: value() ? value() : 'JavaScript Data Service'" />
+                    </script>
+
                     <script type="text/html" data-name-template="DatabaseID-editor">
                         <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
                         <select data-bind="options: $root.allDatabases,
@@ -431,14 +454,6 @@
                                     optionsCaption: 'Select...',
                                     optionsCaptionValue: null"></select>
                     </script>
-                
-    <!--                <script type="text/html" data-name-template="BaseServiceID-editor">-->
-    <!--                    <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>-->
-    <!--                    <select data-bind="options: $root.context().Services.filter(function(it){ return it.ServiceID != this.id; }, { id: $data.ServiceID() }).toKoArray(),-->
-    <!--                                optionsValue: 'ServiceID', optionsText: 'Name', value: $parent[name],-->
-    <!--                                optionsCaption: 'Select2...',-->
-    <!--                                optionsCaptionValue: null"></select>-->
-    <!--                </script>-->
 
                     <script type="text/html" data-name-template="DatabaseID-display">
                         <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
@@ -459,7 +474,9 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                        <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                        <div data-bind='if: owner.ServiceType() === "JavaScript API Service"'>
+                            <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                        </div>
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
@@ -542,21 +559,14 @@
 
                                 <script type="text/html" id="insideEditor">
                                     <div>
-                                        <!--
-<!--                                        <div data-bind="visible: selectedEntity">
-                                            <form data-bind="submit: saveEntity">
-                                                <fieldset data-bind="with: selectedEntity">
-                                                    <legend>Table item props</legend>
-                                                    Table item name: <span data-bind="text: Name"></span>,
-                                                    Namespace: <span data-bind="text: Namespace"></span>
-                                                </fieldset>
-                                            </form>
-                                            <h5>List of FIELDS</h5>
-                                        </div>-->
-
-                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+                                        <h4 style="display:inline">Add or remove fields</h4>
+                                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <div data-bind="with: selectedEntity">
+                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
+                                        </div>
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,
+                                                    beforeSave: beforeSaveField,
                                                     showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
                                                     discriminatorColumn:'EntityID',
                                                     afterAddNew: $root.afterAddNewEntityField,
@@ -564,7 +574,10 @@
                                                     elementTypes: $root.elementTypes,
                                                     defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
                                                     discriminatorValue:$data.data.owner.ElementTypeID(),
-                                                    fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 'Name','TypeTemplate','ElementType','Key','Required']}">
+                                                    fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
+                                                            { name: 'Name', 'hint': 'Field name'},
+                                                            'TypeTemplate',
+                                                            'ElementType','Key','Required']}">
 
                                                 <div data-name-template="TypeTemplate-editor">
                                                     <div data-bind="text: console.log($root)"></div>
@@ -582,12 +595,22 @@
                                                     </div>
                                                 </div>
                                         </div>
+                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+
                                     </div>
                                 </script>
                                 
                                 <script type="text/html" id="editFieldsCell">
                                     <div>
-                                        <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, $data)">Click for editor</a>
+                                    <div data-bind="if: owner.EntitySetID()">
+                                    <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, 
+                                                                    { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
+                                            Manage fields
+                                     
+                                    </a>
+                                    </div>
+                                    <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
+
                                     </div>
                                 </script>
 
@@ -597,7 +620,7 @@
                                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                                 </div>
 
-                                <h4 style="float:left">Select database to manage:</h4>
+                                <h4 style="float:left">Select database schema to edit:</h4>
 <!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
                                                     value: $root.currentDatabase"></select>-->
@@ -605,16 +628,15 @@
                                 <ul class="nav nav-tabs" data-bind="foreach:databases">
                                     <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data)"></a></li>
                                 </ul>
-                                <h3>Tables | ComplexTypes</h3>
 
                                 <div data-bind="if: currentDatabase">
-                                    <h4>Database details</h4>
-
-                                    <h5>List of tables</h5>
+                                    <h3>List of tables</h3>
                                     <div data-bind="jayGrid: {
                                                 source: context().EntitySets,
                                                 XitemCommands: tableCommands,
-                                                fields: [{name: 'Name', '$width':'200px'}, { name: 'XXX', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 'Published'],
+                                                fields: [{name: 'Name', '$width':'200px', 'hint':'Tablename'}, 
+                                                         { name: 'Table fields', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 
+                                                        'Published'],
                                                 discriminatorColumn: 'DatabaseID',
                                                 beforeSave: beforeDatabaseSave,
                                                 discriminatorValue: currentDatabaseID,

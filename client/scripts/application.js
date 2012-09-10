@@ -127,7 +127,9 @@ $(function () {
         };
 
         self.currentApplication.subscribe(function (value) {
+
             var serviceUri = value.url.trim() + "ApplicationDB";
+            var serviceUri = "https://admin.jaystack.net/apps/" + serviceUri.replace("http://", "");
             $data.service(serviceUri, function (factory) {
                 var appDBFactory = function () {
                     var c = factory.apply({}, arguments);
