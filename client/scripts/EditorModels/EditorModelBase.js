@@ -27,12 +27,22 @@
             templateName: 'jay-data-grid-$data.Number-default'
         }
 
+        var self = this;
         model.Value.subscribe(function (val) {
-            columnInfo.value(parseFloat(val));
+            if(self.isDecimal(val))
+                columnInfo.value(parseFloat(val));
+
+            model.Value(columnInfo.value());
         });
 
         return model;
     },
+    isDecimal: function(val){
+        return typeof val === 'string' && (/^[0-9]+.[0-9]+$/.test(val) || /^[0-9]+$/.test(val) || /^[-+][0-9]+.[0-9]+$/.test(val) || /^[-+][0-9]+$/.test(val));
+    },
+
+
+
     '$data.Date': function (columnInfo) {
         var dateVal = columnInfo.value() || new Date();
         var dateStr = this.numComplete(dateVal.getFullYear()) + "-" + this.numComplete(dateVal.getMonth() + 1) + "-" + this.numComplete(dateVal.getDate());
@@ -52,8 +62,9 @@
             templateName: 'jay-data-grid-$data.Date-default'
         }
 
+        var self = this;
         columnInfo.value.subscribe(function (val) {
-            var newDate = this.displayDate(val);
+            var newDate = self.displayDate(val);
             model.Display.Date = ko.observable(newDate.Date);
             model.Display.Time = ko.observable(newDate.Time);
             model.Display.Offset = ko.observable(newDate.Offset);
@@ -109,18 +120,26 @@
         var model = {
             Longitude: ko.observable(geoVal.longitude),
             Latitude: ko.observable(geoVal.latitude),
-            templateName: 'jay-data-grid-$data.Integer-default'
+            templateName: 'jay-data-grid-$data.Geography-default'
         }
 
+        var self = this;
         model.Longitude.subscribe(function (val) {
-            var geo = columnInfo.value();
-            geo.longitude = parseFloat(val);
-            columnInfo.value(geo);
+            var geo = columnInfo.value() || new $data.Geography(0, 0);
+            if (self.isDecimal(val)) {
+                geo.longitude = parseFloat(val);
+                columnInfo.value(geo);
+            }
+            console.log('set');
+            model.Longitude(geo.longitude);
         });
         model.Latitude.subscribe(function (val) {
-            var geo = columnInfo.value();
-            geo.latitude = parseFloat(val);
-            columnInfo.value(geo);
+            var geo = columnInfo.value() || new $data.Geography(0, 0);
+            if (self.isDecimal(val)) {
+                geo.latitude = parseFloat(val);
+                columnInfo.value(geo);
+            }
+            model.Latitude(geo.latitude);
         });
 
         return model;

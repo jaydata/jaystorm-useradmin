@@ -142,13 +142,13 @@ var templateList = [
             data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
     ["jay-data-grid-$data.Number-default-editor",
-        "<input type='number' \
+        "<input type='text' \
             data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
     ["jay-data-grid-$data.Geography-default-editor",
-        "<input type='number' \
-            data-bind='value: Model.Longitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /> / \
-        <input type='number' \
+        "Long:<input type='text' \
+            data-bind='value: Model.Longitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /><br /> \
+        Lat:<input type='text' \
             data-bind='value: Model.Latitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
     ["jay-data-grid-$data.Geography-default-display",
