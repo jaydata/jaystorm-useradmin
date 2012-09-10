@@ -8374,12 +8374,12 @@ $data.Class.define('$data.Logger', $data.TraceBase, null, {
     }
 });
 $data.Geography = function Geography(lon, lat) {
-    if (typeof lon === 'object' && Array.isArray(lon.coordinates)) {
+    if (lon && typeof lon === 'object' && Array.isArray(lon.coordinates)) {
         this.longitude = lon.coordinates[0];
         this.latitude = lon.coordinates[1];
     } else {
-        this.longitude = lon;
-        this.latitude = lat;
+        this.longitude = lon || 0;
+        this.latitude = lat || 0;
     }
 };
 $data.Container.registerType(['$data.Geography', 'Geography', 'geography', 'geo'], $data.Geography);
@@ -13281,9 +13281,11 @@ $data.Class.define('$data.EntityContext', null, null,
         var access = $data.Access.None;
         
         var eventData = {};
+        var sets = [];
         for (var i = 0; i < changedEntities.length; i++){
             var it = changedEntities[i];
             var n = it.entitySet.elementType.name;
+            sets.push(it.entitySet.name);
             var es = this._entitySetReferences[n];
             if (es.beforeCreate || es.beforeUpdate || es.beforeDelete || (this.user && this.checkPermission)){
                 if (!eventData[n]) eventData[n] = {};
@@ -13402,7 +13404,7 @@ $data.Class.define('$data.EntityContext', null, null,
         };
         
         if (this.user && this.checkPermission){
-            this.checkPermission(access, this.user, ies, {
+            this.checkPermission(access, this.user, sets, {
                 success: function(){
                     if (i < ies.length) callbackFn();
                     else readyFn();
