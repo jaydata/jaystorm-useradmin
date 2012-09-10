@@ -7,25 +7,63 @@
  */
 $data.Base.extend("$data.JayStormUI.AdminModel",  {
     constructor: function (application) {
-
+        var self = this;
         var apiContextFactory = application.currentAppDBContextFactory;
+
+        self.context = ko.observable();
+        self.visible = ko.observable(false);
+        self.show = function () {
+            self.visible(true);
+            if (self.onVisible) {
+                console.log("executing delayed setContext###");
+                self.onVisible();
+                self.onVisible = null;
+            }
+        };
+
+        self.hide = function () {
+            self.visible(false);
+        }
 
 
         console.log("admin context:" + this.getType().fullName + " starting");
-        var self = this;
+
 
         self.application = application;
 
         self.context = ko.observable();
 
         if (apiContextFactory()) {
-            self.context(apiContextFactory()());
+console.log("eary init");
+            var setContext = function () {
+                self.context(apiContextFactory()());
+            };
+            if (self.visible()) {
+                setContext();
+            } else {
+                self.onVisible = setContext;
+            }
         }
 
         self.contextFactory = apiContextFactory;
 
+        self.onVisible = null;
+
         self.contextFactory.subscribe(function (value) {
-            self.context(value());
+console.log("app-base: context change");
+            var contextChanged = function () {
+console.log("constext changed fired:" + this.getType().fullName);
+                self.context(value());
+            };
+
+            if (self.visible()) {
+console.log("immediate fire");
+                contextChanged();
+            } else {
+console.log("stashed for later");
+                self.onVisible = contextChanged;
+            }
+
         });
 
         self.createContext = function () {
@@ -36,21 +74,5 @@ $data.Base.extend("$data.JayStormUI.AdminModel",  {
         }
 
 
-        //var factory = apiContextFactory ;
-
-        self.show = function () {
-            //if (self.contextFactory()) {
-            //    self.context( self.createContext() );
-            //}
-            self.visible(true);
-        };
-
-        self.hide = function () {
-            self.visible(false);
-            //self.context ( null );
-        }
-
-        self.context = ko.observable();
-        self.visible = ko.observable(false);
     }
 })

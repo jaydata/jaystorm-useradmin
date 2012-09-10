@@ -373,6 +373,7 @@
                     <h4>Manage users</h4>
 
                     <a href="#" data-bind="click: stress">Click for 1000 rows</a>
+
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                                 fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
 
@@ -437,6 +438,12 @@
                                                         databaseSet: context().Databases}">
 
                     <!--, dbs: databases, databases: context().Databases-->
+                    <!--currentApplication-->
+                    <script type="text/html" data-name-template="Name-display">
+                        <b><div data-bind="{text: value}"></div></b>
+                        
+                        <a data-bind="{text: 'http://{appid}.jaystack.com/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
+                    </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
                     </script>
@@ -600,16 +607,20 @@
                                 
                                 <script type="text/html" id="editFieldsCell">
                                     <div>
-                                    <div data-bind="if: owner.EntitySetID()">
-                                    <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, 
-                                                                    { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
-                                            Manage fields
+<!--                                        <div data-bind="ifnot: owner.EntitySetID()">
+                                            Save table to edit fields
+                                        </div>-->
+                                        <div data-bind="if: owner.EntitySetID()">
+                                            <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, 
+                                                                            { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
+                                                    Manage fields
                                      
-                                    </a>
-                                    </div>
-                                    <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
+                                            </a>
+                                        </div>
+                                        <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
 
                                     </div>
+                                    
                                 </script>
 
                                 <h1>Manage Database Schemas</h1>
