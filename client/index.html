@@ -448,11 +448,13 @@
                     </script>
 
                     <script type="text/html" data-name-template="DatabaseID-editor">
-                        <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
-                        <select data-bind="options: $root.allDatabases,
-                                    optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                    optionsCaption: 'Select...',
-                                    optionsCaptionValue: null"></select>
+                        <div data-bind='if: owner.ServiceType() !== "JavaScript API Service"'>
+                            <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
+                            <select data-bind="options: $root.allDatabases,
+                                        optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
+                                        optionsCaption: 'Select...',
+                                        optionsCaptionValue: null"></select>
+                        </div>
                     </script>
 
                     <script type="text/html" data-name-template="DatabaseID-display">
@@ -474,9 +476,7 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                        <div data-bind='if: owner.ServiceType() === "JavaScript API Service"'>
                             <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
-                        </div>
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">

@@ -72,7 +72,9 @@ $(function () {
             var dbs = c.Databases.toArray();
             Q.allResolved([items, dbs]).then(function () {
                 console.log("sync app items loaded...");
+                
                 var i = items.valueOf();
+                console.log(i.length);
                 var ds = dbs.valueOf();
                 var syncOps = [];
                 var nuDbs = [];
@@ -129,7 +131,8 @@ $(function () {
         self.currentApplication.subscribe(function (value) {
 
             var serviceUri = value.url.trim() + "ApplicationDB";
-            var serviceUri = "https://admin.jaystack.net/apps/" + serviceUri.replace("http://", "");
+            var serviceUri = serviceUri; //serviceUri.replace("http://", "");
+            
             $data.service(serviceUri, function (factory) {
                 var appDBFactory = function () {
                     var c = factory.apply({}, arguments);
