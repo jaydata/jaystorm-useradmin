@@ -161,9 +161,9 @@ var templateList = [
             data-bind='value: Model.Time, attr: { required: metadata.required }' />"],
 
     ["jay-data-grid-$data.Date-default-display",
-        "<span data-bind='text: Model.Display.Date'></span> \
-        <span data-bind='text: Model.Display.Time'></span> \
-        (GMT <span data-bind='text: Model.Display.OffsetPoz'></span><span data-bind='text: Model.Display.Offset'></span>)"],
+        "<div data-bind='if: Model.Date'><span data-bind='text: Model.Date'></span> \
+        <span data-bind='text: Model.Time'></span> \
+        (GMT <span data-bind='text: Model.Display.OffsetPoz'></span><span data-bind='text: Model.Display.Offset'></span>)</div>"],
 
 ];
     $data.jayGridTemplates = $data.jayGridTemplates || {};
