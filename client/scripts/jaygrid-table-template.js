@@ -13,7 +13,7 @@ var templateList = [
             <div data-bind='visible: source' class='action-buttons'>\
                 <span class='iblock'>\
                     <!-- ko if: showNewCommandTop && itemCount() > 7-->                             \
-                    <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
+                    <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i><span data-bind='text: newCommandCaption'></span></a> \
                      <!-- /ko --> \
                     <!-- ko if: showRemoveAllCommand && (itemCount() > 3) -->                             \
                     <a class='btn btn-danger' href='#' data-bind='click:removeAll'><i class='icon-trash icon-white'></i> Remove all</a>\
@@ -33,7 +33,7 @@ var templateList = [
                 <div data-bind='visible: source' class='action-buttons'>\
                     <span class='iblock'>\
                         <!-- ko if: showNewCommandBottom -->  \
-                        <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> New</a> \
+                        <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> <span data-bind='text: newCommandCaption'></a> \
                         <!-- /ko -->\
                         <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges'/>\
                     </span>\

@@ -29,31 +29,31 @@
 
     var i = 0;
 
-    if (!($data.EntitySet.prototype.toKoArray)) {
+    if (! ($data.EntitySet.prototype.toKoArray) ) {
 
 
-        $data.EntitySet.prototype.toKoArray = function () {
+        $data.EntitySet.prototype.toKoArray = function() {
             if (this._cached_ko_array) {
                 return this._cached_ko_array;
             }
             var z = this._cached_ko_array = ko.observableArray([]);
-            this.toArray(function (items) {
-                items.forEach(function (item) {
+            this.toArray( function(items) {
+                items.forEach(function(item) {
                     z.push(item);
                 })
             });
             return z;
         }
-    }
+     }
 
-    templateEngine.addTemplate = function (templateName, templateMarkup) {
+    templateEngine.addTemplate = function(templateName, templateMarkup) {
         document.write("<script type='text/html' id='" + templateName + "'>" + templateMarkup + "<" + "/script>");
     };
 
     //todo displayName
 
     function regiserTemplates(templates) {
-        for (var i = 0; i < templates.length; i++) {
+        for(var i = 0; i < templates.length; i++) {
             templateEngine.addTemplate(templates[i][0], templates[i][1]);
         }
     }
@@ -67,7 +67,7 @@
         source = ko.utils.unwrapObservable(source);
         if (source instanceof $data.EntitySet) {
             entityType = source.elementType;
-        } else if (source instanceof $data.Queryable) {
+        } else if (source instanceof $data.Queryable ) {
             entityType = source._defaultType;
         }
         var props = [].concat(entityType.memberDefinitions.getPublicMappedProperties());
@@ -113,7 +113,7 @@
 
         if (itemCommands.length > 0) {
             var meta = {
-                isVirtual: true,
+                isVirtual : true,
                 name: 'controls',
                 type: 'itemCommands',
                 itemCommands: itemCommands
@@ -134,13 +134,13 @@
                 return;
             }
 
-            var field = ko.utils.unwrapObservable(v.field);
+                var field = ko.utils.unwrapObservable(v.field);
             var keyField = eset.createNew.memberDefinitions.getKeyProperties()[0].name;
 
 
-            eset.filter("it." + keyField.toString() + " == this.value", { value: key })
+            eset.filter("it." + keyField.toString() + " == this.value", { value: key})
                 .map("it." + field)
-                .forEach(function (item) {
+                .forEach(function(item) {
                     ko.utils.setTextContent(element, item);
                 }
             );
@@ -150,7 +150,7 @@
 
     ko.bindingHandlers.jayGrid = {
 
-        init: function () {
+        init: function() {
             return { 'controlsDescendantBindings': true };
         },
 
@@ -173,15 +173,15 @@
                 source = viewModel.source;
             };
 
-            source = ko.isObservable(source) ? source : ko.observable(source);
+            source = ko.isObservable(source) ? source: ko.observable(source);
 
             var fieldTemplates = {};
 
 
-            if (!element.typeTemplates) {
+            if (! element.typeTemplates) {
                 element.typeTemplates = {};
                 var children = element.childNodes;
-                for (var i = 0; i < children.length; i++) {
+                for(var i = 0; i < children.length; i++) {
                     var child = children[i];
                     var tmpName = undefined;
                     if (child.nodeType == 1) {
@@ -192,27 +192,27 @@
                             child.setAttribute("id", rndId);
                             element.typeTemplates[tmpName] = rndId;
                             document.body.appendChild(child);
-                            console.log("template registered:" + tmpName);
+                            console.log("template registered:" + tmpName );
                         }
                     }
                 }
             }
 
 
-            if (!element.nameTemplates) {
+            if (! element.nameTemplates) {
                 element.nameTemplates = {};
                 var children = element.childNodes;
-                for (var i = 0; i < children.length; i++) {
+                for(var i = 0; i < children.length; i++) {
                     var child = children[i];
                     var tmpName = undefined;
                     if (child.nodeType == 1) {
                         tmpName = child.getAttribute("data-name-template");
                         if (tmpName) {
-                            var rndId = Math.random().toString().replace(".", "").replace(",", "");
+                            var rndId = Math.random().toString().replace(".","").replace(",","");
                             child.setAttribute("id", rndId);
                             element.nameTemplates[tmpName] = rndId;
                             document.body.appendChild(child);
-                            console.log("template registered:" + tmpName);
+                            console.log("template registered:" + tmpName );
                         }
                     }
                 }
@@ -222,8 +222,8 @@
 
             console.dir(element);
             function _model(container) {
-
-                for (var j in viewModel) {
+                
+                for(var j in viewModel) {
                     this[j] = viewModel[j];
                 };
 
@@ -253,31 +253,35 @@
                 if (viewModel.items) {
                     console.log("replacing items");
                 }
-                self.items = viewModel.items || ko.observableArray([]);
+
+                self.itemsReceived = viewModel.itemsReceived || function () { };
+
+                self.items =  viewModel.items || ko.observableArray([]);
 
                 if (self.monitorItems) {
                     self.monitorItems(self.items);
                 }
 
+                self.newCommandCaption = viewModel.newCommandCaption || 'New';
                 self.objectsToDelete = ko.observableArray([]);
                 self.objectsInEditMode = ko.observableArray([]);
 
                 self.saving = ko.observable(false);
 
-                self.save = function () {
+                self.save =  function() {
 
                     console.dir("Saving changes: " + arguments);
                     self.saving(true);
                     var source = ko.utils.unwrapObservable(self.source);
                     console.log("Items in tracker:" + source.entityContext.stateManager.trackedEntities.length);
                     ccc = source.entityContext;
-                    for (var i = 0; i < self.objectsToDelete().length; i++) {
+                    for(var i = 0; i < self.objectsToDelete().length; i++) {
                         console.log("items found");
                         var item = self.objectsToDelete()[i];
                         source.remove(item);
                     }
                     function doSave() {
-                        source.entityContext.saveChanges(function () {
+                        source.entityContext.saveChanges( function() {
                             console.log("Items in tracker #2:" + source.entityContext.stateManager.trackedEntities.length);
                             if (self.objectsToDelete().length > 0) {
                                 self.refresh(Math.random());
@@ -286,17 +290,17 @@
                             self.objectsInEditMode.removeAll();
                             self.saving(false);
 
-                        }).fail(function () { console.dir(arguments); })
+                        }).fail( function() { console.dir(arguments); })
                     }
 
                     if (self.beforeSave) {
                         var r = self.beforeSave(source);
                         if (typeof r === 'function') {
                             r(
-                                function () {
+                                function() {
                                     doSave();
                                 },
-                                function () {
+                                function() {
                                     console.log("aborted by client code");
                                 }
                             )
@@ -315,21 +319,21 @@
                 self.showNewCommandBottom = ("showNewCommandBottom" in self) ? self.showNewCommandBottom : ko.observable(true);
                 self.showRemoveAllCommand = ("showRemoveAllCommand" in self) ? self.showRemoveAllCommand : ko.observable(true);
                 self.showSaveCommand = ("showSaveCommand" in self) ? self.showSaveCommand : ko.observable(false);
-                self.showSort = ("showSort" in self) ? self.showSort : ko.observable(true);
+                self.showSort = ("showSort" in self) ? self.showSort: ko.observable(true);
 
 
-                self.pendingChanges = ko.computed(function () {
+                self.pendingChanges = ko.computed( function() {
                     return this.objectsToDelete().length > 0 ||
                         this.objectsInEditMode().length > 0;
                 }, this);
 
-                self.pendingStatusInfo = function () {
+                self.pendingStatusInfo = function() {
                     var es = ko.utils.unwrapObservable(self.source);
                     if (!es) { return "-" };
                     return "Number of tracked changes: " + es.entityContext.stateManager.trackedEntities.length;
                 }
 
-                self.removeAll = function () {
+                self.removeAll = function() {
                     var entitySet = ko.utils.unwrapObservable(self.source);
                     entitySet.removeAll(function () {
                         self.refresh(Math.random());
@@ -371,8 +375,8 @@
                         o[f](v);
                     }
                     if (self.defaultValues) {
-                        for (var m in self.defaultValues) {
-                            console.log("setting default: " + m + " " + self.defaultValues[m]);
+                        for(var m in self.defaultValues) {
+                            console.log("setting default: " + m +" " + self.defaultValues[m]);
                             o[m](ko.utils.unwrapObservable(self.defaultValues[m]));
                         }
                     }
@@ -399,11 +403,11 @@
                         displayName: 'Edit',
                         commandName: 'edit',
 
-                        visible: function (item) {
+                        visible: function( item ) {
                             return self.objectsInEditMode.indexOf(item) < 0;
                         },
 
-                        execute: function (item) {
+                        execute: function( item ) {
                             var es = ko.utils.unwrapObservable(self.source);
                             es.attach(item);
                             self.objectsInEditMode.push(item);
@@ -413,11 +417,11 @@
                         displayName: 'Revert',
                         commandName: 'revert',
 
-                        visible: function (item) {
+                        visible: function( item ) {
                             return self.objectsInEditMode.indexOf(item) > -1;
                         },
 
-                        execute: function (item) {
+                        execute: function( item ) {
                             var es = ko.utils.unwrapObservable(self.source);
                             es.detach(item);
                             self.objectsInEditMode.remove(item);
@@ -425,13 +429,13 @@
                     },
                     {
                         displayName: 'Delete',
-                        commandName: 'delete',
+                        commandName : 'delete',
 
-                        execute: function (item) {
+                        execute: function( item ) {
                             self.objectsToDelete.push(item);
                         },
 
-                        visible: function (item) {
+                        visible: function( item ) {
                             return self.objectsToDelete.indexOf(item) < 0;
                         }
 
@@ -439,13 +443,13 @@
                     },
                     {
                         displayName: 'Undo delete',
-                        commandName: 'undelete',
+                        commandName : 'undelete',
 
-                        execute: function (item) {
+                        execute: function( item ) {
                             self.objectsToDelete.remove(item);
                         },
 
-                        visible: function (item) {
+                        visible: function( item ) {
                             return self.objectsToDelete.indexOf(item) > -1;
                         }
 
@@ -474,9 +478,9 @@
                         } else {
                             defaultEditorModelResolver = new $data.jayGrid.EditorModelBase();
                         }
-                        colData.Model = defaultEditorModelResolver.getModel(colData, self.dbContext());
+                        colData.Model = defaultEditorModelResolver.getModel(colData);
                     }
-
+                    
                     return colData;
                 }
 
@@ -502,7 +506,7 @@
 
                         result.push(self.resolveEditorModel(col));
                     }
-
+                    
                     return result;
                 }
 
@@ -521,7 +525,7 @@
                         var vm = new viewModelType(viewModelData);
                         var colcount = self.columns().length;
                         for (var i = 0; i < colcount; i++) {
-                            var item = { index: i, asked: index };
+                            var item = { index : i, asked: index };
                             item.colspan = 1;
                             item.templateName = undefined;
                             item.viewModel = {};
@@ -536,11 +540,11 @@
                             koCells.push(item);
                         }
                         console.log(koCells().length);
-
+                        
                     }
 
                     if (self.itemExtender) {
-                        self.itemExtender(koItem);
+                        self.itemExtender( koItem );
                     }
                 }
 
@@ -550,22 +554,22 @@
 
                 self.defaultValues = viewModel.defaultValues;
 
-                self.columnNames = ko.computed(function () {
-                    return this.columns().map(function (memDef) { return memDef.name });
+                self.columnNames = ko.computed( function() {
+                    return this.columns().map( function(memDef) { return memDef.name });
                 }, this);
 
                 self.selectedItem = ko.observable();
 
-                self.pages = ko.computed(function () {
+                self.pages = ko.computed( function() {
                     return ko.utils.range(0, this.itemCount() / this.pageSize());
                 }, this);
 
-                self.goToNextPage = function () {
+                self.goToNextPage = function() {
                     self.currentPage(self.currentPage() + 1);
                     self.refresh(Math.random());
                 };
 
-                self.goToPreviousPage = function () {
+                self.goToPreviousPage = function() {
                     self.currentPage(self.currentPage() - 1);
                     self.refresh(Math.random());
                 }
@@ -577,7 +581,6 @@
                 self.refresh = viewModel.refresher || ko.observable();
 
                 self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
-
 
                 console.dir("@@@@@@@@@@@");
                 //console.dir(ko.contextFor(container));
@@ -636,6 +639,7 @@
                                         self.extendItem(koItem);
                                         self.items.push(koItem);
                                     }
+                                    self.itemsReceived(entities);
                                     $data.trace(1, "JayGrid data pushed to grid:", self.items());
                                 }
                     );
@@ -786,6 +790,7 @@
 
 
             model.Date.subscribe(function (val) {
+
                 var date = columnInfo.value();
                 var newdate;
                 if (!date && !val) {
@@ -817,7 +822,6 @@
                 date.setHours(time.getHours());
                 date.setMinutes(time.getMinutes());
                 date.setSeconds(time.getSeconds());
-
                 columnInfo.value(date);
             });
 
