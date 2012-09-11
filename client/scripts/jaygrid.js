@@ -729,7 +729,7 @@
 
             var typeName = Container.resolveName(columnInfo.metadata.type)
             if (typeName in this) {
-                return this[typeName].call(this, columnInfo);
+                return this[typeName].call(this, columnInfo) || {};
             }
 
             return {};
@@ -742,7 +742,7 @@
             }
 
             model.Value.subscribe(function (val) {
-                columnInfo.value(parseInt(val));
+                columnInfo.value(val ? parseInt(val) : null);
             });
 
             return model;
@@ -758,6 +758,8 @@
             model.Value.subscribe(function (val) {
                 if (self.isDecimal(val))
                     columnInfo.value(parseFloat(val));
+                else if (!val)
+                    columnInfo.value(null);
 
                 model.Value(columnInfo.value());
             });
@@ -769,47 +771,55 @@
         },
 
         '$data.Date': function (columnInfo) {
-            var dateVal = columnInfo.value() || new Date();
-            var dateStr = this.numComplete(dateVal.getFullYear()) + "-" + this.numComplete(dateVal.getMonth() + 1) + "-" + this.numComplete(dateVal.getDate());
-            //var timeStr = this.numComplete(dateVal.getHours()) + ":" + this.numComplete(dateVal.getMinutes()) + ":" + this.numComplete(dateVal.getSeconds());
-            var timeStr = dateVal.toLocaleTimeString();
-
-            var dispDate = this.displayDate(dateVal);
+            console.log('$data.Date model creating');
+            var self = this;
             var model = {
-                Date: ko.observable(dateStr),
-                Time: ko.observable(timeStr),
+                Date: ko.observable(),
+                Time: ko.observable(),
                 Display: {
-                    Date: ko.observable(dispDate.Date),
-                    Time: ko.observable(dispDate.Time),
-                    Offset: ko.observable(dispDate.Offset),
-                    OffsetPoz: ko.observable(dateVal.getTimezoneOffset() <= 0 ? '+' : '')
+                    Offset: ko.observable(),
+                    OffsetPoz: ko.observable()
                 },
                 templateName: 'jay-data-grid-$data.Date-default'
             }
 
-            var self = this;
-            columnInfo.value.subscribe(function (val) {
-                var newDate = self.displayDate(val);
-                model.Display.Date = ko.observable(newDate.Date);
-                model.Display.Time = ko.observable(newDate.Time);
-                model.Display.Offset = ko.observable(newDate.Offset);
-                model.Display.OffsetPoz = ko.observable(val.getTimezoneOffset() <= 0 ? '+' : '');
-            });
+            columnInfo.value.equalityComparer = function (d1, d2) { console.log('compare'); return d1 && d2 && d1.valueOf() === d2.valueOf(); };
+
+            if (columnInfo.value()) {
+                self.setDateModel(model, columnInfo.value());
+            }
+
 
             model.Date.subscribe(function (val) {
+                console.log('model.Date');
                 var date = columnInfo.value();
-                var newdate = new Date(val);
-
-                date.setYear(newdate.getFullYear());
-                date.setMonth(newdate.getMonth());
-                date.setDate(newdate.getDate());
+                var newdate;
+                if (!date && !val) {
+                    return;
+                }else if (!date && val) {
+                    date = new Date();
+                }else if (!val) {
+                    date = null;
+                } else {
+                    var newdate = new Date(val);
+                    date.setYear(newdate.getFullYear());
+                    date.setMonth(newdate.getMonth());
+                    date.setDate(newdate.getDate());
+                }
 
                 columnInfo.value(date);
             });
-
             model.Time.subscribe(function (val) {
+                console.log('model.Time');
                 var time = new Date('0001/01/01 ' + val);
                 var date = columnInfo.value();
+
+                if (!date && !val) {
+                    return;
+                }
+                if (!date) {
+                    date = new Date();
+                }
 
                 date.setHours(time.getHours());
                 date.setMinutes(time.getMinutes());
@@ -818,7 +828,29 @@
                 columnInfo.value(date);
             });
 
+            columnInfo.value.subscribe(function (val) {
+                console.log('columnInfo.value');
+                if (columnInfo.value()) {
+                    self.setDateModel(model, columnInfo.value());
+                } else {
+                    //model.Date('');
+                    model.Time('');
+                    model.Display.Offset('');
+                    model.Display.OffsetPoz('');
+                }
+            });
+
             return model;
+
+        },
+        setDateModel: function (model, dateVal) {
+            var dateStr = this.numComplete(dateVal.getFullYear()) + "-" + this.numComplete(dateVal.getMonth() + 1) + "-" + this.numComplete(dateVal.getDate());
+            var timeStr = dateVal.toLocaleTimeString();
+
+            model.Date(dateStr);
+            model.Time(timeStr);
+            model.Display.Offset(this.numComplete(Math.round(dateVal.getTimezoneOffset() / -60)) + ":" + this.numComplete(dateVal.getTimezoneOffset() % -60));
+            model.Display.OffsetPoz(dateVal.getTimezoneOffset() <= 0 ? '+' : '');
         },
         numComplete: function (int) {
             switch (true) {

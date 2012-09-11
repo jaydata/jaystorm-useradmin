@@ -64,9 +64,18 @@ CodeMirror.connect(window, "resize", function() {
 });
 
 $data.Base.extend('$data.JayStormUI.CodeMirror', {
-    constructor: function(el, value){
+    constructor: function(el, value, error){
         setTimeout(function(){
             if (!value()) value('function(items){\n  // code here...\n}');
+            if (error){
+                var lint = JSHINT(value(), {
+                    node: true,
+                    browser: true,
+                    es5: true
+                });
+                if (lint) error(false);
+                else error(JSHINT.errors);
+            }
             var editor = CodeMirror(document.getElementById(el), {
                 value: value(),
                 mode: 'javascript',
@@ -83,6 +92,15 @@ $data.Base.extend('$data.JayStormUI.CodeMirror', {
                 },
                 onChange: function(editor){
                     value(editor.getValue());
+                    if (error){
+                        var lint = JSHINT(value(), {
+                            node: true,
+                            browser: true,
+                            es5: true
+                        });
+                        if (lint) error(false);
+                        else error(JSHINT.errors);
+                    }
                 },
                 onCursorActivity: function() {
                     editor.setLineClass(hlLine, null, null);

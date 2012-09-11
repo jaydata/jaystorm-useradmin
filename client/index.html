@@ -54,6 +54,8 @@
         <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
         <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
         
+        <script src="scripts/jshint.js" type="text/javascript"></script>
+        
         <script src="scripts/codemirror.js"></script>
         <script src="scripts/iscroll.js"></script>
         
@@ -481,7 +483,7 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                            <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                            <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
@@ -493,6 +495,15 @@
                     <h2>Edit source</h2>
 
                     <div id="service-codemirror">
+                    </div>
+                    <div id="service-codemirror-error" data-bind="if: error().length">
+                        <ul data-bind="foreach: error">
+                            <li data-bind="if: $data">
+                                <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
+                                <span class="CodeMirror-error-reason" data-bind="text: $data.reason"></span>
+                                <pre class="CodeMirror-error-code" data-bind="text: $data.evidence"></pre>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
@@ -609,6 +620,45 @@
                                     </div>
                                 </script>
                                 
+                                <script type="text/html" id="eventHandlerCell">
+                                    <a href="#" data-bind="click: $data.showControls.bind({}, 'eventHandlerCodeEditor', EventHandlerCodeEditorModel, { eventHandler: $data })">
+                                        Edit code
+                                    </a>
+                                </script>
+                                
+                                <script type="text/html" id="eventHandlerCodeEditor">
+                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), codemirror: (function(){ $data.codeMirror('EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), $data.data.owner.Handler, $data.error); })() }"></div>
+                                </script>
+                                
+                                <script type="text/html" id="eventHandlersEditor">
+                                    <div>
+                                        <h4 style="display:inline">Add or remove events</h4>
+                                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <div data-bind="with: selectedEntitySet">
+                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
+                                        </div>
+                                        <div data-bind="jayGrid: {
+                                                    source: $root.createContext().EventHandlers,
+                                                    showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
+                                                    defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
+                                                    discriminatorColumn: 'EntitySetID',
+                                                    discriminatorValue: $data.data.owner.EntitySetID(),
+                                                    fields:[{ name: 'Type', 'hint': 'Event type'},
+                                                            { name: 'Event handler', isVirtual: true, type:'string', '$width':'200px', '$template':'eventHandlerCell'},]}">
+                                                            
+                                                <div data-name-template="Type-editor">
+                                                <select data-bind="options: $root.eventTypes,
+                                                        optionsText: 'name',
+                                                        optionsValue: 'type',
+                                                        value: value,
+                                                        optionsCaption: value() ? undefined :  'Select...'"></select>
+                                                </div>
+                                        </div>
+                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+
+                                    </div>
+                                </script>
+                                
                                 <script type="text/html" id="editFieldsCell">
                                     <div>
 <!--                                        <div data-bind="ifnot: owner.EntitySetID()">
@@ -618,6 +668,11 @@
                                             <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, 
                                                                             { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
                                                     Manage fields
+                                     
+                                            </a>
+                                            <a href="#" data-bind="click: $data.showControls.bind({},'eventHandlersEditor', EventHandlersEditorModel, 
+                                                                            { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
+                                                    Manage events
                                      
                                             </a>
                                         </div>
@@ -681,7 +736,7 @@
                                                             optionsCaption: value() ? undefined :  'Select...'"></select>
                                                 </script>
                                                 <script type="text/html" data-name-template="Handler-editor">
-                                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></div>
+                                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value, $root.error); })() }"></div>
                                                 </script>
                                                 <script type="text/html" data-name-template="Handler-display">
                                                     <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
