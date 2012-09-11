@@ -52,7 +52,7 @@ console.log("eary init");
         self.contextFactory.subscribe(function (value) {
 console.log("app-base: context change");
             var contextChanged = function () {
-console.log("constext changed fired:" + this.getType().fullName);
+//console.log("constext changed fired:" + this.getType().fullName);
                 self.context(value());
             };
 
