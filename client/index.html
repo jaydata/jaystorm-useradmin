@@ -628,6 +628,15 @@
                                 
                                 <script type="text/html" id="eventHandlerCodeEditor">
                                     <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), codemirror: (function(){ $data.codeMirror('EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), $data.data.owner.Handler, $data.error); })() }"></div>
+                                    <div id="service-codemirror-error" data-bind="if: $data.error().length">
+                                        <ul data-bind="foreach: $data.error">
+                                            <li data-bind="if: $data">
+                                                <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
+                                                <span class="CodeMirror-error-reason" data-bind="text: $data.reason"></span>
+                                                <pre class="CodeMirror-error-code" data-bind="text: $data.evidence"></pre>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </script>
                                 
                                 <script type="text/html" id="eventHandlersEditor">

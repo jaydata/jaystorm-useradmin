@@ -165,6 +165,32 @@ var templateList = [
         <span data-bind='text: Model.Time'></span> \
         (GMT <span data-bind='text: Model.Display.OffsetPoz'></span><span data-bind='text: Model.Display.Offset'></span>)</div>"],
 
+
+    ["jay-data-grid-$data.Object-default-display",
+        "<span data-bind='text: Model.Value'></span>"],
+
+    ["jay-data-grid-$data.Object-default-editor",
+        '<input type="text" data-bind="value: Model.Value, attr: { required: metadata.required }" />'],
+
+    ["jay-data-grid-$data.Blob-Image-default-editor",
+        '<div data-bind="if: Model.DataUri"> \
+            <img src="#" height="50px" width="50px" data-bind="attr: { src: Model.DataUri }"/> \
+        </div>\
+        <input type="file" accept="image/*" data-bind="file: Model.File"/> '],
+
+    ["jay-data-grid-$data.Blob-Image-default-display",
+        '<div data-bind="if: Model.DataUri">\
+            <img class="thumb" src="#" height="50px" width="50px" data-bind="attr: { src: Model.DataUri }"/>\
+        </div>'],
+
+    //["jay-data-grid-$data.Blob-default-editor",
+    //    '<input type="file" data-bind="file: Model.File, attr: { accept: Model.ContentType }"/>\
+    //    <span data-bind="text: Model.Name"></span>'],
+
+    //["jay-data-grid-$data.Blob-default-display",
+    //    '<a src="#" target="_blank" data-bind="attr: { href: Model.Link }">download</a>'],
+
+    
 ];
     $data.jayGridTemplates = $data.jayGridTemplates || {};
     $data.jayGridTemplates.tableTemplate = templateList;

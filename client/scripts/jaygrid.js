@@ -384,10 +384,10 @@
                     ko.utils.unwrapObservable(source).add(o);
 
                     if (self.afterAddNew) {
-                        var r = self.afterAddNew( o, self );
+                        var r = self.afterAddNew(o, self);
                         if (typeof r === 'function') {
-                            r(function(ok) {
-                               ok(self.items.push(o));
+                            r(function (ok) {
+                                ok(self.items.push(o));
                             });
                         } else {
                             self.items.push(o);
@@ -462,8 +462,7 @@
                 var sortColName = '';
 
                 var srcval = ko.utils.unwrapObservable(self.source);
-                if ( srcval !== undefined && srcval !== null)
-                {
+                if (srcval !== undefined && srcval !== null) {
                     cols = getColumnsMetadata(srcval, fields, itemCommands);
                     sortColName = cols[0].name;
                 };
@@ -499,10 +498,11 @@
                             owner: this,
                             itemCommands: itemCommands
                         }
-                        col.showControls = (function(i, col) { 
+                        col.showControls = (function (i, col) {
                             return function (template, viewModelType, viewModelData) {
                                 self2.showControlBox(i, col, template, viewModelType, viewModelData);
-                            }})(i, col)
+                            }
+                        })(i, col)
 
                         result.push(self.resolveEditorModel(col));
                     }
@@ -581,7 +581,6 @@
                 self.refresh = viewModel.refresher || ko.observable();
 
                 self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
-                
 
                 console.dir("@@@@@@@@@@@");
                 //console.dir(ko.contextFor(container));
@@ -642,7 +641,7 @@
                                     }
                                     self.itemsReceived(entities);
                                     $data.trace(1, "JayGrid data pushed to grid:", self.items());
-                        }
+                                }
                     );
                     },
                     owner: this
@@ -651,10 +650,10 @@
 
                 element["jaystate"] = self.itemsTrigger;
 
-                self.getTemplate =  function(propertyOwner, metadata, customModel) {
+                self.getTemplate = function (propertyOwner, metadata, customModel) {
                     var nameSuffix = '';
 
-                    if (! (metadata.resolvedName && metadata.stringName)) {
+                    if (!(metadata.resolvedName && metadata.stringName)) {
                         metadata.stringName = Container.getName(metadata.type);
                         metadata.resolvedName = Container.resolveName(metadata.type);
                     };
@@ -667,7 +666,7 @@
                             element.typeTemplates[metadata.stringName + "-editor"] ||
                             element.typeTemplates[metadata.resolvedName + "-editor"] ||
                             (document.getElementById(customModel.templateName + '-editor') ? customModel.templateName + '-editor' : undefined) ||
-                            (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-editor' :
+                            (metadata['$sourceTable'] ? 'jay-data-grid-bound-field-editor' :
                                     (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
                                             'jay-data-grid-' + metadata.resolvedName + '-editor' :
                                             'jay-data-grid-generic-editor'));
@@ -686,7 +685,7 @@
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
                                  (document.getElementById(customModel.templateName + '-display') ? customModel.templateName + '-display' : undefined) ||
-                                 (metadata['$sourceTable']  ? 'jay-data-grid-bound-field-display' :
+                                 (metadata['$sourceTable'] ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
                                 'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));
 
@@ -709,12 +708,12 @@
 
             var gridTemplateName = allBindings.gridTemplate || "jay-data-grid";
 
-            var container = element.appendChild( document.createElement("div"));
+            var container = element.appendChild(document.createElement("div"));
             ccccccc = container;
 
-            ssss = ko.renderTemplate(  gridTemplateName,
+            ssss = ko.renderTemplate(gridTemplateName,
                                 new _model(container),
-                                {templateEngine: templateEngine},
+                                { templateEngine: templateEngine },
                                 container,
                                 "replaceNode");
 
@@ -726,11 +725,11 @@
     }
 
     $data.Class.define("$data.jayGrid.EditorModelBase", null, null, {
-        getModel: function (columnInfo) {
+        getModel: function (columnInfo, ctx) {
 
             var typeName = Container.resolveName(columnInfo.metadata.type)
             if (typeName in this) {
-                return this[typeName].call(this, columnInfo) || {};
+                return this[typeName].call(this, columnInfo, ctx) || {};
             }
 
             return {};
@@ -772,7 +771,6 @@
         },
 
         '$data.Date': function (columnInfo) {
-            console.log('$data.Date model creating');
             var self = this;
             var model = {
                 Date: ko.observable(),
@@ -784,7 +782,7 @@
                 templateName: 'jay-data-grid-$data.Date-default'
             }
 
-            columnInfo.value.equalityComparer = function (d1, d2) { console.log('compare'); return d1 && d2 && d1.valueOf() === d2.valueOf(); };
+            columnInfo.value.equalityComparer = function (d1, d2) { return d1 && d2 && d1.valueOf() === d2.valueOf(); };
 
             if (columnInfo.value()) {
                 self.setDateModel(model, columnInfo.value());
@@ -792,14 +790,14 @@
 
 
             model.Date.subscribe(function (val) {
-                console.log('model.Date');
+
                 var date = columnInfo.value();
                 var newdate;
                 if (!date && !val) {
                     return;
-                }else if (!date && val) {
+                } else if (!date && val) {
                     date = new Date();
-                }else if (!val) {
+                } else if (!val) {
                     date = null;
                 } else {
                     var newdate = new Date(val);
@@ -811,7 +809,6 @@
                 columnInfo.value(date);
             });
             model.Time.subscribe(function (val) {
-                console.log('model.Time');
                 var time = new Date('0001/01/01 ' + val);
                 var date = columnInfo.value();
 
@@ -825,12 +822,10 @@
                 date.setHours(time.getHours());
                 date.setMinutes(time.getMinutes());
                 date.setSeconds(time.getSeconds());
-
                 columnInfo.value(date);
             });
 
             columnInfo.value.subscribe(function (val) {
-                console.log('columnInfo.value');
                 if (columnInfo.value()) {
                     self.setDateModel(model, columnInfo.value());
                 } else {
@@ -888,7 +883,6 @@
                     geo.longitude = parseFloat(val);
                     columnInfo.value(geo);
                 }
-                console.log('set');
                 model.Longitude(geo.longitude);
             });
             model.Latitude.subscribe(function (val) {
@@ -901,8 +895,77 @@
             });
 
             return model;
+        },
+
+        '$data.Object': function (columnInfo) {
+            var model = {
+                Value: ko.observable(JSON.stringify(columnInfo.value())),
+                templateName: 'jay-data-grid-$data.Object-default'
+            }
+
+            model.Value.subscribe(function (val) {
+                var obj;
+                try {
+                    obj = val ? JSON.parse(val) : null;
+                    columnInfo.value(obj);
+                } catch (e) {
+                    console.log('parseError');
+                }
+                model.Value(JSON.stringify(columnInfo.value()));
+
+            });
+
+            return model;
+        },
+
+        '$data.Blob': function (columnInfo, ctx) {
+            var self = this;
+            if (Container.getName(columnInfo.metadata.type) === 'Edm.Binary' && (!columnInfo.metadata.$contentType || columnInfo.metadata.$contentType === 'image')) {
+                var basevalue = columnInfo.value();
+                var model = {
+                    Value: ko.observable(basevalue),
+                    DataUri: ko.observable('data:image;base64,' + basevalue),
+                    File: ko.observable(),
+                    templateName: 'jay-data-grid-$data.Blob-Image-default'
+                }
+               
+                model.Value.subscribe(function (val) {
+                    columnInfo.value(val ? val : null);
+                    model.DataUri('data:image;base64,' + columnInfo.value());
+                });
+
+                model.File.subscribe(function (val) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        model.Value(self._arrayBufferToBase64(e.target.result));
+                    };
+                    reader.readAsArrayBuffer(val);
+                });
+
+                return model;
+            }
+        },
+        _arrayBufferToBase64: function ( buffer ) {
+            var binary = ''
+            var bytes = new Uint8Array( buffer )
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode( bytes[ i ] )
+            }
+            return window.btoa( binary );
         }
 
     });
+
+    ko.bindingHandlers.file = {
+        init: function (element, valueAccessor) {
+            element.addEventListener('change', function () {
+                var file = this.files[0];
+                if (ko.isObservable(valueAccessor())) {
+                    valueAccessor()(file);
+                }
+            });
+        }
+    };
 
 })($data);

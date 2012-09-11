@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <title>JayStorm Admin</title>
+
+        <link href="styles/bootstrap.min.css" rel="stylesheet" />
+        <link href="styles/style.css" rel="stylesheet" />
+        <link href="styles/fileuploader.css" rel="stylesheet" />
+
+        <script src="/scripts/jquery-1.7.2.min.js"></script>
+        <script src="/scripts/fileuploader.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <script src="scripts/datajs-1.0.3.js"></script>
+        <script type="text/javascript" src="scripts/q.js"></script>
+        <script src="/scripts/jaytracer.js"></script>
+        <script src="/scripts/jaydata/jaydata.js"></script>
+        
+        <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+        <script src="scripts/knockout-latest.js"></script>
+        <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
+        <script src="scripts/jaygrid-table-template.js"></script>
+        <script src="scripts/jaygrid.js"></script>
+        <script src="scripts/jay-property-editor.js"></script>
+        
+        <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+        <style type="text/css">
+            .CodeMirror-fullscreen
+            {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 9999;
+            }
+
+            .CodeMirror-scroll
+            {
+                height: auto;
+                overflow-y: hidden;
+                overflow-x: auto;
+                margin: 0 0 20px 0;
+                border: 10px solid #F0F1F2;
+                position: relative;
+            }
+
+            .CodeMirror-scroll:after
+            {
+                pointer-events: none;
+                border: 1px solid #DEDEDE;
+                position: absolute; top: 0; bottom: 0; right: 0; left: 0;
+                content: '';
+            }
+
+            .CodeMirror-gutter-text
+            {
+                border-bottom: 1px solid #DEDEDE;
+                position: relative; bottom: 2px;
+            }
+            
+            .CodeMirror-gutter
+            {
+                border-top: 1px solid #DEDEDE;
+                border-left: 1px solid #DEDEDE;
+            }
+
+            .activeline
+            {
+                background: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            span.CodeMirror-matchhighlight
+            {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .CodeMirror-focused span.CodeMirror-matchhighlight
+            {
+                background: rgba(255, 255, 255, 0.3) !important;
+            }
+        </style>
+        <script type="text/javascript">
+            function is_touch_device() {
+                return !!('ontouchstart' in window);
+            }
+
+            $("ul.nav > li > a").live('click', function () {
+                var $parent = $(this).parent();
+
+                $parent.parent().find("li.active").removeClass("active");
+                $parent.addClass("active");
+            });
+
+            var hScroll, vScrolls = [], currentId;
+            function loaded() {
+
+                // ISCROLL
+                var screens = document.getElementById('screens'),
+                    screenWidth = $(window).innerWidth(),
+                    screenHeight = $(window).innerHeight(),
+                    screenItems = screens.children.length,
+                    scroller = document.getElementById('scroller'),
+                    wrapper = document.getElementById('wrapper');
+
+                for (var i = 0; i < screenItems; i++) {
+                    currentId = "screen-" + (i + 1);
+                    screens.children[i].style.width = screenWidth + 'px';
+                    screens.children[i].querySelector("div.inwrapper").setAttribute("id", currentId);
+
+                    if (is_touch_device()) {
+                        // VERTICAL SCROLL
+                        vScrolls.push(new iScroll(currentId, {
+                            checkDOMChanges: true,
+                            hScroll: false,
+                            hScrollbar: false,
+                            vScroll: true,
+                            vScrollbar: true,
+                            lockDirection: true
+                        }));
+                    }
+                }
+
+                // ISCOLL HORIZONTAL CONTAINER
+                wrapper.style.width = screenWidth + 'px';
+                scroller.style.width = (screenItems * screenWidth) + 'px';
+
+                // HORIZONTAL SCROLL
+                hScroll = new iScroll('wrapper', {
+                    checkDOMChanges: true,
+                    snap: 'li',
+                    momentum: false,
+                    hScroll: true,
+                    hScrollbar: false,
+                    vScroll: false,
+                    vScrollbar: false,
+                    lockDirection: true,
+                    onBeforeScrollEnd: function () {
+                        //console.log('horizontal scroll - BeforeScrollEnd');
+                    },
+                    onScrollEnd: function () {
+                        //console.log('horizontal scroll - ScrollEnd');
+                    }
+                });
+                if (!is_touch_device()) {
+                    hScroll.disable();
+                }
+
+                // MENU ITEMS
+                var menuItems = document.body.querySelectorAll("ul.nav li a"),
+                    welcome = document.getElementById("welcome");
+
+                for (var i = 0; i < menuItems.length; i++) {
+                    menuItems[i].addEventListener("click", function () {
+                        var scrollTo = parseInt(this.getAttribute("id"));
+                        welcome.style.display = "none";
+                        hScroll.scrollToPage(scrollTo, 200);
+                    }, false);
+                }
+            }
+
+            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+            document.addEventListener('DOMContentLoaded', loaded, false);
+
+            window.onresize = function () {
+                loaded();
+            }
+
+            function slideclick(e, element) {
+                e.preventDefault();
+                document.getElementById("welcome").style.display = "none";
+                var id = element.getAttribute("id");
+                $("ul.nav > li > a[id='" + id + "']").trigger("click");
+                hScroll.scrollToPage(id, 200);
+            }
+        </script>
+    </head>
+<body>
+<div id="DataManagerUI" data-bind="if: visible">
+                <h1>Manage Data</h1>
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
+
+                <h4>Select database</h4>
+                <ul class="nav nav-tabs" data-bind="foreach: $root.databases">
+                    <li>
+                        <a href="#"  data-bind="click: $root.serviceUrlSelected.bind($data), text: $data"></a>
+                    </li>
+                </ul>
+
+                <ul class="nav nav-tabs" data-bind="foreach: entitySets">
+                    <li>
+                        <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
+                    </li>
+                </ul>
+                    <div data-bind="jayGrid: { source: collection }"></div>
+            </div>
+</body>
+</html>
