@@ -18,15 +18,17 @@ var settings = {
     file2Extract: __dirname + '/uploads/package2'
 };
 
+var config = require('./configuration.js');
+
 passport.use(new BasicStrategy({
 },
   function (username, password, done) {
 
       process.nextTick(function () {
           var get_options = {
-              host: 'dashboard.jaystack.com',
-              port: 443,
-              path: '/auth.axd',
+              host: config.dashboard.url,
+              port: config.dashboard.port,
+              path: config.dashboard.auth,
               method: 'GET',
               headers: {
                   Authorization: 'Basic ' + new Buffer(username + ":" + password).toString('base64')
@@ -103,9 +105,9 @@ app.use('/launch', passport.authenticate('basic', { session: false }));
 app.use('/launch', function (req, res, next) {
     var appId = req.body.appid;
     var get_options = {
-        host: 'admin.storm.jaystack.com',
-        port: 3000,
-        path: '/launch',
+        host: config.admin.url,
+        port: config.admin.port,
+        path: config.admin.launch,
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

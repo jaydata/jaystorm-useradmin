@@ -11,6 +11,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.StaticFileManager", {
         var self = this;
         self.show = function () {
             self.visible(true);
+            alert(JSON.stringify(self.application.currentApplication()));
             var uploader1 = new qq.FileUploader({
                 element: document.getElementById('file-uploader1'),
                 action: '/fileUpload',

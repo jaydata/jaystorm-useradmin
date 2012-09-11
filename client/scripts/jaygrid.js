@@ -253,12 +253,16 @@
                 if (viewModel.items) {
                     console.log("replacing items");
                 }
+
+                self.itemsReceived = viewModel.itemsReceived || function () { };
+
                 self.items =  viewModel.items || ko.observableArray([]);
 
                 if (self.monitorItems) {
                     self.monitorItems(self.items);
                 }
 
+                self.newCommandCaption = viewModel.newCommandCaption || 'New';
                 self.objectsToDelete = ko.observableArray([]);
                 self.objectsInEditMode = ko.observableArray([]);
 

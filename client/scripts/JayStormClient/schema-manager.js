@@ -3,8 +3,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
     constructor:function () {
         var self = this;
 
-        //self.databases = ko.observableArray([]);
-        self.databases = ko.observable();
+        self.databases = ko.observableArray([]);
+        //self.databases = ko.observable();
 
         self.eventTypes = ko.observableArray([{
             name: 'beforeCreate',
@@ -52,6 +52,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         self.currentDatabaseID = ko.observable();
         self.currentDatabaseName = ko.observable();
         
+        self.tableListReceived = function () {
+
+        }
+
+        self.tableItems = 
+
         self.currentDatabase.subscribe(function (db) {
             if (db) {
                 self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
@@ -78,7 +84,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                 if (database instanceof set.createNew) {
                     if ( !(database.ElementTypeID) ) {
                         dbs.push(database);
-                        var namespace = self.currentDatabase().Name,
+                        var namespace = self.currentDatabase().Name(),
                             name = database.Name.singularize().valueOf(),
                             fullName = namespace + "." + name;
 
@@ -223,13 +229,13 @@ function FieldsEditorModel(vm) {
         context.attach(self.selectedEntity());
         self.selectedEntity().HasChanges(true);
         context.attach(db);
-        db.HasChanges = true;
+        db.HasChanges(true);
         context.saveChanges();
     }
     this.selectedEntity = ko.observable();
 
     context.Entities
-        .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() }, ko.observableHere)
+        .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() })
         .then(function (entity) { self.selectedEntity(entity.asKoObservable()) });
 
     this.closeControlBox = function () {

@@ -534,6 +534,10 @@
                     <div class="inwrapper">
                         <div class="inscroller">
                             <div id="DataManagerUI" data-bind="if: visible">
+                                <iframe src="dataui.html">
+
+                                </iframe>
+
                 <h1>Manage Data</h1>
                 <div class="alert alert-info fade in">
                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
@@ -639,10 +643,14 @@
                                 </ul>
 
                                 <div data-bind="if: currentDatabase">
+                                    <h2>Database schema: <span data-bind="text: currentDatabase().Name"> </span></h2>
+                                    
                                     <h3>List of tables</h3>
+
+
                                     <div data-bind="jayGrid: {
+                                                newCommandCaption: 'Create table',
                                                 source: context().EntitySets,
-                                                XitemCommands: tableCommands,
                                                 fields: [{name: 'Name', '$width':'200px', 'hint':'Tablename'}, 
                                                          { name: 'Table fields', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 
                                                         'Published'],
