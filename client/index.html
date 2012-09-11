@@ -616,6 +616,45 @@
                                     </div>
                                 </script>
                                 
+                                <script type="text/html" id="eventHandlerCell">
+                                    <a href="#" data-bind="click: $data.showControls.bind({}, 'eventHandlerCodeEditor', EventHandlerCodeEditorModel, { eventHandler: $data })">
+                                        Edit code
+                                    </a>
+                                </script>
+                                
+                                <script type="text/html" id="eventHandlerCodeEditor">
+                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), codemirror: (function(){ $data.codeMirror('EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), $data.data.owner.Handler, $data.error); })() }"></div>
+                                </script>
+                                
+                                <script type="text/html" id="eventHandlersEditor">
+                                    <div>
+                                        <h4 style="display:inline">Add or remove events</h4>
+                                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <div data-bind="with: selectedEntitySet">
+                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
+                                        </div>
+                                        <div data-bind="jayGrid: {
+                                                    source: $root.createContext().EventHandlers,
+                                                    showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
+                                                    defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
+                                                    discriminatorColumn: 'EntitySetID',
+                                                    discriminatorValue: $data.data.owner.EntitySetID(),
+                                                    fields:[{ name: 'Type', 'hint': 'Event type'},
+                                                            { name: 'Event handler', isVirtual: true, type:'string', '$width':'200px', '$template':'eventHandlerCell'},]}">
+                                                            
+                                                <div data-name-template="Type-editor">
+                                                <select data-bind="options: $root.eventTypes,
+                                                        optionsText: 'name',
+                                                        optionsValue: 'type',
+                                                        value: value,
+                                                        optionsCaption: value() ? undefined :  'Select...'"></select>
+                                                </div>
+                                        </div>
+                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+
+                                    </div>
+                                </script>
+                                
                                 <script type="text/html" id="editFieldsCell">
                                     <div>
 <!--                                        <div data-bind="ifnot: owner.EntitySetID()">
@@ -625,6 +664,11 @@
                                             <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, 
                                                                             { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
                                                     Manage fields
+                                     
+                                            </a>
+                                            <a href="#" data-bind="click: $data.showControls.bind({},'eventHandlersEditor', EventHandlersEditorModel, 
+                                                                            { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
+                                                    Manage events
                                      
                                             </a>
                                         </div>

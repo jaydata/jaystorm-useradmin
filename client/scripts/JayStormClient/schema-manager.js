@@ -6,40 +6,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         //self.databases = ko.observableArray([]);
         self.databases = ko.observable();
 
-        self.eventTypes = ko.observableArray([{
-            name: 'beforeCreate',
-            type: 'beforeCreate'
-        }, {
-            name: 'beforeRead',
-            type: 'beforeRead'
-        }, {
-            name: 'beforeUpdate',
-            type: 'beforeUpdate'
-        }, {
-            name: 'beforeDelete',
-            type: 'beforeDelete'
-        }, {
-            name: 'afterCreate',
-            type: 'afterCreate'
-        }, {
-            name: 'afterRead',
-            type: 'afterRead'
-        }, {
-            name: 'afterUpdate',
-            type: 'afterUpdate'
-        }, {
-            name: 'afterDelete',
-            type: 'afterDelete'
-        }]);
-
-        self.codeMirror = function (el, value) {
-            new $data.JayStormUI.CodeMirror(el, value);
-        };
-
-        self.codeHighlight = function(el, value){
-            new $data.JayStormUI.CodeHighlight(el, value);
-        };
-
         self.context.subscribe(function (value) {
             if (value) {
                 value.Databases.toArray(self.databases);
@@ -208,6 +174,73 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         });
     }
 });
+
+function EventHandlerCodeEditorModel(vm){
+    var self = this;
+    this.data = vm.eventHandler;
+    
+    self.error = ko.observable(false);
+    self.codeMirror = function (el, value, error) {
+        new $data.JayStormUI.CodeMirror(el, value, error);
+    };
+    this.closeControlBox = function(){
+        vm.closeControlBox();
+    }
+}
+
+function EventHandlersEditorModel(vm){
+    var self = this;
+    this.data = vm.entitySet;
+    
+    var entitySet = vm.entitySet.owner;
+    var context = vm.factory()();
+    var db = vm.currentDB();
+    
+    this.selectedEntitySet = ko.observable();
+    
+    self.eventTypes = ko.observableArray([{
+        name: 'beforeCreate',
+        type: 'beforeCreate'
+    }, {
+        name: 'beforeRead',
+        type: 'beforeRead'
+    }, {
+        name: 'beforeUpdate',
+        type: 'beforeUpdate'
+    }, {
+        name: 'beforeDelete',
+        type: 'beforeDelete'
+    }, {
+        name: 'afterCreate',
+        type: 'afterCreate'
+    }, {
+        name: 'afterRead',
+        type: 'afterRead'
+    }, {
+        name: 'afterUpdate',
+        type: 'afterUpdate'
+    }, {
+        name: 'afterDelete',
+        type: 'afterDelete'
+    }]);
+    
+    self.error = ko.observable(false);
+    self.codeMirror = function (el, value, error) {
+        new $data.JayStormUI.CodeMirror(el, value, error);
+    };
+
+    self.codeHighlight = function(el, value){
+        new $data.JayStormUI.CodeHighlight(el, value);
+    };
+    
+    context.EntitySets
+        .single("it.EntitySetID == this.id", { id: entitySet.EntitySetID() }, ko.observableHere)
+        .then(function (entityset) { self.selectedEntitySet(entityset.asKoObservable()) });
+    
+    this.closeControlBox = function(){
+        vm.closeControlBox();
+    }
+}
 
 function FieldsEditorModel(vm) {
     console.log("!!!!!:", vm);
