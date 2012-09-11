@@ -3,7 +3,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
     constructor:function () {
         var self = this;
 
-        self.databases = ko.observableArray([]);
+        //self.databases = ko.observableArray([]);
+        self.databases = ko.observable();
 
         self.eventTypes = ko.observableArray([{
             name: 'beforeCreate',
@@ -39,15 +40,13 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             new $data.JayStormUI.CodeHighlight(el, value);
         };
 
-        self.context.subscribe( function(value) {
+        self.context.subscribe(function (value) {
             if (value) {
                 value.Databases.toArray(self.databases);
-                console.dir(value.EntityFields);
             } else {
                 self.databases.removeAll();
             }
         });
-
 
         self.currentDatabase = ko.observable();
         self.currentDatabaseID = ko.observable();
@@ -63,6 +62,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             }
         });
 
+        //todo rename to beforeTableChange
         self.beforeDatabaseSave = function(set) {
             //upon new table/entityset creation we provision a new entity as the item type
             //of the new entityset. also and id field is created
@@ -78,7 +78,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                 if (database instanceof set.createNew) {
                     if ( !(database.ElementTypeID) ) {
                         dbs.push(database);
-                        var namespace = self.currentDatabase().Name(),
+                        var namespace = self.currentDatabase().Name,
                             name = database.Name.singularize().valueOf(),
                             fullName = namespace + "." + name;
 
@@ -223,7 +223,7 @@ function FieldsEditorModel(vm) {
         context.attach(self.selectedEntity());
         self.selectedEntity().HasChanges(true);
         context.attach(db);
-        db.HasChanges(true);
+        db.HasChanges = true;
         context.saveChanges();
     }
     this.selectedEntity = ko.observable();
