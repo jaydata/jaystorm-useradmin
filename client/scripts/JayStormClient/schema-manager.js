@@ -18,11 +18,13 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         self.currentDatabaseID = ko.observable();
         self.currentDatabaseName = ko.observable();
         
-        self.tableListReceived = function () {
-
+        self.tableListReceived = function (items) {
+            console.log("items present: " + items.length);
+            self.tableItemsPresent(true);
         }
 
-        self.tableItems = 
+        self.tableItemsPresent = ko.observable(false);
+        self.tableItems = ko.observableArray([]);
 
         self.currentDatabase.subscribe(function (db) {
             if (db) {

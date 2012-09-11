@@ -220,6 +220,18 @@ body {
 }
 /*#endregion SCROLLBAR */
 /*#region ALERT */
+
+.alert.alert-warning {
+  min-width: 420px;
+  width: auto;
+}
+.alert.alert-warning p {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+
+
 .alert.alert-info {
   margin-top: 30px;
 }

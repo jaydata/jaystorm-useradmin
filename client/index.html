@@ -545,9 +545,9 @@
                     <div class="inwrapper">
                         <div class="inscroller">
                             <div id="DataManagerUI" data-bind="if: visible">
-                                <iframe src="dataui.html">
+<!--                                <iframe src="dataui.html">
 
-                                </iframe>
+                                </iframe>-->
 
                 <h1>Manage Data</h1>
                 <div class="alert alert-info fade in">
@@ -582,7 +582,7 @@
                                         <h4 style="display:inline">Add or remove fields</h4>
                                         <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
                                         <div data-bind="with: selectedEntity">
-                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
+                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>, EntityID: <span data-bind="text: EntityID"></span>
                                         </div>
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,
@@ -702,11 +702,26 @@
                                     
                                     <h3>List of tables</h3>
 
+                                    <!-- ko if:tableItemsPresent() && (tableItems().length == 0) -->
+                                    <div class="alert alert-warning"  >
+                                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                        <p><strong>Attention!</strong> This database does not have any tables yet. Create a new table to add fields and server event handlers</p>
+                                    </div>
+                                    <!-- /ko -->
+
+                                    <!-- ko if: currentDatabase().HasChanges -->
+                                    <div class="alert alert-warning"  >
+                                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                        <p><strong>Attention!</strong> This database schema has changed. You need to publish these changes before they take effect.</p>
+                                    </div>
+                                    <!-- /ko -->
 
                                     <div data-bind="jayGrid: {
-                                                newCommandCaption: 'Create table',
+                                                newCommandCaption: 'Create new table',
+                                                items: tableItems,
+                                                itemsReceived: tableListReceived,
                                                 source: context().EntitySets,
-                                                fields: [{name: 'Name', '$width':'200px', 'hint':'Tablename'}, 
+                                                fields: [{name: 'Name', '$width':'200px', 'hint':'Tablename', '$displayName': 'Table name'}, 
                                                          { name: 'Table fields', isVirtual: true, type:'string', '$width':'200px', '$template':'editFieldsCell'}, 
                                                         'Published'],
                                                 discriminatorColumn: 'DatabaseID',

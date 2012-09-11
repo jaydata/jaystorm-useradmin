@@ -640,6 +640,7 @@
                                         self.extendItem(koItem);
                                         self.items.push(koItem);
                                     }
+                                    self.itemsReceived(entities);
                                     $data.trace(1, "JayGrid data pushed to grid:", self.items());
                         }
                     );
