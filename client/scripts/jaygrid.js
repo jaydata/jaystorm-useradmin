@@ -767,7 +767,6 @@
         },
 
         '$data.Date': function (columnInfo) {
-            console.log('$data.Date model creating');
             var self = this;
             var model = {
                 Date: ko.observable(),
@@ -779,7 +778,7 @@
                 templateName: 'jay-data-grid-$data.Date-default'
             }
 
-            columnInfo.value.equalityComparer = function (d1, d2) { console.log('compare'); return d1 && d2 && d1.valueOf() === d2.valueOf(); };
+            columnInfo.value.equalityComparer = function (d1, d2) { return d1 && d2 && d1.valueOf() === d2.valueOf(); };
 
             if (columnInfo.value()) {
                 self.setDateModel(model, columnInfo.value());
@@ -787,7 +786,6 @@
 
 
             model.Date.subscribe(function (val) {
-                console.log('model.Date');
                 var date = columnInfo.value();
                 var newdate;
                 if (!date && !val) {
@@ -806,7 +804,6 @@
                 columnInfo.value(date);
             });
             model.Time.subscribe(function (val) {
-                console.log('model.Time');
                 var time = new Date('0001/01/01 ' + val);
                 var date = columnInfo.value();
 
@@ -825,7 +822,6 @@
             });
 
             columnInfo.value.subscribe(function (val) {
-                console.log('columnInfo.value');
                 if (columnInfo.value()) {
                     self.setDateModel(model, columnInfo.value());
                 } else {
@@ -883,7 +879,6 @@
                     geo.longitude = parseFloat(val);
                     columnInfo.value(geo);
                 }
-                console.log('set');
                 model.Longitude(geo.longitude);
             });
             model.Latitude.subscribe(function (val) {
