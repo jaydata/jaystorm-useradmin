@@ -154,17 +154,15 @@ $(function () {
         self.currentAppDBContextFactory = ko.observable();
 
         var modules = [
-            { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
-            { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Services', path: '/Services' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' },
             { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: 'Schemas', path: '/Schema' },
+            { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Services', path: '/Services' },
             { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security' },
             { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Control', path: '/Access' },
             { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Files', path: '/FileManager' },
-            { type: $data.JayStormClient.StaticFileManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' }
+            { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
+            { type: $data.JayStormClient.StaticFileManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' },
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' }
         ];
-
-        
 
         modules.forEach(function (module) {
             ko.applyBindings(module.Model = new module.type(self), document.getElementById(module.ui));
