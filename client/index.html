@@ -922,7 +922,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div>
+                                <div data-bind="if: appContext">
                                     <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Launch" class="btn btn-info">
                                     <span data-bind="if: launchDisabled">Collecting changed data, please wait...</span>
                                     <span data-bind="if: launching">Launching, please wait...</span>
