@@ -45,20 +45,22 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
         }
 
         self.appContext.subscribe(function (ctx) {
-            counter = 0;
-            self.hasChanges(false);
-            self.launchingDone(false);
-            self.launchDisabled(true);
-            self.changedObjects([]);
+            if (ctx) {
+                counter = 0;
+                self.hasChanges(false);
+                self.launchingDone(false);
+                self.launchDisabled(true);
+                self.changedObjects([]);
 
-            var esReferences = ctx._entitySetReferences;
-            for (var es in esReferences) {
-                var eSet = esReferences[es];
-                var changesDef = eSet.elementType.getMemberDefinition('HasChanges');
-                if (changesDef) {
-                    registerEntitySetWatch(eSet);
+                var esReferences = ctx._entitySetReferences;
+                for (var es in esReferences) {
+                    var eSet = esReferences[es];
+                    var changesDef = eSet.elementType.getMemberDefinition('HasChanges');
+                    if (changesDef) {
+                        registerEntitySetWatch(eSet);
+                    }
+
                 }
-
             }
         });
 
