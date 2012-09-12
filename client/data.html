@@ -1,82 +1,105 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <title>JayStorm Admin</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>JayStorm Admin</title>
 
-        <link href="styles/bootstrap.min.css" rel="stylesheet" />
-        <link href="styles/style.css" rel="stylesheet" />
-        <link href="styles/fileuploader.css" rel="stylesheet" />
+    <link href="styles/bootstrap.min.css" rel="stylesheet" />
+    <link href="styles/style.css" rel="stylesheet" />
+    <link href="styles/fileuploader.css" rel="stylesheet" />
 
-        <script src="/scripts/jquery-1.7.2.min.js"></script>
-        <script src="/scripts/fileuploader.js"></script>
-        <script src="scripts/bootstrap.min.js"></script>
-        <script src="scripts/datajs-1.0.3.js"></script>
-        <script type="text/javascript" src="scripts/q.js"></script>
-        <script src="/scripts/jaytracer.js"></script>
-        <script src="/scripts/jaydata/jaydata.js"></script>
-        
-        <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
-        <script src="scripts/knockout-latest.js"></script>
-        <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
-        <script src="scripts/jaygrid-table-template.js"></script>
-        <script src="scripts/jaygrid.js"></script>
-        <script src="scripts/jay-property-editor.js"></script>
-        
-        <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
-        <script src="scripts/dataApplication.js"></script>
-        <script type="text/javascript">
-            console.log(window.opener.stormApplications,window.opener.globalAuthorization);
-            $(function () {
-                ko.applyBindings(new clientApplication().start());
-            });
-        </script>
-    </head>
+    <script src="/scripts/jquery-1.7.2.min.js"></script>
+    <script src="/scripts/fileuploader.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script src="scripts/datajs-1.0.3.js"></script>
+    <script type="text/javascript" src="scripts/q.js"></script>
+    <script src="/scripts/jaytracer.js"></script>
+    <script src="/scripts/jaydata/jaydata.js"></script>
+
+    <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+    <script src="scripts/knockout-latest.js"></script>
+    <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
+    <script src="scripts/jaygrid-table-template.js"></script>
+    <script src="scripts/jaygrid.js"></script>
+    <script src="scripts/jay-property-editor.js"></script>
+
+    <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+    <script src="scripts/dataApplication.js"></script>
+    <script type="text/javascript">
+        console.log(window.opener.stormApplications, window.opener.globalAuthorization);
+        $(function () {
+            ko.applyBindings(new clientApplication().start());
+
+            $("div.full-screen").css("top", $("div.navbar-fixed-top").height());
+        });
+
+        $("ul.nav > li > a").live('click', function () {
+            var $parent = $(this).parent();
+
+            $parent.parent().find("li.active").removeClass("active");
+            $parent.addClass("active");
+        });
+    </script>
+</head>
 <body>
-<div id="wrapper" class="container first">
+    <div id="header">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner ">
+                <div class="container">
 
-    <div id="DataManagerUI">
-                <h1>Manage Data</h1>
-                <div class="alert alert-info fade in">
-                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                    <a class="brand" href="/">JayStorm Admin</a>
+
+                    <div class="fullrow1 ">
+                        <span class="title">Application Selector:</span>
+
+                        <select data-bind="options: applications, 
+                    value: currentApplication, 
+                    optionsText: 'title',
+                    optionsCaption:'Select App To Manage'">
+                        </select>
+                    </div>
+                    <div class="fullrow2">
+                        <span class="title">Select Database:</span>
+                        <ul class="nav" data-bind="foreach: $root.services">
+                            <li>
+                                <a href="#" data-bind="click: $root.currentService.bind($data), text: $data.Name"></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <h4>Select Application</h4>
-                <ul class="nav nav-tabs" data-bind="foreach: $root.applications">
-                    <li>
-                        <a href="#"  data-bind="text: title, click: $root.currentApplication.bind($data)"></a>
-                    </li>
-                </ul>
+    <div class="full-screen">
+        <div id="DataManagerUI">
+            <h1>Manage Data</h1>
+            <div class="alert alert-info fade in">
+                <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            </div>
 
-                <h4>Select Database</h4>
-                <ul class="nav nav-tabs" data-bind="foreach: $root.services">
-                    <li>
-                        <a href="#"  data-bind="click: $root.currentService.bind($data), text: $data.Name"></a>
-                    </li>
-                </ul>
+            <h4>Select Table</h4>
+            <ul class="nav nav-tabs" data-bind="foreach: $root.entitySets">
+                <li>
+                    <a href="#" data-bind="click: $root.collection.bind($data), text: $data.name"></a>
+                </li>
+            </ul>
 
 
-                <h4>Select Table</h4>
-                <ul class="nav nav-tabs" data-bind="foreach: $root.entitySets">
-                    <li>
-                        <a href="#"  data-bind="click: $root.collection.bind($data), text: $data.name"></a>
-                    </li>
-                </ul>
-
-                
-                <div data-bind="jayGrid: { source: collection }"></div>
-<!--
-                <ul class="nav nav-tabs" data-bind="foreach: entitySets">
-                    <li>
-                        <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
-                    </li>
-                </ul>
+            <div data-bind="jayGrid: { source: collection }"></div>
+            <!--
+        <ul class="nav nav-tabs" data-bind="foreach: entitySets">
+            <li>
+                <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
+            </li>
+        </ul>
                     
-            </div>-->
-</div>
+    </div>-->
+        </div>
+    </div>
 </body>
 </html>

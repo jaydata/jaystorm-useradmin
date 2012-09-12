@@ -35,7 +35,7 @@
         <script src="scripts/JayStormClient/security-manager.js"></script>
         <script src="scripts/JayStormClient/access-manager.js"></script>
         <script src="scripts/JayStormClient/staticfile-manager.js"></script>
-    <script src="scripts/JayStormClient/deployment-manager.js"></script>
+        <script src="scripts/JayStormClient/deployment-manager.js"></script>
         <script src="scripts/application.js"></script>
 
 
@@ -183,7 +183,26 @@
                 if (!is_touch_device()) {
                     hScroll.disable();
                 }
+            }
 
+            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+            document.addEventListener('DOMContentLoaded', loaded, false);
+
+            window.onresize = function () {
+                loaded();
+
+                hScroll.scrollToPage($(".navbar .nav > li.active > a:first").attr("id"), 0);
+            }
+
+            function slideclick(e, element) {
+                e.preventDefault();
+                document.getElementById("welcome").style.display = "none";
+                var id = element.getAttribute("id");
+                $("ul.nav > li > a[id='" + id + "']").trigger("click");
+                hScroll.scrollToPage(id, 200);
+            }
+
+            $(function () {
                 // MENU ITEMS
                 var menuItems = document.body.querySelectorAll("ul.nav li a"),
                     welcome = document.getElementById("welcome");
@@ -195,22 +214,7 @@
                         hScroll.scrollToPage(scrollTo, 200);
                     }, false);
                 }
-            }
-
-            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-            document.addEventListener('DOMContentLoaded', loaded, false);
-
-            window.onresize = function () {
-                loaded();
-            }
-
-            function slideclick(e, element) {
-                e.preventDefault();
-                document.getElementById("welcome").style.display = "none";
-                var id = element.getAttribute("id");
-                $("ul.nav > li > a[id='" + id + "']").trigger("click");
-                hScroll.scrollToPage(id, 200);
-            }
+            });
         </script>
     </head>
 <body>
@@ -892,7 +896,7 @@
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
-                        <div class="qq-upload-extra-drop-area1">Drop files here too</div>
+                        <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
 
                         <h4>Folder2 zip</h4>
                         <div id="file-uploader2">
@@ -901,7 +905,7 @@
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
-                        <div class="qq-upload-extra-drop-area2">Drop files here too</div>
+                        <div class="qq-upload-extra-drop-area2 btn btn-danger">Drop files here too</div>
                     </form>
 
                 </div>
