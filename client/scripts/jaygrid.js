@@ -586,7 +586,7 @@
                 //console.dir(ko.contextFor(container));
 
                 self.itemsTrigger = ko.computed({
-                    //disposeWhenNodeIsRemoved: container,
+                    disposeWhenNodeIsRemoved: element,
                     read: function () {
 
                         var v = this.pageSize();

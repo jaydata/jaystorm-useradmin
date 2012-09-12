@@ -1028,7 +1028,7 @@
             var formatQueryString = defined(request.formatQueryString, this.formatQueryString);
             if (!enableJsonpCallback || isLocalUrl(url)) {
                 xhr = createXmlHttpRequest();
-                xhr.withCredentials = true;
+                //xhr.withCredentials = true;
                 xhr.onreadystatechange = function () {
                     if (done || xhr === null || xhr.readyState !== 4) {
                         return;

@@ -734,46 +734,7 @@
                                             <h5 data-bind="text: value"></h5>
                                         </script>
                                     </div>
-                                        <div data-bind="visible: currentEntitySet">
-                                            <div data-bind="jayGrid: {
-                                                        source: context().EventHandlers,
-                                                        fields:['Type', 'Handler'],
-                                                        discriminatorColumn: 'EntitySetID',
-                                                        discriminatorValue: currentEntitySetID,
-                                                        defaultValues: { 'DatabaseID' : currentDatabaseID, EntitySetID: currentEntitySetID },
-                                                        beforeSave: function(source){ console.log('source beforeSave', source); }
-                                                    },
-                                                    visible: currentDatabase">
-                                                <script type="text/html" data-name-template="Type-editor">
-                                                        <select data-bind="options:$root.eventTypes,
-                                                            optionsText: 'name',
-                                                            optionsValue: 'type',
-                                                            value: value,
-                                                            optionsCaption: value() ? undefined :  'Select...'"></select>
-                                                </script>
-                                                <script type="text/html" data-name-template="Handler-editor">
-                                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeMirror('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value, $root.error); })() }"></div>
-                                                </script>
-                                                <script type="text/html" data-name-template="Handler-display">
-                                                    <pre data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('EventHandler-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
-                                                </script>
-                                                <script type="text/html" data-name-template="EventHandlerID-editor">
-                                                    <span data-bind="text: value"></span>
-                                                </script>
-                                                <script type="text/html" data-name-template="EntitySetID-editor">
-                                                    <span data-bind="text: $root.currentEntitySetName"></span>
-                                                </script>
-                                                <script type="text/html" data-name-template="DatabaseID-editor">
-                                                    <span data-bind="text: $root.currentDatabaseName"></span>
-                                                </script>
-                                                <script type="text/html" data-name-template="EntitySetID-display">
-                                                    <span data-bind="text: $root.currentEntitySetName"></span>
-                                                </script>
-                                                <script type="text/html" data-name-template="DatabaseID-display">
-                                                    <span data-bind="text: $root.currentDatabaseName"></span>
-                                                </script>
-                                            </div>
-                                        </div>
+                                        
                                 </div>
                             </div>
                         </div>
