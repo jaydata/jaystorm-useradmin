@@ -14,12 +14,12 @@
 
     color: white;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    background-color: #DA4F49;
-    background-image: -moz-linear-gradient(top, #EE5F5B, #BD362F);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#EE5F5B), to(#BD362F));
-    background-image: -webkit-linear-gradient(top, #EE5F5B, #BD362F);
-    background-image: -o-linear-gradient(top, #EE5F5B, #BD362F);
-    background-image: linear-gradient(to bottom, #EE5F5B, #BD362F);
+    background-color: #5BC0DE;
+    background-image: -moz-linear-gradient(top, #5BC0DE, #2F96B4);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5BC0DE), to(#2F96B4));
+    background-image: -webkit-linear-gradient(top, #5BC0DE, #2F96B4);
+    background-image: -o-linear-gradient(top, #5BC0DE, #2F96B4);
+    background-image: linear-gradient(to bottom, #5BC0DE, #2F96B4);
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffbd362f', GradientType=0);
     border-color: #BD362F #BD362F #802420;
@@ -50,7 +50,7 @@
 }
 
 .qq-upload-button-hover {
-    background: #CC0000;
+    background: #49AFCD;
 }
 .qq-upload-button-focus {
     outline: 1px dotted #000000;

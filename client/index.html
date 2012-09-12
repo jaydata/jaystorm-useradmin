@@ -782,10 +782,10 @@
                         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                     </div>
 
-                    <h4 style="float: left">Static file upload (zip) </h4>
+                    <h4 style="float: left; width:240px">Static file upload (zip) </h4>
                     <form id="deletefile1" action="removeFile" action="post" >
                         <input type="hidden" value="1"/>
-                        <input type="button" value="Remove all files"/>
+                        <input type="button" value="Remove all files" class="btn btn-danger" style="margin: 6px 0 0 15px;"/>
                     </form>
                     <form id="fileUpload1" action="fileUpload" action="post">
                         <div id="file-uploader1">
@@ -794,13 +794,13 @@
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
-                        <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
+                        <div class="qq-upload-extra-drop-area1 btn btn-info">Drop files here too</div>
                     </form>
 
-                    <h4 style="float: left">Javascript upload (zip) </h4>
+                    <h4 style="float: left; width:240px">Javascript upload (zip) </h4>
                     <form id="deletefile2" action="removeFile" action="post">
                         <input type="hidden" value="2"/>
-                        <input type="button" value="Remove all files"/>
+                        <input type="button" value="Remove all files" class="btn btn-danger" style="margin: 6px 0 0 15px;"/>
                     </form>
                     <form id="fileUpload2" action="fileUpload" action="post">
 
@@ -810,7 +810,7 @@
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
-                        <div class="qq-upload-extra-drop-area2 btn btn-danger">Drop files here too</div>
+                        <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
                     </form>
 
                 </div>
@@ -914,11 +914,15 @@
                         <div class="inscroller">
                             <div id="DeploymentUI" data-bind="if: visible">
                                 <h1>Application Launch</h1>
+                                <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">x</button>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                </div>
                                 <div data-bind="if: hasChanges">
-                                    <h2>Changed ApplicationDB items</h2>
+                                    <h3>Changed ApplicationDB items</h3>
                                     <div data-bind="foreach: changedObjects">
                                         <div data-bind="if: Items().length > 0">
-                                            <h3 data-bind="text: CollectionName"></h3>
+                                            <h4 data-bind="text: CollectionName"></h4>
                                             <ul data-bind="foreach: Items">
                                                 <li><span data-bind="text: Name"></span></li>
                                             </ul>
