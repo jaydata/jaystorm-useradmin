@@ -45,7 +45,7 @@ passport.use(new BasicStrategy({
                   });
                   res.on("end", function () {
                       var apps = JSON.parse(data);
-                      done(null, { 'username': username, 'apps': apps});
+                      done(null, { 'username': username, 'apps': apps.apps});
                   });
 
               } else {
