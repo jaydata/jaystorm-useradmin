@@ -101,6 +101,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                         return it.Name() === self.currentDatabase().Name();
                     });
                 })
+                if (dbChanges.length >= 0)
+                    self.currentDatabase().HasChanges(false);
             });
         }
 

@@ -24,7 +24,7 @@
 
     var datajs = window.datajs;
     var odata = window.OData;
-    
+
 
     // Provides an enumeration of possible kinds of payloads.
     var PAYLOADTYPE_BATCH = "b";
@@ -171,7 +171,7 @@
 
             value.setUTCHours(hours, minutes);
         } else if (!hasOffset) {
-            // Don't suffix a 'Z' for Edm.DateTime values.
+                // Don't suffix a 'Z' for Edm.DateTime values.
             offset = "";
         }
 
@@ -1027,8 +1027,8 @@
             var callbackParameterName = defined(request.callbackParameterName, this.callbackParameterName);
             var formatQueryString = defined(request.formatQueryString, this.formatQueryString);
             if (!enableJsonpCallback || isLocalUrl(url)) {
+
                 xhr = createXmlHttpRequest();
-                //xhr.withCredentials = true;
                 xhr.onreadystatechange = function () {
                     if (done || xhr === null || xhr.readyState !== 4) {
                         return;
@@ -1065,6 +1065,10 @@
                     }
                 }
 
+                // Set withCredential 
+                if (request.withCredentials)
+                    xhr.withCredentials = true;
+
                 // Set the timeout if available.
                 if (request.timeoutMS) {
                     xhr.timeout = request.timeoutMS;
@@ -1097,7 +1101,7 @@
                         }
 
                         // Call the success callback in the context of the parent window, instead of the IFRAME
-                        delay(success, { body: data, statusCode: 200, headers: { "Content-Type": "application/json"} });
+                        delay(success, { body: data, statusCode: 200, headers: { "Content-Type": "application/json" } });
                     }
                 };
 
@@ -1221,7 +1225,7 @@
         /// <returns type="String">String value of the header; undefined if the header cannot be found.</returns>
 
         var headers = requestOrResponse.headers;
-        return (headers && headers[name]) || undefined;
+        return (headers && headers[name]) || (headers && headers[name.toLowerCase()]) || undefined;
     };
 
     var getContentType = function (requestOrResponse) {
@@ -1257,7 +1261,7 @@
 
         // The following check isn't as strict because if cType.mediaType = application/; it will match an accept value of "application/xml";
         // however in practice we don't not expect to see such "suffixed" mimeTypes for the handlers.
-        return handler.accept.indexOf(cType.mediaType) >= 0;
+        return cType && handler.accept.indexOf(cType.mediaType) >= 0;
     };
 
     var handlerRead = function (handler, parseCallback, response, context) {
@@ -2256,7 +2260,7 @@
 
             ns = formatNumberWidth(ms.substring(3), 4, true);
             ms = formatNumberWidth(ms.substring(0, 3), 3, true);
-            
+
             ms = parseInt10(ms);
             ns = parseInt10(ns);
         }
@@ -2304,7 +2308,7 @@
         /// <param name="propertyValue" type="String">Value to parse.</param>
         /// <returns type="Date">The parsed value.</returns>
 
-        return parseDateTimeMaybeOffset(propertyValue, false);
+        return parseDateTimeMaybeOffset(propertyValue, true); //Changed for .NET compability, that send with offset
     };
 
     var parseDateTimeOffset = function (propertyValue) {
@@ -2637,7 +2641,7 @@
         } else {
             var parts = path.split('/');
             var i, len;
-            for (i = 0, len = (parts.length - 1); i < len; i++) {
+            for (i = 0, len = (parts.length - 1) ; i < len; i++) {
                 // We construct each step of the way if the property is missing;
                 // if it's already initialized to null, we stop further processing.
                 var next = target[parts[i]];
@@ -2801,7 +2805,7 @@
             var propertyParentElement = propertiesElement;
             var parts = propertyPath.split("/");
             var i, len;
-            for (i = 0, len = (parts.length - 1); i < len; i++) {
+            for (i = 0, len = (parts.length - 1) ; i < len; i++) {
                 propertyParentElement = getSingleElementByTagNameNS(propertyParentElement, odataXmlNs, parts[i]);
                 if (!propertyParentElement) {
                     return;
@@ -3182,7 +3186,7 @@
 
         // If the link has no inline content, we consider it deferred.
         if (inlineData === undefined) {
-            inlineData = { __deferred: { uri: link.href} };
+            inlineData = { __deferred: { uri: link.href } };
         }
 
         // Set the property value on the entry object.
@@ -3256,7 +3260,7 @@
             } else {
                 // Probe for a complex type and read it.
                 if (xmlFirstElement(property)) {
-                    propertyValue = { __metadata: { type: propertyTypeValue} };
+                    propertyValue = { __metadata: { type: propertyTypeValue } };
                     readAtomEntryStructuralObject(property, propertyValue, propertyMetadata);
                 }
             }
@@ -3908,7 +3912,7 @@
         /// <param name="nsURI" type="String">Namespace URI to check.</param>
         /// <returns type="Boolean">true if nsURI is a known CSDL namespace; false otherwise.</returns>
 
-        return nsURI === edmNs || nsURI === edmNs2 || nsURI === edmNs3 || nsURI === edmNs4; 
+        return nsURI === edmNs || nsURI === edmNs2 || nsURI === edmNs3 || nsURI === edmNs4;
     };
 
     var parseConceptualModelElement = function (element) {
@@ -4404,7 +4408,7 @@
                     e.response = readResponse(text, context, delimiter);
                     changeResponses = [e];
                 }
-                responses.push({__changeResponses: changeResponses});
+                responses.push({ __changeResponses: changeResponses });
                 context.boundaries.pop();
                 readTo(text, context, "--" + currentBoundary(context));
             } else {
@@ -4452,7 +4456,7 @@
         var parts;
         var line;
         var pos;
-        
+
         do {
             pos = context.position;
             line = readLine(text, context);
@@ -4460,8 +4464,8 @@
             if (parts !== null) {
                 headers[parts[1]] = parts[2];
             } else {
-              // Whatever was found is not a header, so reset the context position.
-              context.position = pos;
+                // Whatever was found is not a header, so reset the context position.
+                context.position = pos;
             }
         } while (line && parts);
 
@@ -4496,7 +4500,7 @@
             context.position = pos;
         }
 
-         return {
+        return {
             statusCode: statusCode,
             statusText: statusText,
             headers: headers,
@@ -4659,7 +4663,7 @@
         /// <param name="context" type="Object">context argument for delegated call.</param>
 
         var i, len;
-        for (i = 0, len = handlers.length; i < len && !handlers[i][handlerMethod](requestOrResponse, context); i++) {
+        for (i = 0, len = handlers.length; i < len && !handlers[i][handlerMethod](requestOrResponse, context) ; i++) {
         }
 
         if (i === len) {
@@ -5890,7 +5894,7 @@
 
         var that = this;
         var uri = options.source;
-        
+
         that.identifier = normalizeURICase(encodeURI(decodeURI(uri)));
         that.options = options;
 
@@ -6216,7 +6220,7 @@
 
                 default:
                     // Any other state is passed down to the state machine describing the operation's specific behavior.
-                        stateMachine(that, opTargetState, cacheState, data);
+                    stateMachine(that, opTargetState, cacheState, data);
                     break;
             }
         };
@@ -6628,7 +6632,7 @@
                         deferred.resolve(arr);
                     } else {
                         pendingReadRange = that.readRange(readIndex, readCount).then(function (data) {
-                            for (var i = 0, length = data.length; i < length && (count < 0 || arr.length < count); i++) {
+                            for (var i = 0, length = data.length; i < length && (count < 0 || arr.length < count) ; i++) {
                                 var dataIndex = backwards ? length - i - 1 : i;
                                 var item = data[dataIndex];
                                 if (predicate(item)) {
@@ -6952,7 +6956,7 @@
                             operation.cancel();
                         }
                     } else if (cacheState === CACHE_STATE_IDLE) {
-                        // Signal the cache that a prefetch operation is running.
+                            // Signal the cache that a prefetch operation is running.
                         changeState(CACHE_STATE_PREFETCH);
                     }
                     return true;
@@ -7021,7 +7025,7 @@
                             operation.cancel();
                         }
                     } else if (cacheState !== CACHE_STATE_WRITE) {
-                        // Signal the cache that a read operation is running.
+                            // Signal the cache that a read operation is running.
                         changeState(CACHE_STATE_READ);
                     }
 
@@ -7157,7 +7161,7 @@
                 if (operation.canceled) {
                     request.cancel();
                 } else if (operation.s === opTargetState) {
-                    // Wait for the request to complete.
+                        // Wait for the request to complete.
                     wait(request);
                 }
             }
@@ -7228,5 +7232,273 @@
     };
 
 
+    /*Server Extension*/
+    var handlerDataValidator = function (handler, part) {
+        if (typeof handler.dataValidator === 'function') {
+            return handler.dataValidator(part);
+        }
+        return true;
+    };
+    var partHandlerSelector = function (context, part) {
+        if (Array.isArray(context.handler.partHandler)) {
+            var pHandlers = context.handler.partHandler;
+            var cType = getContentType(part);
+            for (var i = 0; i < pHandlers.length; i++) {
+                if (handlerAccepts(pHandlers[i], cType) && handlerDataValidator(part)) {
+                    return pHandlers[i];
+                }
+            }
+            return pHandlers[pHandlers.length - 1];
+        } else {
+            return context.handler.partHandler;
+        }
+    };
 
-})(this);
+    var batchServerParser = function (handler, text, context) {
+        /// <summary>Parses a batch response.</summary>
+        /// <param name="handler">This handler.</param>
+        /// <param name="text" type="String">Batch text.</param>
+        /// <param name="context" type="Object">Object with parsing context.</param>
+        /// <returns>An object representation of the batch.</returns>
+
+        var boundary = context.contentType.properties["boundary"];
+        return { __batchRequests: readRequestBatch(text, { boundaries: [boundary], handlerContext: context }) };
+    };
+    var readRequestBatch = function (text, context) {
+        /// <summary>
+        /// Parses a multipart/mixed response body from from the position defined by the context. 
+        /// </summary>
+        /// <param name="text" type="String" optional="false">Body of the multipart/mixed response.</param>
+        /// <param name="context">Context used for parsing.</param>
+        /// <returns>Array of objects representing the individual responses.</returns>
+
+        var delimiter = "--" + currentBoundary(context);
+
+        // Move beyond the delimiter and read the complete batch
+        readTo(text, context, delimiter);
+
+        // Ignore the incoming line
+        readLine(text, context);
+
+        // Read the batch parts
+        var responses = [];
+        var partEnd;
+
+        while (partEnd !== "--" && context.position < text.length) {
+            var partHeaders = readHeaders(text, context);
+            var partContentType = contentType(partHeaders["Content-Type"]);
+
+            if (partContentType && partContentType.mediaType === batchMediaType) {
+                context.boundaries.push(partContentType.properties["boundary"]);
+                try {
+                    var changeRequests = readRequestBatch(text, context);
+                } catch (e) {
+                    e.response = readRequestBatch(text, context, delimiter);
+                    changeResponses = [e];
+                }
+                responses.push({ __changeRequests: changeRequests });
+                context.boundaries.pop();
+                readTo(text, context, "--" + currentBoundary(context));
+            } else {
+                if (!partContentType || partContentType.mediaType !== "application/http") {
+                    throw { message: "invalid MIME part type " };
+                }
+                // Skip empty line
+                readLine(text, context);
+                // Read the response
+                var response = readRequest(text, context, delimiter);
+                try {
+                    partHandlerSelector(context.handlerContext, response).read(response, context.handlerContext);
+                    //partHandler(context.handlerContext, response).read(response, context.handlerContext);
+                } catch (e) {
+                    response = e;
+                }
+
+                responses.push(response);
+            }
+
+            partEnd = text.substr(context.position, 2);
+
+            // Ignore the incoming line.
+            readLine(text, context);
+        }
+        return responses;
+    };
+    var requestMethodRegex = /^(\w*) (.*) HTTP\/1\.\d$/i;
+    var readRequest = function (text, context, delimiter) {
+        /// <summary>
+        /// Parses an HTTP response. 
+        /// </summary>
+        /// <param name="text" type="String" optional="false">Text representing the http response.</param>
+        /// <param name="context" optional="false">Context used for parsing.</param>
+        /// <param name="delimiter" type="String" optional="false">String used as delimiter of the multipart response parts.</param>
+        /// <returns>Object representing the http response.</returns>
+
+        // Read the status line. 
+        var pos = context.position;
+        var line = readLine(text, context);
+        var match = requestMethodRegex.exec(line);
+
+        var method;
+        var urlPart;
+        var headers;
+
+        if (match) {
+            method = match[1];
+            urlPart = match[2];
+            headers = readHeaders(text, context);
+            readLine(text, context);
+        } else {
+            context.position = pos;
+        }
+
+        return {
+            method: method,
+            urlPart: urlPart,
+            headers: headers,
+            body: readTo(text, context, "\r\n" + delimiter)
+        };
+    };
+
+    var batchServerSerializer = function (handler, data, context) {
+        /// <summary>Serializes a batch object representation into text.</summary>
+        /// <param name="handler">This handler.</param>
+        /// <param name="data" type="Object">Representation of a batch.</param>
+        /// <param name="context" type="Object">Object with parsing context.</param>
+        /// <returns>An text representation of the batch object; undefined if not applicable.</returns>
+
+        var cType = context.contentType = context.contentType || contentType(batchMediaType);
+        if (cType.mediaType === batchMediaType) {
+            return writeServerBatch(data, context);
+        }
+    };
+    var prepareResponse = function (response, handler, context) {
+        /// <summary>Prepares a request object so that it can be sent through the network.</summary>
+        /// <param name="request">Object that represents the request to be sent.</param>
+        /// <param name="handler">Handler for data serialization</param>
+        /// <param name="context">Context used for preparing the request</param>
+
+        if (!response.headers) {
+            response.headers = {};
+        } else {
+            normalizeHeaders(response.headers);
+        }
+
+        //if (response.headers.Accept === undefined) {
+        //    response.headers.Accept = handler.accept;
+        //}
+
+        if (assigned(response.data) && response.body === undefined) {
+            handler.write(response, context);
+        }
+    };
+
+    var writeServerBatch = function (data, context) {
+        /// <summary>
+        /// Serializes a batch request object to a string.
+        /// </summary>
+        /// <param name="data" optional="false">Batch request object in payload representation format</param>
+        /// <param name="context" optional="false">Context used for the serialization</param>
+        /// <returns type="String">String representing the batch request</returns>
+
+        var type = payloadTypeOf(data);
+        if (type !== PAYLOADTYPE_BATCH) {
+            throw { message: "Serialization of batches of type \"" + type + "\" is not supported" };
+        }
+
+        var batchBoundary = createBoundary("batchresponse_");
+        context.request.batchBoundary = batchBoundary;
+        var batchParts = data.__batchRequests;
+        var batch = "";
+        var i, len;
+        for (i = 0, len = batchParts.length; i < len; i++) {
+            batch += writeBatchPartDelimiter(batchBoundary, false) +
+                     writeServerBatchPart(batchParts[i], context);
+        }
+        batch += writeBatchPartDelimiter(batchBoundary, true);
+
+        // Register the boundary with the request content type.
+        var contentTypeProperties = context.contentType.properties;
+        contentTypeProperties.boundary = batchBoundary;
+
+        return batch;
+    };
+    var writeServerBatchPart = function (part, context, nested) {
+        /// <summary>
+        /// Serializes a part of a batch request to a string. A part can be either a GET request or 
+        /// a change set grouping several CUD (create, update, delete) requests.
+        /// </summary>
+        /// <param name="part" optional="false">Request or change set object in payload representation format</param>
+        /// <param name="context" optional="false">Object containing context information used for the serialization</param>
+        /// <param name="nested" type="boolean" optional="true">Flag indicating that the part is nested inside a change set</param>
+        /// <returns type="String">String representing the serialized part</returns>
+        /// <remarks>
+        /// A change set is an array of request objects and they cannot be nested inside other change sets.
+        /// </remarks>
+
+        var changeSet = part.__changeRequests;
+        var result;
+        if (isArray(changeSet)) {
+            if (nested) {
+                throw { message: "Not Supported: change set nested in other change set" };
+            }
+
+            var changeSetBoundary = createBoundary("changesetresponse_");
+            result = "Content-Type: " + batchMediaType + "; boundary=" + changeSetBoundary + "\r\n";
+            var i, len;
+            for (i = 0, len = changeSet.length; i < len; i++) {
+                result += writeBatchPartDelimiter(changeSetBoundary, false) +
+                     writeServerBatchPart(changeSet[i], context, true);
+            }
+
+            result += writeBatchPartDelimiter(changeSetBoundary, true);
+        } else {
+            result = "Content-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\n";
+            prepareResponse(part, partHandlerSelector(context, part), { metadata: context.metadata });
+            //prepareResponse(part, partHandler(context, part), { metadata: context.metadata });
+            result += writeServerResponse(part);
+        }
+
+        return result;
+    };
+    var writeServerResponse = function (response) {
+        /// <summary>
+        /// Serializes a request object to a string.
+        /// </summary>
+        /// <param name="request" optional="false">Request object to serialize</param>
+        /// <returns type="String">String representing the serialized request</returns>
+
+        //var result = (request.method ? request.method : "GET") + " " + request.requestUri + " HTTP/1.1\r\n";
+        var result = "HTTP/1.1 " + response.statusCode + " " + response.statusName + "\r\n";
+        for (var name in response.headers) {
+            if (response.headers[name]) {
+                result = result + name + ": " + response.headers[name] + "\r\n";
+            }
+        }
+
+        result += "\r\n";
+
+        if (response.body) {
+            result += response.body;
+        }
+
+        return result;
+    };
+
+
+    odata.batchServerHandler = handler(batchServerParser, batchServerSerializer, batchMediaType, MAX_DATA_SERVICE_VERSION);
+
+    var defaultJsonHandler = function (handler, text, context) {
+        return text ? window.JSON.parse(text) : undefined;
+    };
+    odata.serverJsonHandler = handler(defaultJsonHandler, jsonSerializer, jsonAcceptTypes.join(","), MAX_DATA_SERVICE_VERSION);
+
+    var atomReadHandler = handler(atomParser, textSerialize, atomAcceptTypes.join(","), MAX_DATA_SERVICE_VERSION);
+    atomReadHandler.dataValidator = function (part) {
+        return typeof part.data === 'string';
+    };
+
+    //odata.batchServerHandler.partHandler = odata.serverJsonHandler;
+    odata.batchServerHandler.partHandler = [odata.serverJsonHandler, atomReadHandler, odata.atomHandler, odata.defaultHandler];
+
+})(window);

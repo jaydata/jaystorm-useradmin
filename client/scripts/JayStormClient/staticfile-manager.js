@@ -11,11 +11,14 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.StaticFileManager", {
         var self = this;
         self.show = function () {
             self.visible(true);
-            alert(JSON.stringify(self.application.currentApplication()));
+
+            var appid = self.application.currentApplication().appid;
+
+            //alert(JSON.stringify(self.application.currentApplication()));
             var uploader1 = new qq.FileUploader({
                 element: document.getElementById('file-uploader1'),
                 action: '/fileUpload',
-                params:{type:'1'},
+                params: { type: '1', appid: appid },
                 debug: true,
                 allowedExtensions: ['zip'],
                 extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area1')[0]]
@@ -23,11 +26,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.StaticFileManager", {
             var uploader2 = new qq.FileUploader({
                 element: document.getElementById('file-uploader2'),
                 action: '/fileUpload',
-                params:{type:'2'},
+                params: { type: '2', appid: appid },
                 debug: true,
                 allowedExtensions: ['zip'],
                 extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area2')[0]]
             });
+
         };
 
         self.hide = function () {

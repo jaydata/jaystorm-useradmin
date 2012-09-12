@@ -16486,7 +16486,8 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             CollectionBaseClass: 'Array',
             url: metadataUri,
             user: undefined,
-            password: undefined
+            password: undefined,
+            withCredentials: undefined
         };
 
         $data.typeSystem.extend( cnf, config || {});
@@ -16554,15 +16555,19 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
 
     createFactoryFunc: function (ctxType, cnf) {
         var self = this;
-        return function (user, passw) {
+        return function (config) {
             if (ctxType) {
-                return new ctxType({
+                var cfg = $data.typeSystem.extend({
                     name: 'oData',
                     oDataServiceHost: cnf.SerivceUri,
                     //maxDataServiceVersion: '',
-                    user: user || cnf.user,
-                    password: passw || cnf.password
-                });
+                    user: cnf.user,
+                    password: cnf.password,
+                    withCredentials: cnf.withCredentials
+                }, config)
+
+
+                return new ctxType(cfg);
             } else {
                 return null;
             }
