@@ -241,10 +241,10 @@
                                             optionsText: 'title',
                                             optionsCaption:'Select App To Manage'"></select>
 
-                        <label>App Url:</label>
+<!--                        <label>App Url:</label>
                         <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
 
-                        <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />
+                        <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />-->
                         <div id="launchResult" data-bind="text:launchResult">
 
                         </div>
@@ -393,7 +393,7 @@
 
                         </script>
                         <script type="text/html" data-name-template="Password-display">
-                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
+                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, { user: $data })">Reset password</a>
                         </script>
 
                         <script type="text/html" data-name-template="Groups-editor">
@@ -432,13 +432,15 @@
                             </div>
 
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
+                                                        newCommandCaption: 'Add new service',
                                                         context: context,
                                                         fields: [
-                                                            'Name',
+                                                            {name: 'Name', '$width':'300px'  },
                                                             {name: 'ServiceType', $width:'200px'},
                                                             'DatabaseID',
                                                             'ServiceSource'
                                                         ],
+                                                        
                                                         defaultValues: { 'ServiceSourceType': 'script'},
                                                         beforeSave: function(){ $root.editingSource(false); },
                                                         allDatabases: allDatabases,
@@ -449,7 +451,7 @@
                     <script type="text/html" data-name-template="Name-display">
                         <b><div data-bind="{text: value}"></div></b>
                         
-                        <a data-bind="{text: 'http://{appid}.jaystack.com/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
+                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
