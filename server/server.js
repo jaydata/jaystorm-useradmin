@@ -13,14 +13,15 @@ var http = require('http');
 
 var settings = {
     node_port: process.argv[2] || 3000,
-    uploadpath: __dirname + '/uploads/',
-    file1Extract: __dirname + '/uploads/package1',
-    file2Extract: __dirname + '/uploads/package2'
+    uploadpath: '/data/uploads/',
+    file1Extract: '/data/filestore/',
+    file2Extract: '/data/filestore/'
 };
+
 
 var config = require('./configuration.js').config;
 
-passport.use(new BasicStrategy({
+passport.use(new BasicStrategy ({
 },
   function (username, password, done) {
 
@@ -159,68 +160,76 @@ app.post('/fileUpload', function(req, res) {
         else
             res.send(JSON.stringify(data), {'Content-Type': 'text/plain'}, 404);
     };
-    uploadFile(req, settings.uploadpath, req.query.type==1?settings.file1Extract:settings.file2Extract, callback);
+    uploadFile(req, settings.uploadpath, req.query.type == 1 ? settings.file1Extract : settings.file2Extract, req.query.type, req.query.appid, callback);
+
 });
 
 
 // Mainfunction to recieve and process the file upload data asynchronously
-var uploadFile = function(req, targetdir, extractDir, callback) {
-
+var uploadFile = function (req, targetdir, extractDir, type, appid, callback) {
+    console.log(extractDir);
     // Moves the uploaded file from temp directory to it's destination
     // and calls the callback with the JSON-data that could be returned.
-    var moveToDestination = function(sourcefile, targetfile) {
-        moveFile(sourcefile, targetfile, function(err) {
-            if(!err){
+    var moveToDestination = function (sourcefile, targetfile) {
+        moveFile(sourcefile, targetfile, function (err) {
+            if (!err) {
 
                 ///unzip file
-                var command = "unzip -o "+targetfile+' -d '+extractDir;
+                var extractDir2 = extractDir + appid + (type == 1 ? "/static" : "/js");
+                // TODO clear folder before unzip
+                console.log(extractDir2);
+                var command = "mkdir -p " + extractDir2 + " ; unzip -o " + targetfile + ' -d ' + extractDir2;
                 var cp = childProc.exec;
-                cp(command, function(error, stdout, stderr){
+                cp(command, function (error, stdout, stderr) {
                     console.log('stdout: ' + stdout);
                     console.log('stderr: ' + stderr);
                     if (error !== null) {
                         console.log('exec error: ' + error);
                     }
-                    callback({success: true});
+                    callback({ success: true });
                 });
             }
-            else{
-                callback({success: false, error: err});
+            else {
+                callback({ success: false, error: err });
             }
         });
     };
 
+
     // Direct async xhr stream data upload, yeah baby.
-    if(req.xhr) {
+    if (req.xhr) {
         var fname = req.header('x-file-name');
 
         // Be sure you can write to '/tmp/'
-        var tmpfile = '/tmp/'+uuid();
+        var tmpfile = '/data/tmp/' + uuid();
 
         // Open a temporary writestream
         var ws = fs.createWriteStream(tmpfile);
-        ws.on('error', function(err) {
+        ws.on('error', function (err) {
             console.log("uploadFile() - req.xhr - could not open writestream.");
-            callback({success: false, error: "Sorry, could not open writestream."});
+            callback({ success: false, error: "Sorry, could not open writestream." });
         });
-        ws.on('close', function(err) {
-            moveToDestination(tmpfile, targetdir+fname);
+
+        ws.on('close', function (err) {
+            console.log(tmpfile, targetdir + fname);
+            moveToDestination(tmpfile, targetdir + fname);
         });
 
         // Writing filedata into writestream
-        req.on('data', function(data) {
+        req.on('data', function (data) {
             ws.write(data);
         });
-        req.on('end', function() {
+        req.on('end', function () {
             ws.end();
         });
     }
 
-    // Old form-based upload
+        // Old form-based upload
     else {
-        moveToDestination(req.files.qqfile.path, targetdir+req.files.qqfile.name);
+        moveToDestination(req.files.qqfile.path, targetdir + req.files.qqfile.name);
     }
 };
+
 
 // Moves a file asynchronously over partition borders
 var moveFile = function(source, dest, callback) {
