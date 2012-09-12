@@ -426,7 +426,7 @@
                                 
                                 <script type="text/html" id="eventHandlerCodeEditor">
                                     <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), codemirror: (function(){ $data.codeMirror('EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), $data.data.owner.Handler, $data.error); })() }"></div>
-                                    <div id="Div1" data-bind="if: $data.error().length">
+                                    <div id="service-codemirror-error" data-bind="if: $data.error().length">
                                         <ul data-bind="foreach: $data.error">
                                             <li data-bind="if: $data">
                                                 <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
@@ -446,6 +446,7 @@
                                         </div>
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EventHandlers,
+                                                    beforeSave: beforeSaveHandler,
                                                     showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
                                                     defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
                                                     discriminatorColumn: 'EntitySetID',
