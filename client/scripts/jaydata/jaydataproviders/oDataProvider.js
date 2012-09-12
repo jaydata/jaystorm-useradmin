@@ -27,7 +27,8 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             serviceUrl: "",
             maxDataServiceVersion: '2.0',
             user: null,
-            password: null
+            password: null,
+            withCredentials: false
         }, cfg);
         if (this.context && this.context._buildDbType_generateConvertToFunction && this.buildDbType_generateConvertToFunction) {
             this.context._buildDbType_generateConvertToFunction = this.buildDbType_generateConvertToFunction;
@@ -53,7 +54,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                         callBack.success(that.context);
                     }];
 
-                    this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password);
+                    this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password, this.providerConfiguration.withCredentials);
                     //if (this.providerConfiguration.user) {
                     //    requestData[0].user = this.providerConfiguration.user;
                     //    requestData[0].password = this.providerConfiguration.password || "";
@@ -153,7 +154,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             }
         ];
 
-        this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password);
+        this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password, this.providerConfiguration.withCredentials);
         //if (this.providerConfiguration.user) {
         //    requestData[0].user = this.providerConfiguration.user;
         //    requestData[0].password = this.providerConfiguration.password || "";
@@ -255,7 +256,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
 
         }, callBack.error];
 
-        this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password);
+        this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password, this.providerConfiguration.withCredentials);
         //if (this.providerConfiguration.user) {
         //    requestData[0].user = this.providerConfiguration.user;
         //    requestData[0].password = this.providerConfiguration.password || "";
@@ -341,7 +342,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
 
         }, callBack.error, OData.batchHandler];
 
-        this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password);
+        this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password, this.providerConfiguration.withCredentials);
         //if (this.providerConfiguration.user) {
         //    requestData[0].user = this.providerConfiguration.user;
         //    requestData[0].password = this.providerConfiguration.password || "";
@@ -671,10 +672,11 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
         }
     }
     */
-    appendBasicAuth: function (request, user, password) {
+    appendBasicAuth: function (request, user, password, withCredentials) {
         request.headers = request.headers || {};
         if (!request.headers.Authorization && user && password) {
             request.headers.Authorization = "Basic " + this.__encodeBase64(user + ":" + password);
+            request.withCredentials = withCredentials;
         }
     },
     __encodeBase64: function (val) {
