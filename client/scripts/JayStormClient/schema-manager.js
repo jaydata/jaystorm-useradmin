@@ -245,7 +245,7 @@ function EventHandlersEditorModel(vm){
         .single("it.EntitySetID == this.id", { id: entitySet.EntitySetID() }, ko.observableHere)
         .then(function (entityset) { self.selectedEntitySet(entityset.asKoObservable()) });
     
-    this.closeControlBox = function(){
+    this.beforeSaveHandler = this.closeControlBox = function(){
         vm.closeControlBox();
     }
 }

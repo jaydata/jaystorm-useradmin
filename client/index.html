@@ -637,6 +637,7 @@
                                         </div>
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EventHandlers,
+                                                    beforeSave: beforeSaveHandler,
                                                     showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
                                                     defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
                                                     discriminatorColumn: 'EntitySetID',
