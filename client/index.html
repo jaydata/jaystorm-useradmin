@@ -839,13 +839,13 @@
                                     <a href="#" data-bind="click: closeControlBox">close</a>
                                 </div>
                             </script>
-
                                 <script type="text/html" id="setPasswordUI">
                                 <form data-bind="submit: savePassword">
-                                <div>
-                                    Password: <input type="password" required/><br />
-                                    Retype: <input type="password" required/>
-                                </div>
+                                    <div>
+                                        Password: <input type="password" required data-bind="value: password"/><br />
+                                        Retype: <input type="password" required data-bind="value: rePassword"/><br />
+                                        <span class="alert-danger" data-bind="text: validation"></span>
+                                    </div>
                                     <input type="submit" />
                                 </form>
                                 <a href="#" data-bind="click: close">close</a>
@@ -869,16 +869,11 @@
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                                 fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
 
-                        <script type="text/html" data-name-template="Password-editor">
-                            <a href="#">!!</a>
-
-<!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
-
-                            </div>-->
-
-                        </script>
                         <script type="text/html" data-name-template="Password-display">
-                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
+                            ******
+                        </script>
+                        <script type="text/html" data-name-template="Password-editor">
+                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, { user: owner, app: $data, root: $root })">Reset password</a>
                         </script>
 
                         <script type="text/html" data-name-template="Groups-editor">

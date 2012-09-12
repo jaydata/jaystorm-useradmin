@@ -142,11 +142,9 @@ app.use('/launch', function (req, res, next) {
 app.use('/crypt', passport.initialize());
 app.use('/crypt', passport.authenticate('basic', { session: false }));
 app.use('/crypt', function (req, res) {
-    res.setHeader("Content-Type", "application/json;charset=UTF-8");
-    //var result = {
-    //    authorization: 
-    //};
-    res.end(JSON.stringify(result));
+    res.setHeader("Content-Type", "text/html;charset=UTF-8");
+    var bc = require('bcrypt');
+    res.end(bc.hashSync(req.body.plain, 8));
 });
 
 //app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
