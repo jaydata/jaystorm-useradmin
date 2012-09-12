@@ -146,7 +146,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         //TODO refactor to fields editor!!!
         self.typeTemplates = ko.observableArray([]);
 
-        var primitiveTypes  = { 'string' : 1,'number' :1,'boolean':1,'id':1,'date':1};
+        var primitiveTypes  = { 'string' : 1,'number' :1,'boolean':1,'id':1,'date':1,'int':1};
 
         self.elementTypes = ko.computed(function() {
             return self.typeTemplates().filter( function(item) {
