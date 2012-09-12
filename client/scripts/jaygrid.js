@@ -693,6 +693,52 @@
 
                 }
 
+                function isEqual(e1, e2) {
+                    var _isEqual = false;
+                    if (e1._wrappedType === e2._wrappedType) {
+                        var realType = e1._wrappedType;
+                        var keys = realType.memberDefinitions.getKeyProperties();
+                        if (keys.length > 0) {
+                            _isEqual = true;
+                            for (var i = 0; _isEqual && i < keys.length; i++) {
+                                _isEqual &= (e1[keys[i].name]() === e2[keys[i].name]())
+                            }
+                        }
+
+                    }
+                    return _isEqual;
+                }
+                self.hasChangeEventHandler = function(sender, values) {
+                    console.log('event', self.items());
+
+                    for (var i = 0; i < values.length; i++) {
+                        if (values[i].CollectionName === self.source().collectionName) {
+                            var currItems = self.items();
+                            for (var j = 0; j < currItems.length; j++) {
+                                for (var k = 0; k < values[i].Items.length; k++) {
+                                    var item = values[i].Items[k];
+                                    if (isEqual(item, currItems[j])) {
+                                        currItems[j].HasChanges(false);
+                                        console.log('MATCH ----> UPDATE');
+                                    }
+                                }
+                            }
+
+
+                            break;
+                        }
+                    }
+
+                }
+
+                if(window.hasChangeEvent){
+                    window.hasChangeEvent.attach(self.hasChangeEventHandler);
+                }
+
+                self.dispose = function () {
+                    if (window.hasChangeEvent)
+                        window.hasChangeEvent.detach(self.hasChangeEventHandler);
+                }
 
 
             }

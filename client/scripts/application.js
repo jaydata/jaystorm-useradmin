@@ -60,6 +60,7 @@ $(function () {
         self.applications = ko.observableArray([]);
         self.currentApplication = ko.observable();
         self.applicationToAdd = ko.observable();
+        self.launchFinished = ko.observable();
         self.addApp = function () {
             value = self.applicationToAdd();
             self.applications.push({ url: value, title: value });
@@ -154,17 +155,15 @@ $(function () {
         self.currentAppDBContextFactory = ko.observable();
 
         var modules = [
-            { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
-            { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Services', path: '/Services' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' },
             { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: 'Schemas', path: '/Schema' },
+            { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Services', path: '/Services' },
             { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security' },
             { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Control', path: '/Access' },
             { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Files', path: '/FileManager' },
-            { type: $data.JayStormClient.StaticFileManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' }
+            { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
+            { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' },
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' }
         ];
-
-        
 
         modules.forEach(function (module) {
             ko.applyBindings(module.Model = new module.type(self), document.getElementById(module.ui));
@@ -180,7 +179,7 @@ $(function () {
             item.Model.show();
         }
         self.launchResult = ko.observable();
-        function launchApplication( appid, ondone ) {
+        function launchApplication(appid, ondone) {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "launch", true);
             xhr.setRequestHeader("Content-Type", "application/json");
@@ -191,6 +190,7 @@ $(function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
                         self.launchResult(xhr.responseText);
+                        self.launchFinished(new Date());
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }
@@ -202,6 +202,25 @@ $(function () {
         self.launchCurrentApplication = function () {
             var appid = self.currentApplication().appid;
             launchApplication(appid);
+        }
+
+        self.cryptData = function (str, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "crypt", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onerror = function () {
+                callback({ message: 'error'});
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        callback(xhr.responseText);
+                    } else {
+                        callback({ message: "not ok (200) response from crypt: " + xhr.responseText });
+                    }
+                }
+            }
+            xhr.send(JSON.stringify({ plain: str }));
         }
 
     }

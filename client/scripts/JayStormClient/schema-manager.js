@@ -94,6 +94,18 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             return result;
         };
 
+        if (window.hasChangeEvent) {
+            window.hasChangeEvent.attach(function (s, values) {
+                var dbChanges = values.filter(function (val) {
+                    return val.CollectionName === 'Databases' && val.Items.filter(function (it) {
+                        return it.Name() === self.currentDatabase().Name();
+                    });
+                })
+                if (dbChanges.length >= 0)
+                    self.currentDatabase().HasChanges(false);
+            });
+        }
+
         self.afterAddNewEntityField = function( item, gridModel) {
             item.Index( gridModel.items().length );
         };
