@@ -13,4 +13,4 @@
     }
 }
 
-export.config = config;
+exports.config = config;

@@ -18,7 +18,7 @@ var settings = {
     file2Extract: __dirname + '/uploads/package2'
 };
 
-var config = require('./configuration.js');
+var config = require('./configuration.js').config;
 
 passport.use(new BasicStrategy({
 },

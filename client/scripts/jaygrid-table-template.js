@@ -172,6 +172,12 @@ var templateList = [
     ["jay-data-grid-$data.Object-default-editor",
         '<input type="text" data-bind="value: Model.Value, attr: { required: metadata.required }" />'],
 
+    ["jay-data-grid-$data.Array-default-display",
+        "<span data-bind='text: Model.Value'></span>"],
+
+    ["jay-data-grid-$data.Array-default-editor",
+        '<span data-bind="text: Model.ElementTypeName"></span><br /><input type="text" data-bind="value: Model.Value, attr: { required: metadata.required }" />'],
+
     ["jay-data-grid-$data.Blob-Image-default-editor",
         '<div data-bind="if: Model.DataUri"> \
             <img src="#" height="50px" width="50px" data-bind="attr: { src: Model.DataUri }"/> \
