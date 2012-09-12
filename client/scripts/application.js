@@ -36,7 +36,7 @@ $(function () {
                         }
                         self.authorization(result.authorization);
                         globalAuthorization = result.authorization;
-                        var apps = result.apps
+                        var apps = result.apps.apps
                                         .filter(function(item) { return item.status != 'Cancelled'})
                                         .map(function (item) {
                                                 return {
@@ -60,6 +60,7 @@ $(function () {
         self.applications = ko.observableArray([]);
         self.currentApplication = ko.observable();
         self.applicationToAdd = ko.observable();
+        self.launchFinished = ko.observable();
         self.addApp = function () {
             value = self.applicationToAdd();
             self.applications.push({ url: value, title: value });
@@ -161,7 +162,7 @@ $(function () {
             { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security' },
             { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Control', path: '/Access' },
             { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Files', path: '/FileManager' },
-            { type: $data.JayStormClient.StaticFileManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' }
+            { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' }
         ];
 
         
@@ -180,7 +181,7 @@ $(function () {
             item.Model.show();
         }
         self.launchResult = ko.observable();
-        function launchApplication( appid, ondone ) {
+        function launchApplication(appid, ondone) {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "launch", true);
             xhr.setRequestHeader("Content-Type", "application/json");
@@ -191,6 +192,7 @@ $(function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
                         self.launchResult(xhr.responseText);
+                        self.launchFinished(new Date());
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }

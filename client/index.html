@@ -912,7 +912,24 @@
                     <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="DeploymentUI" data-bind="if: visible">
-                                <h1>Manage static files</h1>
+                                <h1>Application Launch</h1>
+                                <div data-bind="if: hasChanges">
+                                    <h2>Changed ApplicationDB items</h2>
+                                    <div data-bind="foreach: changedObjects">
+                                        <div data-bind="if: Items().length > 0">
+                                            <h3 data-bind="text: CollectionName"></h3>
+                                            <ul data-bind="foreach: Items">
+                                                <li><span data-bind="text: Name"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Launch" class="btn btn-info">
+                                    <span data-bind="if: launchDisabled">Collecting changed data, please wait...</span>
+                                    <span data-bind="if: launching">Launching, please wait...</span>
+                                    <span data-bind="if: launchingDone">Launch done!</span>
+                                </div>
                             </div>
                         </div>
                     </div>
