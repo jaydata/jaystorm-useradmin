@@ -917,6 +917,27 @@
 
             return model;
         },
+        '$data.Array': function (columnInfo) {
+            var model = {
+                Value: ko.observable(JSON.stringify(columnInfo.value())),
+                ElementTypeName: columnInfo.metadata.elementType ? Container.getName(columnInfo.metadata.elementType).replace('$data.', '') : 'unknown',
+                templateName: 'jay-data-grid-$data.Array-default'
+            }
+
+            model.Value.subscribe(function (val) {
+                var obj;
+                try {
+                    obj = val ? JSON.parse(val) : null;
+                    columnInfo.value(obj);
+                } catch (e) {
+                    console.log('parseError');
+                }
+                model.Value(JSON.stringify(columnInfo.value()));
+
+            });
+
+            return model;
+        },
 
         '$data.Blob': function (columnInfo, ctx) {
             var self = this;
