@@ -13,12 +13,12 @@ $data.Base.extend("$data.JayStormUI.AdminModel",  {
         self.context = ko.observable();
         self.visible = ko.observable(false);
         self.show = function () {
-            self.visible(true);
             if (self.onVisible) {
                 console.log("executing delayed setContext###");
                 self.onVisible();
                 self.onVisible = null;
             }
+            self.visible(true);
         };
 
         self.hide = function () {

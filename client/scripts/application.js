@@ -21,7 +21,7 @@ $(function () {
 
         self.authorization = ko.observable();
 
-        function getAuthroization() {
+        function getAuthroization(succ, err) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "getAuthorization", true);
             xhr.onerror = function () {
@@ -45,6 +45,7 @@ $(function () {
                                                     title: item.name
                                                 }
                                         });
+                        window["stormApplications"] = apps;
                         self.applications(apps);
                         self.currentApplication(apps[0]);
 
@@ -154,12 +155,14 @@ $(function () {
 
         var modules = [
             { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
-            { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Service Manager', path: '/Services' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: '(2) Data Manager', path: '/Databases' },
-            { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: '(1) Schemas', path: '/Schema' },
+            { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Services', path: '/Services' },
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' },
+            { type: $data.JayStormClient.SchemaManager, ui: "SchemaManagerUI", title: 'Schemas', path: '/Schema' },
             { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security' },
-            { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Manager', path: '/Access' },
-            { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'File Manager', path: '/FileManager' }];
+            { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Control', path: '/Access' },
+            { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Files', path: '/FileManager' },
+            { type: $data.JayStormClient.StaticFileManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' }
+        ];
 
         
 

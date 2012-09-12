@@ -20,6 +20,21 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DataManager", {
                 self.databases.push(appUrl);
             });
         }
+        //var w;
+
+        self.show = function () {
+            self.visible(true);
+            if (typeof w === 'undefined') {
+                console.log("opening window");
+                w = window.open("data.html", "_dataui");
+            } else {
+                w.close();
+                w = window.open("data.html", "_dataui");
+                console.log("Focus!");
+                w.focus();
+            }
+
+        }
 
         self.contextFactory.subscribe(function (value) {
             initState(value);

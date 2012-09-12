@@ -35,6 +35,7 @@
         <script src="scripts/JayStormClient/security-manager.js"></script>
         <script src="scripts/JayStormClient/access-manager.js"></script>
         <script src="scripts/JayStormClient/staticfile-manager.js"></script>
+    <script src="scripts/JayStormClient/deployment-manager.js"></script>
         <script src="scripts/application.js"></script>
 
 
@@ -545,30 +546,14 @@
                     <div class="inwrapper">
                         <div class="inscroller">
                             <div id="DataManagerUI" data-bind="if: visible">
-<!--                                <iframe src="dataui.html">
+                                <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                    <p>Data manager has been opened in a separate window!</p>
+                                </div>
 
-                                </iframe>-->
 
-                <h1>Manage Data</h1>
-                <div class="alert alert-info fade in">
-                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                </div>
+                            </div>
 
-                <h4>Select database</h4>
-                <ul class="nav nav-tabs" data-bind="foreach: $root.databases">
-                    <li>
-                        <a href="#"  data-bind="click: $root.serviceUrlSelected.bind($data), text: $data"></a>
-                    </li>
-                </ul>
-
-                <ul class="nav nav-tabs" data-bind="foreach: entitySets">
-                    <li>
-                        <a href="#"  data-bind="click: $root.selectSet, text: $data.collectionName"></a>
-                    </li>
-                </ul>
-                    <div data-bind="jayGrid: { source: collection }"></div>
-            </div>
                         </div>
                     </div>
                 </li>
@@ -707,7 +692,15 @@
                                 </ul>
 
                                 <div data-bind="if: currentDatabase">
+                                    <!-- ko if: currentDatabase().HasChanges -->
+                                    <div class="alert alert-danger fright iblock"  style="max-width:600px">
+                                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                        <p><strong>Attention!</strong> This database schema has changed. You need to publish these changes before they take effect.</p>
+                                    </div>
+                                    <!-- /ko -->
+
                                     <h2>Database schema: <span data-bind="text: currentDatabase().Name"> </span></h2>
+
                                     
                                     <h3>List of tables</h3>
 
@@ -718,12 +711,6 @@
                                     </div>
                                     <!-- /ko -->
 
-                                    <!-- ko if: currentDatabase().HasChanges -->
-                                    <div class="alert alert-warning"  >
-                                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                                        <p><strong>Attention!</strong> This database schema has changed. You need to publish these changes before they take effect.</p>
-                                    </div>
-                                    <!-- /ko -->
 
                                     <div data-bind="jayGrid: {
                                                 newCommandCaption: 'Create new table',
@@ -739,6 +726,9 @@
                                                 pageSize: eSetsPageSize},
                                                 visible: currentDatabase">
 
+                                        <script type="text/html" data-name-template="Name-display">
+                                            <h5 data-bind="text: value"></h5>
+                                        </script>
                                     </div>
 
                                         <h5>List of EVENTS</h5>
@@ -915,6 +905,15 @@
                     </form>
 
                 </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="inwrapper container">
+                        <div class="inscroller">
+                            <div id="DeploymentUI" data-bind="if: visible">
+                                <h1>Manage static files</h1>
+                            </div>
                         </div>
                     </div>
                 </li>
