@@ -785,10 +785,9 @@
                     <h4 style="float: left; width:240px">Static file upload (zip) </h4>
                     <form id="deletefile1" action="removeFile" action="post" >
                         <input type="hidden" value="1"/>
-                        <input type="button" value="Remove all files" class="btn btn-danger" style="margin: 6px 0 0 15px; height:30px;"/>
+                        <input type="button" data-bind="click:removeStaticFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
                     </form>
                     <form id="fileUpload1" action="fileUpload" action="post">
-                        <h4>Static file upload (zip)</h4>
                         <div id="file-uploader1">
                             <noscript>
                                 <p>Please enable JavaScript to use file uploader.</p>
@@ -801,7 +800,7 @@
                     <h4 style="float: left; width:240px">Javascript upload (zip) </h4>
                     <form id="deletefile2" action="removeFile" action="post">
                         <input type="hidden" value="2"/>
-                        <input type="button" value="Remove all files" class="btn btn-danger" style="margin: 6px 0 0 15px; height:30px;"/>
+                        <input type="button" data-bind="click:removeJsFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
                     </form>
                     <form id="fileUpload2" action="fileUpload" action="post">
 
