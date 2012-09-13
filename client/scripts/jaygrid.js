@@ -709,8 +709,6 @@
                     return _isEqual;
                 }
                 self.hasChangeEventHandler = function(sender, values) {
-                    console.log('event', self.items());
-
                     for (var i = 0; i < values.length; i++) {
                         if (values[i].CollectionName === self.source().collectionName) {
                             var currItems = self.items();
@@ -719,16 +717,12 @@
                                     var item = values[i].Items[k];
                                     if (isEqual(item, currItems[j])) {
                                         currItems[j].HasChanges(false);
-                                        console.log('MATCH ----> UPDATE');
                                     }
                                 }
                             }
-
-
                             break;
                         }
                     }
-
                 }
 
                 if(window.hasChangeEvent){
