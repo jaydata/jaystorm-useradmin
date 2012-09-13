@@ -64,10 +64,18 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
             }
         });
 
+        var currentContext = ko.observable();
+        self.contextFactory.subscribe(function (ctxFactory) {
+            currentContext(ctxFactory());
+
+            if(self.visible())
+                self.appContext(currentContext());
+        })
+
         self.show = function () {
             var arg = arguments;
             self.visible(true);
-            self.appContext(self.createContext());
+            self.appContext(currentContext());
 
         };
 
