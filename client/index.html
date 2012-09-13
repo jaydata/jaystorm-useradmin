@@ -621,7 +621,7 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
-                        <pre data-bind="visible: owner.ServiceSourceType() == 'script', attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+                        <pre data-bind="visible: owner.ServiceSourceType() == 'script' && value(), attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ if (value()) $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
                     </script>
                 </div>
             
