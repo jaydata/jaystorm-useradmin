@@ -135,20 +135,24 @@ $(function () {
             var serviceUri = value.url.trim() + "ApplicationDB";
             var serviceUri = serviceUri; //serviceUri.replace("http://", "");
             
-            $data.service(serviceUri, function (factory) {
-                var appDBFactory = function () {
-                    var c = factory.apply({}, arguments);
-                    c.prepareRequest = function (req) {
-                        req[0].headers = req[0].headers || {};
-                        req[0].headers['X-Domain'] = 'jokerStorm';
-                        req[0].headers['Authorization'] = self.authorization();
+            $data.service(serviceUri, {
+                success: function (factory) {
+                    var appDBFactory = function () {
+                        var c = factory.apply({}, arguments);
+                        c.prepareRequest = function (req) {
+                            req[0].headers = req[0].headers || {};
+                            req[0].headers['X-Domain'] = 'jokerStorm';
+                            req[0].headers['Authorization'] = self.authorization();
+                        }
+                        return c;
                     }
-                    return c;
+                    syncAppItemsWithDatabases(appDBFactory);
+                    self.currentAppDBContextFactory(appDBFactory);
+                },
+                error: function () {
+                    window.location.href = 'http://test.jaystack.com/your-jaystorm-app-is-ready?appId=' + self.currentApplication().appid;
                 }
-                syncAppItemsWithDatabases(appDBFactory);
-                self.currentAppDBContextFactory(appDBFactory);
-            }
-            , { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
+            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
             );
         });
 

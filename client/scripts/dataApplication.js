@@ -55,6 +55,9 @@
             });
             globalAuthorization = window.opener.globalAuthorization;
             return;
+        } else {
+            window.location.href = 'https://dashboard.jaystack.com/';
+            return;
         }
 
         var xhr = new XMLHttpRequest();

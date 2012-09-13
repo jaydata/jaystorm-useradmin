@@ -78,7 +78,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                         var field = new c.EntityFields.createNew({
                             Name : 'id',
                             Type : 'id',
-                            Key : true,
+                            Key: true,
+                            Nullable: false,
                             Index: -10,
                             TypeTemplate: 'Object identifier',
                             DatabaseID : self.currentDatabaseID(),
