@@ -788,6 +788,7 @@
                         <input type="button" value="Remove all files" class="btn btn-danger" style="margin: 6px 0 0 15px; height:30px;"/>
                     </form>
                     <form id="fileUpload1" action="fileUpload" action="post">
+                        <h4>Static file upload (zip)</h4>
                         <div id="file-uploader1">
                             <noscript>
                                 <p>Please enable JavaScript to use file uploader.</p>
@@ -872,16 +873,11 @@
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                                 fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
 
-                        <script type="text/html" data-name-template="Password-editor">
-                            <a href="#">!!</a>
-
-<!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
-
-                            </div>-->
-
-                        </script>
                         <script type="text/html" data-name-template="Password-display">
-                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
+                            ******
+                        </script>
+                        <script type="text/html" data-name-template="Password-editor">
+                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, { user: owner, app: $data, root: $root })">Reset password</a>
                         </script>
 
                         <script type="text/html" data-name-template="Groups-editor">
@@ -918,7 +914,7 @@
                                     <button type="button" class="close" data-dismiss="alert">x</button>
                                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                                 </div>
-                                <div data-bind="if: hasChanges">
+                                <div data-bind="if: hasChanges" style="margin-bottom: 20px">
                                     <h3>Changed ApplicationDB items</h3>
                                     <div data-bind="foreach: changedObjects">
                                         <div data-bind="if: Items().length > 0">

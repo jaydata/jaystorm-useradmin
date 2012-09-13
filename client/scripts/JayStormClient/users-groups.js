@@ -86,6 +86,7 @@ function SetPasswordModel(model) {
     var user = model.user;
 
     this.validation = ko.observable();
+
     this.savePassword = function () {
 
         this.close();

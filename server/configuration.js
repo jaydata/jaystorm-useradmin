@@ -1,6 +1,6 @@
 ﻿var config = {
     admin: {
-        url:'dev-admin.jaystack.net',
+        url:'localhost',
         port: 3000,
         ssl: false,
         launch: '/launch'
