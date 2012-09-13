@@ -61,15 +61,15 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.UserManager", {
         }
 
 
-        self.stress = function () {
-            var c = self.createContext();
-            for (var i = 0; i < 1000; i++) {
-                c.Users.add({ Login: "User" + i.toString() });
-            }
-            c.saveChanges(function () {
-                console.log("done");
-            });
-        }
+        //self.stress = function () {
+        //    var c = self.createContext();
+        //    for (var i = 0; i < 1000; i++) {
+        //        c.Users.add({ Login: "User" + i.toString() });
+        //    }
+        //    c.saveChanges(function () {
+        //        console.log("done");
+        //    });
+        //}
         self.addUserToGroup = function (user, group) {
             var g = user.Groups() || [];
             g.push(group.GroupID());
