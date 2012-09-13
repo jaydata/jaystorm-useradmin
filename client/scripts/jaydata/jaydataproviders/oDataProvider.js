@@ -565,7 +565,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                 '$data.Boolean': function (bool) { return bool; },
                 '$data.Blob': function (blob) { return blob; },
                 '$data.Object': function (o) { if (o === undefined) { return new $data.Object(); } else if (typeof o === 'string') { return JSON.parse(o); } return o; },
-                '$data.Array': function (o) { if (o === undefined) { return new $data.Array(); } else if (o instanceof $data.Array) { return o; } return JSON.parse(o); },
+                '$data.Array': function (o) { if (o === undefined) { return new $data.Array(); } else if (o instanceof $data.Array) { return o; } return (o ? (o.element ? [o.element] : JSON.parse(o) ): []); },
                 '$data.Geography': function (geo) {
                     if (geo && typeof geo === 'object' && Array.isArray(geo.coordinates)) {
                         return new $data.Geography(geo.coordinates[0], geo.coordinates[1]);

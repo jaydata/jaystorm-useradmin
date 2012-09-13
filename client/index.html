@@ -563,9 +563,9 @@
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
                                                         fields: [
-                                                            'Name',
+                                                            {name:'Name', $width:'300px'},
                                                             {name: 'ServiceType', $width:'200px'},
-                                                            'DatabaseID',
+                                                            {name: 'DatabaseID', $displayName: 'Backing database', $width:'300px'},
                                                             'ServiceSource'
                                                         ],
                                                         defaultValues: { 'ServiceSourceType': 'script'},
@@ -578,7 +578,7 @@
                     <script type="text/html" data-name-template="Name-display">
                         <b><div data-bind="{text: value}"></div></b>
                         
-                        <a data-bind="{text: 'http://{appid}.jaystack.com/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
+                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
@@ -701,7 +701,9 @@
                 <h4>List of active permissions</h4>
 
                 <div data-bind="jayGrid: {source: context().Permissions,
-                                               fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
+                                               fields: [{name: 'DatabaseID', $displayName: 'Database'},
+                                                        {name: 'EntitySetID', $displayName: 'Table' },
+                                                        {name: 'GroupID', $displayName: 'Group'} ,'Read','Create','Update','Delete','DeleteBatch'],
                                               refresher: $root.rf }">
 
                     <script type="text/html" data-name-template="DatabaseID-display">
