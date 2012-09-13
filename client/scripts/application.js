@@ -150,7 +150,11 @@ $(function () {
                     self.currentAppDBContextFactory(appDBFactory);
                 },
                 error: function () {
-                    window.location.href = 'http://test.jaystack.com/your-jaystorm-app-is-ready?appId=' + self.currentApplication().appid;
+                    setTimeout(function () {
+                        if (value === self.currentApplication()) {
+                            window.location.href = 'http://test.jaystack.com/your-jaystorm-app-is-ready?appId=' + self.currentApplication().appid;
+                        }
+                    }, 5000);
                 }
             }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
             );

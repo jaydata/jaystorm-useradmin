@@ -101,9 +101,11 @@
     self.currentContextFactory = ko.observable();
     self.context = ko.observable();
     self.entitySets = ko.observableArray([]);
+    self.IsApplicationDB = ko.observable(false);
 
     self.currentContextFactory.subscribe(function (cf) {
         var c = cf();
+        self.IsApplicationDB(c.getType().name === 'contextType_ApplicationDB');
         self.context(c);
         self.entitySets.removeAll();
         for (var name in c) {

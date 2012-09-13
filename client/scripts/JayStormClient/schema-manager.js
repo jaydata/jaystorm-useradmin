@@ -25,14 +25,16 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         self.tableItemsPresent = ko.observable(false);
         self.tableItems = ko.observableArray([]);
-
+        self.IsApplicationDB = ko.observable(true);
         self.currentDatabase.subscribe(function (db) {
             if (db) {
                 self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
                 self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
+                self.IsApplicationDB(db.Name() === 'ApplicationDB')
             } else {
                 self.currentDatabaseID(null);
                 self.currentDatabaseName(null);
+                self.IsApplicationDB(false);
             }
         });
 

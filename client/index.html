@@ -514,8 +514,12 @@
                                     <!-- /ko -->
 
                                     <h2>Database schema: <span data-bind="text: currentDatabase().Name"> </span></h2>
-
-                                    
+                                    <div data-bind="if: IsApplicationDB">
+                                        <div class="alert alert-danger fright iblock" style="float: none;">
+                                            <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                            <p><strong>Attention!</strong> Refresh the page to see the changes!</p>
+                                        </div>
+                                    </div>
                                     <h3>List of tables</h3>
 
                                     <!-- ko if:tableItemsPresent() && (tableItems().length == 0) -->
