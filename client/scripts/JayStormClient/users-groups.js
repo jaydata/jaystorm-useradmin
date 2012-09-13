@@ -85,13 +85,28 @@ function SetPasswordModel(model) {
     var self = this;
     var user = model.user;
 
-    this.validation = ko.observable();
+    self.validation = ko.observable('');
 
-    this.savePassword = function () {
+    self.password = ko.observable();
+    self.rePassword = ko.observable();
 
-        this.close();
+    self.savePassword = function () {
+        this.validation('');
+        if (self.password() === self.rePassword()) {
+            model.root.application.cryptData(self.password(), function (res) {
+                if (typeof res === 'object') {
+                    self.validation('encode password failed');
+                } else {
+                    model.user.Password(res);
+                    self.close();
+                }
+            });
+            self.validation('');
+        } else {
+            self.validation("Passwords do not match.")
+        }
     }
-    this.close = function () {
+    self.close = function () {
         model.closeControlBox();
     }
 }
