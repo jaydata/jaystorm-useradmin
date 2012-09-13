@@ -142,11 +142,9 @@ app.use('/launch', function (req, res, next) {
 app.use('/crypt', passport.initialize());
 app.use('/crypt', passport.authenticate('basic', { session: false }));
 app.use('/crypt', function (req, res) {
-    res.setHeader("Content-Type", "application/json;charset=UTF-8");
-    //var result = {
-    //    authorization: 
-    //};
-    res.end(JSON.stringify(result));
+    res.setHeader("Content-Type", "text/html;charset=UTF-8");
+    var bc = require('bcrypt');
+    res.end(bc.hashSync(req.body.plain, 8));
 });
 
 //app.get('/getAuthorization', passport.authenticate('basic', { session: true }));
@@ -262,6 +260,24 @@ var moveFile = function(source, dest, callback) {
     });
 };
 
+app.use('/removeFiles', function(req, res){
+    var type = req.body.type;
+    var appId = req.body.appid;
+    var removeDir = type == 1 ? settings.file1Extract : settings.file2Extract
+    removeDir += appId + (type == 1 ? "/static" : "/js");
+    var cmd = 'rm -rf '+removeDir;
+    console.log('command: '+cmd);
+    var cp = childProc.exec;
+    cp('ls', function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+            console.log('exec error: ' + error);
+            res.send(JSON.stringify({ok:false}), {'Content-Type': 'text/plain'}, 404);
+        }
+        res.send(JSON.stringify({ok:false}), {'Content-Type': 'text/plain'}, 200);
+    });
+});
 
 app.use('/debug', function(req, res){
     res.write('DEBUG');

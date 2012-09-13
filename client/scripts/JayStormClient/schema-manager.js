@@ -252,7 +252,11 @@ function EventHandlersEditorModel(vm){
     self.codeHighlight = function(el, value){
         new $data.JayStormUI.CodeHighlight(el, value);
     };
-    
+
+    self.beforeSaveHandler = function () {
+        vm.closeControlBox();
+    };
+
     context.EntitySets
         .single("it.EntitySetID == this.id", { id: entitySet.EntitySetID() }, ko.observableHere)
         .then(function (entityset) { console.log('ENTITYSET', entityset); self.selectedEntitySet(entityset.asKoObservable()) });

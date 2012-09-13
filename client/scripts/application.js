@@ -204,6 +204,25 @@ $(function () {
             launchApplication(appid);
         }
 
+        self.cryptData = function (str, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "crypt", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onerror = function () {
+                callback({ message: 'error'});
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        callback(xhr.responseText);
+                    } else {
+                        callback({ message: "not ok (200) response from crypt: " + xhr.responseText });
+                    }
+                }
+            }
+            xhr.send(JSON.stringify({ plain: str }));
+        }
+
     }
 
 

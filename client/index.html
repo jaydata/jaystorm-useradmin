@@ -10,7 +10,7 @@
         <link href="styles/bootstrap.min.css" rel="stylesheet" />
         <link href="styles/style.css" rel="stylesheet" />
         <link href="styles/fileuploader.css" rel="stylesheet" />
-        
+
         <script src="/scripts/jquery-1.7.2.min.js"></script>
         <script src="/scripts/fileuploader.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
@@ -282,7 +282,7 @@
                                             optionsText: 'title',
                                             optionsCaption:'Select App To Manage'"></select>
 
-                        <!--<label>App Url:</label>
+<!--                        <label>App Url:</label>
                         <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
 
                         <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />-->
@@ -563,9 +563,9 @@
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
                                                         fields: [
-                                                            'Name',
+                                                            {name:'Name', $width:'300px'},
                                                             {name: 'ServiceType', $width:'200px'},
-                                                            'DatabaseID',
+                                                            {name: 'DatabaseID', $displayName: 'Backing database', $width:'300px'},
                                                             'ServiceSource'
                                                         ],
                                                         defaultValues: { 'ServiceSourceType': 'script'},
@@ -578,7 +578,7 @@
                     <script type="text/html" data-name-template="Name-display">
                         <b><div data-bind="{text: value}"></div></b>
                         
-                        <a data-bind="{text: 'http://{appid}.jaystack.com/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
+                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
@@ -782,9 +782,14 @@
                         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                     </div>
 
+                    <h4 style="float: left; width:240px">Static file upload (zip) </h4>
+                    <form id="deletefile1" action="removeFile" action="post" >
+                        <input type="hidden" value="1"/>
+                        <input type="button" data-bind="click:removeStaticFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
+                    </form>
                     <form id="fileUpload1" action="fileUpload" action="post">
-                        <h4>Static file upload (zip)</h4>
                         <div id="file-uploader1">
+
                             <noscript>
                                 <p>Please enable JavaScript to use file uploader.</p>
                                 <!-- or put a simple form for upload here -->
@@ -792,24 +797,23 @@
                         </div>
                         <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
                     </form>
-                    <form id="deletefile1" action="removeFile" action="post">
-                         <input type="hidden" value="1"/>
-                        <input type="button" value="Remove"/>
+
+                    <h4 style="float: left; width:240px">Javascript upload (zip) </h4>
+                    <form id="deletefile2" action="removeFile" action="post">
+                        <input type="hidden" value="2"/>
+                        <input type="button" data-bind="click:removeJsFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
                     </form>
                     <form id="fileUpload2" action="fileUpload" action="post">
-                        <h4>Javascript upload (zip)</h4>
+
                         <div id="file-uploader2">
                             <noscript>
                                 <p>Please enable JavaScript to use file uploader.</p>
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
-                        <div class="qq-upload-extra-drop-area2 btn btn-danger">Drop files here too</div>
+                        <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
                     </form>
-                    <form id="deletefile2" action="removeFile" action="post">
-                        <input type="hidden" value="2"/>
-                        <input type="button" value="Remove"/>
-                    </form>
+
                 </div>
                         </div>
                     </div>
@@ -842,10 +846,11 @@
 
                                 <script type="text/html" id="setPasswordUI">
                                 <form data-bind="submit: savePassword">
-                                <div>
-                                    Password: <input type="password" required/><br />
-                                    Retype: <input type="password" required/>
-                                </div>
+                                    <div>
+                                        Password: <input type="password" required data-bind="value: password"/><br />
+                                        Retype: <input type="password" required data-bind="value: rePassword"/><br />
+                                        <span class="alert-danger" data-bind="text: validation"></span>
+                                    </div>
                                     <input type="submit" />
                                 </form>
                                 <a href="#" data-bind="click: close">close</a>
@@ -869,16 +874,11 @@
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
                                                 fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
 
-                        <script type="text/html" data-name-template="Password-editor">
-                            <a href="#">!!</a>
-
-<!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
-
-                            </div>-->
-
-                        </script>
                         <script type="text/html" data-name-template="Password-display">
-                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, {})">Reset password</a>
+                            ******
+                        </script>
+                        <script type="text/html" data-name-template="Password-editor">
+                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, { user: owner, app: $data, root: $root })">Reset password</a>
                         </script>
 
                         <script type="text/html" data-name-template="Groups-editor">
@@ -911,18 +911,22 @@
                         <div class="inscroller">
                             <div id="DeploymentUI" data-bind="if: visible">
                                 <h1>Application Launch</h1>
-                                <div data-bind="if: hasChanges">
-                                    <h2>Changed ApplicationDB items</h2>
+                                <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">x</button>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                </div>
+                                <div data-bind="if: hasChanges" style="margin-bottom: 20px">
+                                    <h3>Changed ApplicationDB items</h3>
                                     <div data-bind="foreach: changedObjects">
                                         <div data-bind="if: Items().length > 0">
-                                            <h3 data-bind="text: CollectionName"></h3>
+                                            <h4 data-bind="text: CollectionName"></h4>
                                             <ul data-bind="foreach: Items">
                                                 <li><span data-bind="text: Name"></span></li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                <div>
+                                <div data-bind="if: appContext">
                                     <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Launch" class="btn btn-info">
                                     <span data-bind="if: launchDisabled">Collecting changed data, please wait...</span>
                                     <span data-bind="if: launching">Launching, please wait...</span>
