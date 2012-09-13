@@ -176,7 +176,7 @@ var uploadFile = function (req, targetdir, extractDir, type, appid, callback) {
                 var extractDir2 = extractDir + appid + (type == 1 ? "/static" : "/js");
                 // TODO clear folder before unzip
                 console.log(extractDir2);
-                var command = "mkdir -p " + extractDir2 + " ; unzip -o " + targetfile + ' -d ' + extractDir2;
+                var command = "rm -rf "+extractDir2+"; mkdir -p " + extractDir2 + " ; unzip -o " + targetfile + ' -d ' + extractDir2;
                 var cp = childProc.exec;
                 cp(command, function (error, stdout, stderr) {
                     console.log('stdout: ' + stdout);
@@ -268,7 +268,7 @@ app.use('/removeFiles', function(req, res){
     var cmd = 'rm -rf '+removeDir;
     console.log('command: '+cmd);
     var cp = childProc.exec;
-    cp('ls', function (error, stdout, stderr) {
+    cp(cmd, function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);
         console.log('stderr: ' + stderr);
         if (error !== null) {

@@ -50,8 +50,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.StaticFileManager", {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
-                        self.launchResult(xhr.responseText);
-                        self.launchFinished(new Date());
+                        
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }
