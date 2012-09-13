@@ -80,6 +80,13 @@
             <div class="alert alert-info fade in">
                 <button type="button" class="close" data-dismiss="alert">&#120;</button>
                 <p>With the Data Manager you can edit (add, delete, modify) the contents of individual tables.</p>
+			</div>
+
+            <div data-bind="if: IsApplicationDB">
+                <div class="alert alert-danger fright iblock" style="float: none;">
+                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                    <p><strong>Attention!</strong> The ApplicationDB contains all the meta information about your JayStorm JavaScript application and in trained hands is a powerful tool to create ultra dynamic and flexible data applications. Used on the wrong way however can easily render your system unoperational!</p>
+                </div>
             </div>
 
             <h4>Select Table</h4>

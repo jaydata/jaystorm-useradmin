@@ -985,14 +985,15 @@
                 var basevalue = columnInfo.value();
                 var model = {
                     Value: ko.observable(basevalue),
-                    DataUri: ko.observable('data:image;base64,' + basevalue),
+                    DataUri: ko.observable(basevalue ? 'data:image;base64,' + basevalue : ''),
                     File: ko.observable(),
                     templateName: 'jay-data-grid-$data.Blob-Image-default'
                 }
                
                 model.Value.subscribe(function (val) {
                     columnInfo.value(val ? val : null);
-                    model.DataUri('data:image;base64,' + columnInfo.value());
+                    var realValue = columnInfo.value();
+                    model.DataUri(realValue ? 'data:image;base64,' + realValue : '');
                 });
 
                 model.File.subscribe(function (val) {
