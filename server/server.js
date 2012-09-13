@@ -260,6 +260,24 @@ var moveFile = function(source, dest, callback) {
     });
 };
 
+app.use('/removeFiles', function(req, res){
+    var type = req.body.type;
+    var appId = req.body.appid;
+    var removeDir = type == 1 ? settings.file1Extract : settings.file2Extract
+    removeDir += appId + (type == 1 ? "/static" : "/js");
+    var cmd = 'rm -rf '+removeDir;
+    console.log('command: '+cmd);
+    var cp = childProc.exec;
+    cp('ls', function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+            console.log('exec error: ' + error);
+            res.send(JSON.stringify({ok:false}), {'Content-Type': 'text/plain'}, 404);
+        }
+        res.send(JSON.stringify({ok:false}), {'Content-Type': 'text/plain'}, 200);
+    });
+});
 
 app.use('/debug', function(req, res){
     res.write('DEBUG');

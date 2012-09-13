@@ -282,11 +282,7 @@
                                             optionsText: 'title',
                                             optionsCaption:'Select App To Manage'"></select>
 
-<<<<<<< HEAD
-<!--                        <label>App Url:</label>
-=======
                         <!--<label>App Url:</label>
->>>>>>> d28b69c92a2c889b5a499ca985817eb3bbacb354
                         <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
 
                         <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />-->
@@ -315,7 +311,7 @@
                     </div>
                 </li>
                 <li>
-                   <div class="icon service">&nbsp;</div>
+                    <div class="icon service">&nbsp;</div>
                     <div class="item-content">
                         <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
                         <p>Publish your databases or JavaScript API via OData</p>
@@ -374,243 +370,6 @@
             </script>
 
             <ul id="screens">
-<<<<<<< HEAD
-                <li id="usersScreen">
-                    <div class="todo-list">
-                        <h3>Todo list</h3>
-                        <dl>
-                            <dd>todo item 1</dd>
-                            <dd>todo item 2</dd>
-                            <dd>todo item 3</dd>
-                        </dl>
-                    </div>
-
-                    <div class="inwrapper container">
-                        <div class="inscroller">
-                            
-                            <div id="UserManagerUI" data-bind="if: visible">
-                                <script type="text/html" id="GroupArrayEditor">
-                                <div>
-                                    <ul data-bind="foreach: Groups">
-                                        <li>
-                                            <span  data-bind="text: Name"></span>
-                                            <input type="checkbox" data-bind="checked: selected"/>
-                                        </li>
-                                    </ul>
-                                    <a href="#" data-bind="click: closeControlBox">close</a>
-                                </div>
-                            </script>
-
-                                <script type="text/html" id="setPasswordUI">
-                                <form data-bind="submit: savePassword">
-                                <div>
-                                    Password: <input type="password" required/><br />
-                                    Retype: <input type="password" required/>
-                                </div>
-                                    <input type="submit" />
-                                </form>
-                                <a href="#" data-bind="click: close">close</a>
-                            </script>
-
-                <div class="alert alert-danger fright iblock">
-                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                    <p><strong>Attention!</strong> Refresh the page to see the changes!</p>
-                </div>
-                <h1>Manage Users</h1>
-                <div class="alert alert-info fade in">
-                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                </div>
-
-                <div data-bind="if: Users">
-                    <h4>Manage users</h4>
-
-                    <a href="#" data-bind="click: stress">Click for 1000 rows</a>
-
-                    <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
-                                                fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
-
-                        <script type="text/html" data-name-template="Password-editor">
-                            <a href="#">!!</a>
-
-<!--                            <div data-bind="template: { name: 'dateTemplate', data: { date: } }">
-
-                            </div>-->
-
-                        </script>
-                        <script type="text/html" data-name-template="Password-display">
-                            <a href="#" data-bind="click: $data.showControls.bind({}, 'setPasswordUI', SetPasswordModel, { user: $data })">Reset password</a>
-                        </script>
-
-                        <script type="text/html" data-name-template="Groups-editor">
-                            <div data-bind="foreach: value">
-                                <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
-                            </div>
-                            <a href="#" 
-                                data-bind="click: $data.showControls.bind({},'GroupArrayEditor', 
-                                GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Click me!</a>
-                        </script>
-
-                        <script type="text/html" data-name-template="Groups-display">
-                            <div data-bind="foreach: value">
-                                <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
-                            </div>
-                        </script>
-                    </div>
-
-                </div>
-                <div data-bind="if: Groups">
-                    <h4>Manage groups</h4>
-                    <div data-bind="jayGrid: {  source: Groups, items: allGroups }"></div>
-                </div>
-            </div>
-                        </div>
-                    </div>
-                </li>
-                <li id="servicesScreen">
-                    <div class="inwrapper container">
-                        <div class="inscroller">
-                            <div id="ServiceManagerUI" data-bind="if: visible">
-                            <h1>Manage Services</h1>
-                            <div class="alert alert-info fade in">
-                                <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                            </div>
-
-                <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
-                                                        newCommandCaption: 'Add new service',
-                                                        context: context,
-                                                        fields: [
-                                                            {name: 'Name', '$width':'300px'  },
-                                                            {name: 'ServiceType', $width:'200px'},
-                                                            'DatabaseID',
-                                                            'ServiceSource'
-                                                        ],
-                                                        
-                                                        defaultValues: { 'ServiceSourceType': 'script'},
-                                                        beforeSave: function(){ $root.editingSource(false); },
-                                                        allDatabases: allDatabases,
-                                                        databaseSet: context().Databases}">
-
-                    <!--, dbs: databases, databases: context().Databases-->
-                    <!--currentApplication-->
-                    <script type="text/html" data-name-template="Name-display">
-                        <b><div data-bind="{text: value}"></div></b>
-                        
-                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
-                    </script>
-                    <script type="text/html" data-name-template="ServiceType-editor">
-                        <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
-                    </script>
-
-                    <script type="text/html" data-name-template="ServiceType-display">
-                        <div data-bind="text: value() ? value() : 'JavaScript Data Service'" />
-                    </script>
-
-                    <script type="text/html" data-name-template="DatabaseID-editor">
-                        <div data-bind='if: owner.ServiceType() !== "JavaScript API Service"'>
-                            <a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>
-                            <select data-bind="options: $root.allDatabases,
-                                        optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                        optionsCaption: 'Select...',
-                                        optionsCaptionValue: null"></select>
-                        </div>
-                    </script>
-
-                    <script type="text/html" data-name-template="DatabaseID-display">
-                        <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
-                    </script>
-
-                    <script type="text/html" data-name-template="Sets-editor">
-                        <a href="#" data-bind="click: $root.selectService.bind({}, $parent)">#</a>
-                    </script>
-                
-                    <script type="text/html" data-name-template="ServiceSourceType-editor">
-                        <select data-bind="options: $root.serviceSourceTypes,
-                                    optionsValue: 'type', optionsText: 'name', value: value,
-                                    optionsCaption: 'Select...' "></select>
-                    </script>
-                
-                    <script type="text/html" data-name-template="ServiceSourceType-display">
-                        <span data-bind="text: ($root.serviceSourceTypes().filter(function(it){ return it.type == value() })[0] || { name: '-' }).name"></span>
-                    </script>
-                
-                    <script type="text/html" data-name-template="ServiceSource-editor">
-                            <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
-                    </script>
-                
-                    <script type="text/html" data-name-template="ServiceSource-display">
-                        <pre data-bind="visible: owner.ServiceSourceType() == 'script', attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
-                    </script>
-                </div>
-            
-                <div data-bind="if: editingSource">
-                    <h2>Edit source</h2>
-
-                    <div id="service-codemirror">
-                    </div>
-                    <div id="service-codemirror-error" data-bind="if: error().length">
-                        <ul data-bind="foreach: error">
-                            <li data-bind="if: $data">
-                                <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
-                                <span class="CodeMirror-error-reason" data-bind="text: $data.reason"></span>
-                                <pre class="CodeMirror-error-code" data-bind="text: $data.evidence"></pre>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div data-bind="if: selectedService">
-                    <div id="entitySets" data-bind="jayGrid: {
-                                                            source: context().EntitySetPublications,
-                                                            context: context,
-                                                            fields: 'EntitySetID'
-                                                            discriminatorColumn: 'ServiceID',
-                                                            discriminatorValue: selectedService().ServiceID,
-                                                            allDatabases: allDatabases,
-                                                            databaseSet: context().Databases}">
-
-                        <script type="text/html" data-name-template="Publish-display">
-                            <span data-bind="text: $root.checkBoxStates().length"></span>
-                            <input type="checkbox"
-                                   data-bind="click: $root.check,
-                                              checked: $root.checkBoxStates().length < 1" />
-                        </script>
-
-                        <!--, dbs: databases, databases: context().Databases-->
-                        <script type="text/html" data-name-template="DatabaseID-editor">
-                            <select data-bind="options: $root.allDatabases,
-                                        optionsValue: 'DatabaseID', optionsText: 'Name', value: $parent[name],
-                                        optionsCaption: 'Select...' "></select>
-                        </script>
-
-                        <script type="text/html" data-name-template="DatabaseID-display">
-                            <span data-bind="text: $parent[name]" />:
-                            <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
-                        </script>
-                    </div>
-                </div>
-            </div>
-                        </div>
-                    </div>
-                </li>
-                <li id="dataScreen">
-                    <div class="inwrapper">
-                        <div class="inscroller">
-                            <div id="DataManagerUI" data-bind="if: visible">
-                                <div class="alert alert-info fade in">
-                                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                                    <p>Data manager has been opened in a separate window!</p>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                    </div>
-                </li>
-=======
->>>>>>> d28b69c92a2c889b5a499ca985817eb3bbacb354
                 <li id="schemaScreen">
                     <div class="inwrapper container">
                         <div class="inscroller">
@@ -728,7 +487,7 @@
                                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
 
                                     </div>
-                                   
+                                    
                                 </script>
 
                                 <h1>Manage Database Schemas</h1>
@@ -737,7 +496,7 @@
                                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                                 </div>
 
-                               <h4 style="float:left">Select database schema to edit:</h4>
+                                <h4 style="float:left">Select database schema to edit:</h4>
 <!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
                                                     value: $root.currentDatabase"></select>-->
@@ -804,9 +563,9 @@
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
                                                         fields: [
-                                                            'Name',
+                                                            {name:'Name', $width:'300px'},
                                                             {name: 'ServiceType', $width:'200px'},
-                                                            'DatabaseID',
+                                                            {name: 'DatabaseID', $displayName: 'Backing database', $width:'300px'},
                                                             'ServiceSource'
                                                         ],
                                                         defaultValues: { 'ServiceSourceType': 'script'},
@@ -819,7 +578,7 @@
                     <script type="text/html" data-name-template="Name-display">
                         <b><div data-bind="{text: value}"></div></b>
                         
-                        <a data-bind="{text: 'http://{appid}.jaystack.com/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
+                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
@@ -858,7 +617,7 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                           <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                            <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
@@ -871,7 +630,7 @@
 
                     <div id="service-codemirror">
                     </div>
-                    <div id="Div1" data-bind="if: error().length">
+                    <div id="service-codemirror-error" data-bind="if: error().length">
                         <ul data-bind="foreach: error">
                             <li data-bind="if: $data">
                                 <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
@@ -942,7 +701,9 @@
                 <h4>List of active permissions</h4>
 
                 <div data-bind="jayGrid: {source: context().Permissions,
-                                               fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
+                                               fields: [{name: 'DatabaseID', $displayName: 'Database'},
+                                                        {name: 'EntitySetID', $displayName: 'Table' },
+                                                        {name: 'GroupID', $displayName: 'Group'} ,'Read','Create','Update','Delete','DeleteBatch'],
                                               refresher: $root.rf }">
 
                     <script type="text/html" data-name-template="DatabaseID-display">
@@ -1023,34 +784,49 @@
                         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                     </div>
 
+                    <h4 style="float: left; width:240px">Static file upload (zip) </h4>
+                    <form id="deletefile1" action="removeFile" action="post" >
+                        <input type="hidden" value="1"/>
+                        <input type="button" data-bind="click:removeStaticFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
+                    </form>
                     <form id="fileUpload1" action="fileUpload" action="post">
-                        <h4>Static file upload (zip)</h4>
                         <div id="file-uploader1">
                             <noscript>
                                 <p>Please enable JavaScript to use file uploader.</p>
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
+<<<<<<< HEAD
                         <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
+=======
+                        <div class="qq-upload-extra-drop-area1 btn btn-info">Drop files here too</div>
+>>>>>>> 31608e47d2d4ea6fda20ed62c58a7aa802824b93
                     </form>
-                    <form id="deletefile1" action="removeFile" action="post">
-                         <input type="hidden" value="1"/>
-                        <input type="button" value="Remove"/>
+
+                    <h4 style="float: left; width:240px">Javascript upload (zip) </h4>
+                    <form id="deletefile2" action="removeFile" action="post">
+                        <input type="hidden" value="2"/>
+                        <input type="button" data-bind="click:removeJsFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
                     </form>
                     <form id="fileUpload2" action="fileUpload" action="post">
-                        <h4>Javascript upload (zip)</h4>
+
                         <div id="file-uploader2">
                             <noscript>
                                 <p>Please enable JavaScript to use file uploader.</p>
                                 <!-- or put a simple form for upload here -->
                             </noscript>
                         </div>
+<<<<<<< HEAD
                         <div class="qq-upload-extra-drop-area2 btn btn-danger">Drop files here too</div>
                     </form>
                     <form id="deletefile2" action="removeFile" action="post">
                         <input type="hidden" value="2"/>
                         <input type="button" value="Remove"/>
+=======
+                        <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
+>>>>>>> 31608e47d2d4ea6fda20ed62c58a7aa802824b93
                     </form>
+
                 </div>
                         </div>
                     </div>
@@ -1080,13 +856,13 @@
                                     <a href="#" data-bind="click: closeControlBox">close</a>
                                 </div>
                             </script>
+
                                 <script type="text/html" id="setPasswordUI">
                                 <form data-bind="submit: savePassword">
-                                    <div>
-                                        Password: <input type="password" required data-bind="value: password"/><br />
-                                        Retype: <input type="password" required data-bind="value: rePassword"/><br />
-                                        <span class="alert-danger" data-bind="text: validation"></span>
-                                    </div>
+                                <div>
+                                    Password: <input type="password" required/><br />
+                                    Retype: <input type="password" required/>
+                                </div>
                                     <input type="submit" />
                                 </form>
                                 <a href="#" data-bind="click: close">close</a>
@@ -1147,11 +923,15 @@
                         <div class="inscroller">
                             <div id="DeploymentUI" data-bind="if: visible">
                                 <h1>Application Launch</h1>
+                                <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">x</button>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                </div>
                                 <div data-bind="if: hasChanges" style="margin-bottom: 20px">
-                                    <h2>Changed ApplicationDB items</h2>
+                                    <h3>Changed ApplicationDB items</h3>
                                     <div data-bind="foreach: changedObjects">
                                         <div data-bind="if: Items().length > 0">
-                                            <h3 data-bind="text: CollectionName"></h3>
+                                            <h4 data-bind="text: CollectionName"></h4>
                                             <ul data-bind="foreach: Items">
                                                 <li><span data-bind="text: Name"></span></li>
                                             </ul>

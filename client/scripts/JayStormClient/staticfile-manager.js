@@ -38,7 +38,33 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.StaticFileManager", {
             self.visible(false);
 
         }
+        var removeFile = function(type){
+            var appid = self.application.currentApplication().appid;
 
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "removeFiles", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onerror = function () {
+                alert("could not connect to dashboard.jaystack.net");
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        self.launchResult(xhr.responseText);
+                        self.launchFinished(new Date());
+                    } else {
+                        alert("not ok (200) response from getAuthorization:" + xhr.responseText);
+                    }
+                }
+            }
+            xhr.send(JSON.stringify({appid: appid, type:type}));
+        };
+        self.removeStaticFiles = function(button) {
+           removeFile(1);
+        }
+        self.removeJsFiles = function(button) {
+            removeFile(2);
+        }
 
     }
 });
