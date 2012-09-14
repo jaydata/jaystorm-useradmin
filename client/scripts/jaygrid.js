@@ -32,7 +32,8 @@
     if (! ($data.EntitySet.prototype.toKoArray) ) {
 
 
-        $data.EntitySet.prototype.toKoArray = function() {
+        $data.EntitySet.prototype.toKoArray = function () {
+            var a = arguments;
             if (this._cached_ko_array) {
                 return this._cached_ko_array;
             }
@@ -404,7 +405,7 @@
                         commandName: 'edit',
 
                         visible: function( item ) {
-                            return self.objectsInEditMode.indexOf(item) < 0;
+                            return ko.utils.unwrapObservable(self.editCommand) !== false && self.objectsInEditMode.indexOf(item) < 0;
                         },
 
                         execute: function( item ) {

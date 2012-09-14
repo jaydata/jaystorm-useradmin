@@ -106,11 +106,11 @@ var templateList = [
 
     ["jay-data-grid-bound-field-editor",
         "<a href='#' class='btn' data-bind='click: function(){ value(null); }'>Clear</a>\
-        <select data-bind='options: $root.context()[metadata[\"$sourceTable\"]].toKoArray(),\
+        <select data-bind='options: $root.context()[metadata[\"$sourceTable\"]].toKoArray(value, this),\
                             value: value,\
-                            optionsText: metadata[\"$sourceDisplay\"],\
-                            optionsValue: metadata[\"$sourceKey\"],\
-                            optionsCaption: \"Get some\",\
+                            optionsText: metadata[\"$sourceText\"] || metadata[\"$sourceDisplay\"],\
+                            optionsValue: metadata[\"$sourceValue\"] || metadata[\"$sourceKey\"],\
+                            optionsCaption: \"Select...\",\
                             optionsCaptionValue: null'></select>"],
 
     ["jay-data-grid-$data.Boolean-display",
