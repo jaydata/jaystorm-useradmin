@@ -841,7 +841,7 @@
                 } else if (!val) {
                     date = null;
                 } else {
-                    var newdate = new Date(val);
+                    var newdate = new Date(val.replace(/-/g, '/'));
                     date.setYear(newdate.getFullYear());
                     date.setMonth(newdate.getMonth());
                     date.setDate(newdate.getDate());
