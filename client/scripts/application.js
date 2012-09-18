@@ -234,6 +234,19 @@ $(function () {
             }
             xhr.send(JSON.stringify({ plain: str }));
         }
+        
+        self.createHelloWorld = function(){
+            var factory = self.currentAppDBContextFactory();
+            if (factory){
+                var context = factory();
+                context.Services.add(new context.Services.elementType({
+                    Name: 'HelloWorld',
+                    Published: true,
+                    ServiceSourceType: 'script',
+                    ServiceSource: ''
+                }));
+            }
+        };
 
     }
 
