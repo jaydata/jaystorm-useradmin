@@ -265,9 +265,8 @@
                     <a class="brand" href="/">JayStorm Admin</a>
 
                     <!-- INFO: add class="btn btn-info" to <a> for button style -->
-
                     <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
-                        <li><a href="#" data-bind="click: $root.show, text: title, attr: { id: $index }"></a></li>
+                        <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: $index }"></a></li>
                     </ul>
                 </div>
             </div>
@@ -542,6 +541,7 @@
                                     <div data-bind="jayGrid: {
                                                 newCommandCaption: 'Create new table',
                                                 items: tableItems,
+                                                showRemoveAllCommand: false,
                                                 itemsReceived: tableListReceived,
                                                 source: context().EntitySets,
                                                 fields: [{name: 'Name', '$width':'200px', 'hint':'Tablename', '$displayName': 'Table name'}, 

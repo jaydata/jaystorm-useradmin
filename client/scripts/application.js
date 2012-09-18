@@ -131,6 +131,7 @@ $(function () {
         };
 
         self.currentApplication.subscribe(function (value) {
+            self.navigationVisible(false);
 
             var serviceUri = value.url.trim() + "ApplicationDB";
             var serviceUri = serviceUri; //serviceUri.replace("http://", "");
@@ -148,6 +149,7 @@ $(function () {
                     }
                     syncAppItemsWithDatabases(appDBFactory);
                     self.currentAppDBContextFactory(appDBFactory);
+                    self.navigationVisible(true);
                 },
                 error: function () {
                     setTimeout(function () {
@@ -172,6 +174,8 @@ $(function () {
             { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' },
             { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' }
         ];
+        self.navigationVisible = ko.observable(false);
+
 
         modules.forEach(function (module) {
             ko.applyBindings(module.Model = new module.type(self), document.getElementById(module.ui));
