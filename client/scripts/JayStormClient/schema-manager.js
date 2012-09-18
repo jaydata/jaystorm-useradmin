@@ -203,9 +203,15 @@ function EventHandlerCodeEditorModel(vm){
     this.data = vm.eventHandler;
     
     self.error = ko.observable(false);
-    self.codeMirror = function (el, value, error) {
+    /*self.codeMirror = function (el, value, error) {
         new $data.JayStormUI.CodeMirror(el, value, error);
-    };
+    };*/
+    
+    setTimeout(function(){
+        if (!self.data.owner.Handler()) self.data.owner.Handler('function(items){\n    // code here...\n}');
+        new $data.JayStormUI.CodeMirror('handler-code-editor-' + self.data.rowIndex(), self.data.owner.Handler, self.error);
+    }, 1);
+    
     this.closeControlBox = function(){
         vm.closeControlBox();
     }
@@ -248,9 +254,9 @@ function EventHandlersEditorModel(vm){
     }]);
     
     self.error = ko.observable(false);
-    self.codeMirror = function (el, value, error) {
+    /*self.codeMirror = function (el, value, error) {
         new $data.JayStormUI.CodeMirror(el, value, error);
-    };
+    };*/
 
     self.codeHighlight = function(el, value){
         new $data.JayStormUI.CodeHighlight(el, value);

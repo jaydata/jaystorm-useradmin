@@ -123,12 +123,12 @@
                 return !!('ontouchstart' in window);
             }
 
-            $("ul.nav > li > a").live('click', function () {
+            /*$("ul.nav > li > a").live('click', function () {
                 var $parent = $(this).parent();
 
                 $parent.parent().find("li.active").removeClass("active");
                 $parent.addClass("active");
-            });
+            });*/
 
             var hScroll, vScrolls = [], currentId;
             function loaded() {
@@ -198,7 +198,7 @@
                 e.preventDefault();
                 document.getElementById("welcome").style.display = "none";
                 var id = element.getAttribute("id");
-                $("ul.nav > li > a[id='" + id + "']").trigger("click");
+                //$("ul.nav > li > a[id='" + id + "']").trigger("click");
                 hScroll.scrollToPage(id, 200);
             }
 
@@ -362,6 +362,12 @@
                     </div>
                 </li>
             </ul>
+            <div class="alert fright iblock"  style="max-width:600px">
+                <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                <h4 style="margin-bottom: 1em;">Hello World!</h4>
+                <p>Create a simple "Hello World!" service! You can study the configuration and source code while you learn how to manage the storm over your application.</p>
+                <input type="button" class="btn" style="float:right;margin:0.2em;" onclick="adminApiClient.createHelloWorld()" value="Create service"/>
+            </div>
         </div>
     </div>
     <!-- WELCOME SCREEN -->
@@ -432,8 +438,10 @@
                                 </script>
                                 
                                 <script type="text/html" id="eventHandlerCodeEditor">
-                                    <div data-bind="attr: { id: 'EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), codemirror: (function(){ $data.codeMirror('EventHandler-' + ko.utils.unwrapObservable($data.data.rowIndex), $data.data.owner.Handler, $data.error); })() }"></div>
-                                    <div id="service-codemirror-error" data-bind="if: $data.error().length">
+                                    <span>Event handler source</span>
+                                    <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                    <div data-bind="attr: { id: 'handler-code-editor-' + ko.utils.unwrapObservable($data.data.rowIndex) }"></div>
+                                    <div data-bind="if: $data.error().length, attr: { id: 'handler-code-error-' + ko.utils.unwrapObservable($data.data.rowIndex) }">
                                         <ul data-bind="foreach: $data.error">
                                             <li data-bind="if: $data">
                                                 <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
@@ -442,6 +450,7 @@
                                             </li>
                                         </ul>
                                     </div>
+                                    <a href="#" data-bind="click: closeControlBox">Close</a>
                                 </script>
                                 
                                 <script type="text/html" id="eventHandlersEditor">
