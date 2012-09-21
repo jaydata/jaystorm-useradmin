@@ -123,7 +123,16 @@ var templateList = [
         '[<span data-bind="foreach: value"><span data-bind="text:$data"></span></span>]'],
 
     ["jay-data-grid-generic-editor",
-        '<input type="text" data-bind="value: value, attr: { placeholder: metadata.hint, required: metadata.required, pattern: metadata[\'$RegExp\'] ? metadata[\'$RegExp\'].slice(1, -1) : null }" />'],
+        '\
+        <!-- ko if: metadata[\'$options\']-->\
+        <select data-bind="options: metadata[\'$options\'], value: value, \
+                attr: { required: metadata.required }" /> \
+        <!-- /ko -->\
+        <!-- ko ifnot: metadata[\'$options\']-->\
+        <input type="text" \
+            data-bind="value: value, \
+                attr: { placeholder: metadata.hint, required: metadata.required, pattern: metadata[\'$RegExp\'] ? metadata[\'$RegExp\'].slice(1, -1) : null }" /> \
+        <!-- /ko -->'],
 
     ["jay-data-grid-$data.Boolean-editor",
         '<input type="checkbox" data-bind="checked: $parent[name]"  />'],

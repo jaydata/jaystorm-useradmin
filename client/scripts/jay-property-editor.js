@@ -41,9 +41,9 @@
             return { 'controlsDescendantBindings': true };
         },
 
-        update: function(element, viewModelAccessor, allBindingsAccessor) {
+        update: function(element, valueAccessor, allBindingsAccessor) {
 
-            var viewModel = viewModelAccessor(), allBindings = allBindingsAccessor();
+            var viewModel = valueAccessor(), allBindings = allBindingsAccessor();
 
             while(element.firstChild) {
                 ko.removeNode(element.firstChild);

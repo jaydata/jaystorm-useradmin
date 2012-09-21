@@ -156,9 +156,9 @@
         },
 
         update: function (element, viewModelAccessor, allBindingsAccessor, vModel) {
+
             this.x = this.x || 1;
             this.x += 1;
-            console.dir(this);
             //console.dir(vModel);
             if (element["jaystate"] && element["jaystate"]["dispose"]) {
                 element["jaystate"].dispose();
@@ -376,9 +376,14 @@
                         o[f](v);
                     }
                     if (self.defaultValues) {
-                        for(var m in self.defaultValues) {
-                            console.log("setting default: " + m +" " + self.defaultValues[m]);
-                            o[m](ko.utils.unwrapObservable(self.defaultValues[m]));
+                        for (var m in self.defaultValues) {
+
+                            console.log("setting default: " + m + " " + self.defaultValues[m]);
+                            var value = ko.utils.unwrapObservable(self.defaultValues[m]);
+                            if (typeof value === 'function') {
+                                value = value.call(self, o);
+                            }
+                            o[m](value);
                         }
                     }
                     self.objectsInEditMode.push(o);
@@ -583,7 +588,6 @@
 
                 self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
 
-                console.dir("@@@@@@@@@@@");
                 //console.dir(ko.contextFor(container));
 
                 self.itemsTrigger = ko.computed({
@@ -738,7 +742,6 @@
 
             }
 
-            zzzzzzz = element;
             var receiveEvents = viewModel.receiveEvents !== false;
 
 
@@ -750,9 +753,8 @@
             var gridTemplateName = allBindings.gridTemplate || "jay-data-grid";
 
             var container = element.appendChild(document.createElement("div"));
-            ccccccc = container;
 
-            ssss = ko.renderTemplate(gridTemplateName,
+            ko.renderTemplate(  gridTemplateName,
                                 new _model(container),
                                 { templateEngine: templateEngine },
                                 container,

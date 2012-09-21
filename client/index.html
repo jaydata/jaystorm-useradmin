@@ -756,12 +756,16 @@
 
                 <h4>Control who can access your system</h4>
                 <h4>Application Rules</h4>
-                <div data-bind="jayGrid: { fields: ['SourceAddress','Port','SSL'], filter: 'it.ObjectID == null',
-                                        source: context().IngressIPRules }">
+                <div data-bind="jayGrid: { fields: [ { name: 'Index', '$width':'40px' },
+                                                     { name: 'RuleType', '$options':['Allow','Deny'] },
+                                                     'SourceAddress','Port', 'PortEnd'], 
+                                                     defaultValues: { Index : function() { return this.items().length; } },
+                                                     filter: 'it.ObjectID == null',
+                                                     source: context().IngressIPRules }">
+
                 </div>
                 <div data-bind="jayGrid: { fields: ['SourceOrigin'],filter: 'it.ObjectID == null',
                                         source: context().IngressOriginRules }">
-
                 </div>
                 <h4>Default service rules</h4>
                 <div id="svcAccessGrid" data-bind="jayGrid: { showNewCommand: false, showRemoveAllCommand: false,
