@@ -228,6 +228,19 @@ body {
 }
 /*#endregion TODO LIST */
 
+/*#region CODE MIRROR */
+.CodeMirror-error-pos {
+    font-weight: bold;
+    
+    &:after {
+        content: ':';
+    }
+}
+.CodeMirror-error-reason {
+    color: #D10000;
+}
+/*#endregion CODE MIRROR */
+
 h1 { font-size: 30px; }
 H4 { font-size: 22px; }
 
@@ -274,9 +287,21 @@ H4 { font-size: 22px; }
         max-width: 120px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
         
         input[type="text"]  { max-width: 90%; }
+        
+        > pre[id^=Service] {
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            max-height: 50px; 
+            padding: 5px 10px;
+            margin: 0; 
+            background: #eee; 
+            border: 1px solid #ddd; 
+            -webkit-border-radius: 5px; 
+            -moz-border-radius: 3px;
+            border-radius: 5px;
+        }
     }
-    
-    pre {  text-overflow: ellipsis; white-space: nowrap; overflow: hidden; line-height: 15px; max-height: 50px; padding: 5px 10px; }
     
     select, textarea, input { margin-bottom: 0; width: auto; }
     select { display: block; width: 100%; }
