@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>JayStorm Admin</title>
+
+    <link href="styles/bootstrap.min.css" rel="stylesheet" />
+    <link href="styles/style.css" rel="stylesheet" />
+    <link href="styles/fileuploader.css" rel="stylesheet" />
+
+    <script src="/scripts/jquery-1.7.2.min.js"></script>
+    <script src="/scripts/fileuploader.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script src="scripts/datajs-1.0.3.js"></script>
+    <script type="text/javascript" src="scripts/q.js"></script>
+    <script src="/scripts/jaytracer.js"></script>
+    <script src="/scripts/jaydata/jaydata.js"></script>
+
+    <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+    <script src="scripts/knockout-latest.js"></script>
+    <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
+    <script src="scripts/jaygrid-table-template.js"></script>
+    <script src="scripts/jaygrid.js"></script>
+    <script src="scripts/jay-property-editor.js"></script>
+
+    <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
+    <script src="scripts/codeApplication.js"></script>
+    
+    <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
+    <script src="scripts/codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
+    
+    <script src="scripts/codemirror/lib/util/simple-hint.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="scripts/codemirror/lib/util/simple-hint.css" type="text/css">
+    
+    <script src="scripts/codemirror/lib/util/javascript-hint.js" type="text/javascript"></script>
+    
+    <script src="scripts/codemirror/lib/util/searchcursor.js" type="text/javascript"></script>
+    <script src="scripts/codemirror/lib/util/match-highlighter.js" type="text/javascript"></script>
+    <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
+    
+    <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
+    <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
+    
+    <script src="scripts/jshint.js" type="text/javascript"></script>
+    
+    <script src="scripts/codemirror.js"></script>
+    
+    <script type="text/javascript">
+        //console.log(window.opener.stormApplications, window.opener.globalAuthorization);
+        $(function () {
+            ko.applyBindings(new clientApplication().start());
+
+            $("div.full-screen").css("top", $("div.navbar-fixed-top").height());
+        });
+
+        $("ul.nav > li > a").live('click', function () {
+            var $parent = $(this).parent();
+
+            $parent.parent().find("li.active").removeClass("active");
+            $parent.addClass("active");
+        });
+    </script>
+</head>
+<body>
+    <div id="header">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner ">
+                <div class="container">
+                    <a class="brand" href="/">JayStorm Admin</a>
+                    Application:
+                    <span data-bind="text: currentApplication().title"></span>
+                    <br>
+                    <span data-bind="text: config().event ? 'Table:' : 'Service:'"></span>
+                    <span data-bind="text: currentService().Name()"></span>
+                    <span data-bind="visible: config().event && config().type, text: '(' + config().type() + ')'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="full-screen">
+        <h2>Edit source</h2>
+        <a href="#" data-bind="css: dirty() ? 'btn btn-danger' : 'btn', click: cancel">Close</a>
+        <a href="#" data-bind="visible: dirty(), click: done" class="btn btn-success">Done</a>
+        <div id="codemirror">
+        
+        </div>
+        <div data-bind="if: $root.error().length">
+            <ul data-bind="foreach: $root.error">
+                <li data-bind="if: $data">
+                    <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>
+                    <span class="CodeMirror-error-reason" data-bind="text: $data.reason"></span>
+                    <pre class="CodeMirror-error-code" data-bind="text: $data.evidence"></pre>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -270,6 +270,24 @@ function EventHandlersEditorModel(vm){
         .single("it.EntitySetID == this.id", { id: entitySet.EntitySetID() }, ko.observableHere)
         .then(function (entityset) { console.log('ENTITYSET', entityset); self.selectedEntitySet(entityset.asKoObservable()) });
     
+    self.editSource = function(owner, value, error){
+        if (!window.serviceEditSource) window.serviceEditSource = {};
+        var t = 'edit' + new Date().getTime();
+        window.serviceEditSource[t] = {
+            service: entitySet,
+            value: owner.Handler,
+            event: true,
+            type: owner.Type
+        };
+        window.open('code.html?' + t, t);
+        /*self.currentService(owner);
+        self.editingSource(true);
+        setTimeout(function(){
+            if (!value()) value('$data.ServiceBase.extend("' + self.currentService().Name() + '", {\n    \n});\n\n' + self.currentService().Name() + '.annotateFromVSDoc();');
+            new $data.JayStormUI.CodeMirror('service-codemirror', value, error);
+        }, 1);*/
+    };
+    
     this.closeControlBox = function(){
         vm.closeControlBox();
     }

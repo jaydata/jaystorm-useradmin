@@ -425,8 +425,8 @@
                                 </script>
                                 
                                 <script type="text/html" id="eventHandlerCell">
-                                    <a href="#" data-bind="click: $data.showControls.bind({}, 'eventHandlerCodeEditor', EventHandlerCodeEditorModel, { eventHandler: $data })">
-                                        Edit code
+                                    <a href="#" class="btn" data-bind="click: function(){ $root.editSource(owner, $data) }">
+                                        Edit source
                                     </a>
                                 </script>
                                 
@@ -642,7 +642,7 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                           <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+                        <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
