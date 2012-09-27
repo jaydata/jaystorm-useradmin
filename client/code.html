@@ -53,8 +53,6 @@
         //console.log(window.opener.stormApplications, window.opener.globalAuthorization);
         $(function () {
             ko.applyBindings(new clientApplication().start());
-
-            $("div.full-screen").css("top", $("div.navbar-fixed-top").height());
         });
 
         $("ul.nav > li > a").live('click', function () {
@@ -67,7 +65,7 @@
 </head>
 <body>
     <div id="header">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top medium">
             <div class="navbar-inner ">
                 <div class="container">
                     <a class="brand" href="/">JayStorm Admin</a>
@@ -81,8 +79,8 @@
             </div>
         </div>
     </div>
-
-    <div class="full-screen">
+    
+    <div class="full-screen medium">
         <h2>Edit source</h2>
         <a href="#" data-bind="css: dirty() ? 'btn btn-danger' : 'btn', click: cancel">Close</a>
         <a href="#" data-bind="visible: dirty(), click: done" class="btn btn-success">Done</a>

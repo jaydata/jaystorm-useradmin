@@ -236,8 +236,24 @@ body {
         content: ':';
     }
 }
+
 .CodeMirror-error-reason {
     color: #D10000;
+}
+
+.CodeMirror-scrollbar {
+    margin-top: 30px; display: none !important;
+}
+
+.CodeMirror-scroll {
+    border: 10px solid #F0F1F2;
+    margin: 20px 0;
+}
+
+.CodeMirror-gutter {
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 /*#endregion CODE MIRROR */
 
@@ -361,12 +377,23 @@ form { overflow-x: auto; }
         .btn { margin-top: 0; }
     }
     
-    &.navbar-fixed-top.data 
-    {
-        .navbar-inner {
-            min-height: 100px;
+    &.navbar-fixed-top {
+        &.data 
+        {
+            .navbar-inner {
+                min-height: 100px;
             
-            select { margin-top: 7px; }
+                select { margin-top: 7px; }
+            }
+        }
+        
+        &.medium 
+        {
+            .navbar-inner {
+                min-height: 60px;
+                
+                .container { padding-top: 8px; color: #fff; }
+            }
         }
     }
 }
@@ -380,7 +407,9 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
 
 .full-screen 
 {
-    position: relative; top: 100px; padding: 0 10px; 
+    position: relative; top: 100px; padding: 0 10px;
+    
+    &.medium { top: 60px; }
 }
 
 .validation-msg 
