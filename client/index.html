@@ -788,12 +788,20 @@
 
                     <script type="text/html" data-name-template="Port-editor">
                         <input type='number' \
-                            data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /><br />
-                        <span data-bind="visible: Model.Value() < 1024">"invalid rule", please specify ports above 1024</span>
+                            data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />
+                        <br />
+                        <div class="validation-msg" data-bind="visible: Model.Value() < 1024">
+                            <p class="first">Invalid rule</p>
+                            <p class="second">Please specify ports above 1024!</p>
+                        </div>
                     </script>
                     <script type="text/html" data-name-template="Port-display">
-                        <span data-bind='text: value'></span><br />
-                        <span data-bind="visible: Model.Value() < 1024">"invalid rule", please specify ports above 1024</span>
+                        <span data-bind='text: value'></span>
+                        <br />
+                        <div class="validation-msg" data-bind="visible: Model.Value() < 1024">
+                            <p class="first">Invalid rule</p>
+                            <p class="second">Please specify ports above 1024!</p>
+                        </div>
                     </script>
                 </div>
                 <div id="ingressOrigin" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceOrigin'], 
@@ -816,46 +824,47 @@
                     <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="StaticFileUI" data-bind="if: visible">
-                    <h1>Manage static files</h1>
-                   <div class="alert alert-info fade in">
-                        <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                        <p>Here you can upload all static files and JavaScript resources to the file repository. You can find this useful when developing your hybrid mobile application or web application as well. <br />
-                        <b>Use drag and drop!</b> Drag the zip to the window to start download. We will deploy all files within your zip onto your dedicated virtual server. Upload all resources in one instance! You can empty your repository by clicking the Clear all button.</p>
-                    </div>
+                               <h1>Manage static files</h1>
+                               <div class="alert alert-info fade in">
+                                    <button type="button" class="close" data-dismiss="alert">&#120;</button>
+                                    <p>Here you can upload all static files and JavaScript resources to the file repository. You can find this useful when developing your hybrid mobile application or web application as well. <br />
+                                    <b>Use drag and drop!</b> Drag the zip to the window to start download. We will deploy all files within your zip onto your dedicated virtual server. Upload all resources in one instance! You can empty your repository by clicking the Clear all button.</p>
+                                </div>
 
-                    <h4 style="float: left; width:240px">Static file upload (zip) </h4>
-                    <form id="deletefile1" action="removeFile" action="post" >
-                        <input type="hidden" value="1"/>
-                        <input type="button" data-bind="click:removeStaticFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
-                    </form>
-                    <form id="fileUpload1" action="fileUpload" action="post">
-                        <div id="file-uploader1">
+                                <div  class="part">
+                                    <h4 class="subtitle">Static file upload (zip) </h4>
+                                    <form id="deletefile1" action="removeFile" action="post" >
+                                        <input type="hidden" value="1"/>
+                                        <input type="button" data-bind="click:removeStaticFiles" value="Clear all files" class="btn btn-danger"/>
+                                    </form>
+                                    <form id="fileUpload1" action="fileUpload" action="post">
+                                        <div id="file-uploader1">
+                                            <noscript>
+                                                <p>Please enable JavaScript to use file uploader.</p>
+                                                <!-- or put a simple form for upload here -->
+                                            </noscript>
+                                        </div>
+                                        <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
+                                    </form>
+                                </div>
+                                <div  class="part">
+                                    <h4 class="subtitle">Javascript upload (zip) </h4>
+                                    <form id="deletefile2" action="removeFile" action="post">
+                                        <input type="hidden" value="2"/>
+                                        <input type="button" data-bind="click:removeJsFiles" value="Clear all files" class="btn btn-danger"/>
+                                    </form>
+                                    <form id="fileUpload2" action="fileUpload" action="post">
 
-                            <noscript>
-                                <p>Please enable JavaScript to use file uploader.</p>
-                                <!-- or put a simple form for upload here -->
-                            </noscript>
-                        </div>
-                        <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
-                    </form>
-
-                    <h4 style="float: left; width:240px">Javascript upload (zip) </h4>
-                    <form id="deletefile2" action="removeFile" action="post">
-                        <input type="hidden" value="2"/>
-                        <input type="button" data-bind="click:removeJsFiles" value="Clear all files" class="btn btn-danger" style="margin: 3px 0 0 15px; height:35px;"/>
-                    </form>
-                    <form id="fileUpload2" action="fileUpload" action="post">
-
-                        <div id="file-uploader2">
-                            <noscript>
-                                <p>Please enable JavaScript to use file uploader.</p>
-                                <!-- or put a simple form for upload here -->
-                            </noscript>
-                        </div>
-                        <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
-                    </form>
-
-                </div>
+                                        <div id="file-uploader2">
+                                            <noscript>
+                                                <p>Please enable JavaScript to use file uploader.</p>
+                                                <!-- or put a simple form for upload here -->
+                                            </noscript>
+                                        </div>
+                                        <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -875,10 +884,10 @@
                             <div id="UserManagerUI" data-bind="if: visible">
                                 <script type="text/html" id="GroupArrayEditor">
                                 <div>
-                                    <ul data-bind="foreach: Groups">
+                                    <ul class="resetlist" data-bind="foreach: Groups">
                                         <li>
-                                            <span  data-bind="text: Name"></span>
-                                            <input type="checkbox" data-bind="checked: selected"/>
+                                            <input type="checkbox" data-bind="checked: selected, attr: { id: Name }"/>
+                                            <label data-bind="text: Name, attr: { for: Name }"></label>
                                         </li>
                                     </ul>
                                     <a href="#" data-bind="click: closeControlBox">close</a>
@@ -887,12 +896,22 @@
 
                                 <script type="text/html" id="setPasswordUI">
                                 <form data-bind="submit: savePassword">
-                                    <div>
-                                        Password: <input type="password" required data-bind="value: password"/><br />
-                                        Retype: <input type="password" required data-bind="value: rePassword"/><br />
+                                    <div class="fields">
+                                        <label>
+                                            Password:
+                                            <br />
+                                            <input type="password" required data-bind="value: password"/>
+                                        </label>
+                                        <br />
+                                        <label>
+                                            Retype:
+                                            <br />
+                                            <input type="password" required data-bind="value: rePassword"/>
+                                        </label>
+                                        <br />
                                         <span class="alert-danger" data-bind="text: validation"></span>
                                     </div>
-                                    <input type="submit" />
+                                    <input class="btn btn-info" type="submit" />
                                 </form>
                                 <a href="#" data-bind="click: close">close</a>
                             </script>

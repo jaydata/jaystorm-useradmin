@@ -241,10 +241,41 @@ body {
 }
 /*#endregion CODE MIRROR */
 
+/*#region FILES SCREEN */
+.filesScreen 
+{
+    form  
+    {
+        margin: 15px 10px 0 0;
+        
+        input { margin: 0; height: 35px; }
+    }
+    
+    .part { overflow: hidden; clear: both; margin-top: 25px; }
+    
+    .qq-upload-list { margin: 20px 0; }
+}
+/*#endregion FILES SCREEN */
+
 h1 { font-size: 30px; }
 H4 { font-size: 22px; }
 
 .nav-tabs > li > a, .nav-pills > li > a { padding-left: 11px !important; padding-right: 11px !important; }
+
+.resetlist 
+{
+    list-style-type: none; margin: 0 0 10px;
+    
+    li { list-style-type: none; }
+}
+
+.fields 
+{
+    label { margin: 0; }
+    
+    input[type="password"]  { margin: 5px 0 10px; }
+    input[type="submit"]    { margin: 15px 0 0; }
+}
 
 .pagination select {
     float: left;
@@ -329,6 +360,15 @@ form { overflow-x: auto; }
         select { margin-right: 15px; }
         .btn { margin-top: 0; }
     }
+    
+    &.navbar-fixed-top.data 
+    {
+        .navbar-inner {
+            min-height: 100px;
+            
+            select { margin-top: 7px; }
+        }
+    }
 }
 
 label  
@@ -337,6 +377,19 @@ label
 }
 
 input[type='checkbox']{ margin: 0 10px 0 0; }
+
+.full-screen 
+{
+    position: relative; top: 100px; padding: 0 10px; 
+}
+
+.validation-msg 
+{
+    color: Red; padding: 10px 5px;
+    
+    p { margin: 0; }
+    .first { font-weight: bold; }
+}
 
 /*#region MEDIA QUERIES */
 
