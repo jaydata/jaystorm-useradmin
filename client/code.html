@@ -76,7 +76,7 @@
                     <br>
                     <span data-bind="text: config().event ? 'Table:' : 'Service:'"></span>
                     <span data-bind="text: currentService().Name()"></span>
-                    <span data-bind="visible: config().event && config().type, text: '(' + config().type() + ')'"></span>
+                    <span data-bind="visible: config().event && config().type, text: '(' + (config().type ? config().type() : '') + ')'"></span>
                 </div>
             </div>
         </div>
