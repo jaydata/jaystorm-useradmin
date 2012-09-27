@@ -32,8 +32,6 @@
         //console.log(window.opener.stormApplications, window.opener.globalAuthorization);
         $(function () {
             ko.applyBindings(new clientApplication().start());
-
-            $("div.full-screen").css("top", $("div.navbar-fixed-top").height());
         });
 
         $("ul.nav > li > a").live('click', function () {
@@ -46,7 +44,7 @@
 </head>
 <body>
     <div id="header">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top data">
             <div class="navbar-inner ">
                 <div class="container">
 
