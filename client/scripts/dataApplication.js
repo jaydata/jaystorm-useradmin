@@ -4,6 +4,8 @@
     self.applications = ko.observableArray([]);
     self.currentApplication = ko.observable();
     self.currentApplication.subscribe(function (app) {
+        self.collection(null);
+
         $data.service(getServiceUrl(app, 'ApplicationDB'), function (factory) {
             self.services.removeAll();
             var c = factory();
@@ -28,6 +30,8 @@
     self.currentService = ko.observable();
 
     self.currentService.subscribe(function (service) {
+        self.collection(null);
+
         var url = self.currentApplication().url + service.Name();
         $data.service(url, function (factory) {
             var f = function () {

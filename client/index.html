@@ -785,6 +785,16 @@
                     <script type="text/html" data-name-template="ObjectID-display">
                         <span data-bind="readValue: { source: $root.context().Services, key: value, field: 'Name' }"></span>
                     </script>
+
+                    <script type="text/html" data-name-template="Port-editor">
+                        <input type='number' \
+                            data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /><br />
+                        <span data-bind="visible: Model.Value() < 1024">"invalid rule", please specify ports above 1024</span>
+                    </script>
+                    <script type="text/html" data-name-template="Port-display">
+                        <span data-bind='text: value'></span><br />
+                        <span data-bind="visible: Model.Value() < 1024">"invalid rule", please specify ports above 1024</span>
+                    </script>
                 </div>
                 <div id="ingressOrigin" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceOrigin'], 
                                                 source: context().IngressOriginRules, filter: 'it.ObjectID != null' }">
