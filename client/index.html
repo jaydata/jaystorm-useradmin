@@ -425,8 +425,8 @@
                                 </script>
                                 
                                 <script type="text/html" id="eventHandlerCell">
-                                    <a href="#" class="btn" data-bind="click: function(){ $root.editSource(owner, $data) }">
-                                        Edit source
+                                    <a href="#" data-bind="click: $data.showControls.bind({}, 'eventHandlerCodeEditor', EventHandlerCodeEditorModel, { eventHandler: $data })">
+                                        Edit code
                                     </a>
                                 </script>
                                 
@@ -642,11 +642,12 @@
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-editor">
-                        <a href='#' class='btn' data-bind='click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
+<!--                        <a href='#' class='btn' data-bind='visible: !!$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>-->
                     </script>
                 
                     <script type="text/html" data-name-template="ServiceSource-display">
-                        <pre data-bind="visible: owner.ServiceSourceType() == 'script' && value(), attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ if (value()) $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>
+<!--                        <pre data-bind="visible: owner.ServiceSourceType() == 'script' && value(), attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ if (value()) $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>-->
+                        <a href='#' class='btn' data-bind='visible: !$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>
                     </script>
                 </div>
             

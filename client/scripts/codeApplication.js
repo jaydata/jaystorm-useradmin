@@ -135,13 +135,33 @@
     });
     
     self.cancel = function(){
-        config.value(self.backup);
+        //config.value(self.backup);
         window.close();
     };
     
     self.done = function(){
-        config.value(self.source());
-        window.close();
+        //config.value(self.source());
+        var app = self.currentApplication();
+        $data.service(getServiceUrl(app, 'ApplicationDB'), function (factory) {
+            //self.services.removeAll();
+            var c = factory();
+            c.prepareRequest = function (req) {
+                req[0].headers = req[0].headers || {};
+                req[0].headers['X-Domain'] = 'jokerStorm';
+                req[0].headers['Authorization'] = globalAuthorization;
+            };
+            //c.Services.toArray(self.services);
+            if (config.event){
+            }else{
+                var s = new c.Services.elementType(self.currentService().getEntity());
+                c.Services.attach(s);
+                s.ServiceSource = self.source();
+                c.saveChanges(function(){
+                    self.dirty(false);
+                    config.value(self.source());
+                });
+            }
+        }, { httpHeaders: { 'Authorization': globalAuthorization, 'X-Domain': 'jokerStorm' } });
     }
 
     self.esPageSize = ko.observable(30);
