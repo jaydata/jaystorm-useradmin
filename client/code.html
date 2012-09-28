@@ -54,13 +54,6 @@
         $(function () {
             ko.applyBindings(new clientApplication().start());
         });
-
-        $("ul.nav > li > a").live('click', function () {
-            var $parent = $(this).parent();
-
-            $parent.parent().find("li.active").removeClass("active");
-            $parent.addClass("active");
-        });
     </script>
 </head>
 <body>
@@ -81,13 +74,19 @@
     </div>
     
     <div class="full-screen medium">
+        <div class="alert alert-warning right">
+            <p><strong>Attention!</strong> This database schema has changed. You need to publish these changes before they take effect.</p>
+        </div>
+        
         <h2>Edit source</h2>
         <a href="#" data-bind="css: dirty() ? 'btn btn-danger' : 'btn', click: cancel">Close</a>
         <a href="#" data-bind="visible: dirty(), click: done" class="btn btn-success">Save</a>
-        <div id="codemirror">
-        
-        </div>
-        <div data-bind="if: $root.error().length">
+
+        <div class="clearfix"></div>
+
+        <div id="codemirror"></div>
+
+        <div class="code-mirror-custom-errors" data-bind="if: $root.error().length">
             <ul data-bind="foreach: $root.error">
                 <li data-bind="if: $data">
                     <span class="CodeMirror-error-pos" data-bind="text: 'line ' + $data.line + ' col ' + $data.character"></span>

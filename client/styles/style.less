@@ -194,6 +194,8 @@ body {
         p { font-size: 18px; line-height: 24px; }
     }
     
+    &.right { float: right; }
+    
     p { margin: 0; }
 }
 /*#endregion ALERT */
@@ -242,13 +244,14 @@ body {
 }
 
 .CodeMirror-scrollbar {
-    margin-top: 30px; display: none !important;
+    visibility: hidden;
 }
 
 .CodeMirror-scroll {
     border: 10px solid #F0F1F2;
     margin: 10px 0;
-    min-height: 400px; height: 650px !important;
+    height: 650px !important;
+    position: relative;
 }
 
 .CodeMirror-gutter {
@@ -261,12 +264,11 @@ body {
     margin: 5px 0 10px;
 }
 
-#codemirror + div 
+.code-mirror-custom-errors
 {
     margin-bottom: 30px; overflow: hidden; padding-bottom: 15px;
 }
 
-/* PREDEFINED */
 .CodeMirror-fullscreen
 {
     display: block;
@@ -274,24 +276,6 @@ body {
     top: 0; right: 0; bottom: 0; left: 0;
     width: 100%;
     z-index: 9999;
-}
-
-.CodeMirror-scroll
-{
-    height: auto;
-    overflow-y: hidden;
-    overflow-x: auto;
-    margin: 10px 0 20px 0;
-    border: 10px solid #F0F1F2;
-    position: relative;
-}
-
-.CodeMirror-scroll:after
-{
-    pointer-events: none;
-    border: 1px solid #DEDEDE;
-    position: absolute; top: 0; bottom: 0; right: 0; left: 0;
-    content: '';
 }
 
 .CodeMirror-gutter-text
@@ -485,6 +469,41 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
     .first { font-weight: bold; }
 }
 
+.navbar ul li:last-child {
+    height: 40px;
+}
+.navbar ul li a.btn-info:hover {
+    background: #2F96B4 !important; padding-right: 15px;
+}
+.navbar ul .btn.btn-info {
+    color: #fff !important;
+    background-color: #49AFCD !important;
+    background-image: -moz-linear-gradient(top, #5BC0DE, #2F96B4) !important;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5BC0DE), to(#2F96B4)) !important;
+    background-image: -webkit-linear-gradient(top, #5BC0DE, #2F96B4) !important;
+    background-image: -o-linear-gradient(top, #5BC0DE, #2F96B4) !important;
+    background-image: linear-gradient(to bottom, #5BC0DE, #2F96B4) !important;
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2f96b4', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+
+    margin-right: 15px;
+}
+.navbar ul .btn {
+    color: #555 !important; text-shadow: none !important; padding: 4px 10px !important;
+    position: relative; top: 0px; left: 10px; background: whiteSmoke !important;
+}
+.navbar ul .btn:hover {
+    background: #fff !important;
+}
+#fileUpload h4 {
+    margin: 20px 0 10px;
+}
+table.table tr td:last-child .btn {
+    min-width: 75px;
+    box-sizing: border-box;
+}
+
 /*#region MEDIA QUERIES */
 
 /*#region Screen (-480) */
@@ -496,6 +515,12 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
 /*#region Screen (480-768) */
 @media only screen and (min-width: 481px) and (max-width : 768px), (min-device-width : 480px) and (max-device-width : 768px) {
 	
+}
+/*#endregion Screen (480-768) */
+
+/*#region Screen (768-) */
+@media only screen and (max-width : 988px){
+	.full-screen.medium { top: 0; }
 }
 /*#endregion Screen (480-768) */
 
