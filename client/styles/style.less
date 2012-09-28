@@ -247,13 +247,78 @@ body {
 
 .CodeMirror-scroll {
     border: 10px solid #F0F1F2;
-    margin: 20px 0;
+    margin: 10px 0;
+    min-height: 400px; height: 650px !important;
 }
 
 .CodeMirror-gutter {
     border-top: 1px solid #ddd;
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
+}
+
+.CodeMirror-error-code {
+    margin: 5px 0 10px;
+}
+
+#codemirror + div 
+{
+    margin-bottom: 30px; overflow: hidden; padding-bottom: 15px;
+}
+
+/* PREDEFINED */
+.CodeMirror-fullscreen
+{
+    display: block;
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+.CodeMirror-scroll
+{
+    height: auto;
+    overflow-y: hidden;
+    overflow-x: auto;
+    margin: 10px 0 20px 0;
+    border: 10px solid #F0F1F2;
+    position: relative;
+}
+
+.CodeMirror-scroll:after
+{
+    pointer-events: none;
+    border: 1px solid #DEDEDE;
+    position: absolute; top: 0; bottom: 0; right: 0; left: 0;
+    content: '';
+}
+
+.CodeMirror-gutter-text
+{
+    border-bottom: 1px solid #DEDEDE;
+    position: relative; bottom: 2px;
+}
+
+.CodeMirror-gutter
+{
+    border-top: 1px solid #DEDEDE;
+    border-left: 1px solid #DEDEDE;
+}
+
+.activeline
+{
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+span.CodeMirror-matchhighlight
+{
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.CodeMirror-focused span.CodeMirror-matchhighlight
+{
+    background: rgba(255, 255, 255, 0.3) !important;
 }
 /*#endregion CODE MIRROR */
 

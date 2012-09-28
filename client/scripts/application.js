@@ -134,6 +134,7 @@ $(function () {
             self.navigationVisible(false);
 
             var serviceUri = value.url.trim() + "ApplicationDB";
+            
             var serviceUri = serviceUri; //serviceUri.replace("http://", "");
             
             $data.service(serviceUri, {
