@@ -754,7 +754,7 @@
                                         <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
                                     </form>
                                 </div>
-                                <div  class="part">
+                                <!--<div  class="part">
                                     <h4 class="subtitle">Javascript upload (zip) </h4>
                                     <form id="deletefile2" action="removeFile" action="post">
                                         <input type="hidden" value="2"/>
@@ -764,13 +764,13 @@
 
                                         <div id="file-uploader2">
                                             <noscript>
-                                                <p>Please enable JavaScript to use file uploader.</p>
+                                                <p>Please enable JavaScript to use file uploader.</p>-->
                                                 <!-- or put a simple form for upload here -->
-                                            </noscript>
+                              <!--              </noscript>
                                         </div>
                                         <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
                                     </form>
-                                </div>
+                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -893,7 +893,7 @@
                                 </div>
                                 <div data-bind="if: appContext">
                                     <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Deploy changes and restart services" class="btn btn-info">
-                                    <span data-bind="if: launchDisabled">Collecting changed data, please wait...</span>
+                                    <span data-bind="if: launchInit">Collecting changed data, please wait...</span>
                                     <span data-bind="if: launching">Launching, please wait...</span>
                                     <span data-bind="if: launchingDone">Launch done!</span>
                                 </div>
