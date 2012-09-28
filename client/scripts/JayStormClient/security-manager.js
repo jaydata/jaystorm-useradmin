@@ -25,26 +25,32 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
         self.tablePermissions = [
             {
                 name: 'Read',
+                field: 'Read',
                 value: ko.observable()
             },
             {
                 name: 'Delete',
+                field: 'Delete',
                 value: ko.observable()
             },
             {
                 name: 'Update',
+                field: 'Update',
                 value: ko.observable()
             },
             {
                 name: 'Create',
+                field: 'Create',
                 value: ko.observable()
             },
             {
                 name: 'Delete in a batch',
+                field: 'DeleteBatch',
                 value: ko.observable()
             },
             {
                 name: 'Manage',
+                field: 'Manage',
                 value: ko.observable()
             }
 
@@ -91,7 +97,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
                         GroupID: groupIDs[l]
                     });
                     for (var z = 0; z < self.tablePermissions.length; z++) {
-                        p[self.tablePermissions[z].name] = self.tablePermissions[z].value();
+                        p[self.tablePermissions[z].field] = self.tablePermissions[z].value();
                     }
                     c.add(p);
                     var koItem = p.asKoObservable();
