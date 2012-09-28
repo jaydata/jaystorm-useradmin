@@ -307,7 +307,7 @@
                                                     fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
                                                             { name: 'Name', 'hint': 'Field name'},
                                                             'TypeTemplate',
-                                                            'ElementType','Key','Required']}">
+                                                            'ElementType','Required', 'Nullable']}">
 
                                                 <div data-name-template="TypeTemplate-editor">
                                                     <div data-bind="text: console.log($root)"></div>
@@ -682,7 +682,7 @@
                 </div>
 
                 <h4>Addition service rules</h4>
-                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceAddress','Port','SSL'], 
+                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID','Port','SSL'], 
                                                 source: context().IngressIPRules, filter: 'it.ObjectID != null' }">
 
                     <script type="text/html" data-name-template="ObjectID-editor">

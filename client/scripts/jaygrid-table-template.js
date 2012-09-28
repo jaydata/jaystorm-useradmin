@@ -9,7 +9,7 @@
 (function($data) {
 var templateList = [
     ["jay-data-grid",
-        "<form data-bind='submit:save'>\
+        "<form class='form-horizontal' data-bind='submit:save'>\
             <div data-bind='visible: source' class='action-buttons'>\
                 <span class='iblock'>\
                     <!-- ko if: showNewCommandTop && itemCount() > 7-->                             \
@@ -22,6 +22,7 @@ var templateList = [
                 </span>\
                 <span data-bind=\"if: showSort\" class='iblock pull-right'>\
                     <span class='title'>Sort:</span><select class='input-medium' data-bind='options: columns, optionsValue: \"name\", optionsText: \"name\", value: sortColumn'></select>\
+                    <a class='btn btn-info refresh' href='#' data-bind='click: refreshGrid'><i class='icon-refresh icon-white'></i> <span data-bind='text: refreshCommandCaption'></a> \
                 </span>\
             </div>\
             <table data-bind='visible: source' class='jay-data-grid table table-bordered table-hover' border='0'> \
