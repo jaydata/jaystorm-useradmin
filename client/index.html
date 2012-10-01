@@ -62,6 +62,11 @@
                 
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
+            $("li#servicesScreen div#ServiceManagerUI table.jay-data-grid tbody tr td:first-child a").live('click', function (e) {
+                e.preventDefault();
+                window.open($(this).attr("href"));
+            });
+
             function is_touch_device() {
                 return !!('ontouchstart' in window);
             }
@@ -73,7 +78,7 @@
                 $parent.addClass("active");
             });
 
-            var hScroll, vScrolls = [], currentId;
+            var hScroll = null, vScrolls = [], currentId;
             function loaded() {
 
                 // ISCROLL
@@ -106,23 +111,30 @@
                 wrapper.style.width = screenWidth + 'px';
                 scroller.style.width = (screenItems * screenWidth) + 'px';
 
-                // HORIZONTAL SCROLL
-                hScroll = new iScroll('wrapper', {
-                    checkDOMChanges: true,
-                    snap: 'li',
-                    momentum: false,
-                    hScroll: true,
-                    hScrollbar: false,
-                    vScroll: false,
-                    vScrollbar: false,
-                    lockDirection: true,
-                    onBeforeScrollEnd: function () {
-                        //console.log('horizontal scroll - BeforeScrollEnd');
-                    },
-                    onScrollEnd: function () {
-                        //console.log('horizontal scroll - ScrollEnd');
-                    }
-                });
+                // DESTROY PREVIUOS ISCROLL
+                if (hScroll != null) {
+                    hScroll.refresh();
+                    console.dir(hScroll.pagesX);
+                } else {
+                    // HORIZONTAL SCROLL
+                    hScroll = new iScroll('wrapper', {
+                        checkDOMChanges: false,
+                        //snap: 'li',
+                        momentum: false,
+                        hScroll: true,
+                        hScrollbar: false,
+                        vScroll: false,
+                        vScrollbar: false,
+                        lockDirection: true
+                        /*onBeforeScrollEnd: function () {
+                            //console.log('horizontal scroll - BeforeScrollEnd');
+                        },
+                        onScrollEnd: function () {
+                            //console.log('horizontal scroll - ScrollEnd');
+                        }*/
+                    });
+                }
+
                 if (!is_touch_device()) {
                     hScroll.disable();
                 }
@@ -131,17 +143,22 @@
             document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
             document.addEventListener('DOMContentLoaded', loaded, false);
 
-            window.onresize = function () {
+            function OnResize() {
                 loaded();
-
                 hScroll.scrollToPage($(".navbar .nav > li.active > a:first").attr("id"), 0);
             }
+
+            var resizeTimer;
+            $(window).resize(function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(OnResize, 100);
+            });
 
             function slideclick(e, element) {
                 e.preventDefault();
                 document.getElementById("welcome").style.display = "none";
                 var id = element.getAttribute("id");
-                //$("ul.nav > li > a[id='" + id + "']").trigger("click");
+                $("ul.nav > li > a[id='" + id + "']").trigger("click");
                 hScroll.scrollToPage(id, 200);
             }
 
