@@ -23,14 +23,14 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.StaticFileManager", {
                 allowedExtensions: ['zip'],
                 extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area1')[0]]
             });
-            var uploader2 = new qq.FileUploader({
+            /*var uploader2 = new qq.FileUploader({
                 element: document.getElementById('file-uploader2'),
                 action: '/fileUpload',
                 params: { type: '2', appid: appid },
                 debug: true,
                 allowedExtensions: ['zip'],
                 extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area2')[0]]
-            });
+            });*/
 
         };
 

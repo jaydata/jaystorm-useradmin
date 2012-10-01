@@ -264,6 +264,7 @@
                 }
 
                 self.newCommandCaption = viewModel.newCommandCaption || 'New';
+                self.refreshCommandCaption = viewModel.refreshCommandCaption || 'Refresh';
                 self.objectsToDelete = ko.observableArray([]);
                 self.objectsInEditMode = ko.observableArray([]);
 
@@ -430,6 +431,12 @@
                         execute: function( item ) {
                             var es = ko.utils.unwrapObservable(self.source);
                             es.detach(item);
+
+                            var entity = item.getEntity();
+                            if (entity.getType().memberDefinitions.getKeyProperties().every(function (memDef) { return !entity[memDef.name]; })) {
+                                self.items.remove(item);
+                            }
+
                             self.objectsInEditMode.remove(item);
                         }
                     },
@@ -585,7 +592,17 @@
                 self.discriminatorValue = viewModel.discriminatorValue; //|| ko.observable();
 
                 self.refresh = viewModel.refresher || ko.observable();
-
+                self.refreshGrid = function () {
+                    var es = ko.utils.unwrapObservable(self.source);
+                    var edited = self.objectsInEditMode();
+                    if (edited) {
+                        for (var i = 0; i < edited.length; i++) {
+                            es.detach(edited[i]);
+                        }
+                    }
+                    self.objectsInEditMode([]);
+                    self.refresh(Math.random());
+                }
                 self.filter = ko.isObservable(viewModel.filter) ? viewModel.filter : ko.observable(viewModel.filter);
 
                 //console.dir(ko.contextFor(container));
@@ -777,7 +794,11 @@
 
             return {};
         },
-
+        '$data.Boolean': function (columnInfo) {
+            var val = columnInfo.value();
+            if (val === null || val === undefined)
+                columnInfo.value(false);
+        },
         '$data.Integer': function (columnInfo) {
             var model = {
                 Value: ko.observable(columnInfo.value()),

@@ -59,78 +59,26 @@
         
         <script src="scripts/codemirror.js"></script>
         <script src="scripts/iscroll.js"></script>
-        
-        <style type="text/css">
-            .CodeMirror-fullscreen
-            {
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 9999;
-            }
-
-            .CodeMirror-scroll
-            {
-                height: auto;
-                overflow-y: hidden;
-                overflow-x: auto;
-                margin: 0 0 20px 0;
-                border: 10px solid #F0F1F2;
-                position: relative;
-            }
-
-            .CodeMirror-scroll:after
-            {
-                pointer-events: none;
-                border: 1px solid #DEDEDE;
-                position: absolute; top: 0; bottom: 0; right: 0; left: 0;
-                content: '';
-            }
-
-            .CodeMirror-gutter-text
-            {
-                border-bottom: 1px solid #DEDEDE;
-                position: relative; bottom: 2px;
-            }
-            
-            .CodeMirror-gutter
-            {
-                border-top: 1px solid #DEDEDE;
-                border-left: 1px solid #DEDEDE;
-            }
-
-            .activeline
-            {
-                background: rgba(255, 255, 255, 0.2) !important;
-            }
-
-            span.CodeMirror-matchhighlight
-            {
-                background: rgba(255, 255, 255, 0.2);
-            }
-
-            .CodeMirror-focused span.CodeMirror-matchhighlight
-            {
-                background: rgba(255, 255, 255, 0.3) !important;
-            }
-        </style>
-        
+                
         <script src="scripts/inflection.js"></script>
         <script type="text/javascript">
+            $("li#servicesScreen div#ServiceManagerUI table.jay-data-grid tbody tr td:first-child a").live('click', function (e) {
+                e.preventDefault();
+                window.open($(this).attr("href"));
+            });
+
             function is_touch_device() {
                 return !!('ontouchstart' in window);
             }
 
-            /*$("ul.nav > li > a").live('click', function () {
+            $("ul.nav > li > a").live('click', function () {
                 var $parent = $(this).parent();
 
                 $parent.parent().find("li.active").removeClass("active");
                 $parent.addClass("active");
-            });*/
+            });
 
-            var hScroll, vScrolls = [], currentId;
+            var hScroll = null, vScrolls = [], currentId;
             function loaded() {
 
                 // ISCROLL
@@ -163,23 +111,30 @@
                 wrapper.style.width = screenWidth + 'px';
                 scroller.style.width = (screenItems * screenWidth) + 'px';
 
-                // HORIZONTAL SCROLL
-                hScroll = new iScroll('wrapper', {
-                    checkDOMChanges: true,
-                    snap: 'li',
-                    momentum: false,
-                    hScroll: true,
-                    hScrollbar: false,
-                    vScroll: false,
-                    vScrollbar: false,
-                    lockDirection: true,
-                    onBeforeScrollEnd: function () {
-                        //console.log('horizontal scroll - BeforeScrollEnd');
-                    },
-                    onScrollEnd: function () {
-                        //console.log('horizontal scroll - ScrollEnd');
-                    }
-                });
+                // DESTROY PREVIUOS ISCROLL
+                if (hScroll != null) {
+                    hScroll.refresh();
+                    console.dir(hScroll.pagesX);
+                } else {
+                    // HORIZONTAL SCROLL
+                    hScroll = new iScroll('wrapper', {
+                        checkDOMChanges: false,
+                        //snap: 'li',
+                        momentum: false,
+                        hScroll: true,
+                        hScrollbar: false,
+                        vScroll: false,
+                        vScrollbar: false,
+                        lockDirection: true
+                        /*onBeforeScrollEnd: function () {
+                            //console.log('horizontal scroll - BeforeScrollEnd');
+                        },
+                        onScrollEnd: function () {
+                            //console.log('horizontal scroll - ScrollEnd');
+                        }*/
+                    });
+                }
+
                 if (!is_touch_device()) {
                     hScroll.disable();
                 }
@@ -188,17 +143,22 @@
             document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
             document.addEventListener('DOMContentLoaded', loaded, false);
 
-            window.onresize = function () {
+            function OnResize() {
                 loaded();
-
                 hScroll.scrollToPage($(".navbar .nav > li.active > a:first").attr("id"), 0);
             }
+
+            var resizeTimer;
+            $(window).resize(function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(OnResize, 100);
+            });
 
             function slideclick(e, element) {
                 e.preventDefault();
                 document.getElementById("welcome").style.display = "none";
                 var id = element.getAttribute("id");
-                //$("ul.nav > li > a[id='" + id + "']").trigger("click");
+                $("ul.nav > li > a[id='" + id + "']").trigger("click");
                 hScroll.scrollToPage(id, 200);
             }
 
@@ -218,43 +178,6 @@
                 $(".navbar ul li:last-child a").addClass("btn");
             });
         </script>
-
-        <style>
-            .navbar ul li:last-child {
-                height: 40px;
-            }
-            .navbar ul li a.btn-info:hover {
-                background: #2F96B4 !important; padding-right: 15px;
-            }
-            .navbar ul .btn.btn-info {
-                color: #fff !important;
-                background-color: #49AFCD !important;
-                background-image: -moz-linear-gradient(top, #5BC0DE, #2F96B4) !important;
-                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5BC0DE), to(#2F96B4)) !important;
-                background-image: -webkit-linear-gradient(top, #5BC0DE, #2F96B4) !important;
-                background-image: -o-linear-gradient(top, #5BC0DE, #2F96B4) !important;
-                background-image: linear-gradient(to bottom, #5BC0DE, #2F96B4) !important;
-                background-repeat: repeat-x;
-                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2f96b4', GradientType=0);
-                filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-
-                margin-right: 15px;
-            }
-            .navbar ul .btn {
-                color: #555 !important; text-shadow: none !important; padding: 4px 10px !important;
-                position: relative; top: 0px; left: 10px; background: whiteSmoke !important;
-            }
-            .navbar ul .btn:hover {
-                background: #fff !important;
-            }
-            #fileUpload h4 {
-                margin: 20px 0 10px;
-            }
-            table.table tr td:last-child .btn {
-                min-width: 75px;
-                box-sizing: border-box;
-            }
-        </style>
     </head>
 <body>
     <!-- HEADER -->
@@ -401,7 +324,7 @@
                                                     fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
                                                             { name: 'Name', 'hint': 'Field name'},
                                                             'TypeTemplate',
-                                                            'ElementType','Key','Required']}">
+                                                            'ElementType','Required', 'Nullable']}">
 
                                                 <div data-name-template="TypeTemplate-editor">
                                                     <div data-bind="text: console.log($root)"></div>
@@ -776,8 +699,9 @@
                 </div>
 
                 <h4>Addition service rules</h4>
-                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceAddress','Port','SSL'], 
-                                                source: context().IngressIPRules, filter: 'it.ObjectID != null' }">
+                <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID','Port','SSL'], 
+                                                source: context().IngressIPRules, filter: 'it.ObjectID != null',
+                                                defaultValues: { 'SourceAddress': '*'}, }">
 
                     <script type="text/html" data-name-template="ObjectID-editor">
                         <select data-bind="options: $root.context().Services.toKoArray(), value: value, 
@@ -848,7 +772,7 @@
                                         <div class="qq-upload-extra-drop-area1 btn btn-danger">Drop files here too</div>
                                     </form>
                                 </div>
-                                <div  class="part">
+                                <!--<div  class="part">
                                     <h4 class="subtitle">Javascript upload (zip) </h4>
                                     <form id="deletefile2" action="removeFile" action="post">
                                         <input type="hidden" value="2"/>
@@ -858,13 +782,13 @@
 
                                         <div id="file-uploader2">
                                             <noscript>
-                                                <p>Please enable JavaScript to use file uploader.</p>
+                                                <p>Please enable JavaScript to use file uploader.</p>-->
                                                 <!-- or put a simple form for upload here -->
-                                            </noscript>
+                              <!--              </noscript>
                                         </div>
                                         <div class="qq-upload-extra-drop-area2 btn btn-info">Drop files here too</div>
                                     </form>
-                                </div>
+                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -987,7 +911,7 @@
                                 </div>
                                 <div data-bind="if: appContext">
                                     <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Deploy changes and restart services" class="btn btn-info">
-                                    <span data-bind="if: launchDisabled">Collecting changed data, please wait...</span>
+                                    <span data-bind="if: launchInit">Collecting changed data, please wait...</span>
                                     <span data-bind="if: launching">Launching, please wait...</span>
                                     <span data-bind="if: launchingDone">Launch done!</span>
                                 </div>

@@ -16,6 +16,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
         self.changedObjects = ko.observableArray([]);
         self.hasChanges = ko.observable(false);
         self.launchDisabled = ko.observable(true);
+        self.launchInit = ko.observable(true);
         self.launching = ko.observable(false);
         self.launchingDone = ko.observable(false);
 
@@ -38,8 +39,10 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
             
             entitySet.filter(filterFn).toArray(changes.Items).then(function () {
                 counter++
-                if (self.changedObjects().length === counter)
+                if (self.changedObjects().length === counter) {
                     self.launchDisabled(false);
+                    self.launchInit(false);
+                }
             });
 
         }
@@ -50,6 +53,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 self.hasChanges(false);
                 self.launchingDone(false);
                 self.launchDisabled(true);
+                self.launchInit(true);
                 self.changedObjects([]);
 
                 var esReferences = ctx._entitySetReferences;
@@ -86,6 +90,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
 
         self.launch = function () {
             self.launching(true);
+            self.launchingDone(false);
+            self.launchDisabled(true);
             self.application.launchCurrentApplication();
         }
 
@@ -112,6 +118,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                     window.hasChangeEvent.fire(changeGroups.map(function (cGroup) { return { EntitySet: cGroup.EntitySet, CollectionName: cGroup.CollectionName, Items: cGroup.Items() }; }));
 
                     self.hasChanges(false);
+                    self.launchDisabled(false);
                 });
             }, 3000);
         });

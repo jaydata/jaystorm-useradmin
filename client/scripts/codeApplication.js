@@ -156,6 +156,7 @@
                 var s = new c.Services.elementType(self.currentService().getEntity());
                 c.Services.attach(s);
                 s.ServiceSource = self.source();
+                s.HasChanges = true;
                 c.saveChanges(function(){
                     self.dirty(false);
                     config.value(self.source());

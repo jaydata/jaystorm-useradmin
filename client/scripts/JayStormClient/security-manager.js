@@ -47,12 +47,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
                 name: 'Delete in a batch',
                 field: 'DeleteBatch',
                 value: ko.observable()
-            },
+            }/*,
             {
                 name: 'Manage',
                 field: 'Manage',
                 value: ko.observable()
-            }
+            }*/
 
         ];
 
