@@ -106,6 +106,7 @@ $(function () {
                                 var service = new _c.Services.createNew({ 
                                     DatabaseID: nuDB.DatabaseID, 
                                     Name: nuDB.Name,
+                                    ServiceSourceType: 'script',
                                     Published: true,
                                     AllowAnonymous: true,
                                     AllowAllOrigins: false,
