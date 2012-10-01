@@ -14,7 +14,7 @@
                 req[0].headers['X-Domain'] = 'jokerStorm';
                 req[0].headers['Authorization'] = globalAuthorization;
             };
-            c.Services.toArray(self.services);
+            c.Services.filter(function(it){ return it.DatabaseID != null }).toArray(self.services);
         }, { httpHeaders: { 'Authorization': globalAuthorization, 'X-Domain': 'jokerStorm' } });
     });
 
@@ -58,6 +58,8 @@
                 if (succ) { succ(); }
             });
             globalAuthorization = window.opener.globalAuthorization;
+            var app = window.opener.adminApiClient.currentApplication();
+            if (app) self.currentApplication(app);
             return;
         } else {
             window.location.href = 'https://dashboard.jaystack.com/';
