@@ -47,7 +47,12 @@ $(function () {
                                         });
                         window["stormApplications"] = apps;
                         self.applications(apps);
-                        self.currentApplication(apps[0]);
+                        var appid = window.location.href.match(/appId=([^&]*)/);
+                        if (appid){
+                            var app = apps.filter(function(it){ return it.appid == appid[1]; });
+                            if (app.length) self.currentApplication(app[0]);
+                            else self.currentApplication(apps[0]);
+                        }else self.currentApplication(apps[0]);
 
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
