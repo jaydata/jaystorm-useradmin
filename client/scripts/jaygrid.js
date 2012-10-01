@@ -682,7 +682,7 @@
 
                     if (!customModel) customModel = {};
 
-                    if (self.objectsInEditMode.indexOf(propertyOwner) > -1 && metadata['$editable'] !== false) {
+                    if (self.objectsInEditMode.indexOf(propertyOwner) > -1 && metadata['$editable'] !== false && metadata['$editable'] !== 'false') {
                         var templateId;
                         var result = element.nameTemplates[metadata.name + "-editor"] ||
                             element.typeTemplates[metadata.stringName + "-editor"] ||
