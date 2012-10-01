@@ -27,12 +27,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
              initState(self.contextFactory());
         }
 
-        
-        
-        
-        self.allServices.subscribe(function(value){
-            console.log(value);
-        });
 
         self.selectedService = ko.observable();
 

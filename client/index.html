@@ -509,7 +509,7 @@
                     <script type="text/html" data-name-template="Name-display">
                         <b><div data-bind="{text: value}"></div></b>
                         
-                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {href: $root.application.currentApplication().url + value()}}"></a>
+                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {target: '_blank', href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
@@ -668,15 +668,21 @@
                                                      'SourceAddress','Port', 'PortEnd'], 
                                                      defaultValues: { Index : function() { return this.items().length; } },
                                                      filter: 'it.ObjectID == null',
+                                                     beforeSave: beforeSave,
                                                      source: context().IngressIPRules }">
 
                 </div>
                 <div data-bind="jayGrid: { fields: ['SourceOrigin'],filter: 'it.ObjectID == null',
+                                        beforeSave: beforeSave,
                                         source: context().IngressOriginRules }">
                 </div>
                 <h4>Default service rules</h4>
                 <div id="svcAccessGrid" data-bind="jayGrid: { showNewCommand: false, showRemoveAllCommand: false,
                                 fields: ['Name','Published', 'AllowAnonymous','AllowAllIPs','AllowAllOrigins','UseDefaultPort','UseSSL'],
+                                showNewCommandBottom: false,
+                                showNewCommandTop: false,
+                                deleteCommand: false,
+                                beforeSave: beforeSave,
                                 source: context().Services }">
 
                 </div>
@@ -684,6 +690,7 @@
                 <h4>Addition service rules</h4>
                 <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID','Port','SSL'], 
                                                 source: context().IngressIPRules, filter: 'it.ObjectID != null',
+                                                beforeSave: beforeSave,
                                                 defaultValues: { 'SourceAddress': '*'}, }">
 
                     <script type="text/html" data-name-template="ObjectID-editor">
@@ -713,6 +720,7 @@
                     </script>
                 </div>
                 <div id="ingressOrigin" data-bind="jayGrid: { fields: ['Name', 'ObjectID', 'SourceOrigin'], 
+                                                beforeSave: beforeSave,
                                                 source: context().IngressOriginRules, filter: 'it.ObjectID != null' }">
 
 
@@ -887,7 +895,9 @@
                                         <div data-bind="if: Items().length > 0">
                                             <h4 data-bind="text: CollectionName"></h4>
                                             <ul data-bind="foreach: Items">
+                                                <!-- ko if: _wrappedType.memberDefinitions.getMember('Name') -->
                                                 <li><span data-bind="text: Name"></span></li>
+                                                <!-- /ko -->
                                             </ul>
                                         </div>
                                     </div>

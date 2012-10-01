@@ -449,7 +449,7 @@
                         },
 
                         visible: function( item ) {
-                            return self.objectsToDelete.indexOf(item) < 0;
+                            return ko.utils.unwrapObservable(self.deleteCommand) !== false && self.objectsToDelete.indexOf(item) < 0;
                         }
 
 

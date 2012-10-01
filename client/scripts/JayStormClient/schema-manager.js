@@ -99,13 +99,15 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         if (window.hasChangeEvent) {
             window.hasChangeEvent.attach(function (s, values) {
-                var dbChanges = values.filter(function (val) {
-                    return val.CollectionName === 'Databases' && val.Items.filter(function (it) {
-                        return it.Name() === self.currentDatabase().Name();
-                    });
-                })
-                if (dbChanges.length >= 0)
-                    self.currentDatabase().HasChanges(false);
+                if (self.currentDatabase()) {
+                    var dbChanges = values.filter(function (val) {
+                        return val.CollectionName === 'Databases' && val.Items.filter(function (it) {
+                            return it.Name() === self.currentDatabase().Name();
+                        });
+                    })
+                    if (dbChanges.length >= 0)
+                        self.currentDatabase().HasChanges(false);
+                }
             });
         }
 
