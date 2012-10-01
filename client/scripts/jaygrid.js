@@ -794,7 +794,11 @@
 
             return {};
         },
-
+        '$data.Boolean': function (columnInfo) {
+            var val = columnInfo.value();
+            if (val === null || val === undefined)
+                columnInfo.value(false);
+        },
         '$data.Integer': function (columnInfo) {
             var model = {
                 Value: ko.observable(columnInfo.value()),

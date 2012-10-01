@@ -700,7 +700,8 @@
 
                 <h4>Addition service rules</h4>
                 <div id="ingressIP" data-bind="jayGrid: { fields: ['Name', 'ObjectID','Port','SSL'], 
-                                                source: context().IngressIPRules, filter: 'it.ObjectID != null' }">
+                                                source: context().IngressIPRules, filter: 'it.ObjectID != null',
+                                                defaultValues: { 'SourceAddress': '*'}, }">
 
                     <script type="text/html" data-name-template="ObjectID-editor">
                         <select data-bind="options: $root.context().Services.toKoArray(), value: value, 
