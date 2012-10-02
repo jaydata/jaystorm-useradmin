@@ -387,8 +387,8 @@
                             o[m](value);
                         }
                     }
-                    self.objectsInEditMode.push(o);
                     ko.utils.unwrapObservable(source).add(o);
+                    self.objectsInEditMode.push(o);
 
                     if (self.afterAddNew) {
                         var r = self.afterAddNew(o, self);
@@ -444,12 +444,13 @@
                         displayName: 'Delete',
                         commandName : 'delete',
 
-                        execute: function( item ) {
+                        execute: function (item) {
                             self.objectsToDelete.push(item);
                         },
 
                         visible: function( item ) {
-                            return ko.utils.unwrapObservable(self.deleteCommand) !== false && self.objectsToDelete.indexOf(item) < 0;
+                            return ko.utils.unwrapObservable(self.deleteCommand) !== false && self.objectsToDelete.indexOf(item) < 0 &&
+                                item.getEntity().getType().memberDefinitions.getKeyProperties().every(function (memDef) { return item[memDef.name](); });
                         }
 
 

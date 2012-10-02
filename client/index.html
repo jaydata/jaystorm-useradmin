@@ -650,8 +650,9 @@
                 <h4>List of active permissions</h4>
 
                 <div data-bind="jayGrid: {source: context().Permissions,
-                                                editCommand: false,
-                                               fields: ['DatabaseID','EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
+                                                showNewCommandBottom: false,
+                                                showNewCommandTop: false,
+                                               fields: ['DatabaseID', 'EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
                                               refresher: $root.rf }">
 
                     <script type="text/html" data-name-template="DatabaseID-display">
@@ -661,6 +662,15 @@
                         <span data-bind="readValue: { source: $root.context().EntitySets, key: value, field: 'Name' }"></span>
                     </script>
                     <script type="text/html" data-name-template="GroupID-display">
+                        <span data-bind="readValue: { source: $root.context().Groups, key: value, field: 'Name' }"></span>
+                    </script>
+                    <script type="text/html" data-name-template="DatabaseID-editor">
+                        <span data-bind="readValue: { source: $root.context().Databases, key: value, field: 'Name' }"></span>
+                    </script>
+                    <script type="text/html" data-name-template="EntitySetID-editor">
+                        <span data-bind="readValue: { source: $root.context().EntitySets, key: value, field: 'Name' }"></span>
+                    </script>
+                    <script type="text/html" data-name-template="GroupID-editor">
                         <span data-bind="readValue: { source: $root.context().Groups, key: value, field: 'Name' }"></span>
                     </script>
                 </div>

@@ -161,7 +161,7 @@ $(function () {
                 error: function () {
                     setTimeout(function () {
                         if (value === self.currentApplication()) {
-                            window.location.href = 'http://test.jaystack.com/your-jaystorm-app-is-ready?appId=' + self.currentApplication().appid;
+                            window.location.href = 'http://www.jaystack.com/your-jaystorm-app-is-ready?appId=' + self.currentApplication().appid;
                         }
                     }, 5000);
                 }
