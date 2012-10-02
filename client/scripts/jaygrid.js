@@ -787,6 +787,8 @@
 
     $data.Class.define("$data.jayGrid.EditorModelBase", null, null, {
         getModel: function (columnInfo, ctx) {
+            if (columnInfo.metadata.$readonly)
+                return { templateName: 'jay-data-grid-generic-readonly' };
 
             var typeName = Container.resolveName(columnInfo.metadata.type)
             if (typeName in this) {
