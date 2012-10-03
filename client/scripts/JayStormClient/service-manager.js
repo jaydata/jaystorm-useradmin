@@ -23,6 +23,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
              }
          });
 
+         self.show = function () {
+             self.visible(true);
+             initState(self.contextFactory());
+         };
+
          if (self.contextFactory()) {
              initState(self.contextFactory());
         }

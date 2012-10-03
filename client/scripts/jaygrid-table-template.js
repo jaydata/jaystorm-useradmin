@@ -135,7 +135,7 @@ var templateList = [
                 attr: { placeholder: metadata.hint, required: metadata.required, pattern: metadata[\'$RegExp\'] ? metadata[\'$RegExp\'].slice(1, -1) : null }" /> \
         <!-- /ko -->'],
 
-    ["jay-data-grid-generic-readonly-display",
+    ["jay-data-grid-generic-readonly",
         '<input type="text" data-bind="value: value" style="font-size:80%;" readonly />'],
 
     ["jay-data-grid-$data.Boolean-editor",

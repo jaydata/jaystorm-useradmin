@@ -689,10 +689,16 @@
                             element.typeTemplates[metadata.stringName + "-editor"] ||
                             element.typeTemplates[metadata.resolvedName + "-editor"] ||
                             (document.getElementById(customModel.templateName + '-editor') ? customModel.templateName + '-editor' : undefined) ||
+                            (metadata.key ? 'jay-data-grid-generic-readonly' : undefined) ||
                             (metadata['$sourceTable'] ? 'jay-data-grid-bound-field-editor' :
                                     (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
                                             'jay-data-grid-' + metadata.resolvedName + '-editor' :
                                             'jay-data-grid-generic-editor'));
+
+                        if (metadata.key && result === 'jay-data-grid-generic-editor') {
+                            return 'jay-data-grid-generic-readonly'
+                        }
+
                         return result;
                         //nameSuffix = '-editor';
                     } else {
@@ -708,6 +714,7 @@
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
                                  (document.getElementById(customModel.templateName + '-display') ? customModel.templateName + '-display' : undefined) ||
+                                 (metadata.key ? 'jay-data-grid-generic-readonly' : undefined) ||
                                  (metadata['$sourceTable'] ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
                                 'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));
@@ -787,9 +794,6 @@
 
     $data.Class.define("$data.jayGrid.EditorModelBase", null, null, {
         getModel: function (columnInfo, ctx) {
-            if (columnInfo.metadata.$readonly)
-                return { templateName: 'jay-data-grid-generic-readonly' };
-
             var typeName = Container.resolveName(columnInfo.metadata.type)
             if (typeName in this) {
                 return this[typeName].call(this, columnInfo, ctx) || {};
