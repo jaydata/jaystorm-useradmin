@@ -526,7 +526,7 @@
                     <script type="text/html" data-name-template="Name-display">
                         <b><div data-bind="{text: value}"></div></b>
                         
-                        <a data-bind="{text: 'http://{appid}.jaystack.net/' + value(), attr: {target: '_blank', href: $root.application.currentApplication().url + value()}}"></a>
+                        <a data-bind="{text: $root.application.currentApplication().url + '/' + value(), attr: {target: '_blank', href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
                     <script type="text/html" data-name-template="ServiceType-editor">
                         <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>

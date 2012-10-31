@@ -112,7 +112,7 @@
                                     .map(function (item) {
                                         return {
                                             appid: item.appid,
-                                            url: 'http://' + item.appid + '.jaystack.net/',
+                                            url: item.url + '/' || 'http://' + item.appid + '.jaystack.net/',
                                             title: item.name
                                         }
                                     });

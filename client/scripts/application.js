@@ -41,7 +41,7 @@ $(function () {
                                         .map(function (item) {
                                                 return {
                                                     appid: item.appid,
-                                                    url: 'https://' + item.appid + '.jaystack.net/',
+                                                    url: item.url + '/' || 'https://' + item.appid + '.jaystack.net/',
                                                     title: item.name
                                                 }
                                         });
