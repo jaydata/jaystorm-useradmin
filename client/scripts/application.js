@@ -41,7 +41,7 @@ $(function () {
                                         .map(function (item) {
                                                 return {
                                                     appid: item.appid,
-                                                    url: item.url + '/' || 'https://' + item.appid + '.jaystack.net/',
+                                                    url: item.url.replace('https:', 'http:') + '/' || 'https://' + item.appid + '.jaystack.net/',
                                                     title: item.name
                                                 }
                                         });
@@ -75,7 +75,7 @@ $(function () {
         function syncAppItemsWithDatabases(appDBFactory) {
             console.log("syncAppItems");
             var c = appDBFactory();
-            var items = c.AppItems.filter("it.Type == 'QueryableDB'").toArray();
+            var items = c.AppItems.filter("it.Type == 'QueryableDB' || it.Type == 'FreeQueryableDB'").toArray();
             var dbs = c.Databases.toArray();
             Q.allResolved([items, dbs]).then(function () {
                 console.log("sync app items loaded...");
