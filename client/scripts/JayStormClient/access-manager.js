@@ -12,8 +12,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.AccessManager", {
                 }
             }
         }
-
-
     }
 
 

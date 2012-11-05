@@ -12,6 +12,12 @@ $data.Base.extend("$data.JayStormUI.AdminModel",  {
 
         self.context = ko.observable();
         self.visible = ko.observable(false);
+        
+        self.isfreeapp = ko.observable(false);
+        self.visible.subscribe(function(value){
+            self.isfreeapp(adminApiClient.currentApplication().isfreeapp);
+        });
+        
         self.show = function () {
             if (self.onVisible) {
                 console.log("executing delayed setContext###");
@@ -72,7 +78,5 @@ console.log("stashed for later");
             }
             return null;
         }
-
-
     }
 })

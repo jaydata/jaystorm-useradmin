@@ -87,8 +87,9 @@
                                     .map(function (item) {
                                         return {
                                             appid: item.appid,
-                                            url: item.url + '/' || 'http://' + item.appid + '.jaystack.net/',
-                                            title: item.name
+                                            url: item.url + '/' || 'https://' + item.appid + '.jaystack.net/',
+                                            title: item.name,
+                                            isfreeapp: item.isfreeapp
                                         }
                                     });
                     self.applications(apps);

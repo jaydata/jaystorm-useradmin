@@ -41,8 +41,9 @@ $(function () {
                                         .map(function (item) {
                                                 return {
                                                     appid: item.appid,
-                                                    url: item.url.replace('https:', 'http:') + '/' || 'https://' + item.appid + '.jaystack.net/',
-                                                    title: item.name
+                                                    url: item.url + '/' || 'https://' + item.appid + '.jaystack.net/',
+                                                    title: item.name,
+                                                    isfreeapp: item.isfreeapp
                                                 }
                                         });
                         window["stormApplications"] = apps;
@@ -70,7 +71,9 @@ $(function () {
             value = self.applicationToAdd();
             self.applications.push({ url: value, title: value });
             self.applicationToAdd(null);
-        }
+        };
+        
+        self.freeApp = ko.observable(false);
 
         function syncAppItemsWithDatabases(appDBFactory) {
             console.log("syncAppItems");

@@ -683,6 +683,12 @@
                         <div class="inscroller">
             <div id="AccessManagerUI" data-bind="if: visible && context">
                 <h1>Access control</h1>
+                
+                <div class="alert alert-danger" style="float: none;" data-bind="if: isfreeapp">
+                    <p><strong>Attention!</strong> This is a FREE application. Your access settings will not be validated.</p>
+                    <p>To use these settings upgrade your user account on <a href="https://dashboard.jaystack.com" target="_blank">https://dashboard.jaystack.com</a>.</p>
+                </div>
+                
                 <div class="alert alert-info fade in">
                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
                     <p>Ingress securitiy - you can define here your application access rule. You can define custom request headers to avoid cross-origin issues. Publish or unpublish your service endpoints and control rules (whether or not it is published as well as access control).</p>
@@ -768,6 +774,12 @@
                         <div class="inscroller">
                             <div id="StaticFileUI" data-bind="if: visible">
                                <h1>Manage static files</h1>
+                               
+                               <div class="alert alert-danger" style="float: none;" data-bind="if: isfreeapp">
+                                    <p><strong>Attention!</strong> This is a FREE application. Your file upload will fail.</p>
+                                    <p>To use static files upgrade your user account on <a href="https://dashboard.jaystack.com" target="_blank">https://dashboard.jaystack.com</a>.</p>
+                                </div>
+                                
                                <div class="alert alert-info fade in">
                                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
                                     <p>Here you can upload all static files and JavaScript resources to the file repository. You can find this useful when developing your hybrid mobile application or web application as well. <br />
