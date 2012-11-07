@@ -684,7 +684,7 @@
             <div id="AccessManagerUI" data-bind="if: visible && context">
                 <h1>Access control</h1>
                 
-                <div class="alert alert-danger" style="float: none;" data-bind="if: isfreeapp">
+                <div class="alert alert-danger" style="float: none;" data-bind="visible: isfreeapp">
                     <p><strong>Attention!</strong> This is a JayStorm Open application. Your access settings will not be deployed and have no effects.</p>
                     <p>To use these settings create a JayStorm Business application on <a href="https://dashboard.jaystack.com" target="_blank">https://dashboard.jaystack.com</a>.</p>
                 </div>
