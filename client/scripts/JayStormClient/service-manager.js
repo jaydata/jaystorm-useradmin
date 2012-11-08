@@ -76,5 +76,15 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
             name: 'Static',
             type: 'static'
         }]);
+        
+        self.beforeSave = function (es) {
+            var tracked = es.entityContext.stateManager.trackedEntities;
+            for (var i = 0; i < tracked.length; i++) {
+                var item = tracked[i];
+                if (item.entitySet === es) {
+                    item.data.HasChanges = true;
+                }
+            }
+        }
      }
 });

@@ -508,12 +508,21 @@
                                     </p>
                             </div>
 
+                <script type="text/html" id="manageService">
+                    <div data-bind="if: owner.ServiceID()">
+                        <a href="#" data-bind="click: $data.showControls.bind({},'insideEditor',FieldsEditorModel, { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
+                                Manage
+                        </a>
+                    </div>
+                </script>
+
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
                                                         fields: [
                                                             {name:'Name', $width:'300px'},
                                                             {name: 'ServiceType', $width:'200px'},
                                                             {name: 'DatabaseID', $displayName: 'Backing database', $width:'300px'},
+                                                            { name: 'Manage service', isVirtual: true, type:'string', '$width':'200px', '$template':'manageService'},
                                                             'ServiceSource'
                                                         ],
                                                         defaultValues: { 'ServiceSourceType': 'script'},
@@ -524,7 +533,8 @@
                     <!--, dbs: databases, databases: context().Databases-->
                     <!--currentApplication-->
                     <script type="text/html" data-name-template="Name-display">
-                        <b><div data-bind="{text: value}"></div></b>
+                        <b><div data-bind="{text: value }"></div></b>
+                        <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
                         
                         <a data-bind="{text: $root.application.currentApplication().url + '/' + value(), attr: {target: '_blank', href: $root.application.currentApplication().url + value()}}"></a>
                     </script>
