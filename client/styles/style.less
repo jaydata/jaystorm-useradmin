@@ -54,7 +54,7 @@ body {
 
 .inscroller {
 	width: 100%;
-	padding: 10px;
+	padding: 10px 10px 10px 0;
 	
     -webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -137,7 +137,7 @@ body {
     
     .container 
     {
-        max-width: 940px; min-height: 500px; height: 100%; margin: 0 auto; 
+        min-height: 500px; height: 100%; margin: 0 auto; 
     }
     
     ul 
@@ -326,6 +326,10 @@ span.CodeMirror-matchhighlight
 h1 { font-size: 30px; }
 H4 { font-size: 22px; }
 
+.fleft  { float: left; }
+.fright { float: right; }
+.iblock { display: inline-block; }
+
 .nav-tabs > li > a, .nav-pills > li > a { padding-left: 11px !important; padding-right: 11px !important; }
 
 .resetlist 
@@ -431,7 +435,7 @@ form { overflow-x: auto; }
         &.data 
         {
             .navbar-inner {
-                min-height: 100px;
+                min-height: 80px;
             
                 select { margin-top: 7px; }
             }
@@ -446,6 +450,32 @@ form { overflow-x: auto; }
             }
         }
     }
+    
+    .fullrow2 
+    {
+        overflow: hidden; padding-left: 156px;
+        
+        .title { height: 40px; line-height: 40px; margin-right: 15px; }
+        
+        .nav  
+        {
+            float: left !important; 
+        
+            li 
+            {
+                a { color: #fff; }
+            
+                &.active 
+                {
+                    a { color: #00aff0; }    
+                }
+            }    
+        }
+    }
+}
+.sub-navbar 
+{
+    padding: 3px 10px 0 0;
 }
 
 label  
@@ -501,7 +531,7 @@ input[type='checkbox']{ margin: 0 10px 0 0; }
     margin: 20px 0 10px;
 }
 table.table tr td:last-child .btn {
-    min-width: 75px;
+    min-width: 70px;
     box-sizing: border-box;
 }
 
@@ -550,10 +580,10 @@ table.table tr td:last-child .btn {
 /*#region Screen (1200+) */
 @media only screen and (min-width:1200px) 
 {
-    .navbar, .storm-header 
+    /*.navbar, .storm-header 
     {
         .container { width: 940px !important; }
-    }
+    }*/
     
     @screen-width: 1200px;
     
