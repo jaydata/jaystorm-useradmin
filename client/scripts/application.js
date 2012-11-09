@@ -154,7 +154,7 @@ $(function () {
                             req[0].headers = req[0].headers || {};
                             req[0].headers['X-Domain'] = 'jokerStorm';
                             req[0].headers['Authorization'] = self.authorization();
-                        }
+                        };
                         return c;
                     }
                     syncAppItemsWithDatabases(appDBFactory);
@@ -168,8 +168,7 @@ $(function () {
                         }
                     }, 5000);
                 }
-            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
-            );
+            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } });
         });
 
         self.currentAppDBContextFactory = ko.observable();
@@ -181,8 +180,8 @@ $(function () {
             { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Control', path: '/Access' },
             { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Files', path: '/FileManager' },
             { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users' },
-            { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases' }
+            { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish', className: 'btn btn-info' },
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases', className: 'btn' }
         ];
         self.navigationVisible = ko.observable(false);
 

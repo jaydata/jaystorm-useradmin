@@ -210,7 +210,7 @@ function EventHandlerCodeEditorModel(vm){
     };*/
     
     setTimeout(function(){
-        if (!self.data.owner.Handler()) self.data.owner.Handler('function(items){\n    // code here...\n}');
+        if (!self.data.owner.Handler()) self.data.owner.Handler(new EJS({ url: '/scripts/eventhandlersource-template.ejs' }).render({ event: self.data.owner.Type() }));
         new $data.JayStormUI.CodeMirror('handler-code-editor-' + self.data.rowIndex(), self.data.owner.Handler, self.error);
     }, 1);
     
