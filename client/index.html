@@ -162,6 +162,14 @@
                 hScroll.scrollToPage(id, 200);
             }
 
+            $(".sub-navbar ul.nav li a").live("click", function () {
+                var welcome = document.getElementById("welcome"),
+                    id = $(this).attr("id");
+
+                welcome.style.display = "none";
+                hScroll.scrollToPage(id, 200);
+            });
+
             $(function () {
                 // MENU ITEMS
                 var menuItems = document.body.querySelectorAll("ul.nav li a"),
@@ -172,10 +180,10 @@
                         var scrollTo = parseInt(this.getAttribute("id"));
                         welcome.style.display = "none";
                         hScroll.scrollToPage(scrollTo, 200);
+
+                        console.log('click');
                     }, false);
                 }
-
-                $(".navbar ul li:last-child a").addClass("btn");
             });
         </script>
     </head>
@@ -189,7 +197,7 @@
 
                     <!-- INFO: add class="btn btn-info" to <a> for button style -->
                     <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
-                        <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: $index }"></a></li>
+                        <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: $index, class: cssclass }"></a></li>
                     </ul>
                 </div>
             </div>
@@ -204,13 +212,18 @@
                                             optionsText: 'title',
                                             optionsCaption:'Select App To Manage'"></select>
 
+                        <div class="navbar sub-navbar iblock fright">
+                            <ul class="nav" data-bind="visible: currentApplication, foreach: submenuItems">
+                                <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: id, class: cssclass }"></a></li>
+                            </ul>
+                        </div>
+
 <!--                        <label>App Url:</label>
                         <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
 
                         <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />-->
-                        <div id="launchResult" data-bind="text:launchResult">
 
-                        </div>
+                        <div id="launchResult" data-bind="text:launchResult"></div>
                     </form>
                 </div>
                 <div data-bind="ifnot: authorization">
@@ -924,7 +937,7 @@
                         <div class="inscroller">
                             <div id="DeploymentUI" data-bind="if: visible">
                                 <h1>Application Publish</h1>
-                              <div class="alert alert-info fade in">
+                                <div class="alert alert-info fade in">
                                     <button type="button" class="close" data-dismiss="alert">x</button>
                                     <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
                                 </div>
@@ -942,10 +955,11 @@
                                     </div>
                                 </div>
                                 <div data-bind="if: appContext">
-                                    <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Deploy changes and restart services" class="btn btn-info">
-                                    <span data-bind="if: launchInit">Collecting changed data, please wait...</span>
-                                    <span data-bind="if: launching">Launching, please wait...</span>
-                                    <span data-bind="if: launchingDone">Launch done!</span>
+                                    <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Deploy changes and restart services" class="btn btn-info btn-deploy">
+
+                                    <h3 data-bind="if: launchInit">Collecting changed data, please wait...</h3>
+                                    <h3 data-bind="if: launching">Publish in progress, please wait...</h3>
+                                    <h3 data-bind="if: launchingDone">Publish done!</h3>
                                 </div>
                             </div>
                         </div>

@@ -89,6 +89,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
         };
 
         self.launch = function () {
+            $(".btn-deploy").attr("disabled", true);
+
             self.launching(true);
             self.launchingDone(false);
             self.launchDisabled(true);
@@ -112,6 +114,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 context.saveChanges(function () {
                     //fire event
                     var aaa = arguments;
+
+                    $(".btn-deploy").removeAttr("disabled");
                     self.launching(false);
                     self.launchingDone(true);
 
