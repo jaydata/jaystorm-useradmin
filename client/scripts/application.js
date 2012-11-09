@@ -154,7 +154,7 @@ $(function () {
                             req[0].headers = req[0].headers || {};
                             req[0].headers['X-Domain'] = 'jokerStorm';
                             req[0].headers['Authorization'] = self.authorization();
-                        }
+                        };
                         return c;
                     }
                     syncAppItemsWithDatabases(appDBFactory);
@@ -168,8 +168,7 @@ $(function () {
                         }
                     }, 5000);
                 }
-            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } }
-            );
+            }, { httpHeaders: { 'Authorization': self.authorization(), 'X-Domain': 'jokerStorm' } });
         });
 
         self.currentAppDBContextFactory = ko.observable();

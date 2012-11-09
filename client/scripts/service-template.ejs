@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <title>JayStorm Get Started</title>
+    
+    <script src="http://include.jaydata.org/datajs-1.0.3.js" type="text/javascript"></script>
+    <script src="http://include.jaydata.org/jaydata.min.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" language="javascript" charset="utf-8">
+    // <![CDATA[
+        console.log('Connecting to service...');
+        $data.service('<%=metadataUri %>', function(contextFactory){
+            console.log('Connection established.');
+            var context = contextFactory();
+            
+            context.onReady(function(db){
+                console.log('Database ready.');
+                
+                /* db.<EntitySet>.toArray(function(result){
+                
+                    ...
+                    
+                    db.<EntitySet>.add(new db.<EntitySet>.elementType({ ... }));
+                    
+                    ...
+                    
+                    db.<EntitySet>.attach(result[0]);
+                    result[0].<property> = <value>;
+                    
+                    ...
+                    
+                    db.<EntitySet>.remove(result[1]);
+                    
+                    ...
+                    
+                    db.saveChanges(function(result){
+                    
+                        ...
+                        
+                        console.log(result + ' entity changes processed and saved.');
+                    
+                    })
+                    
+                }); */
+                
+                /* db.<EntitySet>.forEach(function(result){
+                    ...
+                }); */
+            });
+        });
+    // ]]>
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

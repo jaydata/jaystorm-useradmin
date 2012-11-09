@@ -76,5 +76,68 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
             name: 'Static',
             type: 'static'
         }]);
+        
+        self.beforeSave = function (es) {
+            var tracked = es.entityContext.stateManager.trackedEntities;
+            for (var i = 0; i < tracked.length; i++) {
+                var item = tracked[i];
+                if (item.entitySet === es) {
+                    item.data.HasChanges = true;
+                }
+            }
+        }
      }
 });
+
+function EmbedServiceModel(vm){
+    var self = this;
+    this.data = vm.service;
+    
+    self.jsContext = ko.observable();
+    self.tsContext = ko.observable();
+    self.html = ko.observable();
+    
+    self.contextGenerator = new $data.MetadataLoaderClass();
+    self.contextGenerator.debugMode = true;
+    
+    self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(f, t, s){
+        self.jsContext(s.replace('JaySvcUtil.exe', 'JayStorm Admin'));
+        setTimeout(function(){
+            var el = document.getElementById('service-jscontext-' + self.data.owner.Name());
+            el.style.height = el.scrollHeight + 'px';
+        });
+    }, {
+        AutoCreateContext: true,
+        DefaultNamespace: '',
+        //ContextInstanceName: self.data.owner.Name(),
+        httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
+    });
+    
+    self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(f, t, s){
+        self.tsContext(s.replace('JaySvcUtil.exe', 'JayStorm Admin'));
+        setTimeout(function(){
+            var el = document.getElementById('service-tscontext-' + self.data.owner.Name());
+            el.style.height = el.scrollHeight + 'px';
+        });
+    }, {
+        AutoCreateContext: true,
+        DefaultNamespace: '',
+        typeScript: true,
+        //ContextInstanceName: self.data.owner.Name(),
+        httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
+    });
+    
+    self.html(new EJS({url: '/scripts/service-template.ejs'}).render({ metadataUri: adminApiClient.currentApplication().url + self.data.owner.Name() }));
+    setTimeout(function(){
+        var el = document.getElementById('service-html-' + self.data.owner.Name());
+        el.style.height = el.scrollHeight + 'px';
+    });
+    
+    self.openHtml = function(){
+        window.open('data:text/html;base64,' + btoa(self.html()), '_blank', '');
+    };
+    
+    this.closeControlBox = function(){
+        vm.closeControlBox();
+    }
+}

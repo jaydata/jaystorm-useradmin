@@ -79,7 +79,7 @@
                 if (config.event){
                     self.source('function(items){\n    // code here...\n}');
                 }else{
-                    self.source('$data.ServiceBase.extend("' + self.currentService().Name() + '", {\n    \n});\n\n' + self.currentService().Name() + '.annotateFromVSDoc();');
+                    self.source(new EJS({ url: '/scripts/servicesource-template.ejs' }).render({ serviceName: self.currentService().Name() }));
                 }
             }
             new $data.JayStormUI.CodeMirror('codemirror', self.source, self.error);

@@ -1,0 +1,9 @@
+module.exports = exports = function(type){
+    "use strict";
+    var <%=serviceName %>ServiceType = type.extend('<%=serviceName %>ServiceType', {
+        // your service operations
+    });
+    
+    <%=serviceName %>ServiceType.annotateFromVSDoc();
+    return <%=serviceName %>ServiceType;
+};

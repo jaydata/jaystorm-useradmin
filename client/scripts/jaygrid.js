@@ -545,16 +545,18 @@
                             item.viewModel = {};
                             item.data = {};
                             if (index == i) {
-                                item.colspan = 2;
+                                item.colspan = colcount - i;
                                 item.templateName = template;
                                 item.data = data;
                                 item.viewModel = vm;
-                                i++;
+                                koCells.push(item);
+                                break;
                             }
                             koCells.push(item);
                         }
                         console.log(koCells().length);
                         
+                        return false;
                     }
 
                     if (self.itemExtender) {
