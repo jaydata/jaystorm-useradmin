@@ -685,11 +685,12 @@
 
                     if (self.objectsInEditMode.indexOf(propertyOwner) > -1 && metadata['$editable'] !== false && metadata['$editable'] !== 'false') {
                         var templateId;
-                        var result = element.nameTemplates[metadata.name + "-editor"] ||
+                        var result = (document.getElementById(metadata['$controlHint'] + '-editor') ? metadata['$controlHint'] + '-editor' : undefined) ||
+                            element.nameTemplates[metadata.name + "-editor"] ||
                             element.typeTemplates[metadata.stringName + "-editor"] ||
                             element.typeTemplates[metadata.resolvedName + "-editor"] ||
                             (document.getElementById(customModel.templateName + '-editor') ? customModel.templateName + '-editor' : undefined) ||
-                            (metadata.key ? 'jay-data-grid-generic-readonly' : undefined) ||
+                            (metadata.computed ? 'jay-data-grid-generic-readonly' : undefined) ||
                             (metadata['$sourceTable'] ? 'jay-data-grid-bound-field-editor' :
                                     (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-editor') ?
                                             'jay-data-grid-' + metadata.resolvedName + '-editor' :
@@ -710,11 +711,12 @@
                     var named = metadata.name + '-display';
                     var f = element.nameTemplates[named] || 'xxx';
 
-                    var result = element.nameTemplates[metadata.name + '-display'] ||
+                    var result = (document.getElementById(metadata['$controlHint'] + '-display') ? metadata['$controlHint'] + '-display' : undefined) ||
+                                 element.nameTemplates[metadata.name + '-display'] ||
                                  element.typeTemplates[metadata.stringName + '-display'] ||
                                  element.typeTemplates[metadata.resolvedName + '-display'] ||
                                  (document.getElementById(customModel.templateName + '-display') ? customModel.templateName + '-display' : undefined) ||
-                                 (metadata.key ? 'jay-data-grid-generic-readonly' : undefined) ||
+                                 (metadata.computed ? 'jay-data-grid-generic-readonly' : undefined) ||
                                  (metadata['$sourceTable'] ? 'jay-data-grid-bound-field-display' :
                                  (document.getElementById('jay-data-grid-' + metadata.resolvedName + '-display') ?
                                 'jay-data-grid-' + metadata.resolvedName + '-display' : 'jay-data-grid-generic-display'));

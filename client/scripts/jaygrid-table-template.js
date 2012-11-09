@@ -120,6 +120,10 @@ var templateList = [
     ["jay-data-grid-$data.String-display",
         '<span data-bind="text: value"></span>'],
 
+    ["jay-data-grid-$data.String-Long-editor",
+        '<textarea type="text" data-bind="value: value, \
+            attr: { placeholder: metadata.hint, required: metadata.required, pattern: metadata[\'$RegExp\'] ? metadata[\'$RegExp\'].slice(1, -1) : null }" ></textarea>'],
+
     ["jay-data-grid-$data.Array-display",
         '[<span data-bind="foreach: value"><span data-bind="text:$data"></span></span>]'],
 
