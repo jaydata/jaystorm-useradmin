@@ -415,9 +415,13 @@
                         },
 
                         execute: function( item ) {
+                            if (self.beforeEdit) self.beforeEdit(item);
+                            
                             var es = ko.utils.unwrapObservable(self.source);
                             es.attach(item);
                             self.objectsInEditMode.push(item);
+                            
+                            if (self.afterEdit) self.afterEdit(item);
                         }
                     },
                     {
@@ -429,6 +433,8 @@
                         },
 
                         execute: function( item ) {
+                            if (self.beforeRevert) self.beforeRevert(item);
+                            
                             var es = ko.utils.unwrapObservable(self.source);
                             es.detach(item);
 
@@ -438,6 +444,8 @@
                             }
 
                             self.objectsInEditMode.remove(item);
+                            
+                            if (self.afterRevert) self.afterRevert(item);
                         }
                     },
                     {
@@ -445,7 +453,11 @@
                         commandName : 'delete',
 
                         execute: function (item) {
+                            if (self.beforeDelete) self.beforeDelete(item);
+                            
                             self.objectsToDelete.push(item);
+                            
+                            if (self.afterDelete) self.afterDelete(item);
                         },
 
                         visible: function( item ) {
@@ -460,7 +472,11 @@
                         commandName : 'undelete',
 
                         execute: function( item ) {
+                            if (self.beforeUndoDelete) self.beforeUndoDelete(item);
+                            
                             self.objectsToDelete.remove(item);
+                            
+                            if (self.afterUndoDelete) self.afterUndoDelete(item);
                         },
 
                         visible: function( item ) {

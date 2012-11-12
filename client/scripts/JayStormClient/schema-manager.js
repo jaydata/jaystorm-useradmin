@@ -209,14 +209,31 @@ function EventHandlerCodeEditorModel(vm){
         new $data.JayStormUI.CodeMirror(el, value, error);
     };*/
     
+    //var h = self.data.owner.Handler();
+    
+    self.originalValue = self.data.owner.Handler();
     setTimeout(function(){
         if (!self.data.owner.Handler()) self.data.owner.Handler(new EJS({ url: '/scripts/eventhandlersource-template.ejs' }).render({ event: self.data.owner.Type() }));
         new $data.JayStormUI.CodeMirror('handler-code-editor-' + self.data.rowIndex(), self.data.owner.Handler, self.error);
     }, 1);
     
+    this.saveHandler = function(){
+        /*if (self.data.owner.Handler() != h){
+            var f = adminApiClient.currentAppDBContextFactory();
+            var c = f();
+            
+            c.onReady(function(db){
+                db.EventHandlers.attach(self.data.owner);
+                eh.Handler = 
+            });
+        }*/
+    };
+    
     this.closeControlBox = function(){
         vm.closeControlBox();
-    }
+    };
+    
+    vm.parent.codeEditor.push(self);
 }
 
 function EventHandlersEditorModel(vm){
@@ -265,8 +282,34 @@ function EventHandlersEditorModel(vm){
     };
 
     self.beforeSaveHandler = function () {
-        vm.closeControlBox();
+        //vm.closeControlBox();
+        var tmp = self.codeEditor.slice();
+        
+        tmp.forEach(function(it){
+            if (it.closeControlBox){
+                it.closeControlBox();
+            }
+        });
+        
+        self.codeEditor.length = 0;
     };
+    
+    self.afterRevertHandler = function(item){
+        var tmp = self.codeEditor.slice();
+        
+        var cb = tmp.filter(function(it){ return it.data.owner.EventHandlerID() === item.EventHandlerID() })[0];
+        if (cb && cb.closeControlBox) cb.closeControlBox();
+        
+        self.codeEditor.splice(self.codeEditor.indexOf(cb), 1);
+        
+        item.Handler(cb.originalValue);
+    };
+    
+    self.codeEditor = [];
+    
+    self.editCode = function(e){
+        e.showControls.bind({}, 'eventHandlerCodeEditor', EventHandlerCodeEditorModel, { eventHandler: e, parent: self });
+    }
 
     context.EntitySets
         .single("it.EntitySetID == this.id", { id: entitySet.EntitySetID() }, ko.observableHere)
