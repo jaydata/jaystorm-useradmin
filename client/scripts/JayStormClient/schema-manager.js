@@ -179,7 +179,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             c.EntityFields.defaultType.instancePropertyChanged = c.EntityFields.defaultType.instancePropertyChanged || new $data.Event("changed");
 
             c.EntityFields.defaultType.instancePropertyChanged.attach(function (holder, prop) {
-                if ('TypeTemplate' == prop.propertyName) {
+                if ('TypeTemplate' == prop.propertyName && prop.oldValue !== undefined) {
                     console.log("Template changed!");
                     var ttname = prop.newValue;
                     //console.log(id);
