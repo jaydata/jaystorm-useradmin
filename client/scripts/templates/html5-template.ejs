@@ -1,13 +1,18 @@
-<textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;">
-<%
-setTimeout(function(){
-    var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
-    if (el){
-        el.style.height = el.scrollHeight + 'px';
-    }
-});
-%>
-<!DOCTYPE html>
+<form class="form-horizontal">
+    <fieldset>
+        <legend>Service URL</legend>
+        <input type="text" style="width:100%;" value="<%=app.url + service.Name %>" onfocus="this.select();"/>
+    </fieldset>
+    <fieldset>
+        <legend>Get started HTML</legend>
+        <textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+%><!DOCTYPE html>
 <html>
 <meta charset="utf-8">
 <head>
@@ -64,5 +69,6 @@ setTimeout(function(){
 <body>
     
 </body>
-</html>
-</textarea>
+</html></textarea>
+    </fieldset>
+</form>

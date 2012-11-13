@@ -1,0 +1,17 @@
+<form class="form-horizontal">
+    <fieldset>
+        <legend>Service URL</legend>
+        <input type="text" style="width:100%;" value="<%=app.url + service.Name %>" onfocus="this.select();"/>
+    </fieldset>
+    <fieldset>
+        <legend>JayData TypeScript context</legend>
+        <textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+        %><%=tsContext %></textarea>
+    </fieldset>
+</form>

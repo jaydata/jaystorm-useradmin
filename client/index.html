@@ -551,7 +551,7 @@
                             Service name: <span data-bind="text: $data.data.owner.Name()"></span>
                                 <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                     <li>
-                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>
+<!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
                                         <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
                                     </li>
                                 </ul>
