@@ -14,7 +14,12 @@
                 req[0].headers['X-Domain'] = 'jokerStorm';
                 req[0].headers['Authorization'] = globalAuthorization;
             };
-            c.Services.filter(function(it){ return it.DatabaseID != null }).toArray(self.services);
+            c.Services.filter(function(it){ return it.DatabaseID != null }).toArray(self.services).then(function(value){
+                if (window.opener.editDataService){
+                    //self.currentService(self.services().filter(function(it){ return it.ServiceID() == this.db; }, { db: window.opener.editDataService })[0]);
+                    document.querySelector('*[data-serviceid="' + window.opener.editDataService + '"]').click();
+                }
+            });
         }, { httpHeaders: { 'Authorization': globalAuthorization, 'X-Domain': 'jokerStorm' } });
     });
 
@@ -121,6 +126,8 @@
                 self.entitySets.push(c[name]);
             }
         }
+        
+        document.querySelector('#tables li a').click();
     })
 
     self.esPageSize = ko.observable(30);

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/jaystorm_favicon.png">
     <title>JayStorm Admin</title>
 
     <link href="styles/bootstrap.min.css" rel="stylesheet" />
@@ -15,13 +16,13 @@
     <script src="/scripts/fileuploader.js"></script>
     <script src="scripts/bootstrap.min.js"></script>
     <script src="scripts/datajs-1.0.3-patched.js"></script>
-    <script type="text/javascript" src="scripts/q.js"></script>
+    <script src="scripts/q.js"></script>
     <script src="/scripts/jaytracer.js"></script>
     <script src="/scripts/jaydata/jaydata.js"></script>
 
     <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
     <script src="scripts/knockout-latest.js"></script>
-    <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
+    <script src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
     <script src="scripts/jaygrid-table-template.js"></script>
     <script src="scripts/jaygrid.js"></script>
     <script src="scripts/jay-property-editor.js"></script>
@@ -65,7 +66,7 @@
                         <span class="title iblock fleft">Select Database:</span>
                         <ul class="nav" data-bind="foreach: $root.services">
                             <li>
-                                <a href="#" data-bind="click: $root.currentService.bind($data), text: $data.Name"></a>
+                                <a href="#" data-bind="click: $root.currentService.bind($data), text: $data.Name, attr: { 'data-serviceid': $data.ServiceID() }"></a>
                             </li>
                         </ul>
                     </div>
@@ -90,7 +91,7 @@
             </div>
 
             <h4>Select Table</h4>
-            <ul class="nav nav-tabs" data-bind="foreach: $root.entitySets">
+            <ul class="nav nav-tabs" data-bind="foreach: $root.entitySets" id="tables">
                 <li>
                     <a href="#" data-bind="click: $root.collection.bind($data), text: $data.name"></a>
                 </li>

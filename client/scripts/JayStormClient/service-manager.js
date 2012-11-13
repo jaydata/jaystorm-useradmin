@@ -85,7 +85,20 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
                     item.data.HasChanges = true;
                 }
             }
-        }
+        };
+        
+        self.editData = function(item){
+            window.editDataService = item.owner.ServiceID();
+            if (typeof w === 'undefined') {
+                console.log("opening window");
+                w = window.open("data.html", "_dataui");
+            } else {
+                w.close();
+                w = window.open("data.html", "_dataui");
+                console.log("Focus!");
+                w.focus();
+            }
+        };
      }
 });
 
@@ -93,7 +106,16 @@ function EmbedServiceModel(vm){
     var self = this;
     this.data = vm.service;
     
-    self.jsContext = ko.observable();
+    self.embedTemplates = ko.observableArray([
+        { title: 'HTML5', cssclass: 'icon-start' },
+        { title: 'JayData', cssclass: 'icon-stop' }
+    ]);
+    
+    self.renderTemplate = function(item){
+    
+    };
+    
+    /*self.jsContext = ko.observable();
     self.tsContext = ko.observable();
     self.html = ko.observable();
     
@@ -135,7 +157,7 @@ function EmbedServiceModel(vm){
     
     self.openHtml = function(){
         window.open('data:text/html;base64,' + btoa(self.html()), '_blank', '');
-    };
+    };*/
     
     this.closeControlBox = function(){
         vm.closeControlBox();
