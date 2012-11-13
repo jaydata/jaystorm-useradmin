@@ -22,6 +22,7 @@
         <script src="/scripts/jaydata/jaydata.js"></script>
         
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
+        <script src="scripts/jaydata/jaydataproviders/MongoDbProvider.js"></script>
         <script src="scripts/knockout-latest.js"></script>
         <script type="text/javascript" src="scripts/jaydata/jaydatamodules/qDeferred.js"></script>
         <script src="scripts/jaygrid-table-template.js"></script>
@@ -548,12 +549,15 @@
                         
                         <div>
                             Service name: <span data-bind="text: $data.data.owner.Name()"></span>
-                                <ul class="nav-tabs" data-bind="foreach: embedTemplates">
+                                <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                     <li>
                                         <i data-bind="if: cssclass, attr: { class: cssclass }"></i>
-                                        <a href="#" data-bind="text: title, click: $parent.renderTemplate"></a>
+                                        <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
                                     </li>
                                 </ul>
+                                <div class="tab-content" data-bind="foreach: embedTemplates">
+                                    <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
+                                </div>
 <!--                            <table class="jay-data-grid table table-bordered table-hover" border="0">-->
 <!--                                <thead class="jay-data-grid-columns">-->
 <!--                                    <tr class="jay-data-grid-columns-row">-->

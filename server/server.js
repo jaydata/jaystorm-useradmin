@@ -66,7 +66,7 @@ app.use(c.compress());
 app.use(c.query());
 app.use(function (req, res, next) {
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    /*res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'X-PINGOTHER, Content-Type, MaxDataServiceVersion, DataServiceVersion');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, MERGE, DELETE');
     res.setHeader('Cache-Control', 'no-cache');
@@ -75,7 +75,31 @@ app.use(function (req, res, next) {
         res.end();
     } else {
         next();
+    }*/
+    
+    var origin = req.headers["origin"];
+    if (!origin){
+        var referer = req.headers["referer"];
+        if (referer){
+            var m = referer.match(/(http:\/\/|https:\/\/)([a-zA-Z0-9-\.]+)/);
+            if (m[2]) origin = m[2]; else origin = req.headers["host"] || "*";
+        }else origin = req.headers["host"] || "*";
     }
+    /*if ((req.isAdmin && req.isAdmin()) ||
+        (["*"].indexOf(origin) >= 0) ||
+        (["*"].indexOf("*") >= 0) ||
+        (req.method == "OPTIONS")){*/
+        res.setHeader("Access-Control-Allow-Origin", origin);
+        res.setHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, MaxDataServiceVersion, DataServiceVersion, Authorization, X-Domain, X-Requested-With");
+        res.setHeader("Access-Control-Allow-Method", req.headers["access-control-allow-method"] || req.method);
+        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, HEAD, POST, MERGE, PATCH, DELETE, PUT");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+        if (req.method === "OPTIONS"){
+            res.end();
+            return;
+        }
+    //}
+    next();
 });
 passport.serializeUser(function (user, done) {
     console.log("serialize user:" + user.username);

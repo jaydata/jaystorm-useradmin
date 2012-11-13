@@ -107,12 +107,65 @@ function EmbedServiceModel(vm){
     this.data = vm.service;
     
     self.embedTemplates = ko.observableArray([
-        { title: 'HTML5', cssclass: 'icon-start' },
-        { title: 'JayData', cssclass: 'icon-stop' }
+        { name: 'html5', title: 'HTML5', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon-start' },
+        { name: 'jaydata', title: 'JayData', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon-stop' }
     ]);
     
-    self.renderTemplate = function(item){
+    setTimeout(function(){ document.querySelector('#embed-service-' + self.data.owner.ServiceID() + ' li a').click(); }, 0);
     
+    self.contextGenerator = new $data.MetadataLoaderClass();
+    self.contextGenerator.debugMode = true;
+    
+    self.jsContext = ko.observable();
+    self.tsContext = ko.observable();
+    self.serviceType = ko.observable();
+    
+    self.renderTemplate = function(el, name, tmpl){
+        if (self.serviceType()){
+            document.getElementById(el).innerHTML = new EJS({
+                url: tmpl.template
+            }).render({
+                template: tmpl,
+                serviceType: self.serviceType(),
+                app: adminApiClient.currentApplication(),
+                service: self.data.owner.innerInstance,
+                jsContext: self.jsContext(),
+                tsContext: self.tsContext()
+            });
+        }else{
+            self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(f, t, s){
+                self.serviceType(t);
+                self.jsContext(s.replace('JaySvcUtil.exe', 'JayStorm Admin'));
+                
+                self.contextGenerator.factoryCache = {};
+                
+                self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(tf, tt, ts){
+                    self.tsContext(ts.replace('JaySvcUtil.exe', 'JayStorm Admin'));
+                    
+                    document.getElementById(el).innerHTML = new EJS({
+                        url: tmpl.template
+                    }).render({
+                        template: tmpl,
+                        serviceType: self.serviceType(),
+                        app: adminApiClient.currentApplication(),
+                        service: self.data.owner.innerInstance,
+                        jsContext: self.jsContext(),
+                        tsContext: self.tsContext()
+                    });
+                }, {
+                    AutoCreateContext: true,
+                    DefaultNamespace: '',
+                    typeScript: true,
+                    //ContextInstanceName: self.data.owner.Name(),
+                    httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
+                });
+            }, {
+                AutoCreateContext: true,
+                DefaultNamespace: '',
+                //ContextInstanceName: self.data.owner.Name(),
+                httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
+            });
+        }
     };
     
     /*self.jsContext = ko.observable();
@@ -133,9 +186,9 @@ function EmbedServiceModel(vm){
         DefaultNamespace: '',
         //ContextInstanceName: self.data.owner.Name(),
         httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
-    });
+    });*/
     
-    self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(f, t, s){
+    /*self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(f, t, s){
         self.tsContext(s.replace('JaySvcUtil.exe', 'JayStorm Admin'));
         setTimeout(function(){
             var el = document.getElementById('service-tscontext-' + self.data.owner.Name());
