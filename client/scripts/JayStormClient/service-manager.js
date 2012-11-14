@@ -135,7 +135,8 @@ function EmbedServiceModel(vm){
                 app: adminApiClient.currentApplication(),
                 service: self.data.owner.innerInstance,
                 jsContext: self.jsContext(),
-                tsContext: self.tsContext()
+                tsContext: self.tsContext(),
+                phpContext: self.phpContext()
             });
         }else{
             self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), {
@@ -188,7 +189,8 @@ function EmbedServiceModel(vm){
                         app: adminApiClient.currentApplication(),
                         service: self.data.owner.innerInstance,
                         jsContext: self.jsContext(),
-                        tsContext: self.tsContext()
+                        tsContext: self.tsContext(),
+                        phpContext: self.phpContext()
                     });
                 }
             }, {
