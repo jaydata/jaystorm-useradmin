@@ -1,4 +1,4 @@
-// JayData 1.1.1
+// JayData 1.2.3
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -20,7 +20,8 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
         this.context = {};
         this.providerConfiguration = $data.typeSystem.extend({
             FQLFormat: "format=json",
-            FQLQueryUrl: "https://graph.facebook.com/fql?q="
+            FQLQueryUrl: "https://graph.facebook.com/fql?q=",
+            Access_Token: ''
         }, cfg);
         this.initializeStore = function (callBack) {
             callBack = $data.typeSystem.createCallbackSetting(callBack);
@@ -147,8 +148,13 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
         if (!sql.selectMapping)
             this._discoverType('', schema, includes);
 
+        var requestUrl = this.providerConfiguration.FQLQueryUrl + encodeURIComponent(sql.queryText) + "&" + this.providerConfiguration.FQLFormat;
+        if (this.providerConfiguration.Access_Token) {
+            requestUrl += '&access_token=' + this.providerConfiguration.Access_Token;
+        }
+
         var requestData = {
-            url: this.providerConfiguration.FQLQueryUrl + encodeURIComponent(sql.queryText) + "&" + this.providerConfiguration.FQLFormat,
+            url: requestUrl,
             dataType: "JSON",
             success: function (data, textStatus, jqXHR) {
                 query.rawDataList = data.data;
@@ -271,7 +277,7 @@ $C('$data.storageProviders.Facebook.FacebookCompiler', $data.Expressions.EntityE
         return databaseQuery.projectionSql;
     },
     generateProjectionFunc: function (query) {
-        var isAuthenticated = this.provider.AuthenticationProvider.Authenticated;
+        var isAuthenticated = this.provider.AuthenticationProvider.Authenticated || this.provider.providerConfiguration.Access_Token;
         var publicMemberDefinitions = query.defaultType.memberDefinitions.getPublicMappedProperties();
         if (!isAuthenticated && publicMemberDefinitions.some(function (memDef) { return memDef.isPublic == true; })) {
             publicMemberDefinitions = publicMemberDefinitions.filter(function (memDef) { return memDef.isPublic == true; });
@@ -655,7 +661,7 @@ $data.Class.define("$data.Facebook.FQLContext", $data.EntityContext, null, {
                 .select(function (f) { return f.uid2; });
 
         this.MyFriends = this.Users
-                .where(function (u) { return u.uid == this.me || u.uid in this.friends; }, { me: $data.Facebook.FQLCommands.me, friends: friendsQuery });
+                .where(function (u) { return u.uid in this.friends; }, { friends: friendsQuery });
     },
     Users: {
         dataType: $data.EntitySet,
