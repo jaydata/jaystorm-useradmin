@@ -1,8 +1,9 @@
 <form class="form-horizontal">
     <fieldset>
         <legend>Service URL</legend>
-        <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>" onfocus="this.select();"/>
+        <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>"/>
     </fieldset>
+    <% if (tsContext){ %>
     <fieldset>
         <legend>JayData TypeScript context</legend>
         <textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
@@ -14,4 +15,8 @@
         });
         %><%=tsContext %></textarea>
     </fieldset>
+    <% } %>
 </form>
+<% if (!jsContext){ %>
+<p class="text-error">Service unpublished. Please publish your service by deploying your application.</p>
+<% }%>

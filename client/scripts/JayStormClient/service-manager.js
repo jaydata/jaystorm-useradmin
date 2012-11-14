@@ -134,15 +134,35 @@ function EmbedServiceModel(vm){
                 tsContext: self.tsContext()
             });
         }else{
-            self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(f, t, s){
-                self.serviceType(t);
-                self.jsContext(s.replace('JaySvcUtil.exe', 'JayStorm Admin'));
-                
-                self.contextGenerator.factoryCache = {};
-                
-                self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(tf, tt, ts){
-                    self.tsContext(ts.replace('JaySvcUtil.exe', 'JayStorm Admin'));
+            self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), {
+                success: function(f, t, s){
+                    self.serviceType(t);
+                    self.jsContext(s.replace('JaySvcUtil.exe', 'JayStorm Admin'));
                     
+                    self.contextGenerator.factoryCache = {};
+                    
+                    self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(tf, tt, ts){
+                        self.tsContext(ts.replace('JaySvcUtil.exe', 'JayStorm Admin'));
+                        
+                        document.getElementById(el).innerHTML = new EJS({
+                            url: tmpl.template
+                        }).render({
+                            template: tmpl,
+                            serviceType: self.serviceType(),
+                            app: adminApiClient.currentApplication(),
+                            service: self.data.owner.innerInstance,
+                            jsContext: self.jsContext(),
+                            tsContext: self.tsContext()
+                        });
+                    }, {
+                        AutoCreateContext: true,
+                        DefaultNamespace: '',
+                        typeScript: true,
+                        //ContextInstanceName: self.data.owner.Name(),
+                        httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
+                    });
+                },
+                error: function(err){
                     document.getElementById(el).innerHTML = new EJS({
                         url: tmpl.template
                     }).render({
@@ -153,13 +173,7 @@ function EmbedServiceModel(vm){
                         jsContext: self.jsContext(),
                         tsContext: self.tsContext()
                     });
-                }, {
-                    AutoCreateContext: true,
-                    DefaultNamespace: '',
-                    typeScript: true,
-                    //ContextInstanceName: self.data.owner.Name(),
-                    httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
-                });
+                }
             }, {
                 AutoCreateContext: true,
                 DefaultNamespace: '',
