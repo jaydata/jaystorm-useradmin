@@ -8,7 +8,9 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         self.context.subscribe(function (value) {
             if (value) {
-                value.Databases.toArray(self.databases);
+                value.Databases.toArray(self.databases).then(function(value){
+                    setTimeout(function(){ document.querySelector('#SchemaManagerUI .nav.nav-tabs li a').click(); }, 0);
+                });
             } else {
                 self.databases.removeAll();
             }
