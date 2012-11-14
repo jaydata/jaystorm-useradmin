@@ -122,6 +122,7 @@ function EmbedServiceModel(vm){
     
     self.jsContext = ko.observable();
     self.tsContext = ko.observable();
+    self.phpContext = ko.observable();
     self.serviceType = ko.observable();
     
     self.renderTemplate = function(el, name, tmpl){
@@ -134,7 +135,8 @@ function EmbedServiceModel(vm){
                 app: adminApiClient.currentApplication(),
                 service: self.data.owner.innerInstance,
                 jsContext: self.jsContext(),
-                tsContext: self.tsContext()
+                tsContext: self.tsContext(),
+                phpContext: self.phpContext()
             });
         }else{
             self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), {
@@ -144,23 +146,36 @@ function EmbedServiceModel(vm){
                     
                     self.contextGenerator.factoryCache = {};
                     
-                    self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function(tf, tt, ts){
+                    self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function (tf, tt, ts) {
                         self.tsContext(ts.replace('JaySvcUtil.exe', 'JayStorm Admin'));
-                        
-                        document.getElementById(el).innerHTML = new EJS({
-                            url: tmpl.template
-                        }).render({
-                            template: tmpl,
-                            serviceType: self.serviceType(),
-                            app: adminApiClient.currentApplication(),
-                            service: self.data.owner.innerInstance,
-                            jsContext: self.jsContext(),
-                            tsContext: self.tsContext()
+
+                        self.contextGenerator.factoryCache = {};
+
+                        self.contextGenerator.load(adminApiClient.currentApplication().url + self.data.owner.Name(), function (phpf, phpt, phps) {
+                            self.phpContext(phps);
+
+                            document.getElementById(el).innerHTML = new EJS({
+                                url: tmpl.template
+                            }).render({
+                                template: tmpl,
+                                serviceType: self.serviceType(),
+                                app: adminApiClient.currentApplication(),
+                                service: self.data.owner.innerInstance,
+                                jsContext: self.jsContext(),
+                                tsContext: self.tsContext(),
+                                phpContext: self.phpContext()
+                            });
+                        }, {
+                            AutoCreateContext: true,
+                            DefaultNamespace: '',
+                            mode: '_metadataPHPConverterXSLT',
+                            //ContextInstanceName: self.data.owner.Name(),
+                            httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
                         });
                     }, {
                         AutoCreateContext: true,
                         DefaultNamespace: '',
-                        typeScript: true,
+                        mode: '_metadataTypeScriptConverterXSLT',
                         //ContextInstanceName: self.data.owner.Name(),
                         httpHeaders: { 'Authorization': adminApiClient.authorization(), 'X-Domain': 'jokerStorm' }
                     });
@@ -174,7 +189,8 @@ function EmbedServiceModel(vm){
                         app: adminApiClient.currentApplication(),
                         service: self.data.owner.innerInstance,
                         jsContext: self.jsContext(),
-                        tsContext: self.tsContext()
+                        tsContext: self.tsContext(),
+                        phpContext: self.phpContext()
                     });
                 }
             }, {
