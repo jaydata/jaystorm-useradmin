@@ -1,0 +1,56 @@
+<form class="form-horizontal">
+    <fieldset>
+        <legend>
+          <h3>Service URL</h3>
+        </legend>
+        <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>"/>
+        <br />
+        <p class='alert alert-info iblock'>
+          See more info at: <a target='_blank' href="http://code.google.com/p/odata4j/">http://code.google.com/p/odata4j/</a>, put odata4j-0.7.0-clientbundle.jar into your CLASSPATH.
+        </p>
+    </fieldset>
+    <fieldset>
+        <legend>
+          <h3>Get started Java code</h3>
+        </legend>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+%>
+
+
+package odataexample;
+
+import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OQueryRequest;
+
+public class ODataExample {
+
+	public static void main(String[] args) {
+		
+		ODataConsumer c = ODataConsumers.create("<%=app.url + service.Name %>");
+		
+<% if (service.DatabaseID){ %>
+		OQueryRequest<OEntity> result = c.getEntities("<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>");
+		
+		Enumerable<OEntity> entities = result.execute().take(2);
+		for (OEntity entity : entities) {
+			System.out.println(entity.getProperty("<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %>").getValue());
+		}
+<% } %>
+	}
+}
+
+
+
+</textarea>
+    </fieldset>
+</form>
+
