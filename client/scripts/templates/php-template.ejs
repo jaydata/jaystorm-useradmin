@@ -1,11 +1,18 @@
 <form class="form-horizontal">
     <fieldset>
-        <legend>Service URL</legend>
+        <legend>
+          <h3>Service URL</h3>
+        </legend>
         <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>"/>
-        <br />See more info at <a href="http://odataphp.codeplex.com/">http://odataphp.codeplex.com/</a>
+        <br />
+        <p class='alert alert-info iblock'>
+          See more info at <a target='_blank' href="http://odataphp.codeplex.com/">http://odataphp.codeplex.com/</a>
+        </p>
     </fieldset>
     <fieldset>
-        <legend>Get started PHP code</legend>
+        <legend>
+          <h3>Get started PHP code</h3>
+        </legend>
         <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
             var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);

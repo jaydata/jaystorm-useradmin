@@ -545,11 +545,12 @@
 
                 <script type="text/html" id="embedService">
                     <div>
-                        <h4 style="display:inline">Embed service</h4>
-                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                        <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
+                        
+                        <h3 class="sub-title">Embed service</h3>
+                        <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
                         
                         <div>
-                            Service name: <span data-bind="text: $data.data.owner.Name()"></span>
                                 <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                     <li>
 <!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
@@ -587,8 +588,8 @@
 <!--                            </table>-->
                         </div>
                         
-                        <a href="#" data-bind="click: closeControlBox">Close</a>
-
+                        <br />
+                        <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
                     </div>
                 </script>
 
