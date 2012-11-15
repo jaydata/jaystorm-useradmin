@@ -444,11 +444,14 @@
                                                                             { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
                                                     Manage fields
                                      
-                                            </a>
+                                            </a><br>
                                             <a href="#" data-bind="click: $data.showControls.bind({},'eventHandlersEditor', EventHandlersEditorModel, 
                                                                             { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
                                                     Manage events
                                      
+                                            </a><br>
+                                            <a href="#" data-bind="click: $root.editData">
+                                                    Edit data
                                             </a>
                                         </div>
                                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
@@ -471,7 +474,7 @@
                                                     value: $root.currentDatabase"></select>-->
 
                                 <ul class="nav nav-tabs" data-bind="foreach:databases">
-                                    <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data)"></a></li>
+                                    <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data), attr: { 'data-dbname': Name }"></a></li>
                                 </ul>
 
                                 <div data-bind="if: currentDatabase">

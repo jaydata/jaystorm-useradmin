@@ -9,7 +9,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         self.context.subscribe(function (value) {
             if (value) {
                 value.Databases.toArray(self.databases).then(function(value){
-                    setTimeout(function(){ document.querySelector('#SchemaManagerUI .nav.nav-tabs li a').click(); }, 0);
+                    setTimeout(function(){ (document.querySelector('#SchemaManagerUI .nav.nav-tabs li a:not([data-dbname="ApplicationDB"])') || { click: function(){} }).click(); }, 0);
                 });
             } else {
                 self.databases.removeAll();
@@ -199,6 +199,22 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                 }
             });
         });
+        
+        self.editData = function(item){
+            //self.context().Services.first(function(it){ return it.DatabaseID == this.db; }, { db: self.currentDatabaseID() }, function(service){
+                window.editDataService = item.owner.DatabaseID();
+                window.editDataTable = item.owner.Name();
+                if (typeof w === 'undefined') {
+                    console.log("opening window");
+                    w = window.open("data.html", "_dataui");
+                } else {
+                    w.close();
+                    w = window.open("data.html", "_dataui");
+                    console.log("Focus!");
+                    w.focus();
+                }
+            //});
+        };
     }
 });
 

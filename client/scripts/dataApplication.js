@@ -17,7 +17,9 @@
             c.Services.filter(function(it){ return it.DatabaseID != null }).toArray(self.services).then(function(value){
                 if (window.opener.editDataService){
                     //self.currentService(self.services().filter(function(it){ return it.ServiceID() == this.db; }, { db: window.opener.editDataService })[0]);
-                    document.querySelector('*[data-serviceid="' + window.opener.editDataService + '"]').click();
+                    (document.querySelector('*[data-serviceid="' + window.opener.editDataService + '"]') ||
+                     document.querySelector('*[data-databaseid="' + window.opener.editDataService + '"]') ||
+                     { click: function(){} }).click();
                 }
             });
         }, { httpHeaders: { 'Authorization': globalAuthorization, 'X-Domain': 'jokerStorm' } });
@@ -127,7 +129,7 @@
             }
         }
         
-        document.querySelector('#tables li a').click();
+        document.querySelector(window.opener.editDataTable ? '#table-' + window.opener.editDataTable : '#tables li a').click();
     })
 
     self.esPageSize = ko.observable(30);

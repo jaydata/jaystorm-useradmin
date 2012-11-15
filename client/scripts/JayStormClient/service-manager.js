@@ -89,6 +89,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
         
         self.editData = function(item){
             window.editDataService = item.owner.ServiceID();
+            window.editDataTable = undefined;
             if (typeof w === 'undefined') {
                 console.log("opening window");
                 w = window.open("data.html", "_dataui");
