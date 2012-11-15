@@ -1,0 +1,53 @@
+<form class="form-horizontal">
+    <fieldset>
+        <legend>Service URL</legend>
+        <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>"/>
+        <br />See more info <a href="http://rdoc.info/github/visoft/ruby_odata">here</a>
+    </fieldset>
+    <fieldset>
+        <legend>Get started Ruby code</legend>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+%>
+
+
+require 'ruby_odata'
+
+svc = OData::Service.new "<%=app.url + service.Name %>"
+# you'll need this if your database operation needs authentication/authorization
+# svc = OData::Service.new "<%=app.url + service.Name %>", { :username => "scott", :password=> "tiger" }
+
+#get all rows from an entityset
+svc.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
+result = svc.execute
+puts result.to_json
+
+#get some rows from an entityset
+svc.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.filter("<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> ne null")
+result = svc.execute
+puts result.to_json
+
+#add new element
+#elem = <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.name %>.new
+#elem.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> = <somevalue>
+#svc.AddTo<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>(elem)
+#svc.save_changes
+
+#update
+#elem.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> = <some other value>
+#svc.update_object(elem)
+#svc.save_changes
+
+#delete
+#svc.delete_object(elem)
+#svc.save_changes
+
+</textarea>
+    </fieldset>
+</form>
+
