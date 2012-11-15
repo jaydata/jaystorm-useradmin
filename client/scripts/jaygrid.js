@@ -62,7 +62,7 @@
 
     regiserTemplates($data.jayGridTemplates.tableTemplate);
 
-    function getColumnsMetadata(source, fields, itemCommands) {
+    function getColumnsMetadata(source, fields, itemCommands, viewModel) {
         var entityType = null;
 
         source = ko.utils.unwrapObservable(source);
@@ -112,14 +112,16 @@
             props = res;
         }
 
-        if (itemCommands.length > 0) {
-            var meta = {
-                isVirtual : true,
-                name: 'controls',
-                type: 'itemCommands',
-                itemCommands: itemCommands
-            };
-            props.push(meta);
+        if (viewModel.showItemCommands !== false){
+            if (itemCommands.length > 0) {
+                var meta = {
+                    isVirtual : true,
+                    name: 'controls',
+                    type: 'itemCommands',
+                    itemCommands: itemCommands
+                };
+                props.push(meta);
+            }
         }
 
         return props;
@@ -493,7 +495,7 @@
 
                 var srcval = ko.utils.unwrapObservable(self.source);
                 if (srcval !== undefined && srcval !== null) {
-                    cols = getColumnsMetadata(srcval, fields, itemCommands);
+                    cols = getColumnsMetadata(srcval, fields, itemCommands, viewModel);
                     sortColName = cols[0].name;
                 };
 
