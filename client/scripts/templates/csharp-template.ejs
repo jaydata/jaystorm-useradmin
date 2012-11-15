@@ -3,22 +3,37 @@
         <legend>
           <h3>Tutorial</h3>
         </legend>
-      
-        <h3 class='margint35'>Step 1 - Create a project</h3>
-        <h5>Right click on project and select Add Service Reference</h5>
-        <p>
-          <img src="/img/template/csharp/1addservicereference.JPG"></img>
-        </p>
-
-        <h3 class='margint35'>Step 2 - Service url</h3>
-        <h5>Add service url and press Go</h5>
-        <p>
-          <img src="/img/template/csharp/2serviceurl.JPG"></img>
-        </p>
-
-        <h3 class='margint35'>Enjoy</h3>
-        <p>
-          <img src="/img/template/csharp/3crud.JPG"></img>
-        </p>
+        
+        <ul class="gallery thumbnails" id="csharp-gallery-<%=service.ServiceID %>">
+            <li class="span4">
+            <div class="thumbnail">
+              <a class="fancybox first thumbnail" rel="group1" href="/img/template/csharp/1addservicereference.JPG">
+                <img src="/img/template/csharp/1addservicereference.JPG" />
+              </a>
+              <h5>Step 1 - Create a project</h5>
+              <p>Right click on project and select Add Service Reference</p>
+            </div>
+            </li>
+            <li class="span4">
+            <div class="thumbnail">
+              <a class="fancybox thumbnail" rel="group1" href="/img/template/csharp/2serviceurl.JPG">
+                <img src="/img/template/csharp/2serviceurl.JPG" />
+              </a>
+              <h5>Step 2 - Service URL</h5>
+              <p>Add service url and press Go</p>
+            </div>
+            </li>
+            <li class="span4">
+            <div class="thumbnail">
+              <a class="fancybox thumbnail" rel="group1" href="/img/template/csharp/3crud.JPG">
+                <img src="/img/template/csharp/3crud.JPG" />
+              </a>
+              <h5>Step 3 - Enjoy</h5>
+            </div>
+            </li>
+        </ul>
+<%
+    setTimeout(function(){ $('#csharp-gallery-' + service.ServiceID + ' .fancybox').fancybox(); }, 0);
+%>
     </fieldset>
 </form>

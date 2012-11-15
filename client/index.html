@@ -66,6 +66,10 @@
         <script src="scripts/iscroll.js"></script>
                 
         <script src="scripts/inflection.js"></script>
+        
+        <link rel="stylesheet" href="styles/fancy/jquery.fancybox.css" type="text/css">
+        <script src="scripts/jquery.fancybox.pack.js"></script>
+        
         <script type="text/javascript">
             /*$("li#servicesScreen div#ServiceManagerUI table.jay-data-grid tbody tr td:first-child a").live('click', function (e) {
                 e.preventDefault();
@@ -191,6 +195,12 @@
                 }
             });
         </script>
+        
+        <style>
+            .thumbnail{
+                white-space: normal !important;
+            }
+        </style>
     </head>
 <body>
     <!-- HEADER -->
@@ -322,10 +332,8 @@
                     
                     <h3 class="sub-title">Code snippet</h3>
                     <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
-                    
+                    <h5 class="muted">Service URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
                     <div>
-                            <h3>Service URL</h3>
-                            <input type="text" style="width:100%;" data-bind="value: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/'"/>
                             <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                 <li>
 <!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
