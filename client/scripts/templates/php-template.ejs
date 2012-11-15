@@ -2,7 +2,7 @@
     <fieldset>
         <legend>Service URL</legend>
         <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>"/>
-        <br />See more info ?????? <a href="http://rdoc.info/github/visoft/ruby_odata">here</a>
+        <br />See more info at <a href="http://odataphp.codeplex.com/">http://odataphp.codeplex.com/</a>
     </fieldset>
     <fieldset>
         <legend>Get started PHP code</legend>
@@ -23,10 +23,12 @@ $svc = new <%= service.Name %>Service(DEFAULT_ODATA_SERVICE_URL);
 // you'll need this if your database operation needs authentication/authorization
 // $svc->Credential = new WindowsCredential('scott','tiger');
 
+<% if (service.DatabaseID){ %>
 // #get all rows from an entityset
 $query = $svc-><%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>();
 $items = $query->Execute();
 var_dump($items);
+<% } %>
 
 ?>
   
@@ -36,9 +38,9 @@ var_dump($items);
     <% if (tsContext){ %>
     <fieldset>
         <legend>JayData PHP context</legend>
-        <textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        <textarea id="service-<%=template.name %>-template-context-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
-            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            var el = document.getElementById('service-' + template.name + '-template-context-' + service.ServiceID);
             if (el){
                 el.style.height = el.scrollHeight + 'px';
             }

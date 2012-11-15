@@ -2,7 +2,7 @@
     <fieldset>
         <legend>Service URL</legend>
         <input type="text" style="width:100%;" value="<%=app.url + service.Name + '/' %>"/>
-        <br />See more info <a href="http://rdoc.info/github/visoft/ruby_odata">here</a>
+        <br />See more info at <a href="http://rdoc.info/github/visoft/ruby_odata">http://rdoc.info/github/visoft/ruby_odata</a>
     </fieldset>
     <fieldset>
         <legend>Get started Ruby code</legend>
@@ -21,7 +21,7 @@ require 'ruby_odata'
 svc = OData::Service.new "<%=app.url + service.Name %>"
 # you'll need this if your database operation needs authentication/authorization
 # svc = OData::Service.new "<%=app.url + service.Name %>", { :username => "scott", :password=> "tiger" }
-
+<% if (service.DatabaseID){ %>
 #get all rows from an entityset
 svc.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
 result = svc.execute
@@ -46,6 +46,8 @@ puts result.to_json
 #delete
 #svc.delete_object(elem)
 #svc.save_changes
+
+<% } %>
 
 </textarea>
     </fieldset>

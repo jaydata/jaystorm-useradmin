@@ -112,7 +112,9 @@ function EmbedServiceModel(vm){
         { name: 'jaydata-ts', title: 'JayData TypeScript', template: '/scripts/templates/jaydata-ts-template.ejs', cssclass: 'icon-stop' },
         { name: 'csharp', title: '.NET C#', template: '/scripts/templates/csharp-template.ejs', cssclass: 'icon-stop' },
         { name: 'office', title: 'MS Office', template: '/scripts/templates/office-template.ejs', cssclass: 'icon-stop' },
-        { name: 'lightswitch', title: 'LightSwitch', template: '/scripts/templates/lightswitch-template.ejs', cssclass: 'icon-stop' }
+        { name: 'lightswitch', title: 'LightSwitch', template: '/scripts/templates/lightswitch-template.ejs', cssclass: 'icon-stop' },
+        { name: 'ruby', title: 'Ruby', template: '/scripts/templates/ruby-template.ejs', cssclass: 'icon-stop' },
+        { name: 'php', title: 'PHP', template: '/scripts/templates/php-template.ejs', cssclass: 'icon-stop' }
     ]);
     
     setTimeout(function(){ document.querySelector('#embed-service-' + self.data.owner.ServiceID() + ' li a').click(); }, 0);
