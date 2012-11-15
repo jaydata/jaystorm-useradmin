@@ -444,11 +444,14 @@
                                                                             { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
                                                     Manage fields
                                      
-                                            </a>
+                                            </a><br>
                                             <a href="#" data-bind="click: $data.showControls.bind({},'eventHandlersEditor', EventHandlersEditorModel, 
                                                                             { entitySet : $data, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
                                                     Manage events
                                      
+                                            </a><br>
+                                            <a href="#" data-bind="click: $root.editData">
+                                                    Edit data
                                             </a>
                                         </div>
                                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
@@ -471,7 +474,7 @@
                                                     value: $root.currentDatabase"></select>-->
 
                                 <ul class="nav nav-tabs" data-bind="foreach:databases">
-                                    <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data)"></a></li>
+                                    <li><a href="#" data-bind="text:Name,click: $root.currentDatabase.bind($data), attr: { 'data-dbname': Name }"></a></li>
                                 </ul>
 
                                 <div data-bind="if: currentDatabase">
@@ -551,6 +554,8 @@
                         <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
                         
                         <div>
+                                <h3>Service URL</h3>
+                                <input type="text" style="width:100%;" data-bind="value: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/'"/>
                                 <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                     <li>
 <!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
@@ -615,7 +620,7 @@
                         </b>
                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
                         <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">
-                            &lt;embed&gt;
+                            Code snippet
                         </a>
                         
 <!--                        <a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
