@@ -12,7 +12,7 @@
         <link href="styles/bootstrap.min.css" rel="stylesheet" />
         <link href="styles/style.css" rel="stylesheet" />
         <link href="styles/fileuploader.css" rel="stylesheet" />
-
+        
         <script src="/scripts/jquery-1.7.2.min.js"></script>
         <script src="/scripts/fileuploader.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
@@ -197,7 +197,7 @@
         </script>
         
         <style>
-            .thumbnail{
+            .thumbnail {
                 white-space: normal !important;
             }
         </style>
@@ -210,39 +210,37 @@
                 <div class="container">
                     <a class="brand" href="/">JayStorm Admin</a>
 
-                    <!-- INFO: add class="btn btn-info" to <a> for button style -->
-                    <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
-                        <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: $index, class: cssclass }"></a></li>
-                    </ul>
+                    <div data-bind="if :authorization">
+                        <form class="form-inline">
+                            <label>Application Selector:</label>
+                            <select data-bind="options: applications, 
+                                                value: currentApplication, 
+                                                optionsText: 'title',
+                                                optionsCaption:'Select App To Manage'"></select>
+
+                            <div class="navbar sub-navbar iblock fright">
+                                <ul class="nav" data-bind="visible: currentApplication, foreach: submenuItems">
+                                    <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: id, class: cssclass }"></a></li>
+                                </ul>
+                            </div>
+
+                            <div id="launchResult" data-bind="text:launchResult"></div>
+                        </form>
+                    </div>
+                <div data-bind="ifnot: authorization">
+                    <form class="form-inline">
+                        <p style="color: #fff;">Collecting apps and getting authorization. Please wait...</p>
+                    </form>
+                </div>
                 </div>
             </div>
         </div>
         <div class="storm-header">
             <div class="container">
-                <div data-bind="if :authorization">
-                    <form class="form-inline">
-                        <label>Application Selector:</label>
-                        <select data-bind="options: applications, 
-                                            value: currentApplication, 
-                                            optionsText: 'title',
-                                            optionsCaption:'Select App To Manage'"></select>
-
-                        <div class="navbar sub-navbar iblock fright">
-                            <ul class="nav" data-bind="visible: currentApplication, foreach: submenuItems">
-                                <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: id, class: cssclass }"></a></li>
-                            </ul>
-                        </div>
-
-<!--                        <label>App Url:</label>
-                        <input type="text" data-bind="value: applicationToAdd" /> <input type="button" data-bind="click: addApp" value="Add" class="btn btn-info" />
-
-                        <input type="button" data-bind="click: launchCurrentApplication" value="Press me to get fucked" />-->
-
-                        <div id="launchResult" data-bind="text:launchResult"></div>
-                    </form>
-                </div>
-                <div data-bind="ifnot: authorization">
-                    <p style="color: #fff;">Collecting apps and getting authorization. Please wait...</p>
+                <div class="navbar">
+                    <ul class="nav" data-bind="visible: currentApplication, foreach:menuItems">
+                        <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: $index, class: cssclass }"></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -252,66 +250,103 @@
     <!-- WELCOME SCREEN -->
     <div id="welcome">
         <div class="container" data-bind="if :authorization">
-            <ul id="feature-list-left" class="feature left">
-                <li>
-                    <div class="icon schema">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="0" href="#">Schemas</a></h2>
-                        <p>Manage the schema of your tables, add, edit columns, change field types</p>
-                    </div>
-                </li>
-                <li>
-                   <div class="icon service">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
-                        <p>Publish your databases or JavaScript API via OData</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="icon security">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="2" href="#">Security</a></h2>
-                        <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="icon access">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="3" href="#">Access control / Firewall</a></h2>
-                        <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
-                    </div>
-                </li>
-            </ul>
-            <ul id="feature-list-right" class="feature right">
-                <li>
-                    <div class="icon file">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);"  id="4" href="#">File manager</a></h2>
-                        <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="icon user">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="5" href="#">Users</a></h2>
-                        <p>Manage your users and security groups of your app</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="icon access">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="6" href="#">Publish</a></h2>
-                        <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="icon data">&nbsp;</div>
-                    <div class="item-content">
-                        <h2><a onclick="slideclick(event, this);" id="7" href="#">Data manager</a></h2>
-                        <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. </p>
-                    </div>
-                </li>
-            </ul>
+
+            <br />
+
+            <div class="thumbnails big">
+                <div class="wrapper">
+                    <h1>Steps to create your application</h1>
+                    <p class="muted">If you just started developing an Application you should go throught these simple steps listed below.</p>
+
+                    <ul>
+                        <li class="thumbnail" onclick="slideclick(event, this);" id="0">
+                            <div class="box box-medium box-circle box-jayblue">
+                                <h3>Define<br/>database</h3>
+                            </div>
+                            <p>If your application needs to store data, create tables and fields to describe it's shape. You'll be rewarded with an out of the box REST data API with query and CRUD capabilities.</p>
+                        </li>
+                        <li class="thumbnail" onclick="slideclick(event, this);" id="1">
+                            <div class="box box-medium box-circle box-jayblue">
+                                <h3>Create<br/>business logic</h3>
+                            </div>
+                            <p>If simple, automatic CRUD is not enough, extend your service with code to modify the way it works, or create your own server side business logic and custom API functions in JavaScript and stay in 100% control.</p>
+                        </li>
+                        <li class="thumbnail" onclick="slideclick(event, this);" id="6">
+                            <div class="box box-medium box-circle box-jayblue">
+                                <h3>Publish<br/>your<br />API</h3>
+                            </div>
+                            <p>Now that you have built it you have to make it accessible to your clients. Publish your changes, bring your API live, and get the bootstrap code for a number of clients environments so that you can start using your new API in now time.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="blue-line">&nbsp;</div>
+            </div>
+
+            <br />
+
+            <div class="wrapper">
+                <ul id="feature-list-left" class="feature left">
+                    <li>
+                        <div class="icon schema">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="0" href="#">Schemas</a></h2>
+                            <p>Manage the schema of your tables, add, edit columns, change field types</p>
+                        </div>
+                    </li>
+                    <li>
+                       <div class="icon service">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="1" href="#">Service manager</a></h2>
+                            <p>Publish your databases or JavaScript API via OData</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon security">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="2" href="#">Security</a></h2>
+                            <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon access">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="3" href="#">Access control / Firewall</a></h2>
+                            <p>Control the accessiblity of your app by allow IPs, ports, anonymous visitors, customize request origins</p>
+                        </div>
+                    </li>
+                </ul>
+                <ul id="feature-list-right" class="feature right">
+                    <li>
+                        <div class="icon file">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);"  id="4" href="#">File manager</a></h2>
+                            <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon user">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="5" href="#">Users</a></h2>
+                            <p>Manage your users and security groups of your app</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon access">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="6" href="#">Publish</a></h2>
+                            <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon data">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="7" href="#">Data manager</a></h2>
+                            <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <!-- WELCOME SCREEN -->
@@ -491,18 +526,45 @@
                                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
 
                                     </div>
-                                   
                                 </script>
 
+
+                            <div class="thumbnails small">
+                                <div class="wrapper-mini">
+                                    <ul>
+                                        <li class="thumbnail active">
+                                            <div class="box box-mini box-circle box-jayblue">
+                                                <h2>1</h2>
+                                            </div>
+                                            <h3>Define DB</h3>
+                                        </li>
+                                        <li class="thumbnail" onclick="slideclick(event, this);" id="1">
+                                            <div class="box box-mini box-circle box-gray">
+                                                <h2>2</h2>
+                                            </div>
+                                            <h3>Create logic</h3>
+                                        </li>
+                                        <li class="thumbnail" onclick="slideclick(event, this);" id="6">
+                                            <div class="box box-mini box-circle box-gray">
+                                                <h2>3</h2>
+                                            </div>
+                                            <h3>Publish API</h3>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="blue-line">&nbsp;</div>
+                            </div>
+
                                 <h1>Manage Database Schemas</h1>
-                                <div class="alert alert-info fade in">
+                                <div class="alert alert-info fade in clear">
                                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
                                     <p>Here you can administer the schema of the default Application database you received with your application as well as the schema of the queryable database power-up. You can <b>create database tables </b>and <b>define entities</b>. Select the database you wish to edit then click Create new table, than add/edit/delete table fields.</p>
                                     <p>When adding a new field, you can choose from the following types: text-based, numeric, UTC Date, Image and Geography. You can set the relations between tables at the Reference field.<br /></p>
                                    <p>Manage events: here you can subscribe for entity events and provide your custom code (with JavaScript syntax) you want to run. You can individually set the triggers you want to run before and after CRUD operations.</p>
                                 </div>
 
-                               <h4 style="float:left">Select database schema to edit:</h4>
+                               <h4>Select database schema to edit:</h4>
 <!--                                <select data-bind="options: databases, optionsCaption: 'Select database',
                                                     optionsText: 'Name',
                                                     value: $root.currentDatabase"></select>-->
@@ -519,7 +581,7 @@
                                     </div>
                                     <!-- /ko -->
 
-                                    <h2>Database schema: <span data-bind="text: currentDatabase().Name"> </span></h2>
+                                    <h5 class="muted">Selected database schema: <span class="jayblue" data-bind="text: currentDatabase().Name"></span></h5>
                                     <div data-bind="if: IsApplicationDB">
                                         <div class="alert alert-danger fright iblock" style="float: none;">
                                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
@@ -565,19 +627,47 @@
                     <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="ServiceManagerUI" data-bind="if: visible">
+                            
+                            <div class="thumbnails small">
+                                <div class="wrapper-mini">
+                                    <ul>
+                                        <li class="thumbnail active" onclick="slideclick(event, this);" id="0">
+                                            <div class="box box-mini box-circle box-jayblue">
+                                                <h2>1</h2>
+                                            </div>
+                                            <h3>Define DB</h3>
+                                        </li>
+                                        <li class="thumbnail active">
+                                            <div class="box box-mini box-circle box-jayblue">
+                                                <h2>2</h2>
+                                            </div>
+                                            <h3>Create logic</h3>
+                                        </li>
+                                        <li class="thumbnail" onclick="slideclick(event, this);" id="6">
+                                            <div class="box box-mini box-circle box-gray">
+                                                <h2>3</h2>
+                                            </div>
+                                            <h3>Publish API</h3>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="blue-line">&nbsp;</div>
+                            </div>
+
                             <h1>Manage Services</h1>
-                            <div class="alert alert-info fade in">
+                            <div class="alert alert-info fade in clear">
                                 <button type="button" class="close" data-dismiss="alert">&#120;</button>
                                 <p>You can manage your application services here, that is the data endpoint of your app. <br />
                                  You can crearte two types of services:
-                                    <ul><li>
-                                        JavaScript API service - you can add the services of your choices to the oData endpoint, using your JavaScript code
-                                        </li>
-                                        <li>
-                                        JavaScript Data service - you can publish the selected database and you have the option to add further services to the oData endpoint
-                                        </li>
-                                    </ul>
-                                    </p>
+                                <ul><li>
+                                    JavaScript API service - you can add the services of your choices to the oData endpoint, using your JavaScript code
+                                    </li>
+                                    <li>
+                                    JavaScript Data service - you can publish the selected database and you have the option to add further services to the oData endpoint
+                                    </li>
+                                </ul>
+                                </p>
                             </div>
 
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
@@ -1005,8 +1095,35 @@
                     <div class="inwrapper container">
                         <div class="inscroller">
                             <div id="DeploymentUI" data-bind="if: visible">
+                                <div class="thumbnails small">
+                                    <div class="wrapper-mini">
+                                        <ul>
+                                            <li class="thumbnail active" onclick="slideclick(event, this);" id="0">
+                                                <div class="box box-mini box-circle box-jayblue">
+                                                    <h2>1</h2>
+                                                </div>
+                                                <h3>Define DB</h3>
+                                            </li>
+                                            <li class="thumbnail active">
+                                                <div class="box box-mini box-circle box-jayblue" onclick="slideclick(event, this);" id="1">
+                                                    <h2>2</h2>
+                                                </div>
+                                                <h3>Create logic</h3>
+                                            </li>
+                                            <li class="thumbnail active">
+                                                <div class="box box-mini box-circle box-jayblue">
+                                                    <h2>3</h2>
+                                                </div>
+                                                <h3>Publish API</h3>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="blue-line">&nbsp;</div>
+                                </div>
+
                                 <h1>Application Publish</h1>
-                                <div class="alert alert-info fade in">
+                                <div class="alert alert-info fade in clear">
                                     <button type="button" class="close" data-dismiss="alert">x</button>
                                     <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
                                 </div>
@@ -1083,5 +1200,17 @@
         </div>
     </div>
     <!-- ISCROLL CONTAINER -->
+
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-30304727-5']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
 </body>
 </html>
