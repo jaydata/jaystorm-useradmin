@@ -1,4 +1,5 @@
 <form class="form-horizontal">
+<% if (jsContext){ %>
     <fieldset>
         <p>This is a "get started" code snippet for Java where you can see how to access your JayStorm service from a Java application.</p>
         <p class='alert alert-info iblock'>
@@ -48,5 +49,8 @@ public class ODataExample {
 
 </textarea>
     </fieldset>
+<% } %>
 </form>
-
+<% if (!jsContext){ %>
+<p class="text-error">Service unpublished. Please publish your service by deploying your application.</p>
+<% }%>
