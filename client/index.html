@@ -69,6 +69,7 @@
         
         <link rel="stylesheet" href="styles/fancy/jquery.fancybox.css" type="text/css">
         <script src="scripts/jquery.fancybox.pack.js"></script>
+        <script src="scripts/jquery.easing.1.3.js"></script>
         
         <script type="text/javascript">
             /*$("li#servicesScreen div#ServiceManagerUI table.jay-data-grid tbody tr td:first-child a").live('click', function (e) {
@@ -365,7 +366,8 @@
                 <div>
                     <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
                     
-                    <h3 class="sub-title">Code snippet</h3>
+                    <h3 class="sub-title">API access tutorials</h3>
+                    <p>See how to access your API from different clients.</p>
                     <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
                     <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
                     <div>
@@ -693,7 +695,7 @@
                         </b>
                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
                         <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">
-                            Code snippet
+                            API access tutorials
                         </a>
                         
 <!--                        <a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
@@ -1149,7 +1151,7 @@
                                     <h3 data-bind="if: launchingDone">Publish done!</h3>
                                 </div>
                                 <p>
-                                    After you have successfully published your JayStorm application, you can access your JayStorm services through OData protocol in every language or application which supports OData.
+                                    After you have successfully published your JayStorm application, you can access your JayStorm services through standards based OData protocol in every language or application which supports OData.
                                     Below you can find a few code snippet examples and tutorials for each of your services in different languages and applications. See more info in the tutorials.
                                 </p>
                                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
@@ -1174,7 +1176,7 @@
                                         </b>
                                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
                                         <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">
-                                            Code snippet
+                                            API access tutorials
                                         </a>
                                         
                 <!--                        <a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->

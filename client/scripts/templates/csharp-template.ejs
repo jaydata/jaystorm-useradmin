@@ -8,7 +8,7 @@
         <ul class="gallery thumbnails" id="csharp-gallery-<%=service.ServiceID %>">
             <li class="span4">
             <div class="thumbnail">
-              <a class="fancybox first thumbnail" rel="group1" href="/img/template/csharp/1addservicereference.JPG">
+              <a class="fancybox first thumbnail" rel="group1" title="Step 1 - Create a project: Right click on project and select Add Service Reference" href="/img/template/csharp/1addservicereference.JPG">
                 <img src="/img/template/csharp/1addservicereference.JPG" />
               </a>
               <h5>Step 1 - Create a project</h5>
@@ -17,7 +17,7 @@
             </li>
             <li class="span4">
             <div class="thumbnail">
-              <a class="fancybox thumbnail" rel="group1" href="/img/template/csharp/2serviceurl.JPG">
+              <a class="fancybox thumbnail" rel="group1" title="Step 2 - Service URL: Add service url and press Go" href="/img/template/csharp/2serviceurl.JPG">
                 <img src="/img/template/csharp/2serviceurl.JPG" />
               </a>
               <h5>Step 2 - Service URL</h5>
@@ -26,7 +26,7 @@
             </li>
             <li class="span4">
             <div class="thumbnail">
-              <a class="fancybox thumbnail" rel="group1" href="/img/template/csharp/3crud.JPG">
+              <a class="fancybox thumbnail" rel="group1" title="Step 3 - Enjoy" href="/img/template/csharp/3crud.JPG">
                 <img src="/img/template/csharp/3crud.JPG" />
               </a>
               <h5>Step 3 - Enjoy</h5>
@@ -34,7 +34,7 @@
             </li>
         </ul>
 <%
-    setTimeout(function(){ $('#csharp-gallery-' + service.ServiceID + ' .fancybox').fancybox(); }, 0);
+    setTimeout(function(){ $('#csharp-gallery-' + service.ServiceID + ' .fancybox').fancybox({ loop: false, openEffect: 'elastic', closeEffect: 'elastic' }); }, 0);
 %>
     </fieldset>
 </form>
