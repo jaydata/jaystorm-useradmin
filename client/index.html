@@ -332,7 +332,7 @@
                     
                     <h3 class="sub-title">Code snippet</h3>
                     <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
-                    <h5 class="muted">Service URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
+                    <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
                     <div>
                             <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                 <li>
