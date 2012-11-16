@@ -15,10 +15,23 @@
                 req[0].headers['Authorization'] = globalAuthorization;
             };
             c.Services.filter(function(it){ return it.DatabaseID != null }).toArray(self.services).then(function(value){
+                var appdb = value.filter(function(it){ return it.Name == 'ApplicationDB' || it.Name == 'User' });
                 if (window.opener.editDataService){
                     //self.currentService(self.services().filter(function(it){ return it.ServiceID() == this.db; }, { db: window.opener.editDataService })[0]);
                     (document.querySelector('*[data-serviceid="' + window.opener.editDataService + '"]') ||
                      document.querySelector('*[data-databaseid="' + window.opener.editDataService + '"]') ||
+                     { click: function(){} }).click();
+                     
+                     window.opener.editDataService = undefined;
+                }else{
+                    var db = document.querySelector('*[data-serviceid]' + appdb.map(function(it){ return ':not([data-serviceid="' + it.ServiceID + '"])'; }).join(''));
+                    if (db){
+                        db.click();
+                        return;
+                    }
+                    
+                    (document.querySelector('*[data-serviceid]') ||
+                     document.querySelector('*[data-databaseid]') ||
                      { click: function(){} }).click();
                 }
             });
@@ -130,6 +143,7 @@
         }
         
         document.querySelector(window.opener.editDataTable ? '#table-' + window.opener.editDataTable : '#tables li a').click();
+        if (window.opener.editDataTable) window.opener.editDataTable = undefined;
     })
 
     self.esPageSize = ko.observable(30);
