@@ -197,7 +197,7 @@
         </script>
         
         <style>
-            .thumbnail {
+            .thumbnail{
                 white-space: normal !important;
             }
         </style>
@@ -367,7 +367,7 @@
                     
                     <h3 class="sub-title">Code snippet</h3>
                     <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
-                    <h5 class="muted">Service URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
+                    <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
                     <div>
                             <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
                                 <li>
@@ -526,6 +526,7 @@
                                         <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
 
                                     </div>
+                                   
                                 </script>
 
 
@@ -1147,7 +1148,10 @@
                                     <h3 data-bind="if: launching">Publish in progress, please wait...</h3>
                                     <h3 data-bind="if: launchingDone">Publish done!</h3>
                                 </div>
-                                
+                                <p>
+                                    After you have successfully published your JayStorm application, you can access your JayStorm services through OData protocol in every language or application which supports OData.
+                                    Below you can find a few code snippet examples and tutorials for each of your services in different languages and applications. See more info in the tutorials.
+                                </p>
                                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
                                                         fields: [
