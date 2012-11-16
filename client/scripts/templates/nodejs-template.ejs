@@ -1,0 +1,51 @@
+<form class="form-horizontal">
+    <fieldset>
+        <legend>
+          <h3>Get started in node.js</h3>
+        </legend>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+%>require('jaydata');
+
+$data.service('<%=app.url + service.Name %>', function(contextFactory, contextType){
+    var <%=service.Name %> = contextFactory();
+    <%=service.Name %>.onReady(function(){
+        /* <%=service.Name %>.<table name>.toArray(function(result){
+            
+            ...
+            
+            <%=service.Name %>.<table name>.add(new <%=service.Name %>.<table name>.elementType({ ... }));
+            
+            ...
+            
+            <%=service.Name %>.<table name>.attach(result[0]);
+            result[0].<property> = <value>;
+            
+            ...
+            
+            <%=service.Name %>.<table name>.remove(result[1]);
+            
+            ...
+            
+            <%=service.Name %>.saveChanges(function(result){
+            
+                ...
+                
+                console.log(result + ' entity changes processed and saved.');
+            
+            });
+            
+        }); */
+        
+        /* <%=service.Name %>.<table name>.forEach(function(result){
+            ...
+        }); */
+    });
+});</textarea>
+    </fieldset>
+</form>
