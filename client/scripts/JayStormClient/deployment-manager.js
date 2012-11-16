@@ -67,6 +67,19 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 }
             }
         });
+        
+        self.allDatabases = ko.observableArray([]);
+         self.allServices = ko.observableArray([]);
+
+         
+         //apiContextFactory().Databases.toArray(self.allDatabases);
+        
+         function initState(cf) {
+             var cntx = cf();
+             cntx.Databases.toArray(self.allDatabases);
+             cntx.Services.toArray(self.allServices);
+             self.context(cf());
+        }
 
         var currentContext = ko.observable();
         self.contextFactory.subscribe(function (ctxFactory) {
@@ -74,13 +87,15 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
 
             if(self.visible())
                 self.appContext(currentContext());
+                
+            if (ctxFactory) initState(ctxFactory);
         })
 
         self.show = function () {
             var arg = arguments;
             self.visible(true);
             self.appContext(currentContext());
-
+            initState(self.contextFactory());
         };
 
         self.hide = function () {
@@ -126,5 +141,9 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 });
             }, 3000);
         });
+
+         if (self.contextFactory()) {
+             initState(self.contextFactory());
+        }
     }
 });

@@ -66,6 +66,10 @@
         <script src="scripts/iscroll.js"></script>
                 
         <script src="scripts/inflection.js"></script>
+        
+        <link rel="stylesheet" href="styles/fancy/jquery.fancybox.css" type="text/css">
+        <script src="scripts/jquery.fancybox.pack.js"></script>
+        
         <script type="text/javascript">
             /*$("li#servicesScreen div#ServiceManagerUI table.jay-data-grid tbody tr td:first-child a").live('click', function (e) {
                 e.preventDefault();
@@ -191,6 +195,12 @@
                 }
             });
         </script>
+        
+        <style>
+            .thumbnail{
+                white-space: normal !important;
+            }
+        </style>
     </head>
 <body>
     <!-- HEADER -->
@@ -314,6 +324,30 @@
 
             <script type="text/html" id="foobar">
                 <table class="table"></table>
+            </script>
+            
+            <script type="text/html" id="embedService">
+                <div>
+                    <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
+                    
+                    <h3 class="sub-title">Code snippet</h3>
+                    <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
+                    <h5 class="muted">Service URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
+                    <div>
+                            <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
+                                <li>
+<!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
+                                    <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" data-bind="foreach: embedTemplates">
+                                <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
+                            </div>
+                    </div>
+                    
+                    <br />
+                    <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
+                </div>
             </script>
 
             <ul id="screens">
@@ -545,58 +579,6 @@
                                     </ul>
                                     </p>
                             </div>
-
-                <script type="text/html" id="embedService">
-                    <div>
-                        <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
-                        
-                        <h3 class="sub-title">Embed service</h3>
-                        <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
-                        
-                        <div>
-                                <h3>Service URL</h3>
-                                <input type="text" style="width:100%;" data-bind="value: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/'"/>
-                                <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
-                                    <li>
-<!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
-                                        <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content" data-bind="foreach: embedTemplates">
-                                    <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
-                                </div>
-<!--                            <table class="jay-data-grid table table-bordered table-hover" border="0">-->
-<!--                                <thead class="jay-data-grid-columns">-->
-<!--                                    <tr class="jay-data-grid-columns-row">-->
-<!--                                        <th style="width: 12em;">Type</th>-->
-<!--                                        <th>Embed code</th>-->
-<!--                                    </tr>-->
-<!--                                </thead>-->
-<!--                                <tbody>-->
-<!--                                    <tr>-->
-<!--                                        <td style="vertical-align:top;">Service URL</td>-->
-<!--                                        <td><input type="text" style="width:100%;max-width:98%;" data-bind="value: $root.application.currentApplication().url + $data.data.owner.Name()" onfocus="this.select();"/></td>-->
-<!--                                    </tr>-->
-<!--                                    <tr>-->
-<!--                                        <td style="vertical-align:top;">Get started HTML</td>-->
-<!--                                        <td><textarea style="width:98%;resize:none;font-family:monospace;background:black;color:silver;" data-bind="text: $data.html, attr: { id: 'service-html-' + $data.data.owner.Name() }" onfocus="this.select();"/></td>-->
-<!--                                    </tr-->
-<!--                                    <tr>-->
-<!--                                        <td style="vertical-align:top;">JayData JavaScript context</td>-->
-<!--                                        <td><textarea style="width:98%;resize:none;font-family:monospace;background:black;color:silver;" data-bind="text: $data.jsContext, attr: { id: 'service-jscontext-' + $data.data.owner.Name() }" onfocus="this.select();"/></td>-->
-<!--                                    </tr>-->
-<!--                                    <tr>-->
-<!--                                        <td style="vertical-align:top;">JayData TypeScript context</td>-->
-<!--                                        <td><textarea style="width:98%;resize:none;font-family:monospace;background:black;color:silver;" data-bind="text: $data.tsContext, attr: { id: 'service-tscontext-' + $data.data.owner.Name() }" onfocus="this.select();"/></td>-->
-<!--                                    </tr>-->
-<!--                                </tbody>-->
-<!--                            </table>-->
-                        </div>
-                        
-                        <br />
-                        <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
-                    </div>
-                </script>
 
                 <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
                                                         context: context,
@@ -1048,6 +1030,39 @@
                                     <h3 data-bind="if: launching">Publish in progress, please wait...</h3>
                                     <h3 data-bind="if: launchingDone">Publish done!</h3>
                                 </div>
+                                <p>
+                                    After you have successfully published your JayStorm application, you can access your JayStorm services through OData protocol in every language or application which supports OData.
+                                    Below you can find a few code snippet examples and tutorials for each of your services in different languages and applications. See more info in the tutorials.
+                                </p>
+                                <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
+                                                        context: context,
+                                                        fields: [
+                                                            {name:'Name'}
+                                                        ],
+                                                        showItemCommands: false,
+                                                        showNewCommandTop: false,
+                                                        showNewCommandBottom: false,
+                                                        beforeSave: function(){ $root.editingSource(false); },
+                                                        allDatabases: allDatabases,
+                                                        showRemoveAllCommand: false,
+                                                        showControls: false,
+                                                        databaseSet: context().Databases}">
+
+                                    <!--, dbs: databases, databases: context().Databases-->
+                                    <!--currentApplication-->
+                                    <script type="text/html" data-name-template="Name-display">
+                                        <b>
+                                            <a data-bind="{text: value, attr: { target: '_blank', href: $root.application.currentApplication().url + value() } }"></a>
+                                        </b>
+                                        <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
+                                        <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">
+                                            Code snippet
+                                        </a>
+                                        
+                <!--                        <a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
+                                    </script>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>

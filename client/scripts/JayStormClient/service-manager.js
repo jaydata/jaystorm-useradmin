@@ -27,6 +27,13 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
              self.visible(true);
              initState(self.contextFactory());
          };
+         
+         self.visible.subscribe(function(value){
+            if (!value){
+                self.allDatabases([]);
+                self.allServices([]);
+            }
+         });
 
          if (self.contextFactory()) {
              initState(self.contextFactory());
@@ -109,6 +116,7 @@ function EmbedServiceModel(vm){
     
     self.embedTemplates = ko.observableArray([
         { name: 'html5', title: 'HTML5', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon-start' },
+        { name: 'nodejs', title: 'node.js', template: '/scripts/templates/nodejs-template.ejs', cssclass: 'icon-start' },
         { name: 'jaydata-js', title: 'JayData JavaScript', template: '/scripts/templates/jaydata-js-template.ejs', cssclass: 'icon-stop' },
         { name: 'jaydata-ts', title: 'JayData TypeScript', template: '/scripts/templates/jaydata-ts-template.ejs', cssclass: 'icon-stop' },
         { name: 'csharp', title: '.NET C#', template: '/scripts/templates/csharp-template.ejs', cssclass: 'icon-stop' },

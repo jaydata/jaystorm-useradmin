@@ -197,12 +197,17 @@ $(function () {
 
         self.menuItems = modules;
         self.submenuItems = submodules;
+        self.currentModel = null;
 
         self.show = function (item) {
             //self.menuItems.forEach(function (item) {
             //    item.Model.hide();
             //});
-
+            if (self.currentModel){
+                self.currentModel.hide();
+            }
+            
+            self.currentModel = item.Model;
             item.Model.show();
         }
         self.launchResult = ko.observable();

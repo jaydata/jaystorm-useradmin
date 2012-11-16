@@ -6,10 +6,20 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         self.databases = ko.observableArray([]);
         //self.databases = ko.observable();
 
+        self.clickDb = function(){
+            setTimeout(function(){ (document.querySelector('#SchemaManagerUI .nav.nav-tabs li a:not([data-dbname="ApplicationDB"])') || { click: function(){} }).click(); }, 0);
+        };
+        
+        self.visible.subscribe(function(value){
+            if (value && self.databases().length){
+                self.clickDb();
+            }
+        });
+
         self.context.subscribe(function (value) {
             if (value) {
                 value.Databases.toArray(self.databases).then(function(value){
-                    setTimeout(function(){ (document.querySelector('#SchemaManagerUI .nav.nav-tabs li a:not([data-dbname="ApplicationDB"])') || { click: function(){} }).click(); }, 0);
+                    self.clickDb();
                 });
             } else {
                 self.databases.removeAll();
