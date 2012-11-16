@@ -27,6 +27,13 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
              self.visible(true);
              initState(self.contextFactory());
          };
+         
+         self.visible.subscribe(function(value){
+            if (!value){
+                self.allDatabases([]);
+                self.allServices([]);
+            }
+         });
 
          if (self.contextFactory()) {
              initState(self.contextFactory());
