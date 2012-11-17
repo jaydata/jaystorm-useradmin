@@ -19,14 +19,69 @@
             }
         });
 %>
+///<reference path="<%=service.Name%>.d.ts" />
 
-///<reference path="./mydatabase.d.ts" />
+var <%=service.Name%>Service = new <%=service.Name%>.<%=service.Name%>Service({name: "oData",
+    oDataServiceHost:"<%=app.url + service.Name %>"
+// you'll need this if your database operation needs authentication/authorization
+//  , user: 'scott', password: 'tiger' 
+});
 
-var ctx = new mydatabase.mydatabaseService({name: "oData", oDataServiceHost:"<%=app.url + service.Name %>" });
-ctx
-    .<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
-    .filter(f => f.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> != null)
-    .forEach(f => console.log(f.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %>));
+// read
+function read() {
+    return <%=service.Name%>Service
+        .<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
+        .filter(f => f.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> != null)
+        .forEach(f => console.log(f.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %>));
+}
+
+// add new elem
+function add() {
+    var elem = new <%=service.Name%>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.name %>({ <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %>: <value> });
+    <%=service.Name%>Service.add(elem);
+    return <%=service.Name%>Service.saveChanges()
+        .then(function (n) {
+            console.log('saved');
+            return elem;
+        })
+        .fail(function (reason) {
+            console.log('save failed', reason);
+        });
+}
+
+// update elem
+function update(elem) {
+    <%=service.Name%>Service.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.attach(elem);
+    elem. <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> = <new value>;
+    return <%=service.Name%>Service.saveChanges()
+        .then(function (n) {
+            console.log('updated');
+            return elem;
+        })
+        .fail(function (reason) {
+            console.log('update failed', reason);
+        });
+}
+
+function remove(elem) {
+    <%=service.Name%>Service.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.remove(elem);
+    return <%=service.Name%>Service.saveChanges()
+        .then(function (n) {
+            console.log('deleted');
+        })
+        .fail(function (reason) {
+            console.log('delete failed', reason);
+        });
+}
+
+window.onload = () => {
+
+    <%=service.Name%>Service.onReady()
+        .then(read)
+        .then(add)
+        .then(update)
+        .then(remove);
+};
 
 </textarea>
     </fieldset>
