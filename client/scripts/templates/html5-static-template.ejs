@@ -5,14 +5,13 @@
         </legend>
         <p>This is a "get started" code snippet for HTML5 where you can see how to access your JayStorm service from the browser.<br>
         The latest JayData and datajs are included from our CDN.</p>
-<a class="btn btn-primary" href="javascript:document.location = 'data:Application/octet-stream,' +encodeURIComponent($('#service-<%=template.name %>-template-context-<%=service.ServiceID %>').text());">Download <%=service.Name%>.js</a>
-        <p>Replace <i>&lt;table name&gt;</i> with your table of choice.</p>
+        <a class="btn btn-primary" href="javascript:document.location = 'data:Application/octet-stream,' +encodeURIComponent($('#service-<%=template.name %>-template-context-<%=service.ServiceID %>').text());">Download <%=service.Name%>.js</a>
         <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
-            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
-            if (el){
-                el.style.height = el.scrollHeight + 'px';
-            }
+            CodeMirror.fromTextArea(document.getElementById('service-' + template.name + '-template-' + service.ServiceID), {
+                mode: 'text/html',
+                lineNumbers: true
+            });
         });
 %><!DOCTYPE html>
 <html>
@@ -26,43 +25,72 @@
     
     <script type="text/javascript" language="javascript" charset="utf-8">
     // <![CDATA[
-        console.log('Connecting to service...');
-        
-	var <%=service.Name %> = new <%= serviceType.fullName %>({name:"oData", oDataServiceHost: "<%=app.url + service.Name %>"});
-	<%=service.Name %>.onReady(function(){
-            console.log('Connection established.');
-            console.log('Database ready.');
-            
-            /* <%=service.Name %>.<table name>.toArray(function(result){
-            
-                ...
+        // this is your API key to access the <%= service.Name %> service in the <%=app.name %> application
+        var apiKey = {<% if (app.isfreeapp){ %>
+            ownerId: '<%=app.url.split('/')[3] %>',
+            appId: '<%=app.appid %>',
+            serviceName: '<%=service.Name %>'<% }else{ %>
+            appId: '<%=app.appid %>',
+            // see https://dashboard.jaystack.com for your real application key
+            applicationKey: '<your-application-key>',
+            serviceName: '<%=service.Name %>',
+            license: 'business'<% } %>
+        };
+
+        // the credentials used when connecting to the service
+        // set <username> and <password> correctly
+        var credentials = {
+            user: '<username>',
+            password: '<password>'
+        };
+
+        // instantiate a context to the <%=service.Name %> service in the <%=app.name %> application
+        // credentials are optional, anonymous access used if omitted
+        var <%=service.Name %> = new <%= serviceType.fullName %>({ name: 'oData', oDataServiceHost: '<%=app.url + service.Name %>', user: credentials.user, password: credentials.password });
+
+        // when the context is ready we can start to work
+        <%=service.Name %>.onReady(function(){
+            // get all data from the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %> table
+            <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.toArray(function(result){
+                // "result" is the actual data in a simple Array
                 
-                <%=service.Name %>.<table name>.add({ ... });
-                
-                ...
-                
-                <%=service.Name %>.<table name>.attach(result[0]);
-                result[0].<property> = <value>;
-                
-                ...
-                
-                <%=service.Name %>.<table name>.remove(result[1]);
-                
-                ...
-                
-                <%=service.Name %>.saveChanges(function(result){
-                
-                    ...
-                    
-                    console.log(result + ' entity changes processed and saved.');
-                
+                // add a new element to the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %> table
+                <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.add({
+                    <%
+                        var memDefs = serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties();
+                        for (var i = 0; i < memDefs.length; i++){
+                            if (!memDefs[i].computed){
+                                if (i < memDefs.length - 1){
+                    %><%=memDefs[i].name %>: <some value>,
+                    <%
+                                }else{
+                    %><%=memDefs[i].name %>: <some value><%
+                                }
+                            }
+                        }
+                    %>
                 });
                 
-            }); */
-            
-            /* <%=service.Name %>.<table name>.forEach(function(result){
-                ...
-            }); */
+                // we want to update the first element, so we attach it
+                var updated = result[0];
+                <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.attach(updated);
+                
+                // and set the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> field of the element
+                updated.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> = <some other value>;
+                
+                // remove the second element
+                var removed = result[1];
+                <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.remove(removed);
+                
+                // after we create, update or remove an element
+                // we have to call the "saveChanges" method
+                // to send the modifications to the server
+                <%=service.Name %>.saveChanges(function(cnt){
+                    // "cnt" is the number of elements successfully processed on the server on "saveChanges"
+                    console.log(cnt + ' element changes processed and saved.');
+                });
+                
+            });
         });
     // ]]>
     </script>
