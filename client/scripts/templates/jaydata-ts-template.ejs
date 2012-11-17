@@ -1,11 +1,41 @@
 <form class="form-horizontal">
     <% if (tsContext){ %>
     <fieldset>
+        <p>This is a "get started" code snippet for Typescript code where you can see how to access your JayStorm service from Typescript.</p>
+        <p class='alert alert-info iblock'>
+          See more info at <a target='_blank' href="http://typescriptlang.org">http://typescriptlang.org/</a>
+        </p>
+<a class="btn btn-primary" href="javascript:document.location = 'data:Application/octet-stream,' +encodeURIComponent($('#service-<%=template.name %>-template-<%=service.ServiceID %>').text());">Download <%=service.Name%>.d.ts</a>
+    </fieldset>
+    <fieldset>
         <legend>
-          <h3>JayData TypeScript context</h3>
+          <h3>Get started Typescript code</h3>
         </legend>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+%>
+
+///<reference path="./mydatabase.d.ts" />
+
+var ctx = new mydatabase.mydatabaseService({name: "oData", oDataServiceHost:"<%=app.url + service.Name %>" });
+ctx
+    .<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
+    .filter(f => f.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> != null)
+    .forEach(f => console.log(f.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %>));
+
+</textarea>
+    </fieldset>
+    <fieldset>
+	<!--
+        <legend><h3>JayData TypeScript context</h3></legend>
         <p>Include this TypeScript code into your application to use a static JayData context.</p>
-        <textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+	-->
+        <textarea id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="display:none;width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
             var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
             if (el){
@@ -19,3 +49,4 @@
 <% if (!jsContext){ %>
 <p class="text-error">Service unpublished. Please publish your service by deploying your application.</p>
 <% }%>
+

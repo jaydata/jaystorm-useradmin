@@ -1,10 +1,11 @@
 <form class="form-horizontal">
     <% if (phpContext){ %>
     <fieldset>
-        <p>This is a "get started" code snippet for PHP where you can see how to access your JayStorm service from a PHP script.</p>
+        <p>This is a "get started" code snippet for PHP where you can see how to access your JayStorm service from a PHP script. You can only read from php now but we'll fix that soon.</p>
         <p class='alert alert-info iblock'>
           See more info at <a target='_blank' href="http://odataphp.codeplex.com/">http://odataphp.codeplex.com/</a>
         </p>
+<a class="btn btn-primary" href="javascript:document.location = 'data:Application/octet-stream,' +encodeURIComponent($('#service-<%=template.name %>-template-context-<%=service.ServiceID %>').text());">Download context.php</a>
     </fieldset>
     <fieldset>
         <legend>
@@ -39,8 +40,8 @@ var_dump($items);
 </textarea>
     </fieldset>
     <fieldset>
-        <legend>JayData PHP context</legend>
-        <textarea id="service-<%=template.name %>-template-context-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        <!--<legend>JayData PHP context</legend>-->
+        <textarea id="service-<%=template.name %>-template-context-<%=service.ServiceID %>" style="display:none;width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
             var el = document.getElementById('service-' + template.name + '-template-context-' + service.ServiceID);
             if (el){
