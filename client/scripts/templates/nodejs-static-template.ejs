@@ -1,0 +1,68 @@
+<form class="form-horizontal">
+    <fieldset>
+        <legend>
+          <h3>Get started in node.js</h3>
+        </legend>
+        <p>This is a "get started" code snippet for node.js where you can see how to access your JayStorm service from a node.js application.<br>
+        Before you can use this code, you have to install JayData with <i>npm</i> package manager.</p>
+<a class="btn btn-primary" href="javascript:document.location = 'data:Application/octet-stream,' +encodeURIComponent($('#service-<%=template.name %>-template-context-<%=service.ServiceID %>').text());">Download <%=service.Name%>.js</a>
+        <p><textarea class="console-code" style="font-family:monospace;background:black;color:silver;">npm install jaydata</textarea></p>
+        <p>Replace <i>&lt;table name&gt;</i> with your table of choice.</p>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+%>require('jaydata');
+require('./<%=service.Name%>.js');
+
+var <%=service.Name %> = new <%= serviceType.fullName %>({name: "oData", oDataServiceHost: "<%=app.url + service.Name %>"});
+<%=service.Name %>.onReady(function(){
+    /* <%=service.Name %>.<table name>.toArray(function(result){
+            
+        ...
+            
+        <%=service.Name %>.<table name>.add({ ... });
+            
+        ...
+            
+        <%=service.Name %>.<table name>.attach(result[0]);
+        result[0].<property> = <value>;
+            
+        ...
+            
+        <%=service.Name %>.<table name>.remove(result[1]);
+            
+        ...
+            
+        <%=service.Name %>.saveChanges(function(result){
+            
+            ...
+                
+            console.log(result + ' entity changes processed and saved.');
+            
+        });
+            
+    }); */
+        
+    /* <%=service.Name %>.<table name>.forEach(function(result){
+
+        ...
+
+    }); */
+});
+</textarea>
+    </fieldset>
+    <% if (jsContext){ %>
+        <textarea id="service-<%=template.name %>-template-context-<%=service.ServiceID %>" style="display:none;width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
+            if (el){
+                el.style.height = el.scrollHeight + 'px';
+            }
+        });
+        %><%=jsContext %></textarea>
+    <% } %>
+</form>
