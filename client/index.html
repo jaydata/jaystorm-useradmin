@@ -404,7 +404,7 @@
                                 <script type="text/html" id="insideEditor">
                                     <div>
                                         <h4 style="display:inline">Add or remove fields</h4>
-                                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>
                                         <div data-bind="with: selectedEntity">
                                             Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>, EntityID: <span data-bind="text: EntityID"></span>
                                         </div>
@@ -439,7 +439,7 @@
                                                     </div>
                                                 </div>
                                         </div>
-                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+                                        <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
 
                                     </div>
                                 </script>
@@ -452,7 +452,7 @@
                                 
                                 <script type="text/html" id="eventHandlerCodeEditor">
                                     <span>Event handler source</span>
-<!--                                    <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>-->
+<!--                                    <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>-->
                                     <div data-bind="attr: { id: 'handler-code-editor-' + ko.utils.unwrapObservable($data.data.rowIndex) }"></div>
                                     <div data-bind="if: $data.error().length, attr: { id: 'handler-code-error-' + ko.utils.unwrapObservable($data.data.rowIndex) }">
                                         <ul data-bind="foreach: $data.error">
@@ -464,13 +464,13 @@
                                         </ul>
                                     </div>
 <!--                                    <a href="#" class="btn btn-success" style="float:right;" data-bind="click: saveHandler">Save</a>-->
-<!--                                    <a href="#" data-bind="click: closeControlBox">Close</a>-->
+<!--                                    <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>-->
                                 </script>
                                 
                                 <script type="text/html" id="eventHandlersEditor">
                                     <div>
                                         <h4 style="display:inline">Add or remove events</h4>
-                                        <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>
                                         <div data-bind="with: selectedEntitySet">
                                             Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: console.log('fdfjkdshfjkdshkfhdskjhfkdshfhksdhfkjdhksja', $data)"></span>
                                         </div>
@@ -508,7 +508,7 @@
 <!--                                                    </a>-->
 <!--                                                </div>-->
                                         </div>
-                                        <a href="#" data-bind="click: closeControlBox">Close</a>
+                                        <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
 
                                     </div>
                                 </script>
@@ -570,9 +570,7 @@
                                 <h1>Manage Database Schemas</h1>
                                 <div class="alert alert-info fade in clear">
                                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                                    <p>Here you can administer the schema of the default Application database you received with your application as well as the schema of the queryable database power-up. You can <b>create database tables </b>and <b>define entities</b>. Select the database you wish to edit then click Create new table, than add/edit/delete table fields.</p>
-                                    <p>When adding a new field, you can choose from the following types: text-based, numeric, UTC Date, Image and Geography. You can set the relations between tables at the Reference field.<br /></p>
-                                   <p>Manage events: here you can subscribe for entity events and provide your custom code (with JavaScript syntax) you want to run. You can individually set the triggers you want to run before and after CRUD operations.</p>
+                                    <p>If your application needs to store data, create tables and fields to describe it's shape. You'll be rewarded with an out of the box REST data API with query and CRUD capabilities.</p>
                                 </div>
 
                                <h4>Select database schema to edit:</h4>
@@ -1068,7 +1066,7 @@
                     <h4>Manage users</h4>
 
                     <div data-bind="jayGrid: { source: Users, itemExtender: extendUserItem,
-                                                fields: ['Login', 'FirstName','LastName','Password','Enabled','Groups'] }">
+                                                fields: ['Login', 'FirstName','LastName','Password','Groups'] }">
 
                         <script type="text/html" data-name-template="Password-display">
                             ******

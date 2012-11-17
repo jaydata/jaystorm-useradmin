@@ -24,7 +24,7 @@ require 'ruby_odata'
 
 svc = OData::Service.new "<%=app.url + service.Name %>"
 # you'll need this if your database operation needs authentication/authorization
-# svc = OData::Service.new "<%=app.url + service.Name %>", { :username => "scott", :password=> "tiger" }
+# , { :username => "scott", :password=> "tiger" }
 <% if (service.DatabaseID){ %>
 #get all rows from an entityset
 svc.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
