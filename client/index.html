@@ -374,9 +374,9 @@
                 <div>
                     <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i> Close</a>
                     
-                    <h3 class="sub-title">API access tutorials</h3>
-                    <p>See how to access your API from different clients.</p>
-                    <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>
+<!--                    <h3 class="sub-title">API access tutorials</h3>-->
+<!--                    <p>See how to access your API from different clients.</p>-->
+<!--                    <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>-->
                     <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
                     <div>
                             <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
