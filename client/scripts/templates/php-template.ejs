@@ -24,15 +24,17 @@
 
 require_once 'context.php';
 
-$svc = new <%= service.Name %>Service(DEFAULT_ODATA_SERVICE_URL);
+$<%=service.Name%>Service = new <%= service.Name %>Service(DEFAULT_ODATA_SERVICE_URL);
 // you'll need this if your database operation needs authentication/authorization
-// $svc->Credential = new WindowsCredential('scott','tiger');
+// $<%=service.Name%>Service->Credential = new WindowsCredential('scott','tiger');
 
 <% if (service.DatabaseID){ %>
 // #get all rows from an entityset
-$query = $svc-><%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>();
-$items = $query->Execute();
-var_dump($items);
+$query = $<%=service.Name%>Service-><%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>();
+$items = $query->Execute()->Result;
+foreach($items as $item) {
+  echo $item-><%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %>."\n";
+}
 <% } %>
 
 ?>
