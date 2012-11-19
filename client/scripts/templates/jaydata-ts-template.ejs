@@ -27,6 +27,7 @@ var <%=service.Name%>Service = new <%=service.Name%>.<%=service.Name%>Service({n
 //  , user: 'scott', password: 'tiger' 
 });
 
+<% if (service.DatabaseID){ %>
 // read
 function read() {
     return <%=service.Name%>Service
@@ -82,6 +83,25 @@ window.onload = () => {
         .then(update)
         .then(remove);
 };
+<% }else{ %>
+
+function call(){
+    <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedMethods()[0].name %>(<%
+        for (var i = 0; i < (serviceType.memberDefinitions.getPublicMappedMethods()[0].params || { length: 0 }).length; i++){
+            %><some param value>,<%
+        }
+        %>function(result){
+        // "result" is the return value of the API call
+        // do your code work here
+    });
+}
+
+window.onload = () => {
+
+    <%=service.Name%>Service.onReady()
+        .then(call);
+};
+<% } %>
 
 </textarea>
     </fieldset>

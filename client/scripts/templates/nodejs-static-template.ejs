@@ -49,6 +49,7 @@ var <%=service.Name %> = new <%= serviceType.fullName %>({
 
 // when the context is ready we can start to work
 <%=service.Name %>.onReady(function(){
+    <% if (service.DatabaseID){ %>
     // get all data from the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %> table
     <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.toArray(function(result){
         // "result" is the actual data in a simple Array
@@ -88,8 +89,18 @@ var <%=service.Name %> = new <%= serviceType.fullName %>({
             // "cnt" is the number of elements successfully processed on the server on "saveChanges"
             console.log(cnt + ' element changes processed and saved.');
         });
-        
-    });
+    });<% }else if (serviceType.memberDefinitions.getPublicMappedMethods().length){
+    %>// work with API service operations
+    <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedMethods()[0].name %>(<%
+        for (var i = 0; i < (serviceType.memberDefinitions.getPublicMappedMethods()[0].params || { length: 0 }).length; i++){
+            %><some param value>,<%
+        }
+        %>function(result){
+        // "result" is the return value of the API call
+        // do your code work here
+    });<%
+    %>)
+    <% } %>
 });
 </textarea>
     </fieldset>

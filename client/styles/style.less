@@ -118,7 +118,7 @@ body {
 }
 .nav-tabs 
 {
-    min-width: 175px; background: #f3f3f3; float: left !important;
+    min-width: 175px; background: #f3f3f3;
     
     > li {
         > a 
@@ -145,7 +145,12 @@ body {
 {
     h3 { font-size: 20px; }
 }
-.tabbable { clear: both; }
+.tabbable  
+{
+    clear: both; 
+    
+    &.tabs-left .nav-tabs { float: left !important; }
+}
 
 .brand
 {
