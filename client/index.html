@@ -21,7 +21,7 @@
         <script src="/scripts/jaytracer.js"></script>
         <script src="/scripts/jaydata/jaydata.js"></script>
         <script src="scripts/JaySvcUtil.js"></script>
-
+        
         <script src="scripts/jaydata/jaydataproviders/oDataProvider.js"></script>
         <script src="scripts/jaydata/jaydataproviders/MongoDbProvider.js"></script>
         <script src="scripts/knockout-latest.js"></script>
@@ -94,6 +94,10 @@
 
                 $parent.parent().find("li.active").removeClass("active");
                 $parent.addClass("active");
+            });
+
+            $(".sub-navbar a").live('click', function () {
+                $("div.navbar ul.nav li.active").removeClass("active");
             });
 
             var hScroll = null, vScrolls = [], currentId;
@@ -378,16 +382,16 @@
 <!--                    <p>See how to access your API from different clients.</p>-->
 <!--                    <h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>-->
                     <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
-                    <div>
-                            <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
-                                <li>
-<!--                                        <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
-                                    <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
-                                </li>
-                            </ul>
-                            <div class="tab-content" data-bind="foreach: embedTemplates">
-                                <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
-                            </div>
+                    <div class="tabbable tabs-left">
+                        <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
+                            <li>
+<!--                            <i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
+                                <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" data-bind="foreach: embedTemplates">
+                            <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
+                        </div>
                     </div>
                     
                     <br />
@@ -406,7 +410,8 @@
                                         <h4 style="display:inline">Add or remove fields</h4>
                                         <a href="#" style="float:right" data-bind="click: closeControlBox">Close</a>
                                         <div data-bind="with: selectedEntity">
-                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>, EntityID: <span data-bind="text: EntityID"></span>
+                                            Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
+<!--                                            , EntityID: <span data-bind="text: EntityID"></span>-->
                                         </div>
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,

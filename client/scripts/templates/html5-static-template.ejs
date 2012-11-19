@@ -1,7 +1,7 @@
 <form class="form-horizontal">
     <fieldset>
         <legend>
-          <h3>Get started in HTML5</h3>
+          <h3>Get started in HTML5 with static schema</h3>
         </legend>
         <p>This is a "get started" code snippet for HTML5 where you can see how to access your JayStorm service from the browser.<br>
         The latest JayData and datajs are included from our CDN.</p>
@@ -46,7 +46,12 @@
 
         // instantiate a context to the <%=service.Name %> service in the <%=app.name %> application
         // credentials are optional, anonymous access used if omitted
-        var <%=service.Name %> = new <%= serviceType.fullName %>({ name: 'oData', oDataServiceHost: '<%=app.url + service.Name %>', user: credentials.user, password: credentials.password });
+        var <%=service.Name %> = new <%= serviceType.fullName %>({
+            name: 'oData',
+            oDataServiceHost: '<%=app.url + service.Name %>',
+            user: credentials.user,
+            password: credentials.password
+        });
 
         // when the context is ready we can start to work
         <%=service.Name %>.onReady(function(){

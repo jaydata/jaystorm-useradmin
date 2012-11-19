@@ -57,9 +57,9 @@
             </li>
         </ul>
 <%
-    setTimeout(function(){ $('#office2010-gallery-' + service.ServiceID + ' .fancybox').fancybox(); }, 0);
-%>
-    </fieldset>
+    setTimeout(function(){ $('#office2010-gallery-' + service.ServiceID + ' .fancybox').fancybox({ loop: false, nextEffect : 'fade', prevEffect : 'fade' }); }, 0);
+  %>
+</fieldset>
     <fieldset>
         <legend>
           <h3>MS Office 2013</h3>
@@ -121,9 +121,9 @@
             </li>
         </ul>
 <%
-    setTimeout(function(){ $('#office2013-gallery-' + service.ServiceID + ' .fancybox').fancybox(); }, 0);
-%>
-    </fieldset>
+    setTimeout(function(){ $('#office2013-gallery-' + service.ServiceID + ' .fancybox').fancybox({ loop: false, nextEffect : 'fade', prevEffect : 'fade' }); }, 0);
+  %>
+</fieldset>
 <!--
     <fieldset>
         <legend>

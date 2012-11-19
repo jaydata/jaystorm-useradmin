@@ -118,7 +118,7 @@ body {
 }
 .nav-tabs 
 {
-    background: #f3f3f3;
+    min-width: 175px; background: #f3f3f3; float: left !important;
     
     > li {
         > a 
@@ -134,9 +134,9 @@ body {
         
         &.active 
         {
-            background: #fff; margin-right: 0 !important;
+            background: #fff; margin-right: -1px !important;
             
-            a { color: @jaystackBlue; margin-right: 0 !important; font-weight: bold; }
+            a { color: @jaystackBlue; margin-right: 0 !important; margin-bottom: 0; font-weight: bold; }
         }
     }
 }
@@ -145,6 +145,7 @@ body {
 {
     h3 { font-size: 20px; }
 }
+.tabbable { clear: both; }
 
 .brand
 {
@@ -446,7 +447,7 @@ span.CodeMirror-matchhighlight
     background: #f3f3f3; border: 1px solid darken(#f3f3f3, 5%);
     
     h1          { color: gray; margin: 0 0 10px; }
-    .blue-line  { position: absolute; margin: 0; left: 0; right: 0; top: 170px; z-index: 100; }
+    .blue-line  { position: absolute; margin: 0; left: 0; right: 0; top: 165px; z-index: 100; }
     .wrapper    { padding: 20px; }
     .muted      { color: #999; }
     
@@ -511,7 +512,7 @@ span.CodeMirror-matchhighlight
                 content: ''; display: inline-block;
                 background: url(../img/icon_arrow.png) top left no-repeat transparent;
                 width: 98px; height: 62px;
-                position: absolute; top: 22%; right: -57px;
+                position: absolute; top: 50px; right: -57px;
             }
             
             p { margin: 15px 0 0; }
@@ -838,7 +839,7 @@ table.table tr td:last-child .btn {
 
 fieldset 
 {
-    margin: 0 0 15px;
+    margin: 0 0 15px; white-space: normal;
     
     legend 
     {

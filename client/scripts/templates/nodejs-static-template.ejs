@@ -1,7 +1,7 @@
 <form class="form-horizontal">
     <fieldset>
         <legend>
-          <h3>Get started in node.js</h3>
+          <h3>Get started in node.js with static schema</h3>
         </legend>
         <p>This is a "get started" code snippet for node.js where you can see how to access your JayStorm service from a node.js application.<br>
         Before you can use this code, you have to install JayData with <i>npm</i> package manager.</p>        
@@ -40,7 +40,12 @@ var credentials = {
 
 // instantiate a context to the <%=service.Name %> service in the <%=app.name %> application
 // credentials are optional, anonymous access used if omitted
-var <%=service.Name %> = new <%= serviceType.fullName %>({ name: 'oData', oDataServiceHost: '<%=app.url + service.Name %>', user: credentials.user, password: credentials.password });
+var <%=service.Name %> = new <%= serviceType.fullName %>({
+    name: 'oData',
+    oDataServiceHost: '<%=app.url + service.Name %>',
+    user: credentials.user,
+    password: credentials.password
+});
 
 // when the context is ready we can start to work
 <%=service.Name %>.onReady(function(){

@@ -58,7 +58,7 @@
             </li>
         </ul>
 <%
-    setTimeout(function(){ $('#lightswitch-gallery-' + service.ServiceID + ' .fancybox').fancybox(); }, 0);
-%>
-    </fieldset>
+    setTimeout(function(){ $('#lightswitch-gallery-' + service.ServiceID + ' .fancybox').fancybox({ loop: false, nextEffect : 'fade', prevEffect : 'fade' }); }, 0);
+  %>
+</fieldset>
 </form>
