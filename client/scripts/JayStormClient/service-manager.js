@@ -120,7 +120,7 @@ function EmbedServiceModel(vm){
         { name: 'nodejs', title: 'node.js', template: '/scripts/templates/nodejs-template.ejs', cssclass: 'icon-start' },
         { name: 'nodejs-static', title: 'node.js static schema', template: '/scripts/templates/nodejs-static-template.ejs', cssclass: 'icon-start' },
         //{ name: 'jaydata-js', title: 'JayData JavaScript', template: '/scripts/templates/jaydata-js-template.ejs', cssclass: 'icon-stop' },
-        { name: 'jaydata-ts', title: 'JayData TypeScript', template: '/scripts/templates/jaydata-ts-template.ejs', cssclass: 'icon-stop' },
+        { name: 'jaydata-ts', title: 'TypeScript', template: '/scripts/templates/jaydata-ts-template.ejs', cssclass: 'icon-stop' },
         { name: 'csharp', title: '.NET C#', template: '/scripts/templates/csharp-template.ejs', cssclass: 'icon-stop' },
         { name: 'office', title: 'MS Office', template: '/scripts/templates/office-template.ejs', cssclass: 'icon-stop' },
         { name: 'lightswitch', title: 'LightSwitch', template: '/scripts/templates/lightswitch-template.ejs', cssclass: 'icon-stop' },

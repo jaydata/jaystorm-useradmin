@@ -5,51 +5,90 @@
         </legend>
         <p>This is a "get started" code snippet for node.js where you can see how to access your JayStorm service from a node.js application.<br>
         Before you can use this code, you have to install JayData with <i>npm</i> package manager.</p>
-        <p><textarea class="console-code" style="font-family:monospace;background:black;color:silver;">npm install jaydata</textarea></p>
-        <p>Replace <i>&lt;table name&gt;</i> with your table of choice.</p>
+        <p>
+            <span class="console-code" style="font-family:monospace;background:black;color:silver;padding:0.4em;">npm install jaydata</span>
+        </p>
         <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
-            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
-            if (el){
-                el.style.height = el.scrollHeight + 'px';
-            }
+            CodeMirror.fromTextArea(document.getElementById('service-' + template.name + '-template-' + service.ServiceID), {
+                mode: 'javascript',
+                lineNumbers: true
+            });
         });
 %>require('jaydata');
 
-$data.service('<%=app.url + service.Name %>', function(contextFactory, contextType){
+// this is your API key to access the <%= service.Name %> service in the <%=app.name %> application
+var apiKey = {<% if (app.isfreeapp){ %>
+    ownerId: '<%=app.url.split('/')[3] %>',
+    appId: '<%=app.appid %>',
+    serviceName: '<%=service.Name %>'<% }else{ %>
+    appId: '<%=app.appid %>',
+    // see https://dashboard.jaystack.com for your real application key
+    applicationKey: '<your-application-key>',
+    serviceName: '<%=service.Name %>',
+    license: 'business'<% } %>
+};
+
+// the credentials used when connecting to the service
+// set <username> and <password> correctly
+var credentials = {
+    user: '<username>',
+    password: '<password>'
+};
+
+// initialize the connection to the <%=service.Name %> service in the <%=app.name %> application
+// credentials are optional, anonymous access used if omitted
+$data.service(apiKey, function(contextFactory, contextType){
+    // "factory" is a context factory method
+    // "type" is your context type
+    
+    // we instantiate a context with the context factory method
     var <%=service.Name %> = contextFactory();
+    
+    // when the context is ready we can start to work
     <%=service.Name %>.onReady(function(){
-        /* <%=service.Name %>.<table name>.toArray(function(result){
+        // get all data from the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %> table
+        <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.toArray(function(result){
+            // "result" is the actual data in a simple Array
             
-            ...
-            
-            <%=service.Name %>.<table name>.add({ ... });
-            
-            ...
-            
-            <%=service.Name %>.<table name>.attach(result[0]);
-            result[0].<property> = <value>;
-            
-            ...
-            
-            <%=service.Name %>.<table name>.remove(result[1]);
-            
-            ...
-            
-            <%=service.Name %>.saveChanges(function(result){
-            
-                ...
-                
-                console.log(result + ' entity changes processed and saved.');
-            
+            // add a new element to the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %> table
+            <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.add({
+                <%
+                    var memDefs = serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties();
+                    for (var i = 0; i < memDefs.length; i++){
+                        if (!memDefs[i].computed){
+                            if (i < memDefs.length - 1){
+                %><%=memDefs[i].name %>: <some value>,
+                <%
+                            }else{
+                %><%=memDefs[i].name %>: <some value><%
+                            }
+                        }
+                    }
+                %>
             });
             
-        }); */
-        
-        /* <%=service.Name %>.<table name>.forEach(function(result){
-            ...
-        }); */
+            // we want to update the first element, so we attach it
+            var updated = result[0];
+            <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.attach(updated);
+            
+            // and set the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> field of the element
+            updated.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> = <some other value>;
+            
+            // remove the second element
+            var removed = result[1];
+            <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.remove(removed);
+            
+            // after we create, update or remove an element
+            // we have to call the "saveChanges" method
+            // to send the modifications to the server
+            <%=service.Name %>.saveChanges(function(cnt){
+                // "cnt" is the number of elements successfully processed on the server on "saveChanges"
+                console.log(cnt + ' element changes processed and saved.');
+            });
+            
+        });
     });
-});</textarea>
+}, credentials);</textarea>
     </fieldset>
 </form>

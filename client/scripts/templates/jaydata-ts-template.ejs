@@ -13,10 +13,10 @@
         </legend>
         <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
         setTimeout(function(){
-            var el = document.getElementById('service-' + template.name + '-template-' + service.ServiceID);
-            if (el){
-                el.style.height = el.scrollHeight + 'px';
-            }
+            CodeMirror.fromTextArea(document.getElementById('service-' + template.name + '-template-' + service.ServiceID), {
+                mode: 'text/typescript',
+                lineNumbers: true
+            });
         });
 %>
 
