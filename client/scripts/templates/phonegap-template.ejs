@@ -1,0 +1,106 @@
+        <form id="phonegapstart" method="post" action="/download">
+          <input type="hidden" name="p" value="zip" />
+          <input type="hidden" name="z" value="phonegap-start" />
+          <input type="hidden" name="filename" value="phonegap-start.zip" />
+          <input type="hidden" name="f1" value="www/js/index.js" />
+          <input type="hidden" name="c1" id="phonegapstartc1" />
+        </form>
+<form class="form-horizontal">
+    <fieldset>
+        <legend>
+          <h3>Get started with PhoneGap</h3>
+        </legend>
+<% if (jsContext){ %>
+        <p>This is a "get started" code snippet for PhoneGap where you can see how to access your JayStorm service from PhoneGap Application.<br>
+        The latest JayData, the JayStorm client module and datajs are loaded locally.<br>
+        Download as a project, upload to build.phonegap.com, download the binary packages and it will just work!</p>
+        <a class="btn btn-primary" href="#" onclick="$('#phonegapstart')[0].submit(); return false;">Download PhoneGap project</a>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            CodeMirror.fromTextArea(document.getElementById('service-' + template.name + '-template-' + service.ServiceID), {
+                mode: 'text/html',
+                lineNumbers: true
+            });
+        });
+%><!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1,
+                 minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Hello World</title>
+    </head>
+    <body>
+        <ul id="items">
+        </ul>
+
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/datajs-1.0.3.min.js"></script>
+        <script type="text/javascript" src="js/jaydata.min.js"></script>
+        <script type="text/javascript" src="js/jaydataproviders/oDataProvider.min.js"></script>
+        <script type="text/javascript" src="js/jaystorm-1.0.0.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+    </body>
+</html></textarea>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>-js" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            $('#phonegapstartc1').val($('#service-' + template.name + '-template-' + service.ServiceID + '-js').val());
+            CodeMirror.fromTextArea(document.getElementById('service-' + template.name + '-template-' + service.ServiceID + '-js'), {
+                mode: 'javascript',
+                lineNumbers: true
+            });
+        });
+%>var app = {
+    initialize: function () {
+        document.addEventListener('deviceready', this.main, false);
+    },
+    main: function () {
+
+        var apiKey = {<% if (app.isfreeapp){ %>
+            ownerId: '<%=app.url.split('/')[3] %>',
+            appId: '<%=app.appid %>',
+            serviceName: '<%=service.Name %>'<% }else{ %>
+            appId: '<%=app.appid %>',
+            // see https://dashboard.jaystack.com for your real application key
+            applicationKey: '<your-application-key>',
+            serviceName: '<%=service.Name %>',
+            license: 'business'<% } %>
+        };
+        
+        /*
+        var credentials = {
+            user: 'scott',
+            password: 'tiger'
+        };
+        */
+
+        $data.initService(apiKey /*, credentials*/).then(function(<%=service.Name %>, factory, type){
+        
+            <% if (service.DatabaseID){ %>
+            <%=service.Name %>
+                .<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
+                .filter('it.<%=  serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> ne null')
+                .forEach(function (i) {
+                    $('#items')
+                        .append('<li>' + i.<%=  serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1].name %> + '</li>');
+                });
+            <% } %>
+                
+        }).fail(function (err) {
+            console.error('Connection failed.');
+            console.error(err);
+        });
+    }
+};</textarea>
+<% } %>
+    </fieldset>
+</form>
+<% if (!jsContext){ %>
+<p class="text-error">Service unpublished. Please publish your service by deploying your application.</p>
+<% }%>

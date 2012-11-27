@@ -383,6 +383,77 @@ app.use('/eval', function(req, res){
     }
 });
 
+var processors = [];
+processors['echo'] = function(req,res) {
+  res.end(req.body.context);
+};
+/*
+require('node-zip')();
+processors['zipszar'] = function(req,res) {
+  var zip = new JSZip();
+console.log('zips/'+req.query.z+'.zip');
+  zip.load('zips/'+req.query.z+'.zip');
+console.log(zip);
+  //folder.file(req.query.f, req.query.context);
+  return zip.generate({base64:true});
+};
+*/
+
+var fs = require('fs');
+function mkdirsSync(pathname) {
+    try {
+    if (!fs.statSync(pathname).isDirectory())
+        throw new Error('Unable to create directory at: ' + pathname);
+    } catch (e) {
+        if (e.code === 'ENOENT') {
+            mkdirsSync(path.dirname(pathname));
+            fs.mkdirSync(pathname);
+    } else
+            throw e;
+    }
+}
+
+var spawn = require('child_process').spawn;
+var path = require('path');
+var uuid = require('node-uuid');
+processors['zip'] = function(req,res) {
+  var z = path.basename(req.body.z);
+  var tmp = uuid.v4();
+  fs.mkdirSync('zips/'+tmp);
+  fs.mkdirSync('zips/'+tmp+'/'+z);
+  var i=1;
+  while(req.body['f'+i] && req.body['c'+i]) {
+   var fn = 'zips/'+tmp+'/'+z+'/'+req.body['f'+i];
+   mkdirsSync(path.dirname(fn));
+   fs.writeFileSync(fn, req.body['c'+i]);
+   i = i + 1;
+  }
+  var zip = spawn('./dynzip.sh', [ z, tmp ], { cwd: 'zips' });
+  zip.stdout.on('data', function (data) {
+    res.write(data);
+  });
+  zip.stderr.on('data', function (data) {
+  });
+  zip.on('exit', function (code) {
+    if(code !== 0) {
+      res.statusCode = 500;
+      console.log('zip process exited with code ' + code);
+    }
+    res.end();
+   });
+}
+
+app.use('/download', function(req, res){
+  var processor = processors[req.body.p];
+  if (!processor) { 
+    res.status(500);
+    res.end('invalid processor');
+    return;
+  } 
+  res.header('Content-Type','application/octet-stream');
+  res.header('Content-Disposition','attachment; filename="'+req.body.filename+'"');
+  processor(req,res);
+});
 
 app.use("/", c.static(__dirname + "/../client"));
 app.use(c.errorHandler());
