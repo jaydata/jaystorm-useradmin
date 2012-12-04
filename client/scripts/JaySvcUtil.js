@@ -470,7 +470,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "\r\n" +
             "<xsl:for-each select=\"edm:EntityContainer\">\r\n" +
             "  <xsl:text xml:space=\"preserve\">  </xsl:text>export class <xsl:value-of select=\"@Name\"/> extends <xsl:value-of select=\"$ContextBaseClass\"  /> {\r\n" +
-            "    onReady() => void): $data.IPromise;\r\n" +
+            "    onReady(): $data.IPromise;\r\n" +
             "    onReady(handler: (context: <xsl:value-of select=\"@Name\"/>) => void): $data.IPromise;\r\n" +
             "    <xsl:for-each select=\"edm:EntitySet | edm:FunctionImport\">\r\n" +
             "      <xsl:apply-templates select=\".\" />;\r\n" +
