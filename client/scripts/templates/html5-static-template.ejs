@@ -24,8 +24,7 @@
     <script src="http://include.jaydata.org/jaydata.min.js" type="text/javascript"></script>
     <script src="<%=service.Name%>.js" type="text/javascript"></script>
     
-    <script type="text/javascript" language="javascript" charset="utf-8">
-    // <![CDATA[
+    <script type="text/javascript">
         // this is your API key to access the <%= service.Name %> service in the <%=app.name %> application
         var apiKey = {<% if (app.isfreeapp){ %>
             ownerId: '<%=app.url.split('/')[3] %>',
@@ -40,6 +39,7 @@
 
         // the credentials used when connecting to the service
         // set <username> and <password> correctly
+        // uncomment this section to enable
         var credentials = {
             user: '<username>',
             password: '<password>'
@@ -49,9 +49,9 @@
         // credentials are optional, anonymous access used if omitted
         var <%=service.Name %> = new <%= serviceType.fullName %>({
             name: 'oData',
-            oDataServiceHost: '<%=app.url + service.Name %>',
+            oDataServiceHost: '<%=app.url + service.Name %>'/*,
             user: credentials.user,
-            password: credentials.password
+            password: credentials.password*/
         });
 
         // when the context is ready we can start to work
@@ -109,7 +109,6 @@
             %>)
             <% } %>
         });
-    // ]]>
     </script>
 </head>
 <body>
