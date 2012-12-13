@@ -118,6 +118,7 @@ function EmbedServiceModel(vm){
         { name: 'html5', title: 'HTML5', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon-start' },
         { name: 'html5-static', title: 'HTML5 static schema', template: '/scripts/templates/html5-static-template.ejs', cssclass: 'icon-start' },
         { name: 'phonegap-static', title: 'PhoneGap', template: '/scripts/templates/phonegap-template.ejs', cssclass: 'icon-start' },
+        { name: 'kendoui', title: 'Kendo UI', template: '/scripts/templates/kendoui-template.ejs', cssclass: 'icon-start' },
         { name: 'nodejs', title: 'node.js', template: '/scripts/templates/nodejs-template.ejs', cssclass: 'icon-start' },
         { name: 'nodejs-static', title: 'node.js static schema', template: '/scripts/templates/nodejs-static-template.ejs', cssclass: 'icon-start' },
         //{ name: 'jaydata-js', title: 'JayData JavaScript', template: '/scripts/templates/jaydata-js-template.ejs', cssclass: 'icon-stop' },

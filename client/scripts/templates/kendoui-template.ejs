@@ -1,0 +1,113 @@
+<form class="form-horizontal">
+    <fieldset>
+        <legend>
+          <h3>Get started in Kendo UI</h3>
+        </legend>
+<% if (jsContext && service.DatabaseID){ %>
+        <p>This is a "get started" code snippet for HTML5 where you can see how to access your JayStorm service from the browser.<br>
+        The latest JayData, the JayStorm client module and datajs are included from our CDN.</p>
+        <textarea class="console-code" id="service-<%=template.name %>-template-<%=service.ServiceID %>" style="width:98%;resize:none;font-family:monospace;background:black;color:silver;"><%
+        setTimeout(function(){
+            CodeMirror.fromTextArea(document.getElementById('service-' + template.name + '-template-' + service.ServiceID), {
+                mode: 'text/html',
+                lineNumbers: true
+            });
+        });
+%><!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <title>JayStorm Get Started</title>
+    
+    <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
+    <script src="http://include.jaydata.org/datajs-1.0.3.min.js" type="text/javascript"></script>
+    <script src="http://include.jaydata.org/jaydata.min.js" type="text/javascript"></script>
+    <script src="http://include.jaydata.org/jaystorm-1.0.0.js" type="text/javascript"></script>
+    
+    <link href="http://cdn.kendostatic.com/2012.3.1114/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="http://cdn.kendostatic.com/2012.3.1114/styles/kendo.bootstrap.min.css" rel="stylesheet">
+    
+    <script src="http://cdn.kendostatic.com/2012.3.1114/js/kendo.web.min.js"></script>
+    <script src="http://cdn.kendostatic.com/2012.3.1114/js/kendo.grid.min.js"></script>
+    <script src="http://cdn.kendostatic.com/2012.3.1114/js/kendo.tabstrip.min.js"></script>
+    
+    <script src="jaydata-kendods.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        // this is your API key to access the <%= service.Name %> service in the <%=app.name %> application
+        var apiKey = {<% if (app.isfreeapp){ %>
+            ownerId: '<%=app.url.split('/')[3] %>',
+            appId: '<%=app.appid %>',
+            serviceName: '<%=service.Name %>'<% }else{ %>
+            appId: '<%=app.appid %>',
+            // see https://dashboard.jaystack.com for your real application key
+            applicationKey: '<your-application-key>',
+            serviceName: '<%=service.Name %>',
+            license: 'business'<% } %>
+        };
+        
+        // the credentials used when connecting to the service
+        // set <username> and <password> correctly
+        // uncomment this section to enable
+        /*var credentials = {
+            user: '<username>',
+            password: '<password>'
+        };*/
+        
+        // initialize the connection to the <%=service.Name %> service in the <%=app.name %> application
+        // credentials are optional, anonymous access used if omitted
+        $data.initService(apiKey /*, credentials */).then(function(<%=service.Name %>, factory, type){
+            // "<%=service.Name %>" is your data context
+            // "factory" is a context factory method
+            // "type" is your context type
+            
+            // create a Kendo UI tab strip control
+            var tabStrip = $("#tabstrip").kendoTabStrip({
+                activate: function (e) {
+                    var setName = $(e.item).text();
+                    var db = factory();
+                    var entitySet = db[setName];
+                    if ($(e.contentElement).text() === 'loading...') {
+                        var cols = entitySet.asKendoColumns().prepend({ command: "edit" }).append({ command: "destroy" });
+                        var options = {
+                            dataSource: entitySet.asKendoDataSource({ pageSize: 25, batch: true}),
+                            filterable: true,
+                            sortable: true,
+                            pageable: true,
+                            height: 500,
+                            columns: cols,
+                            toolbar: ["create", "save", "cancel"],
+                            editable: true
+                        };
+                        $(e.contentElement).empty();
+                        $(e.contentElement).append($("<div id='grid'></div>").kendoGrid(options));
+                    }
+                }
+            }).data("kendoTabStrip");
+
+            // add each table to the tab strip
+            <%=service.Name %>.EntitySets.forEach(function (setName) {
+                tabStrip.append([{
+                    text: setName,
+                    content: 'loading...'
+                }]);
+            });
+        }).fail(function(err){
+            console.error('Connection failed.');
+            console.error(err);
+        });
+    </script>
+</head>
+<body>
+    <div id="tabstrip"></div>
+</body>
+</html></textarea>
+<% } %>
+    </fieldset>
+</form>
+<% if (!jsContext){ %>
+<p class="text-error">Service unpublished. Please publish your service by deploying your application.</p>
+<% } %>
+<% if (!service.DatabaseID){ %>
+<p class="text-error">Service is not a JavaScript Data Service. Kendo UI get started source code is only available for JavaScript Data Services.</p>
+<% } %>
