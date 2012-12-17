@@ -423,6 +423,111 @@
                         <div class="inscroller">
                             <div id="SchemaManagerUI" data-bind="if: visible">
 
+                                <script type="text/html" id="customizeField">
+                                    <div>
+                                        <h4 style="display:inline">Customize field</h4>
+                                        <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                        <form class="form-horizontal">
+                                            <fieldset>
+                                                <legend>Attributes</legend>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputName">Name</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputName" data-bind="value: data.Name"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputType">Type</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputType" data-bind="value: data.Type"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputElementType">Element type</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputElementType" data-bind="value: data.ElementType"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputTypeTemplate">Type template</label>
+                                                    <div class="controls">
+                                                        <select data-bind="options: parent.typeTemplates, optionsText: 'Name', optionsValue: 'Name',
+                                                            value: data.TypeTemplate,
+                                                            optionsCaption: data.TypeTemplate() ? undefined : 'Select'"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputKey">Key</label>
+                                                    <div class="controls">
+                                                        <input type="checkbox" id="inputKey" data-bind="checked: data.Key"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputComputed">Computed</label>
+                                                    <div class="controls">
+                                                        <input type="checkbox" id="inputComputed" data-bind="checked: data.Computed"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputNullable">Nullable</label>
+                                                    <div class="controls">
+                                                        <input type="checkbox" id="inputNullable" data-bind="checked: data.Nullable"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputRequired">Required</label>
+                                                    <div class="controls">
+                                                        <input type="checkbox" id="inputRequired" data-bind="checked: data.Required"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputMinValue">Minimum value</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputMinValue" data-bind="value: data.MinValue"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputMaxValue">Maximum value</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputMaxValue" data-bind="value: data.MaxValue"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputMinLength">Minimum length</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputMinLength" data-bind="value: data.MinLength"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputMaxLength">Maximum length</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputMaxLength" data-bind="value: data.MaxLength"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputLength">Exact length</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputLength" data-bind="value: data.Length"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputRegExp">Regular expression validator</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="inputRegExp" data-bind="value: data.RegExp"/>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputExtendedProperties">Extended properties</label>
+                                                    <div class="controls">
+                                                        <textarea id="inputExtendedProperties" data-bind="text: data.ExtendedProperties"></textarea>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                        <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
+                                    </div>
+                                </script>
+                                
                                 <script type="text/html" id="insideEditor">
                                     <div>
                                         <h4 style="display:inline">Add or remove fields</h4>
@@ -434,6 +539,7 @@
                                         <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,
                                                     beforeSave: beforeSaveField,
+                                                    afterRevert: afterRevertHandler,
                                                     showSort: false, showRemoveAllCommand: false, showNewCommandTop: false,
                                                     discriminatorColumn:'EntityID',
                                                     afterAddNew: $root.afterAddNewEntityField,
@@ -451,6 +557,8 @@
                                                     <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
                                                             value: value,
                                                             optionsCaption: value() ? undefined : 'Select'"></select>
+                                                    <a href="#" data-bind="click: $data.showControls.bind({},'customizeField',FieldsCustomizeEditorModel, 
+                                                                            { field: $data, parent: $root, factory: $root.contextFactory, currentDB: $root.currentDatabase })">Customize</a>
                                                 </div>
                                                 <div data-name-template="ElementType-editor">
                                                 <div data-bind="if: owner.TypeTemplate() === 'Array'">

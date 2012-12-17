@@ -370,6 +370,16 @@ function FieldsEditorModel(vm) {
     var context = vm.factory()();
     var db = vm.currentDB();
     this.beforeSaveField = function () {
+        var tmp = self.customize.slice();
+        
+        tmp.forEach(function(it){
+            if (it.closeControlBox){
+                it.closeControlBox();
+            }
+        });
+        
+        self.customize.length = 0;
+        
         context.attach(entitySet);
         entitySet.HasChanges(true);
         context.attach(self.selectedEntity());
@@ -379,11 +389,34 @@ function FieldsEditorModel(vm) {
         context.saveChanges();
     }
     this.selectedEntity = ko.observable();
+    
+    self.afterRevertHandler = function(item){
+        var tmp = self.customize.slice();
+        
+        var cb = tmp.filter(function(it){ return it.data.EntityFieldID() === item.EntityFieldID() })[0];
+        if (cb && cb.closeControlBox) cb.closeControlBox();
+        
+        self.customize.splice(self.customize.indexOf(cb), 1);
+    };
+    
+    self.customize = [];
 
     context.Entities
         .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() })
         .then(function (entity) { self.selectedEntity(entity.asKoObservable()) });
 
+    this.closeControlBox = function () {
+        vm.closeControlBox();
+    }
+}
+
+function FieldsCustomizeEditorModel(vm){
+    var self = this;
+    this.data = vm.field.owner;
+    this.parent = vm.parent;
+    
+    this.parent.customize.push(this);
+    
     this.closeControlBox = function () {
         vm.closeControlBox();
     }
