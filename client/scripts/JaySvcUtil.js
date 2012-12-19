@@ -440,6 +440,8 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "    first(predicate: (it: <xsl:value-of select=\"$fullName\"/>, params?: any) => bool, params?: any, handler?: { success?: (result: <xsl:value-of select=\"$fullName\"/>[]) => void; error?: (result: any) => void; }): $data.IPromise;\r\n" +
             "    \r\n" +
             "    include(selector: string): <xsl:value-of select=\"$fullName\"/>Queryable;\r\n" +
+            "    withInlineCount(): <xsl:value-of select=\"$fullName\"/>Queryable;\r\n" +
+            "    withInlineCount(selector: string): <xsl:value-of select=\"$fullName\"/>Queryable;\r\n" +
             "\r\n" +
             "    removeAll(): $data.IPromise;\r\n" +
             "    removeAll(handler: (count: number) => void): $data.IPromise;\r\n" +
