@@ -1,4 +1,4 @@
-// JayData 1.2.3
+// JayData 1.2.7
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -6,9 +6,9 @@
 // practices to access and manipulate data from various online and offline sources.
 //
 // Credits:
-//     Hajnalka Battancs, D√°niel J√≥zsef, J√°nos Roden, L√°szl√≥ Horv√°th, P√©ter Nochta
-//     P√©ter Zentai, R√≥bert B√≥nay, Szabolcs Czinege, Viktor Borza, Viktor L√°z√°r,
-//     Zolt√°n Gyebrovszki
+//     Hajnalka Battancs, D·niel JÛzsef, J·nos Roden, L·szlÛ Horv·th, PÈter Nochta
+//     PÈter Zentai, RÛbert BÛnay, Szabolcs Czinege, Viktor Borza, Viktor L·z·r,
+//     Zolt·n Gyebrovszki, G·bor Dolla
 //
 // More info: http://jaydata.org
 $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', $data.StorageProviderBase, null,
@@ -112,7 +112,9 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
             idbOpenDBRequest.prototype.setCallbacks = setCallbacks;
     },
     supportedDataTypes: {
-        value: [$data.Integer, $data.Number, $data.Date, $data.String, $data.Boolean, $data.Blob, $data.Array, $data.Object, $data.Guid],
+        value: [$data.Integer, $data.Number, $data.Date, $data.String, $data.Boolean, $data.Blob, $data.Array, $data.Object, $data.Guid, $data.GeographyPoint,
+            $data.GeographyLineString, $data.GeographyPolygon, $data.GeographyMultiPoint, $data.GeographyMultiLineString, $data.GeographyMultiPolygon, $data.GeographyCollection,
+            $data.GeometryPoint, $data.GeometryLineString, $data.GeometryPolygon, $data.GeometryMultiPoint, $data.GeometryMultiLineString, $data.GeometryMultiPolygon, $data.GeometryCollection],
         writable: false
     },
     fieldConverter: {
@@ -126,7 +128,21 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
                 '$data.Blob': function (blob) { return blob; },
                 '$data.Array': function (arr) { if (arr === undefined) { return new $data.Array(); } return arr; },
                 '$data.Object': function (obj) { return obj; },
-                "$data.Guid": function (g) { return g ? $data.parseGuid(g) : g; }
+                "$data.Guid": function (g) { return g ? $data.parseGuid(g) : g; },
+                '$data.GeographyPoint': function (g) { if (g) { return new $data.GeographyPoint(g); } return g; },
+                '$data.GeographyLineString': function (g) { if (g) { return new $data.GeographyLineString(g); } return g; },
+                '$data.GeographyPolygon': function (g) { if (g) { return new $data.GeographyPolygon(g); } return g; },
+                '$data.GeographyMultiPoint': function (g) { if (g) { return new $data.GeographyMultiPoint(g); } return g; },
+                '$data.GeographyMultiLineString': function (g) { if (g) { return new $data.GeographyMultiLineString(g); } return g; },
+                '$data.GeographyMultiPolygon': function (g) { if (g) { return new $data.GeographyMultiPolygon(g); } return g; },
+                '$data.GeographyCollection': function (g) { if (g) { return new $data.GeographyCollection(g); } return g; },
+                '$data.GeometryPoint': function (g) { if (g) { return new $data.GeometryPoint(g); } return g; },
+                '$data.GeometryLineString': function (g) { if (g) { return new $data.GeometryLineString(g); } return g; },
+                '$data.GeometryPolygon': function (g) { if (g) { return new $data.GeometryPolygon(g); } return g; },
+                '$data.GeometryMultiPoint': function (g) { if (g) { return new $data.GeometryMultiPoint(g); } return g; },
+                '$data.GeometryMultiLineString': function (g) { if (g) { return new $data.GeometryMultiLineString(g); } return g; },
+                '$data.GeometryMultiPolygon': function (g) { if (g) { return new $data.GeometryMultiPolygon(g); } return g; },
+                '$data.GeometryCollection': function (g) { if (g) { return new $data.GeometryCollection(g); } return g; }
             },
             toDb: {
                 '$data.Integer': function (i) { return i; },
@@ -137,7 +153,21 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
                 '$data.Blob': function (blob) { return blob; },
                 '$data.Array': function (arr) { return arr; },
                 '$data.Object': function (obj) { return obj; },
-                "$data.Guid": function (g) { return g ? g.value : g; }
+                "$data.Guid": function (g) { return g ? g.value : g; },
+                '$data.GeographyPoint': function (g) { if (g) { return g; } return g; },
+                '$data.GeographyLineString': function (g) { if (g) { return g; } return g; },
+                '$data.GeographyPolygon': function (g) { if (g) { return g; } return g; },
+                '$data.GeographyMultiPoint': function (g) { if (g) { return g; } return g; },
+                '$data.GeographyMultiLineString': function (g) { if (g) { return g; } return g; },
+                '$data.GeographyMultiPolygon': function (g) { if (g) { return g; } return g; },
+                '$data.GeographyCollection': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryPoint': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryLineString': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryPolygon': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryMultiPoint': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryMultiLineString': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryMultiPolygon': function (g) { if (g) { return g; } return g; },
+                '$data.GeometryCollection': function (g) { if (g) { return g; } return g; }
             }
         }
     },
@@ -199,6 +229,12 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
     },
     _createDB: function (db, definitions) {
         for (var i = 0; i < definitions.length; i++) {
+            if (definitions[i].dropIfExists && db.objectStoreNames.contains(definitions[i].storeName)) {
+                db.deleteObjectStore(definitions[i].storeName);
+            }
+        }
+
+        for (var i = 0; i < definitions.length; i++) {
             var storeDef = definitions[i];
 
             if (!db.objectStoreNames.contains(storeDef.storeName)) {
@@ -218,10 +254,15 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
             }
         }
     },
-    _hasDbChanges: function (db, definitions) {
+    _hasDbChanges: function (db, definitions, dropTabes) {
         var isOriginal = true;
-        for (var i = 0; i < definitions.length && isOriginal; i++) {
+        for (var i = 0; i < definitions.length; i++) {
             isOriginal = isOriginal && db.objectStoreNames.contains(definitions[i].storeName);
+
+            if (dropTabes) {
+                definitions[i].dropIfExists = true;
+                isOriginal = false;
+            }
         }
 
         return !isOriginal;
@@ -233,7 +274,7 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
             db.onversionchange = function (event) {
                 return event.target.close();
             };
-            var hasTableChanges = self._hasDbChanges(db, objectStoreDefinitions);
+            var hasTableChanges = self._hasDbChanges(db, objectStoreDefinitions, self.providerConfiguration.dbCreation == $data.storageProviders.DbCreationType.DropAllExistingTables);
             if (hasTableChanges)
                 self._createDB(db, objectStoreDefinitions);
         }
@@ -251,6 +292,7 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
                 } catch (e) {
                     console.log(objectStoreDefinitions);
                     callBack.error(e);
+                    return;
                 }
                 self.indexedDB.open(self.providerConfiguration.databaseName).setCallbacks({
                     onsuccess: function (e) {
@@ -259,11 +301,11 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
                             return event.target.close();
                         };
 
-                        var hasTableChanges = self._hasDbChanges(db, objectStoreDefinitions);
+                        var hasTableChanges = self._hasDbChanges(db, objectStoreDefinitions, self.providerConfiguration.dbCreation == $data.storageProviders.DbCreationType.DropAllExistingTables);
                         //oldAPI
                         if (db.setVersion) {
                             if (db.version === "" || hasTableChanges) {
-                                db.setVersion(parseInt(db.version) || 1).setCallbacks({
+                                db.setVersion((parseInt(db.version) || 0) + 1).setCallbacks({
                                     onsuccess: function (e) {
                                         var db = e.target.result
                                         self._oldCreateDB(db /*setVerTran*/, objectStoreDefinitions, function (e) {
@@ -528,7 +570,7 @@ $data.Class.define('$data.storageProviders.indexedDb.IndexedDBStorageProvider', 
             // Setting key fields (composite key)
             settings.keys = keys;
         } else if (keys.length == 1) {
-                // Simple key
+            // Simple key
             settings.keyPath = keys[0];
         } else {
             Guard.raise(new Exception('No valid key found!'));

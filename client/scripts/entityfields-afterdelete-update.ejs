@@ -1,0 +1,25 @@
+function afterDelete(items){
+  var context = this;
+  return function(callback){
+    context.EntityFields.toArray(function(entityFields){
+      for (var i = 0; i < items.length; i++){
+        var field = items[i];
+        if (field.InverseFieldID){
+          var inverseField = entityFields.filter(function(it){ return it.InverseFieldID == field.EntityFieldID; })[0];
+          if (inverseField){
+            context.EntityFields.remove(inverseField);
+          }
+        }
+      }
+      context.saveChanges(function(){
+        callback();
+      }).fail(function(err){
+        console.log(err);
+        callback();
+      });
+    }).fail(function(err){
+      console.log(err);
+      callback();
+    });
+  };
+}

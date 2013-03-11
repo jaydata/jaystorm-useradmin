@@ -74,6 +74,372 @@ $(function () {
         };
         
         self.freeApp = ko.observable(false);
+        
+        function updateVersion(appDBFactory){
+            console.log('updateVersion');
+            var c = appDBFactory();
+            var update = false;
+            
+            c.Databases.single(function(it){ return it.Name == this.appdb; }, { appdb: 'ApplicationDB' }, function(appdb){
+                var packageEntity, indexEntity, indexKeyEntity, serviceOperationEntity;
+                
+                c.TypeTemplates.filter(function(it){ return it.Name == this.geo; }, { geo: 'Geography' }).toArray(function(tt){
+                    if (tt.length){
+                        update = true;
+                        c.TypeTemplates.remove(tt[0]);
+                        
+                        c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                            Name: 'Geography point',
+                            Description: 'Spherical location point',
+                            TypeName: '$data.GeographyPoint',
+                            TypeDescriptor: '{"Type":"$data.GeographyPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                        }));
+                        
+                        c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                            Name: 'Geometry point',
+                            Description: 'Euclidean location point',
+                            TypeName: '$data.GeometryPoint',
+                            TypeDescriptor: '{"Type":"$data.GeometryPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                        }));
+                    }
+                }).then(function(){
+                
+                c.EntitySets.single(function(it){
+                    return it.ElementType == this.elementType && it.DatabaseID == this.appdb;
+                }, {
+                    elementType: '$data.JayStormAPI.EntityField',
+                    appdb: appdb.DatabaseID
+                }, function(entitySet){
+                    c.EventHandlers.filter(function(it){
+                        return it.EntitySetID == this.entitySet && (it.Type == this.afterCreate || it.Type == this.afterDelete) && it.DatabaseID == this.appdb;
+                    }, {
+                        entitySet: entitySet.EntitySetID,
+                        afterCreate: 'afterCreate',
+                        afterDelete: 'afterDelete',
+                        appdb: appdb.DatabaseID
+                    }).toArray(function(handlers){
+                        if (!handlers.filter(function(it){ return it.Type == 'afterCreate'; }).length){
+                            update = true;
+                            c.EventHandlers.add(new c.EventHandlers.createNew({
+                                EntitySetID: entitySet.EntitySetID,
+                                DatabaseID: appdb.DatabaseID,
+                                Type: 'afterCreate',
+                                Handler: new EJS({ url: '/scripts/entityfields-aftercreate-update.ejs' }).render({})
+                            }));
+                        }
+                        
+                        if (!handlers.filter(function(it){ return it.Type == 'afterDelete'; }).length){
+                            update = true;
+                            c.EventHandlers.add(new c.EventHandlers.createNew({
+                                EntitySetID: entitySet.EntitySetID,
+                                DatabaseID: appdb.DatabaseID,
+                                Type: 'afterDelete',
+                                Handler: new EJS({ url: '/scripts/entityfields-afterdelete-update.ejs' }).render({})
+                            }));
+                        }
+                        
+                        c.Entities.filter(function(it){
+                            return it.FullName == this.packageFullName ||
+                                it.FullName == this.indexFullName ||
+                                it.FullName == this.indexKeyFullName ||
+                                it.FullName == this.serviceOperationFullName;
+                        }, {
+                            packageFullName: '$data.JayStormAPI.Package',
+                            indexFullName: '$data.JayStormAPI.Index',
+                            indexKeyFullName: '$data.JayStormAPI.IndexKey',
+                            serviceOperationFullName: '$data.JayStormAPI.ServiceOperation'
+                        }).length(function(cnt){
+                            if (!update && (cnt == 4)) return;
+                            
+                            if (!c.Packages){
+                                update = true;
+                                packageEntity = new c.Entities.createNew({
+                                    Name: 'Package',
+                                    FullName: '$data.JayStormAPI.Package',
+                                    Namespace: '$data.JayStormAPI',
+                                    DatabaseID: appdb.DatabaseID,
+                                    HasChanges: true
+                                });
+                                c.Entities.add(packageEntity);
+                            }
+                            
+                            if (!c.Indices){
+                                update = true;
+                                indexEntity = new c.Entities.createNew({
+                                    Name: 'Index',
+                                    FullName: '$data.JayStormAPI.Index',
+                                    Namespace: '$data.JayStormAPI',
+                                    DatabaseID: appdb.DatabaseID,
+                                    HasChanges: true
+                                });
+                                c.Entities.add(indexEntity);
+                            }
+                            
+                            if (!c.IndexKeys){
+                                update = true;
+                                indexKeyEntity = new c.Entities.createNew({
+                                    Name: 'IndexKey',
+                                    FullName: '$data.JayStormAPI.IndexKey',
+                                    Namespace: '$data.JayStormAPI',
+                                    DatabaseID: appdb.DatabaseID,
+                                    HasChanges: true
+                                });
+                                c.Entities.add(indexKeyEntity);
+                            }
+                            
+                            if (!c.ServiceOperations){
+                                update = true;
+                                serviceOperationEntity = new c.Entities.createNew({
+                                    Name: 'ServiceOperation',
+                                    FullName: '$data.JayStormAPI.ServiceOperation',
+                                    Namespace: '$data.JayStormAPI',
+                                    DatabaseID: appdb.DatabaseID,
+                                    HasChanges: true
+                                });
+                                c.Entities.add(serviceOperationEntity);
+                            }
+                            
+                            if (update){
+                                c.saveChanges(function(){
+                                    if (packageEntity){
+                                        c.EntitySets.add(new c.EntitySets.createNew({
+                                            Name: 'Packages',
+                                            ElementType: packageEntity.FullName,
+                                            ElementTypeID: packageEntity.EntityID,
+                                            DatabaseID: appdb.DatabaseID,
+                                            HasChanges: true
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Id',
+                                            Type: 'id',
+                                            Computed: true,
+                                            Key: true,
+                                            Nullable: false,
+                                            TypeTemplate: 'Object identifier',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: packageEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Name',
+                                            Type: 'string',
+                                            TypeTemplate: 'Long string',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: packageEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Status',
+                                            Type: 'string',
+                                            TypeTemplate: 'Long string',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: packageEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'StdOut',
+                                            Type: 'string',
+                                            TypeTemplate: 'Long string',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: packageEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'StdErr',
+                                            Type: 'string',
+                                            TypeTemplate: 'Long string',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: packageEntity.EntityID
+                                        }));
+                                    }
+                                    
+                                    if (indexEntity){
+                                        c.EntitySets.add(new c.EntitySets.createNew({
+                                            Name: 'Indices',
+                                            ElementType: indexEntity.FullName,
+                                            ElementTypeID: indexEntity.EntityID,
+                                            DatabaseID: appdb.DatabaseID,
+                                            HasChanges: true
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'IndexID',
+                                            Type: 'id',
+                                            Computed: true,
+                                            Key: true,
+                                            Nullable: false,
+                                            TypeTemplate: 'Object identifier',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'DatabaseID',
+                                            Type: 'id',
+                                            TypeTemplate: 'Reference',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'EntitySetID',
+                                            Type: 'id',
+                                            TypeTemplate: 'Reference',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Unique',
+                                            Type: 'boolean',
+                                            TypeTemplate: 'Boolean',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'ExpireAfterSeconds',
+                                            Type: 'int',
+                                            TypeTemplate: 'Integer',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexEntity.EntityID
+                                        }));
+                                    }
+                                    
+                                    if (indexKeyEntity){
+                                        c.EntitySets.add(new c.EntitySets.createNew({
+                                            Name: 'IndexKeys',
+                                            ElementType: indexKeyEntity.FullName,
+                                            ElementTypeID: indexKeyEntity.EntityID,
+                                            DatabaseID: appdb.DatabaseID,
+                                            HasChanges: true
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'IndexKeyID',
+                                            Type: 'id',
+                                            Computed: true,
+                                            Key: true,
+                                            Nullable: false,
+                                            TypeTemplate: 'Object identifier',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexKeyEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'DatabaseID',
+                                            Type: 'id',
+                                            TypeTemplate: 'Reference',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexKeyEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'IndexID',
+                                            Type: 'id',
+                                            TypeTemplate: 'Reference',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexKeyEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'EntityFieldID',
+                                            Type: 'id',
+                                            TypeTemplate: 'Reference',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexKeyEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Order',
+                                            Type: 'int',
+                                            Nullable: true,
+                                            TypeTemplate: 'Integer',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexKeyEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Spatial',
+                                            Type: 'boolean',
+                                            TypeTemplate: 'Boolean',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: indexKeyEntity.EntityID
+                                        }));
+                                    }
+                                    
+                                    if (serviceOperationEntity){
+                                        c.EntitySets.add(new c.EntitySets.createNew({
+                                            Name: 'ServiceOperations',
+                                            ElementType: serviceOperationEntity.FullName,
+                                            ElementTypeID: serviceOperationEntity.EntityID,
+                                            DatabaseID: appdb.DatabaseID,
+                                            HasChanges: true
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'ServiceOperationID',
+                                            Type: 'id',
+                                            Computed: true,
+                                            Key: true,
+                                            Nullable: false,
+                                            TypeTemplate: 'Object identifier',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: serviceOperationEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'ServiceID',
+                                            Type: 'id',
+                                            Nullable: false,
+                                            TypeTemplate: 'Reference',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: serviceOperationEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'Name',
+                                            Type: 'string',
+                                            Nullable: false,
+                                            Required: true,
+                                            RegExp: '/^(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|false|null|this|true|void|with|break|catch|class|const|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)$)[A-Z\_a-z][A-Z\_a-z0-9]*$/',
+                                            TypeTemplate: 'Long string',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: serviceOperationEntity.EntityID
+                                        }));
+                                        
+                                        c.EntityFields.add(new c.EntityFields.createNew({
+                                            Name: 'FunctionBody',
+                                            Type: 'string',
+                                            Nullable: false,
+                                            TypeTemplate: 'Long string',
+                                            DatabaseID: appdb.DatabaseID,
+                                            EntityID: serviceOperationEntity.EntityID
+                                        }));
+                                    }
+                                    
+                                    c.saveChanges(function(){
+                                        alert('JayStorm updated to v1.1\n\nPlease publish your application and reload the Application Manager to apply.');
+                                    }).fail(function(err){
+                                        console.error(err);
+                                        alert(err);
+                                    });
+                                });
+                            }
+                        });
+                    }).fail(function(err){
+                        console.error(err);
+                        alert(err);
+                    });
+                }).fail(function(err){
+                    console.error(err);
+                    alert(err);
+                });
+                
+                });
+            });
+        }
 
         function syncAppItemsWithDatabases(appDBFactory) {
             console.log("syncAppItems");
@@ -158,6 +524,7 @@ $(function () {
                         return c;
                     }
                     syncAppItemsWithDatabases(appDBFactory);
+                    updateVersion(appDBFactory);
                     self.currentAppDBContextFactory(appDBFactory);
                     self.navigationVisible(true);
                 },
@@ -178,12 +545,14 @@ $(function () {
             { type: $data.JayStormClient.ServiceManager, ui: "ServiceManagerUI", title: 'Services', path: '/Services', cssclass: '' },
             { type: $data.JayStormClient.SecurityManager, ui: "SecurityManagerUI", title: 'Security', path: '/Security', cssclass: '' },
             { type: $data.JayStormClient.AccessManager, ui: "AccessManagerUI", title: 'Access Control', path: '/Access', cssclass: '' },
+            { type: $data.JayStormClient.PackageManager, ui: "PackageManagerUI", title: 'Packages', path: '/PackageManager', cssclass: '' },
             { type: $data.JayStormClient.StaticFileManager, ui: "StaticFileUI", title: 'Files', path: '/FileManager', cssclass: '' },
             { type: $data.JayStormClient.UserManager, ui: "UserManagerUI", title: 'Users', path: '/Users', cssclass: '' }
         ];
         var submodules = [
-            { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish', cssclass: 'btn btn-info', id: '6' },
-            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases', cssclass: 'btn', id: '7' }
+            { type: $data.JayStormClient.DeploymentManager, ui: "DeploymentUI", title: 'Publish', path: '/Publish', cssclass: 'after-icon star', id: '7' },
+            { type: $data.JayStormClient.DataManager, ui: "DataManagerUI", title: 'Edit data', path: '/Databases', cssclass: 'after-icon edit', id: '8' },
+            { type: $data.JayStormClient.AccessClients, ui: "AccessClientsUI", title: 'API access', path: '/AccessClients', cssclass: 'after-icon access', id: '9' }
         ];
         self.navigationVisible = ko.observable(false);
 
@@ -199,16 +568,26 @@ $(function () {
         self.submenuItems = submodules;
         self.currentModel = null;
 
-        self.show = function (item) {
-            //self.menuItems.forEach(function (item) {
-            //    item.Model.hide();
-            //});
+        self.show = function (item, event) {
+
+            // HIDE PREVIOUS
+            $(".tab-pane.active.in").removeClass("in").removeClass("active");
+            $("#nav-1 li.active").removeClass("active");
+            $("#nav-2 li.active").removeClass("active");
+
             if (self.currentModel){
                 self.currentModel.hide();
             }
             
             self.currentModel = item.Model;
+
+            // SHOW CURRENT
             item.Model.show();
+            $("#" + item.ui).parent().addClass("in active");
+
+            /*if (item.ui == "DeploymentUI" || item.ui == "DataManagerUI") {
+                $(".main-tab.tabs-left > .nav > li.active").removeClass("active");
+            }*/
         }
         self.launchResult = ko.observable();
         function launchApplication(appid, ondone) {

@@ -49,37 +49,32 @@
     <div id="header">
         <div class="navbar navbar-inverse navbar-fixed-top data">
             <div class="navbar-inner ">
-                <div class="container">
+                <a class="brand" href="/">JayStorm Admin</a>
 
-                    <a class="brand" href="/">JayStorm Admin</a>
+                <form class="form-inline">
+                    <div class="fullrow1 ">
+                        <label class="bold12 border-l-gray">Application Selector:</label>
 
-                    <form class="form-inline">
-                        <div class="fullrow1 ">
-                            <span class="title">Application Selector:</span>
-
-                            <select data-bind="options: applications, 
-                        value: currentApplication, 
-                        optionsText: 'title',
-                        optionsCaption:'Select App To Manage'">
-                            </select>
-                        </div>
-                    </form>
-                </div>
+                        <select data-bind="options: applications, 
+                                            value: currentApplication, 
+                                            optionsText: 'title',
+                                            optionsCaption:'Select App To Manage'">
+                        </select>
+                    </div>
+                </form>
             </div>
         </div>
         <div class="storm-header">
-            <div class="container">
-                <div class="navbar">
-                    <label class="title iblock fleft">Select Database:</label>
-                    <ul class="nav" data-bind="foreach: $root.services">
-                        <li>
-                            <a href="#" data-bind="click: $root.currentService.bind($data), text: $data.Name, attr: { 'data-serviceid': $data.ServiceID(), 'data-databaseid': $data.DatabaseID() }"></a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="navbar">
+                <label class="bold12 fleft">Select Database:</label>
+
+                <ul class="nav" data-bind="foreach: $root.services">
+                    <li>
+                        <a href="#" data-bind="click: $root.currentService.bind($data), text: $data.Name, attr: { 'data-serviceid': $data.ServiceID(), 'data-databaseid': $data.DatabaseID() }"></a>
+                    </li>
+                </ul>
             </div>
         </div>
-
     </div>
 
     <div class="full-screen">

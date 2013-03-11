@@ -4,6 +4,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         var self = this;
 
         self.databases = ko.observableArray([]);
+        self.indicesNotSupported = ko.observable();
         //self.databases = ko.observable();
 
         self.clickDb = function(){
@@ -37,12 +38,59 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         self.tableItemsPresent = ko.observable(false);
         self.tableItems = ko.observableArray([]);
+        
+        self.complexTypesReceived = function(items){
+            console.log('complex types: ', items.length);
+            self.complexTypesPresent(true);
+        }
+        
+        self.complexTypesPresent = ko.observable(false);
+        self.complexTypes = ko.observableArray([]);
+        
         self.IsApplicationDB = ko.observable(true);
         self.currentDatabase.subscribe(function (db) {
             if (db) {
                 self.currentDatabaseID(ko.utils.unwrapObservable(db.DatabaseID));
                 self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
-                self.IsApplicationDB(db.Name() === 'ApplicationDB')
+                self.IsApplicationDB(db.Name() === 'ApplicationDB');
+                self.indicesNotSupported(!!adminApiClient.currentAppDBContextFactory()().Indices);
+                
+                self.typeTemplates([]);
+                adminApiClient.currentAppDBContextFactory()().TypeTemplates.forEach(function(it){
+                    self.typeTemplates.push(it.asKoObservable());
+                    self.typeTemplates.sort(function(a, b){
+                        var aName = a.Name().toLowerCase();
+                        var bName = b.Name().toLowerCase();
+                        return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+                    });
+                });
+                adminApiClient.currentAppDBContextFactory()().ComplexTypes.filter(function(it){ return it.DatabaseID == this.db; }, { db: self.currentDatabaseID() }).forEach(function(it){
+                    self.typeTemplates.push({
+                        Name: ko.observable(it.FullName),
+                        TypeName: ko.observable(it.FullName),
+                        TypeDescriptor: ko.observable({ Type: it.FullName }),
+                        isComplexType: true
+                    });
+                    self.typeTemplates.sort(function(a, b){
+                        var aName = a.Name().toLowerCase();
+                        var bName = b.Name().toLowerCase();
+                        return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+                    });
+                });
+                adminApiClient.currentAppDBContextFactory()().Entities.filter(function(it){ return it.DatabaseID == this.db; }, { db: self.currentDatabaseID() }).forEach(function(it){
+                    self.typeTemplates.push({
+                        Entity: it,
+                        Name: ko.observable(it.FullName),
+                        TypeName: ko.observable(it.FullName),
+                        TypeDescriptor: ko.observable({ Type: it.FullName, InverseFieldID: it.EntityID }),
+                        isNavigation: true
+                    });
+                    self.typeTemplates.sort(function(a, b){
+                        var aName = a.Name().toLowerCase();
+                        var bName = b.Name().toLowerCase();
+                        return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+                    });
+                });
             } else {
                 self.currentDatabaseID(null);
                 self.currentDatabaseName(null);
@@ -83,30 +131,55 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                 }
             };
             function result(ok, error) {
-                c.saveChanges( function() {
-                    for(var i = 0; i < dbs.length; i++) {
-                        var db = dbs[i];
+                var saveFn = function(){
+                    c.saveChanges( function() {
+                        for(var i = 0; i < dbs.length; i++) {
+                            var db = dbs[i];
 
-                        db.ElementTypeID = newEntities[db.Name].EntityID;
+                            db.ElementTypeID = newEntities[db.Name].EntityID;
 
-                        var field = new c.EntityFields.createNew({
-                            Name : 'id',
-                            Type : 'id',
-                            Key: true,
-                            Nullable: false,
-                            Index: -10,
-                            TypeTemplate: 'Object identifier',
-                            DatabaseID : self.currentDatabaseID(),
-                            Computed : true,
-                            EntityID : db.ElementTypeID
+                            var field = new c.EntityFields.createNew({
+                                Name : 'id',
+                                Type : 'id',
+                                Key: true,
+                                Nullable: false,
+                                Index: -10,
+
+                                TypeTemplate: 'Object identifier',
+                                DatabaseID : self.currentDatabaseID(),
+                                Computed : true,
+                                EntityID : db.ElementTypeID
+                            });
+                            set.entityContext.add(field);
+                        }
+                        console.dir(dbs);
+                        ok();
+                    });
+                };
+                
+                if (database.entityState == $data.EntityState.Deleted){
+                    c.Entities.filter(function(it){ return it.EntityID == this.entityid; }, { entityid: database.ElementTypeID }).toArray(function(es){
+                        for(var i = 0; i < es.length; i++){
+                            c.Entities.remove(es[i]);
+                        }
+                        c.Permissions.filter(function(it){ return it.EntitySetID == this.entitysetid; }, { entitysetid: database.EntitySetID }).toArray(function(r){
+                            for(var i = 0; i < r.length; i++){
+                                c.Permissions.remove(r[i]);
+                            }
+                            saveFn();
                         });
-                        set.entityContext.add(field);
-                    }
-                    console.dir(dbs);
-                    ok();
-                })
-            }
+                    });
+                }else saveFn();
+            };
             return result;
+        };
+        
+        self.beforeComplexTypeSave = function(set){
+            var tracks = set.entityContext.stateManager.trackedEntities;
+            tracks.forEach(function(complexType){
+                complexType = complexType.data;
+                complexType.FullName = self.currentDatabase().Name() + '.' + complexType.Name;
+            });
         };
 
         if (window.hasChangeEvent) {
@@ -174,18 +247,29 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         //TODO refactor to fields editor!!!
         self.typeTemplates = ko.observableArray([]);
+        
+        /*self.typeTemplatesSorted = ko.computed(function(){
+            return ko.observableArray(self.typeTemplates().map(function(it){ return it(); }));
+        });*/
 
         var primitiveTypes  = { 'string' : 1,'number' :1,'boolean':1,'id':1,'date':1,'int':1};
 
         self.elementTypes = ko.computed(function() {
-            return self.typeTemplates().filter( function(item) {
+            return self.typeTemplates();/*.filter( function(item) {
                 return item.TypeDescriptor().Type in primitiveTypes;
-            })
-        })
+            })*/
+        });
 
         //TODO refactor to fields editor!!!
         self.contextFactory.subscribe(function (value) {
-            value().TypeTemplates.toArray(self.typeTemplates);
+            /*value().TypeTemplates.forEach(function(it){
+                self.typeTemplates.push(it.asKoObservable());
+                self.typeTemplates.sort(function(a, b){
+                    var aName = a.Name().toLowerCase();
+                    var bName = b.Name().toLowerCase();
+                    return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+                });
+            });*/
 
             var c = value();
             c.EntityFields.defaultType.instancePropertyChanged = c.EntityFields.defaultType.instancePropertyChanged || new $data.Event("changed");
@@ -199,11 +283,19 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                     for (var i = 0; i < self.typeTemplates().length; i++) {
                         var t = self.typeTemplates()[i];
                         if (t.Name() == ttname) {
+                            var td = t.TypeDescriptor();
 
-                            for (var s in t.TypeDescriptor()) {
-                                holder[s] = t.TypeDescriptor()[s];
+                            for (var s in td) {
+                                holder[s] = td[s];
                             }
-
+                            
+                            if (td.Type && td.Type != 'Array' && !t.isComplexType){
+                                holder.ElementType = null;
+                            }
+                            
+                            if (td.Type && t.isNavigation){
+                                holder.InverseProperty = t.Entity.Name;
+                            }
                         }
                     }
                 }
@@ -369,7 +461,7 @@ function FieldsEditorModel(vm) {
     var entitySet = vm.entitySet.owner;
     var context = vm.factory()();
     var db = vm.currentDB();
-    this.beforeSaveField = function () {
+    this.beforeSaveField = function (set) {
         var tmp = self.customize.slice();
         
         tmp.forEach(function(it){
@@ -386,6 +478,31 @@ function FieldsEditorModel(vm) {
         self.selectedEntity().HasChanges(true);
         context.attach(db);
         db.HasChanges(true);
+        
+        /*var tracks = set.entityContext.stateManager.trackedEntities.slice();
+        return function(ok, error){
+            var readyFn = function(){
+                context.saveChanges();
+            };
+            
+            var inverseFn = function(field){
+                if (field.entityState == $data.EntityState.Added){
+                    var c = vm.factory()();
+                    c.EntityFields.add(new context.EntityFields.createNew({
+                        EntityID: field.InverseFieldID,
+                        InverseFieldID: field.En
+                    }));
+                }else if (field.entityState == $data.EntityState.Deleted){
+                    
+                }else if (field.entityState == $data.EntityState.Modified){
+                    
+                }
+                
+                if (tracks.length) inverseFn(tracks.shift().data);
+            };
+            
+            if (tracks.length) inverseFn(tracks.shift().data);
+        };*/
         context.saveChanges();
     }
     this.selectedEntity = ko.observable();
@@ -410,6 +527,55 @@ function FieldsEditorModel(vm) {
     }
 }
 
+function ComplexTypeEditorModel(vm) {
+    console.log("!!!!!:", vm);
+    var self = this;
+    this.data = vm.entitySet;
+    
+    var entitySet = vm.entitySet.owner;
+    var context = vm.factory()();
+    var db = vm.currentDB();
+    this.beforeSaveField = function () {
+        /*var tmp = self.customize.slice();
+        
+        tmp.forEach(function(it){
+            if (it.closeControlBox){
+                it.closeControlBox();
+            }
+        });
+        
+        self.customize.length = 0;
+        
+        context.attach(entitySet);
+        entitySet.HasChanges(true);
+        context.attach(self.selectedEntity());
+        self.selectedEntity().HasChanges(true);
+        context.attach(db);
+        db.HasChanges(true);
+        context.saveChanges();*/
+    }
+    this.selectedEntity = ko.observable(vm.entity);
+    
+    self.afterRevertHandler = function(item){
+        var tmp = self.customize.slice();
+        
+        var cb = tmp.filter(function(it){ return it.data.EntityFieldID() === item.EntityFieldID() })[0];
+        if (cb && cb.closeControlBox) cb.closeControlBox();
+        
+        self.customize.splice(self.customize.indexOf(cb), 1);
+    };
+    
+    self.customize = [];
+
+    /*context.Entities
+        .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() })
+        .then(function (entity) { self.selectedEntity(entity.asKoObservable()) });*/
+
+    this.closeControlBox = function () {
+        vm.closeControlBox();
+    }
+}
+
 function FieldsCustomizeEditorModel(vm){
     var self = this;
     this.data = vm.field.owner;
@@ -417,6 +583,113 @@ function FieldsCustomizeEditorModel(vm){
     
     this.parent.customize.push(this);
     
+    this.closeControlBox = function () {
+        vm.closeControlBox();
+    }
+}
+
+function IndicesEditorModel(vm) {
+    var self = this;
+    
+    var entitySet = vm.entitySet.owner;
+    self.selectedEntitySet = ko.observable(entitySet);
+    self.root = ko.observable(vm.root);
+    self.selectedEntity = ko.observable();
+    var context = vm.factory()();
+    var db = vm.currentDB();
+    this.beforeSaveField = function () {
+        /*var tmp = self.customize.slice();
+        
+        tmp.forEach(function(it){
+            if (it.closeControlBox){
+                it.closeControlBox();
+            }
+        });
+        
+        self.customize.length = 0;*/
+        
+        context.attach(entitySet);
+        entitySet.HasChanges(true);
+        context.attach(self.selectedEntity());
+        self.selectedEntity().HasChanges(true);
+        context.attach(db);
+        db.HasChanges(true);
+        context.saveChanges();
+    };
+    
+    self.afterRevertHandler = function(item){
+        /*var tmp = self.customize.slice();
+        
+        var cb = tmp.filter(function(it){ return it.data.EntityFieldID() === item.EntityFieldID() })[0];
+        if (cb && cb.closeControlBox) cb.closeControlBox();
+        
+        self.customize.splice(self.customize.indexOf(cb), 1);*/
+    };
+    
+    //self.customize = [];
+
+    context.Entities
+        .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() })
+        .then(function (entity) { self.selectedEntity(entity.asKoObservable()) });
+
+    this.closeControlBox = function () {
+        vm.closeControlBox();
+    }
+}
+
+function IndexKeysEditorModel(vm) {
+    var self = this;
+    
+    /*var entitySet = vm.entitySet.owner;
+    self.selectedEntitySet = ko.observable(entitySet);*/
+    var context = vm.factory()();
+    var entity = vm.entity;
+    self.context = ko.observable(vm.factory()());
+    self.currentDatabaseID = ko.observable(vm.currentDB().DatabaseID());
+    self.selectedIndex = ko.observable(vm.index.owner);
+    self.entityFields = ko.observableArray([]);
+    var db = vm.currentDB();
+    
+    context.EntityFields
+        .filter(function(it){ return it.EntityID == this.id; }, { id: entity.EntityID() })
+        .toArray(self.entityFields);
+    
+    this.beforeSaveField = function () {
+        /*var tmp = self.customize.slice();
+        
+        tmp.forEach(function(it){
+            if (it.closeControlBox){
+                it.closeControlBox();
+            }
+        });
+        
+        self.customize.length = 0;*/
+        
+        /*context.attach(entitySet);
+        entitySet.HasChanges(true);
+        context.attach(self.selectedEntity());
+        self.selectedEntity().HasChanges(true);
+        context.attach(db);
+        db.HasChanges(true);
+        context.saveChanges();*/
+    };
+    //this.selectedEntity = ko.observable();
+    
+    self.afterRevertHandler = function(item){
+        /*var tmp = self.customize.slice();
+        
+        var cb = tmp.filter(function(it){ return it.data.EntityFieldID() === item.EntityFieldID() })[0];
+        if (cb && cb.closeControlBox) cb.closeControlBox();
+        
+        self.customize.splice(self.customize.indexOf(cb), 1);*/
+    };
+    
+    //self.customize = [];
+
+    /*context.Entities
+        .single("it.EntityID == this.id", { id: entitySet.ElementTypeID() })
+        .then(function (entity) { self.selectedEntity(entity.asKoObservable()) });*/
+
     this.closeControlBox = function () {
         vm.closeControlBox();
     }

@@ -6,7 +6,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
          var self = this;
          self.allDatabases = ko.observableArray([]);
          self.allServices = ko.observableArray([]);
-
+         self.serviceOperationsNotSupported = ko.observable();
          
          //apiContextFactory().Databases.toArray(self.allDatabases);
         
@@ -14,6 +14,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
              var cntx = cf();
              cntx.Databases.toArray(self.allDatabases);
              cntx.Services.toArray(self.allServices);
+             self.serviceOperationsNotSupported(!!cntx.ServiceOperations);
              self.context(cf());
         }
 
@@ -112,9 +113,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
 
 function EmbedServiceModel(vm){
     var self = this;
-    this.data = vm.service;
+    if (self.data) self.data(vm.service);
+    else this.data = vm.service;
     
-    self.embedTemplates = ko.observableArray([
+    if (!self.embedTemplates) self.embedTemplates = ko.observableArray([]);
+    self.embedTemplates([
         { name: 'html5', title: 'HTML5', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon-start' },
         { name: 'html5-static', title: 'HTML5 static schema', template: '/scripts/templates/html5-static-template.ejs', cssclass: 'icon-start' },
         { name: 'phonegap-static', title: 'PhoneGap', template: '/scripts/templates/phonegap-template.ejs', cssclass: 'icon-start' },
@@ -265,4 +268,101 @@ function EmbedServiceModel(vm){
     this.closeControlBox = function(){
         vm.closeControlBox();
     }
+};
+
+function ServiceOperationCodeEditorModel(vm){
+    var self = this;
+    this.data = vm.service;
+    
+    self.error = ko.observable(false);
+    /*self.codeMirror = function (el, value, error) {
+        new $data.JayStormUI.CodeMirror(el, value, error);
+    };*/
+    
+    //var h = self.data.owner.Handler();
+    
+    self.originalValue = self.data.owner.FunctionBody();
+    setTimeout(function(){
+        if (!self.data.owner.FunctionBody()) self.data.owner.FunctionBody(new EJS({ url: '/scripts/serviceoperation-template.ejs' }).render({ name: self.data.owner.Name() }));
+        new $data.JayStormUI.CodeMirror('serviceoperation-code-editor-' + self.data.rowIndex(), self.data.owner.FunctionBody, self.error);
+    }, 1);
+    
+    this.saveHandler = function(){
+        /*if (self.data.owner.Handler() != h){
+            var f = adminApiClient.currentAppDBContextFactory();
+            var c = f();
+            
+            c.onReady(function(db){
+                db.EventHandlers.attach(self.data.owner);
+                eh.Handler = 
+            });
+        }*/
+    };
+    
+    this.closeControlBox = function(){
+        vm.closeControlBox();
+    };
+    
+    vm.parent.codeEditor.push(self);
 }
+
+function ServiceOperationsEditorModel(vm){
+    var self = this;
+    this.data = vm.service;
+    
+    var service = vm.service.owner;
+    var context = vm.factory()();
+        
+    self.error = ko.observable(false);
+    self.codeMirror = function (el, value, error) {
+        new $data.JayStormUI.CodeMirror(el, value, error);
+    };
+
+    self.codeHighlight = function(el, value){
+        new $data.JayStormUI.CodeHighlight(el, value);
+    };
+
+    self.beforeSaveHandler = function () {
+        //vm.closeControlBox();
+        var tmp = self.codeEditor.slice();
+        
+        tmp.forEach(function(it){
+            if (it.closeControlBox){
+                it.closeControlBox();
+            }
+        });
+        
+        self.codeEditor.length = 0;
+    };
+    
+    self.afterRevertHandler = function(item){
+        var tmp = self.codeEditor.slice();
+        
+        var cb = tmp.filter(function(it){ return it.data.owner.ServiceID() === item.ServiceID() })[0];
+        if (cb && cb.closeControlBox) cb.closeControlBox();
+        
+        self.codeEditor.splice(self.codeEditor.indexOf(cb), 1);
+        
+        item.FunctionBody(cb.originalValue);
+    };
+    
+    self.codeEditor = [];
+    
+    self.editCode = function(e){
+        e.showControls.bind({}, 'serviceOperationCodeEditor', ServiceOperationCodeEditorModel, { service: self.data, serviceOperation: e, parent: self });
+    };
+    
+    self.buildServiceSource = function(){
+        if (confirm('Service source code will be rebuild from service operations. Are you sure you want to continue with build?')){
+            context.ServiceOperations.filter(function(it){ return it.ServiceID == this.serviceid; }, { serviceid: service.ServiceID() }).toArray(function(r){
+                context.Services.attach(service);
+                service.ServiceSource(new EJS({ url: '/scripts/buildservice-template.ejs' }).render({ serviceName: service.Name(), serviceOperations: r }));
+                context.saveChanges();
+            });
+        }
+    };
+    
+    this.closeControlBox = function(){
+        vm.closeControlBox();
+    };
+};

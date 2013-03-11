@@ -1,0 +1,13 @@
+module.exports = exports = function(type){
+    "use strict";
+    var <%=serviceName %>ServiceType = type.extend('<%=serviceName %>ServiceType', {
+
+<% for (var i = 0; i < serviceOperations.length; i++){ %>// <%=serviceOperations[i].Name %> service operation generated from build
+<%=serviceOperations[i].Name %>: <%=serviceOperations[i].FunctionBody %><% if (i < serviceOperations.length - 1){ %>,
+<% } %><% } %>
+
+    });
+    
+    <%=serviceName %>ServiceType.annotateFromVSDoc();
+    return <%=serviceName %>ServiceType;
+};

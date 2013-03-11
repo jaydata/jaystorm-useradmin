@@ -1,4 +1,4 @@
-// JayData 1.2.3
+// JayData 1.2.7
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -6,9 +6,9 @@
 // practices to access and manipulate data from various online and offline sources.
 //
 // Credits:
-//     Hajnalka Battancs, D√°niel J√≥zsef, J√°nos Roden, L√°szl√≥ Horv√°th, P√©ter Nochta
-//     P√©ter Zentai, R√≥bert B√≥nay, Szabolcs Czinege, Viktor Borza, Viktor L√°z√°r,
-//     Zolt√°n Gyebrovszki
+//     Hajnalka Battancs, D·niel JÛzsef, J·nos Roden, L·szlÛ Horv·th, PÈter Nochta
+//     PÈter Zentai, RÛbert BÛnay, Szabolcs Czinege, Viktor Borza, Viktor L·z·r,
+//     Zolt·n Gyebrovszki, G·bor Dolla
 //
 // More info: http://jaydata.org
 $data.Class.define('$data.storageProviders.YQL.YQLProvider', $data.StorageProviderBase, null,
@@ -606,13 +606,10 @@ $data.Class.defineEx('$data.Yahoo.types.Geo.PlaceMetaFull', [{ type: null }, { t
 
 
 $data.Class.define('$data.Yahoo.types.Geo.placetype', $data.Entity, null, {
-    woeid: { type: 'int', key: true },
     placeTypeDescription: { type: 'string' },
-    uri: { type: 'string' },
+    uri: { type: 'string', key: true },
     placeTypeName: { type: 'placeTypeNameRef' },
-    lang: { type: 'string' },
-    placetype: { type: 'string' },
-    placetypeid: { type: 'string' }
+    lang: { type: 'string' }
 }, null);
 
 $data.Class.defineEx('$data.Yahoo.types.Geo.sibling', [{ type: $data.Entity }, { type: $data.Yahoo.types.Geo.PlaceMetaFull }], null, {

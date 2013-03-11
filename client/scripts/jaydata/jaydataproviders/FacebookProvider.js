@@ -1,4 +1,4 @@
-// JayData 1.2.3
+// JayData 1.2.7
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -6,9 +6,9 @@
 // practices to access and manipulate data from various online and offline sources.
 //
 // Credits:
-//     Hajnalka Battancs, D√°niel J√≥zsef, J√°nos Roden, L√°szl√≥ Horv√°th, P√©ter Nochta
-//     P√©ter Zentai, R√≥bert B√≥nay, Szabolcs Czinege, Viktor Borza, Viktor L√°z√°r,
-//     Zolt√°n Gyebrovszki
+//     Hajnalka Battancs, D·niel JÛzsef, J·nos Roden, L·szlÛ Horv·th, PÈter Nochta
+//     PÈter Zentai, RÛbert BÛnay, Szabolcs Czinege, Viktor Borza, Viktor L·z·r,
+//     Zolt·n Gyebrovszki, G·bor Dolla
 //
 // More info: http://jaydata.org
 
@@ -114,6 +114,7 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
     supportedSetOperations: {
         value: {
             filter: {},
+            length: {},
             map: {},
             forEach: {},
             toArray: {},
@@ -160,6 +161,10 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
                 query.rawDataList = data.data;
                 var compiler = Container.createModelBinderConfigCompiler(query, []);
                 compiler.Visit(query.expression);
+
+                if (query.expression instanceof $data.Expressions.CountExpression) {
+                    query.rawDataList = [{ cnt: data.data.length }];
+                }
                 callBack.success(query);
             },
             error: function (jqXHR, textStatus, errorThrow) {

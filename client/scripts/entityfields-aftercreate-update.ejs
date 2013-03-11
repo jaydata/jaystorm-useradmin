@@ -1,0 +1,51 @@
+function afterCreate(items){
+  var context = this;
+  return function(callback){
+    var writeBack = {};
+    context.Entities.toArray(function(entities){
+      var update = false;
+      for (var i = 0; i < items.length; i++){
+        var field = items[i];
+        if (field.InverseFieldID){
+          var entity = entities.filter(function(it){ return it.EntityID == field.EntityID; })[0];
+          if (entity){
+            var inverseField = new context.EntityFields.createNew({
+              EntityID: field.InverseFieldID,
+              DatabaseID: field.DatabaseID,
+              Name: entity.Name,
+              Type: entity.FullName,
+              TypeTemplate: entity.FullName,
+              InverseFieldID: field.EntityFieldID
+            });
+            writeBack[field.EntityFieldID] = inverseField;
+            context.EntityFields.add(inverseField);
+            update = true;
+          }
+        }
+      }
+      console.log('writeBack', writeBack);
+      if (update){
+        context.saveChanges(function(){
+          for (var i = 0; i < items.length; i++){
+            var field = items[i];
+            console.log('field', field, 'inverseField', writeBack[field.EntityFieldID]);
+            context.EntityFields.attach(field);
+            field.InverseFieldID = writeBack[field.EntityFieldID].EntityFieldID;
+          }
+          context.saveChanges(function(){
+            callback();
+          }).fail(function(err){
+            console.log(err);
+            callback();
+          });
+        }).fail(function(err){
+          console.log(err);
+          callback();
+        });
+      }else callback();
+    }).fail(function(err){
+      console.log(err);
+      callback();
+    });
+  };
+}

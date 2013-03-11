@@ -18,12 +18,37 @@ var settings = {
     file2Extract: '/data/filestore/'
 };
 
+BasicStrategy.prototype.authenticate = function(req) {
+  var authorization = req.headers['authorization'];
+  if (!authorization) { return this.fail(this._challenge()); }
+  
+  var parts = authorization.split(' ')
+  if (parts.length < 2) { return this.fail(400); }
+  
+  var scheme = parts[0]
+    , credentials = new Buffer(parts[1], 'base64').toString().split(':');
+
+  if (!/Basic/i.test(scheme)) { return this.fail(this._challenge()); }
+  
+  var userid = credentials[0];
+  var password = credentials[1];
+  /*if (!userid || !password) {
+    return this.fail(400);
+  }*/
+  
+  var self = this;
+  this._verify(req, userid, password, function(err, user) {
+    if (err) { return self.error(err); }
+    if (!user) { return self.fail(self._challenge()); }
+    self.success(user);
+  });
+};
 
 var config = require('./configuration.js').config;
 
 passport.use(new BasicStrategy ({
 },
-  function (username, password, done) {
+  function (req, username, password, done) {
 
       process.nextTick(function () {
           var get_options = {
@@ -114,8 +139,17 @@ app.use(c.cookieParser());
 //app.use(c.session({ secret: 'keyboard cat' }));
 app.use(c.methodOverride());
 
-app.use('/getAuthorization', passport.initialize());
-app.use('/getAuthorization', passport.authenticate('basic', { session: false }));
+app.use('/getAuthorization', function(req, res, next){
+    console.log('passport init', req);
+    passport.initialize()(req, res, function(){
+        console.log('passport auth', req);
+        passport.authenticate('basic', { session: false })(req, res, next);
+    });
+});
+/*app.use('/getAuthorization', function(err, req, res, next) {
+    res.statusCode = res.statusCode != 401 ? err.status || 500 : res.statusCode;
+    next(err);
+});*/
 app.use('/getAuthorization', function (req, res) {
     res.setHeader("Content-Type", "application/json;charset=UTF-8");
     var result = {

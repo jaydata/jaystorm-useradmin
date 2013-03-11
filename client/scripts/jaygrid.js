@@ -961,30 +961,59 @@
             }
         },
 
-        '$data.Geography': function (columnInfo) {
-            var geoVal = columnInfo.value() || new $data.Geography(0, 0);
+        '$data.GeographyPoint': function (columnInfo) {
+            var geoVal = columnInfo.value() || new $data.GeographyPoint([0, 0]);
             var model = {
-                Longitude: ko.observable(geoVal.longitude),
-                Latitude: ko.observable(geoVal.latitude),
+                Longitude: ko.observable(geoVal.coordinates[0]),
+                Latitude: ko.observable(geoVal.coordinates[1]),
                 templateName: 'jay-data-grid-$data.Geography-default'
             }
 
             var self = this;
             model.Longitude.subscribe(function (val) {
-                var geo = columnInfo.value() || new $data.Geography(0, 0);
+                var geo = columnInfo.value() || new $data.GeographyPoint([0, 0]);
                 if (self.isDecimal(val)) {
-                    geo.longitude = parseFloat(val);
+                    geo.coordinates[0] = parseFloat(val);
                     columnInfo.value(geo);
                 }
-                model.Longitude(geo.longitude);
+                model.Longitude(geo.coordinates[0]);
             });
             model.Latitude.subscribe(function (val) {
-                var geo = columnInfo.value() || new $data.Geography(0, 0);
+                var geo = columnInfo.value() || new $data.GeographyPoint([0, 0]);
                 if (self.isDecimal(val)) {
-                    geo.latitude = parseFloat(val);
+                    geo.coordinates[1] = parseFloat(val);
                     columnInfo.value(geo);
                 }
-                model.Latitude(geo.latitude);
+                model.Latitude(geo.coordinates[1]);
+            });
+
+            return model;
+        },
+        
+        '$data.GeometryPoint': function (columnInfo) {
+            var geoVal = columnInfo.value() || new $data.GeometryPoint([0, 0]);
+            var model = {
+                Longitude: ko.observable(geoVal.coordinates[0]),
+                Latitude: ko.observable(geoVal.coordinates[1]),
+                templateName: 'jay-data-grid-$data.Geography-default'
+            }
+
+            var self = this;
+            model.Longitude.subscribe(function (val) {
+                var geo = columnInfo.value() || new $data.GeometryPoint([0, 0]);
+                if (self.isDecimal(val)) {
+                    geo.coordinates[0] = parseFloat(val);
+                    columnInfo.value(geo);
+                }
+                model.Longitude(geo.coordinates[0]);
+            });
+            model.Latitude.subscribe(function (val) {
+                var geo = columnInfo.value() || new $data.GeometryPoint([0, 0]);
+                if (self.isDecimal(val)) {
+                    geo.coordinates[1] = parseFloat(val);
+                    columnInfo.value(geo);
+                }
+                model.Latitude(geo.coordinates[1]);
             });
 
             return model;
