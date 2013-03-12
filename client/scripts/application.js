@@ -83,25 +83,44 @@ $(function () {
             c.Databases.single(function(it){ return it.Name == this.appdb; }, { appdb: 'ApplicationDB' }, function(appdb){
                 var packageEntity, indexEntity, indexKeyEntity, serviceOperationEntity;
                 
-                c.TypeTemplates.filter(function(it){ return it.Name == this.geo; }, { geo: 'Geography' }).toArray(function(tt){
-                    if (tt.length){
+                c.Entities.single(function(it){
+                    return it.FullName == this.entityfields &&
+                        it.DatabaseID == this.appdb;
+                }, {
+                    entityfields: '$data.JayStormAPI.EntityField',
+                    appdb: appdb.DatabaseID
+                }, function(entityfieldEntity){
+                    if (!c.EntityFields.createNew.memberDefinitions.getMember('InverseFieldID')){
                         update = true;
-                        c.TypeTemplates.remove(tt[0]);
-                        
-                        c.TypeTemplates.add(new c.TypeTemplates.createNew({
-                            Name: 'Geography point',
-                            Description: 'Spherical location point',
-                            TypeName: '$data.GeographyPoint',
-                            TypeDescriptor: '{"Type":"$data.GeographyPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
-                        }));
-                        
-                        c.TypeTemplates.add(new c.TypeTemplates.createNew({
-                            Name: 'Geometry point',
-                            Description: 'Euclidean location point',
-                            TypeName: '$data.GeometryPoint',
-                            TypeDescriptor: '{"Type":"$data.GeometryPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                        c.EntityFields.add(new c.EntityFields.createNew({
+                            Name: 'Id',
+                            Type: 'id',
+                            TypeTemplate: 'Reference',
+                            DatabaseID: appdb.DatabaseID,
+                            EntityID: entityfieldEntity.EntityID
                         }));
                     }
+                }).then(function(){
+                    c.TypeTemplates.filter(function(it){ return it.Name == this.geo; }, { geo: 'Geography' }).toArray(function(tt){
+                        if (tt.length){
+                            update = true;
+                            c.TypeTemplates.remove(tt[0]);
+                            
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography point',
+                                Description: 'Spherical location point',
+                                TypeName: '$data.GeographyPoint',
+                                TypeDescriptor: '{"Type":"$data.GeographyPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                            
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry point',
+                                Description: 'Euclidean location point',
+                                TypeName: '$data.GeometryPoint',
+                                TypeDescriptor: '{"Type":"$data.GeometryPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                    })
                 }).then(function(){
                 
                 c.EntitySets.single(function(it){
@@ -139,15 +158,16 @@ $(function () {
                         }
                         
                         c.Entities.filter(function(it){
-                            return it.FullName == this.packageFullName ||
+                            return (it.FullName == this.packageFullName ||
                                 it.FullName == this.indexFullName ||
                                 it.FullName == this.indexKeyFullName ||
-                                it.FullName == this.serviceOperationFullName;
+                                it.FullName == this.serviceOperationFullName) && it.DatabaseID == this.appdb;
                         }, {
                             packageFullName: '$data.JayStormAPI.Package',
                             indexFullName: '$data.JayStormAPI.Index',
                             indexKeyFullName: '$data.JayStormAPI.IndexKey',
-                            serviceOperationFullName: '$data.JayStormAPI.ServiceOperation'
+                            serviceOperationFullName: '$data.JayStormAPI.ServiceOperation',
+                            appdb: appdb.DatabaseID
                         }).length(function(cnt){
                             if (!update && (cnt == 4)) return;
                             
