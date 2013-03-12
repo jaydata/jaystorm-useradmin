@@ -118,20 +118,20 @@ function EmbedServiceModel(vm){
     
     if (!self.embedTemplates) self.embedTemplates = ko.observableArray([]);
     self.embedTemplates([
-        { name: 'html5', title: 'HTML5', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon-start' },
-        { name: 'html5-static', title: 'HTML5 static schema', template: '/scripts/templates/html5-static-template.ejs', cssclass: 'icon-start' },
-        { name: 'phonegap-static', title: 'PhoneGap', template: '/scripts/templates/phonegap-template.ejs', cssclass: 'icon-start' },
-        { name: 'kendoui', title: 'Kendo UI', template: '/scripts/templates/kendoui-template.ejs', cssclass: 'icon-start' },
-        { name: 'nodejs', title: 'node.js', template: '/scripts/templates/nodejs-template.ejs', cssclass: 'icon-start' },
-        { name: 'nodejs-static', title: 'node.js static schema', template: '/scripts/templates/nodejs-static-template.ejs', cssclass: 'icon-start' },
-        //{ name: 'jaydata-js', title: 'JayData JavaScript', template: '/scripts/templates/jaydata-js-template.ejs', cssclass: 'icon-stop' },
-        { name: 'jaydata-ts', title: 'TypeScript', template: '/scripts/templates/jaydata-ts-template.ejs', cssclass: 'icon-stop' },
-        { name: 'csharp', title: '.NET C#', template: '/scripts/templates/csharp-template.ejs', cssclass: 'icon-stop' },
-        { name: 'office', title: 'MS Office', template: '/scripts/templates/office-template.ejs', cssclass: 'icon-stop' },
-        { name: 'lightswitch', title: 'LightSwitch', template: '/scripts/templates/lightswitch-template.ejs', cssclass: 'icon-stop' },
-        { name: 'java', title: 'Java', template: '/scripts/templates/java-template.ejs', cssclass: 'icon-stop' },
-        { name: 'ruby', title: 'Ruby', template: '/scripts/templates/ruby-template.ejs', cssclass: 'icon-stop' },
-        { name: 'php', title: 'PHP', template: '/scripts/templates/php-template.ejs', cssclass: 'icon-stop' }
+        { name: 'html5', title: 'HTML5', template: '/scripts/templates/html5-template.ejs', cssclass: 'icon_32x32 html5' },
+        { name: 'html5-static', title: 'HTML5 static schema', template: '/scripts/templates/html5-static-template.ejs', cssclass: 'icon_32x32 html5' },
+        { name: 'phonegap-static', title: 'PhoneGap', template: '/scripts/templates/phonegap-template.ejs', cssclass: 'icon_32x32 phonegap' },
+        { name: 'kendoui', title: 'Kendo UI', template: '/scripts/templates/kendoui-template.ejs', cssclass: 'icon_32x32 kendo' },
+        { name: 'nodejs', title: 'node.js', template: '/scripts/templates/nodejs-template.ejs', cssclass: 'icon_32x32 nodejs' },
+        { name: 'nodejs-static', title: 'node.js static schema', template: '/scripts/templates/nodejs-static-template.ejs', cssclass: 'icon_32x32 nodejs' },
+        //{ name: 'jaydata-js', title: 'JayData JavaScript', template: '/scripts/templates/jaydata-js-template.ejs', cssclass: 'icon-remove' },
+        { name: 'jaydata-ts', title: 'TypeScript', template: '/scripts/templates/jaydata-ts-template.ejs', cssclass: 'icon_32x32 typescript' },
+        { name: 'csharp', title: '.NET C#', template: '/scripts/templates/csharp-template.ejs', cssclass: 'icon_32x32 csharp' },
+        { name: 'office', title: 'MS Office', template: '/scripts/templates/office-template.ejs', cssclass: 'icon_32x32 office' },
+        { name: 'lightswitch', title: 'LightSwitch', template: '/scripts/templates/lightswitch-template.ejs', cssclass: 'icon_32x32 lightswitch' },
+        { name: 'java', title: 'Java', template: '/scripts/templates/java-template.ejs', cssclass: 'icon_32x32 java' },
+        { name: 'ruby', title: 'Ruby', template: '/scripts/templates/ruby-template.ejs', cssclass: 'icon_32x32 ruby' },
+        { name: 'php', title: 'PHP', template: '/scripts/templates/php-template.ejs', cssclass: 'icon_32x32 php' }
     ]);
     
     setTimeout(function(){ document.querySelector('#embed-service-' + self.data.owner.ServiceID() + ' li a').click(); }, 0);

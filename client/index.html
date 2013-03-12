@@ -9,11 +9,6 @@
 
     <link rel="shortcut icon" type="image/x-icon" href="/img/jaystorm_favicon.png">
 
-    <!--<script src="http://use.edgefonts.net/ropa-sans.js"></script>-->
-    <!--<script src="http://use.edgefonts.net/amaranth.js"></script>-->
-    <!--<script src="http://use.edgefonts.net/imprima.js"></script>-->
-    <!--<script src="http://use.edgefonts.net/muli.js"></script>-->
-
     <link href="styles/bootstrap.min.css" rel="stylesheet" />
     <link href="styles/style.css" rel="stylesheet" />
     <link href="styles/fileuploader.css" rel="stylesheet" />
@@ -82,68 +77,7 @@
     <link rel="stylesheet" href="styles/fancy/jquery.fancybox.css" type="text/css">
     <script src="scripts/jquery.fancybox.pack.js"></script>
     <script src="scripts/jquery.easing.1.3.js"></script>
-
-    <script type="text/javascript">
-        function getInternetExplorerVersion() {
-            if (navigator.appName == 'Microsoft Internet Explorer') {
-                var ua = navigator.userAgent;
-                var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-                if (re.exec(ua) != null)
-                    return parseFloat(RegExp.$1);
-            }
-            return -1;
-        }
-        function slideclick(e, element) {
-            e.preventDefault();
-            document.getElementById("welcome").style.display = "none";
-            $(".nav a#" + element.getAttribute("id") + "").trigger("click");
-        }
-
-        var ver = getInternetExplorerVersion();
-        if (ver > -1) {
-            if (ver < 10.0)
-                alert('Please upgrade to Internet Explorer 10 or use another browser, this function does not work with your Internet Explorer version!');
-        }
-
-        $("ul.nav > li > a").live('click', function () {
-            var $parent = $(this).parent();
-
-            $parent.parent().find("li.active").removeClass("active");
-            $parent.addClass("active");
-        });
-
-        $(".sub-navbar a").live('click', function () {
-            $("div.navbar ul.nav li.active").removeClass("active");
-        });
-
-        /*var resizeTimer;
-        $(window).resize(function () {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function(){}, 100);
-        });*/
-
-        /*$(".sub-navbar ul.nav li a").live("click", function () {
-            var welcome = document.getElementById("welcome"),
-                id = $(this).attr("id");
-
-            welcome.style.display = "none";
-            hScroll.scrollToPage(id, 200);
-        });*/
-
-        $(function () {
-            // MENU ITEMS
-            var menuItems = document.body.querySelectorAll("ul.nav li a"),
-                welcome = document.getElementById("welcome");
-
-            for (var i = 0; i < menuItems.length; i++) {
-                menuItems[i].addEventListener("click", function () {
-                    var scrollTo = parseInt(this.getAttribute("id"));
-                    welcome.style.display = "none";
-                    //hScroll.scrollToPage(scrollTo, 200);
-                }, false);
-            }
-        });
-    </script>
+    <script src="scripts/ui.js"></script>
 </head>
 <body>
     <div id="AppUI">
@@ -216,11 +150,11 @@
                                             </div>
                                         </div>
                                         <div class="control-group">
-                                                    <label class="control-label" for="inputInverseProperty">Inverse property</label>
-                                                    <div class="controls">
-                                                        <input type="text" id="inputInverseProperty" data-bind="value: data.InverseProperty"/>
-                                                    </div>
-                                                </div>
+                                            <label class="control-label" for="inputInverseProperty">Inverse property</label>
+                                            <div class="controls">
+                                                <input type="text" id="inputInverseProperty" data-bind="value: data.InverseProperty" />
+                                            </div>
+                                        </div>
                                         <div class="control-group">
                                             <label class="control-label" for="inputTypeTemplate">Type template</label>
                                             <div class="controls">
@@ -303,12 +237,12 @@
                         </script>
 
                         <script type="text/html" id="insideEditor">
-                            <div>
+                            <div class="inner-table">
                                 <h4 style="display: inline">Add or remove fields</h4>
                                 <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
                                 <div data-bind="with: selectedEntity">
                                     Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
-                                    <!--                                            , EntityID: <span data-bind="text: EntityID"></span>-->
+                                    <!--, EntityID: <span data-bind="text: EntityID"></span>-->
                                 </div>
                                 <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,
@@ -347,17 +281,16 @@
                                     </div>
                                 </div>
                                 <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
-
                             </div>
                         </script>
-                        
+
                         <script type="text/html" id="insideComplexTypeEditor">
-                            <div>
-                                <h4 style="display:inline">Add or remove fields</h4>
-                                <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>
+                            <div class="inner-table">
+                                <h4 style="display: inline">Add or remove fields</h4>
+                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
                                 <div data-bind="with: selectedEntity">
                                     Complex type name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
-<!--                                            , EntityID: <span data-bind="text: EntityID"></span>-->
+                                    <!--                                            , EntityID: <span data-bind="text: EntityID"></span>-->
                                 </div>
                                 <div data-bind="jayGrid: {
                                         source: $root.createContext().EntityFields,
@@ -379,7 +312,8 @@
                                         <div data-bind="text: console.log($root)"></div>
                                         <select data-bind="options:$root.typeTemplates, optionsText:'Name', optionsValue: 'Name',
                                                 value: value,
-                                                optionsCaption: value() ? undefined : 'Select...'"></select>
+                                                optionsCaption: value() ? undefined : 'Select...'">
+                                        </select>
                                         <a href="#" data-bind="click: $data.showControls.bind({},'customizeField',FieldsCustomizeEditorModel, 
                                                                 { field: $data, parent: $root, factory: $root.contextFactory, currentDB: $root.currentDatabase })">Customize</a>
                                     </div>
@@ -389,12 +323,12 @@
                                                     optionsText:'Name',
                                                     optionsValue: 'TypeName',
                                                     value: value,
-                                                    optionsCaption: value() ? undefined :  'Select...'"></select>
+                                                    optionsCaption: value() ? undefined :  'Select...'">
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
                                 <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
-
                             </div>
                         </script>
 
@@ -421,7 +355,7 @@
                         </script>
 
                         <script type="text/html" id="eventHandlersEditor">
-                            <div>
+                            <div class="inner-table">
                                 <h4 style="display: inline">Add or remove events</h4>
                                 <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
                                 <div data-bind="with: selectedEntitySet">
@@ -465,11 +399,11 @@
 
                             </div>
                         </script>
-                        
+
                         <script type="text/html" id="indexKeysEditor">
                             <div>
-                                <h4 style="display:inline">Add or remove index keys</h4>
-                                <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                <h4 style="display: inline">Add or remove index keys</h4>
+                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
                                 <span data-bind="text: console.log($data, $root)"></span>
                                 <div data-bind="jayGrid: {
                                             source: $root.root().createContext().IndexKeys,
@@ -484,45 +418,45 @@
                                                 { name: 'Spatial', $displayName: 'Geospatial index' }
                                             ]
                                         }">
-                                        
-                                        <div data-name-template="EntityFieldID-display">
-                                            <span data-bind="text: ($root.entityFields().filter(function(it){ return it.EntityFieldID() == value(); })[0] || { Name: '' }).Name"></span>
-                                        </div>
-                                        
-                                        <div data-name-template="EntityFieldID-editor">
-                                            <select data-bind="options: $root.entityFields(),
+
+                                    <div data-name-template="EntityFieldID-display">
+                                        <span data-bind="text: ($root.entityFields().filter(function(it){ return it.EntityFieldID() == value(); })[0] || { Name: '' }).Name"></span>
+                                    </div>
+
+                                    <div data-name-template="EntityFieldID-editor">
+                                        <select data-bind="options: $root.entityFields(),
                                                 optionsValue: 'EntityFieldID', optionsText: 'Name', value: $parent[name],
                                                 optionsCaption: 'Select...',
-                                                optionsCaptionValue: null"></select>
-                                        </div>
+                                                optionsCaptionValue: null">
+                                        </select>
+                                    </div>
                                 </div>
-                                
+
                                 <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
 
                             </div>
                         </script>
-                        
+
                         <script type="text/html" id="indexKeysCell">
                             <div data-bind="ifnot: owner.IndexID()">
                                 Save index to edit keys
                             </div>
                             <div data-bind="if: owner.IndexID()">
                                 <a href="#" data-bind="click: $data.showControls.bind({},'indexKeysEditor',IndexKeysEditorModel, 
-                                                                    { index: $data, entity: $root.selectedEntity(), factory: $root.root().contextFactory, currentDB: $root.root().currentDatabase })">
-                                        Manage keys
+                                                                    { index: $data, entity: $root.selectedEntity(), factory: $root.root().contextFactory, currentDB: $root.root().currentDatabase })">Manage keys
                          
                                 </a>
                             </div>
                         </script>
-                        
+
                         <script type="text/html" id="indicesEditor">
                             <div>
-                                <h4 style="display:inline">Add or remove indices</h4>
-                                <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>
+                                <h4 style="display: inline">Add or remove indices</h4>
+                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
                                 <div data-bind="with: selectedEntitySet">
                                     Table item name: <span data-bind="text: Name"></span>
                                 </div>
-                                
+
                                 <div data-bind="jayGrid: {
                                             source: $root.createContext().Indices,
                                             beforeSave: beforeSaveField,
@@ -538,7 +472,7 @@
                                             ]
                                         }">
                                 </div>
-                                
+
                                 <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
 
                             </div>
@@ -572,20 +506,19 @@
                             </div>
 
                         </script>
-                        
+
                         <script type="text/html" id="editComplexTypeCell">
                             <div>
                                 <div data-bind="if: owner.EntityID()">
                                     <a href="#" data-bind="click: $data.showControls.bind({},'insideComplexTypeEditor',ComplexTypeEditorModel, 
-                                                                    { entitySet : $data, entity: $data.owner, factory: $root.contextFactory, currentDB: $root.currentDatabase })">
-                                            Manage fields
+                                                                    { entitySet : $data, entity: $data.owner, factory: $root.contextFactory, currentDB: $root.currentDatabase })">Manage fields
                              
                                     </a>
                                 </div>
                                 <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
 
                             </div>
-                           
+
                         </script>
 
                         <div class="thumbnails small">
@@ -609,10 +542,14 @@
                                         </div>
                                         <h3>Publish API</h3>
                                     </li>
+                                    <li class="thumbnail" onclick="slideclick(event, this);" id="9">
+                                        <div class="box box-mini box-circle box-gray">
+                                            <h2>4</h2>
+                                        </div>
+                                        <h3>API Access</h3>
+                                    </li>
                                 </ul>
                             </div>
-
-                            <div class="blue-line">&nbsp;</div>
                         </div>
 
                         <h1>Manage Database Schemas</h1>
@@ -620,8 +557,8 @@
                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
                             <p>If your application needs to store data, create tables and fields to describe it's shape. You'll be rewarded with an out of the box REST data API with query and CRUD capabilities.</p>
                         </div>
-                        
-                        <div class="alert alert-danger fade in" style="float: none;display: inline-block;" data-bind="visible: !indicesNotSupported()">
+
+                        <div class="alert alert-danger fade in" style="float: none; display: inline-block;" data-bind="visible: !indicesNotSupported()">
                             <p><strong>Attention!</strong> You use an older version of JayStorm. Please publish your application to use indices in your schema.</p>
                         </div>
 
@@ -649,9 +586,9 @@
                                     <p><strong>Attention!</strong> The ApplicationDB contains all the meta information about your JayStorm JavaScript application and in trained hands is a powerful tool to create ultra dynamic and flexible data applications. Used on the wrong way however can easily render your system unoperational!</p>
                                 </div>
                             </div>
-                            
+
                             <div class="tabbable">
-                                <ul class="nav nav-tabs">
+                                <ul class="nav nav-tabs reset-m">
                                     <li class="active"><a data-toggle="tab" data-bind="attr: { href: '#' + $root.currentDatabase().Name() + '-tables' }">Tables</a></li>
                                     <li><a data-toggle="tab" data-bind="attr: { href: '#' + $root.currentDatabase().Name() + '-complextypes' }">Complex types</a></li>
                                 </ul>
@@ -659,7 +596,7 @@
                                     <div class="tab-pane active" data-bind="attr: { id: $root.currentDatabase().Name() + '-tables' }">
                                         <h3 class="clear">List of tables</h3>
                                         <!-- ko if:tableItemsPresent() && (tableItems().length == 0) -->
-                                        <div class="alert alert-warning"  >
+                                        <div class="alert alert-warning">
                                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
                                             <p><strong>Attention!</strong> This database does not have any tables yet. Create a new table to add fields, server event handlers and indices</p>
                                         </div>
@@ -688,12 +625,12 @@
                                     <div class="tab-pane" data-bind="attr: { id: $root.currentDatabase().Name() + '-complextypes' }">
                                         <h3 class="clear">List of complex types</h3>
                                         <!-- ko if:complexTypesPresent() && (complexTypes().length == 0) -->
-                                        <div class="alert alert-warning"  >
+                                        <div class="alert alert-warning">
                                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
                                             <p><strong>Attention!</strong> This database does not have any complex types yet. Create a new complex type to use as a type of a table field</p>
                                         </div>
                                         <!-- /ko -->
-                                        
+
                                         <div data-bind="jayGrid: {
                                                     newCommandCaption: 'Create new complex type',
                                                     items: complexTypes,
@@ -741,10 +678,14 @@
                                         </div>
                                         <h3>Publish API</h3>
                                     </li>
+                                    <li class="thumbnail" onclick="slideclick(event, this);" id="9">
+                                        <div class="box box-mini box-circle box-gray">
+                                            <h2>4</h2>
+                                        </div>
+                                        <h3>API Access</h3>
+                                    </li>
                                 </ul>
                             </div>
-
-                            <div class="blue-line">&nbsp;</div>
                         </div>
 
                         <h1>Manage Services</h1>
@@ -762,11 +703,11 @@
                                 </ul>
                             </p>
                         </div>
-                        
-                        <div class="alert alert-danger fade in" style="float: none;display: inline-block;" data-bind="visible: !serviceOperationsNotSupported()">
+
+                        <div class="alert alert-danger fade in" style="float: none; display: inline-block;" data-bind="visible: !serviceOperationsNotSupported()">
                             <p><strong>Attention!</strong> You use an older version of JayStorm. Please publish your application to build service operations in your service.</p>
                         </div>
-                        
+
                         <script type="text/html" id="serviceOperationCodeEditor">
                             <span>Service operation source</span>
                             <!--                                    <a href="#" class="btn btn-danger" style="float:right" data-bind="click: closeControlBox">Close</a>-->
@@ -783,7 +724,7 @@
                             <!--<a href="#" class="btn btn-success" style="float:right;" data-bind="click: saveHandler">Save</a>-->
                             <!--<a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>-->
                         </script>
-                        
+
                         <script id="serviceOperationsEditor" type="text/html">
                             <div>
                                 <h4 style="display: inline">Add or remove service operations</h4>
@@ -800,7 +741,7 @@
                                                     fields:[{ name: 'Name', 'hint': 'Service operation name'}]}">
 
                                     <div data-name-template="Name-editor">
-                                        <input type="text" data-bind="value: value, attr: { required: metadata.required, pattern: metadata.$RegExp ? metadata.$RegExp.slice(1, -1) : null }, css: { verror: owner.ValidationErrors }"/>
+                                        <input type="text" data-bind="value: value, attr: { required: metadata.required, pattern: metadata.$RegExp ? metadata.$RegExp.slice(1, -1) : null }, css: { verror: owner.ValidationErrors }" />
                                         <a href="#" style="display: none;" data-bind="text: setTimeout($data.showControls.bind({}, 'serviceOperationCodeEditor', ServiceOperationCodeEditorModel, { service: $data, serviceOperation: $data, parent: $root }), 0)">Edit code
                                         </a>
                                     </div>
@@ -827,21 +768,18 @@
                             <!--, dbs: databases, databases: context().Databases-->
                             <!--currentApplication-->
                             <script type="text/html" data-name-template="Name-display">
-                                <b>
-                                    <a data-bind="{text: value, attr: { target: '_blank', href: $root.application.currentApplication().url + value() } }"></a>
-                                </b>
+                                <b><a data-bind="{text: value, attr: { target: '_blank', href: $root.application.currentApplication().url + value() } }"></a></b>
                                 <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
-                                <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">API access tutorials
-                                </a>
+                                <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">API access tutorials</a>
 
-                                <!--                        <a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
+                                <!--<a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
                             </script>
                             <script type="text/html" data-name-template="ServiceType-editor">
                                 <select data-bind="options: ['JavaScript Data Service','JavaScript API Service'], value: value"></select>
                             </script>
 
                             <script type="text/html" data-name-template="ServiceType-display">
-                                <div data-bind="text: value() ? value() : 'JavaScript Data Service'" />
+                                <div data-bind="text: value() ? value() : 'JavaScript Data Service'"></div>
                             </script>
 
                             <script type="text/html" data-name-template="DatabaseID-editor">
@@ -878,22 +816,23 @@
                             </script>
 
                             <script type="text/html" data-name-template="ServiceSource-editor">
-                                <!--                        <a href='#' class='btn' data-bind='visible: !!$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>-->
+                                <!--<a href='#' class='btn' data-bind='visible: !!$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit Source</a>-->
                             </script>
 
                             <script type="text/html" data-name-template="ServiceSource-display">
-                                <!--                        <pre data-bind="visible: owner.ServiceSourceType() == 'script' && value(), attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ if (value()) $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>-->
+                                <!--<pre data-bind="visible: owner.ServiceSourceType() == 'script' && value(), attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ if (value()) $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>-->
                                 <div><a href='#' data-bind='visible: !$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit source</a></div>
-                                <div data-bind="if: $root.serviceOperationsNotSupported"><a href='#' data-bind='visible: !$data.ServiceID, click: $data.showControls.bind({}, "serviceOperationsEditor", ServiceOperationsEditorModel, 
-                                                                            { service: $data, factory: $root.contextFactory }), visible: owner.ServiceSourceType() == "script"'>Edit service operations</a></div>
+                                <div data-bind="if: $root.serviceOperationsNotSupported">
+                                    <a href='#' data-bind='visible: !$data.ServiceID, click: $data.showControls.bind({}, "serviceOperationsEditor", ServiceOperationsEditorModel, 
+                                                                            { service: $data, factory: $root.contextFactory }), visible: owner.ServiceSourceType() == "script"'>Edit service operations</a>
+                                </div>
                             </script>
                         </div>
 
                         <div data-bind="if: editingSource">
                             <h2>Edit source</h2>
 
-                            <div id="service-codemirror">
-                            </div>
+                            <div id="service-codemirror"></div>
                             <div id="Div1" data-bind="if: error().length">
                                 <ul data-bind="foreach: error">
                                     <li data-bind="if: $data">
@@ -929,8 +868,7 @@
                                 </script>
 
                                 <script type="text/html" data-name-template="DatabaseID-display">
-                                    <span data-bind="text: $parent[name]" />:
-                            <span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
+                                    <span data-bind="text: $parent[name]"></span>:<span data-bind="readValue: { source: $root.databaseSet, key: $parent[name], field: 'Name' }"></span>
                                 </script>
                             </div>
                         </div>
@@ -1081,25 +1019,27 @@
                 <div class="tab-content-item tab-pane fade">
                     <div id="PackageManagerUI" data-bind="if: visible">
                         <h1>Manage NPM packages</h1>
-                        
+
                         <div class="alert alert-info fade in">
                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
-                            <p>Here you can manage the NPM packages you want to install into your application.<br>
-                            Packages will be deployed on publish.</p>
+                            <p>
+                                Here you can manage the NPM packages you want to install into your application.<br>
+                                Packages will be deployed on publish.
+                            </p>
                         </div>
-                        
+
                         <br>
-                        
+
                         <div class="alert alert-danger fade in" style="float: none; display: inline-block;" data-bind="visible: notsupported">
                             <p><strong>Attention!</strong> You use an older version of JayStorm. Please publish your application to use the Package Manager.</p>
                         </div>
-                        
+
                         <script type="text/html" id="packageStatus">
                             <i data-bind="css: (value() == null || value() == 'pending') ? 'icon-time' : (value() == 'installed' ? 'icon-ok' : 'icon-ban-circle')"></i>
                             <span data-bind="text: value() != null ? value().charAt(0).toUpperCase() + value().slice(1).toLowerCase() : 'Waiting for deployment'"></span>
                             <pre style="overflow: auto;" data-bind="visible: value() == 'error', text: owner.StdErr()"></pre>
                         </script>
-                        
+
                         <div data-bind="jayGrid: { source: context().Packages, fields: [
                             { name: 'Name', $displayName: 'NPM package name' },
                             { name: 'Status', isVirtual: true, type:'string', '$width':'400px', '$template':'packageStatus' }
@@ -1265,29 +1205,20 @@
                                         </div>
                                         <h3>Publish API</h3>
                                     </li>
+                                    <li class="thumbnail" onclick="slideclick(event, this);" id="9">
+                                        <div class="box box-mini box-circle box-gray">
+                                            <h2>4</h2>
+                                        </div>
+                                        <h3>API Access</h3>
+                                    </li>
                                 </ul>
                             </div>
-
-                            <div class="blue-line">&nbsp;</div>
                         </div>
 
                         <h1>Application Publish</h1>
                         <div class="alert alert-info fade in clear">
                             <button type="button" class="close" data-dismiss="alert">x</button>
                             <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
-                        </div>
-                        <div data-bind="if: hasChanges" style="margin-bottom: 20px">
-                            <h3>Changed ApplicationDB items</h3>
-                            <div data-bind="foreach: changedObjects">
-                                <div data-bind="if: Items().length > 0">
-                                    <h4 data-bind="text: CollectionName"></h4>
-                                    <ul data-bind="foreach: Items">
-                                        <!-- ko if: _wrappedType.memberDefinitions.getMember('Name') -->
-                                        <li><span data-bind="text: Name"></span></li>
-                                        <!-- /ko -->
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                         <div data-bind="if: appContext">
                             <input type="button" data-bind="click: launch, attr: { disabled: launchDisabled }" value="Deploy changes and restart services" class="btn btn-info btn-deploy">
@@ -1296,33 +1227,18 @@
                             <h3 data-bind="if: launching">Publish in progress, please wait...</h3>
                             <h3 data-bind="if: launchingDone">Publish done!</h3>
                         </div>
-                        
-                        <div id="svcGrid" data-bind="jayGrid: { source: context().Services,
-                                                        context: context,
-                                                        fields: [
-                                                            {name:'Name'}
-                                                        ],
-                                                        showItemCommands: false,
-                                                        showNewCommandTop: false,
-                                                        showNewCommandBottom: false,
-                                                        beforeSave: function(){ $root.editingSource(false); },
-                                                        allDatabases: allDatabases,
-                                                        showRemoveAllCommand: false,
-                                                        showControls: false,
-                                                        databaseSet: context().Databases}">
-
-                            <!--, dbs: databases, databases: context().Databases-->
-                            <!--currentApplication-->
-                            <script type="text/html" data-name-template="Name-display">
-                                <b>
-                                    <a data-bind="{text: value, attr: { target: '_blank', href: $root.application.currentApplication().url + value() } }"></a>
-                                </b>
-                                <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
-                                <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">API access tutorials
-                                </a>
-
-                                <!--<a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
-                            </script>
+                        <div data-bind="if: hasChanges" style="margin-bottom: 20px">
+                            <h3>Changed ApplicationDB items</h3>
+                            <div data-bind="foreach: changedObjects">
+                                <div data-bind="if: Items().length > 0">
+                                    <h4 data-bind="text: CollectionName"></h4>
+                                    <ul class="cyan_list" data-bind="foreach: Items">
+                                        <!-- ko if: _wrappedType.memberDefinitions.getMember('Name') -->
+                                        <li><span data-bind="text: Name"></span></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1338,28 +1254,57 @@
                 </div>
                 <div class="tab-content-item tab-pane fade">
                     <div id="AccessClientsUI" data-bind="if: visible">
+                        <div class="thumbnails small">
+                            <div class="wrapper-mini">
+                                <ul>
+                                    <li class="thumbnail active" onclick="slideclick(event, this);" id="0">
+                                        <div class="box box-mini box-circle box-jayblue">
+                                            <h2><i class="icon-ok icon-white"></i></h2>
+                                        </div>
+                                        <h3>Define DB</h3>
+                                    </li>
+                                    <li class="thumbnail active" onclick="slideclick(event, this);" id="1">
+                                        <div class="box box-mini box-circle box-jayblue">
+                                            <h2><i class="icon-ok icon-white"></i></h2>
+                                        </div>
+                                        <h3>Create logic</h3>
+                                    </li>
+                                    <li class="thumbnail active" onclick="slideclick(event, this);" id="7">
+                                        <div class="box box-mini box-circle box-jayblue">
+                                            <h2><i class="icon-ok icon-white"></i></h2>
+                                        </div>
+                                        <h3>Publish API</h3>
+                                    </li>
+                                    <li class="thumbnail active" onclick="slideclick(event, this);" id="9">
+                                        <div class="box box-mini box-circle box-jayblue">
+                                            <h2>4</h2>
+                                        </div>
+                                        <h3>API Access</h3>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <h1>API access tutorials</h1>
 
                         <div class="alert alert-info fade in clear">
-<!--                            <button type="button" class="close" data-dismiss="alert">x</button>-->
-                            <p>
-                                After you have successfully published your JayStorm application, you can access your JayStorm services through standards based OData protocol in every language or application which supports OData.
-                                        Below you can find a few code snippet examples and tutorials for each of your services in different languages and applications. See more info in the tutorials.
-                            </p>
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            <p>After you have successfully published your JayStorm application, you can access your JayStorm services through standards based OData protocol in every language or application which supports OData. Below you can find a few code snippet examples and tutorials for each of your services in different languages and applications. See more info in the tutorials.</p>
                         </div>
-                        
+
                         <ul class="nav nav-tabs" data-bind="foreach:services">
                             <li><a href="#" data-bind="text:Name,click: $root.currentService.bind($data), attr: { 'data-servicename': Name }"></a></li>
                         </ul>
-                        
+
                         <div data-bind="if: data">
                             <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $root.currentService().Name() + '/', attr: { href: adminApiClient.currentApplication().url + $root.currentService().Name() + '/' }" target="_blank"></a></h5>
                             <div class="tabbable">
-                                <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $root.currentService().ServiceID() }">
+                                <ul class="nav nav-tabs reset-m" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $root.currentService().ServiceID() }">
                                     <li style="text-align: center;">
                                         <a data-toggle="tab" data-bind="click: function(){ $root.renderTemplate('service-template-' + name + '-' + $root.currentService().ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $root.currentService().ServiceID() }">
-                                            <i data-bind="if: cssclass, attr: { class: cssclass }"></i><br>
                                             <span data-bind="text: title"></span>
+                                            <br />
+                                            <i data-bind="if: cssclass, attr: { class: cssclass }"></i>
                                         </a>
                                     </li>
                                 </ul>
@@ -1483,40 +1428,37 @@
         </div>
     </div>
 
-    <div id="wrapper2" class="first">
-        <div id="scroller2">
+    <div class="first">
+        <div id="output"></div>
 
-            <div id="output"></div>
+        <script type="text/html" id="foobar">
+            <table class="table"></table>
+        </script>
 
-            <script type="text/html" id="foobar">
-                <table class="table"></table>
-            </script>
+        <script type="text/html" id="embedService">
+            <div>
+                <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i>Close</a>
 
-            <script type="text/html" id="embedService">
-                <div>
-                    <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i>Close</a>
-
-                    <!--<h3 class="sub-title">API access tutorials</h3>-->
-                    <!--<p>See how to access your API from different clients.</p>-->
-                    <!--<h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>-->
-                    <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
-                    <div class="tabbable tabs-left">
-                        <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
-                            <li>
-                                <!--<i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
-                                <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
-                            </li>
-                        </ul>
-                        <div class="tab-content" data-bind="foreach: embedTemplates">
-                            <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
-                        </div>
+                <!--<h3 class="sub-title">API access tutorials</h3>-->
+                <!--<p>See how to access your API from different clients.</p>-->
+                <!--<h5 class="muted">Service name: <span class="jayblue" data-bind="text: $data.data.owner.Name()"></span></h5>-->
+                <h5 class="muted">API URL: <a class="jayblue" data-bind="text: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/', attr: { href: adminApiClient.currentApplication().url + $data.data.owner.Name() + '/' }" target="_blank"></a></h5>
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs" data-bind="foreach: embedTemplates, attr: { id: 'embed-service-' + $data.data.owner.ServiceID() }">
+                        <li>
+                            <!--<i data-bind="if: cssclass, attr: { class: cssclass }"></i>-->
+                            <a data-toggle="tab" data-bind="text: title, click: function(){ $parent.renderTemplate('service-template-' + name + '-' + $parent.data.owner.ServiceID(), name, $data); }, attr: { href: '#service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" data-bind="foreach: embedTemplates">
+                        <div class="tab-pane fade" data-bind="attr: { id: 'service-template-' + name + '-' + $parent.data.owner.ServiceID() }"></div>
                     </div>
-
-                    <br />
-                    <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i>Close</a>
                 </div>
-            </script>
-        </div>
+
+                <br />
+                <a href="#" class="btn btn-danger pull-right marginr10" data-bind="click: closeControlBox"><i class="icon-remove icon-white"></i>Close</a>
+            </div>
+        </script>
     </div>
 
     <script type="text/javascript">
