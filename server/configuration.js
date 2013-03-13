@@ -1,12 +1,12 @@
 var config = {
     admin: {
-        url:'dev-admin.jaystack.net',
+        url:'admin.jaystack.net',
         port: 3000,
         ssl: false,
         launch: '/launch'
     },
     dashboard: {
-        url: 'dev-dashboard.jaystack.com',
+        url: 'dashboard.jaystack.com',
         port :443,
         ssl: true,
         auth: '/auth.axd'
