@@ -138,6 +138,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
 
                     self.hasChanges(false);
                     self.launchDisabled(false);
+                    self.application.publishSuccess(self.application.publishSuccess() + 1);
                 });
             }, 3000);
         });

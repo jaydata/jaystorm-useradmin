@@ -67,6 +67,15 @@ $(function () {
         self.currentApplication = ko.observable();
         self.applicationToAdd = ko.observable();
         self.launchFinished = ko.observable();
+        self.publishSuccess = ko.observable(0);
+        
+        self.publishSuccess.subscribe(function(value){
+            console.log('publishSuccess', value);
+            if (value){
+                localStorage[self.currentApplication().appid] = value;
+            }
+        });
+        
         self.addApp = function () {
             value = self.applicationToAdd();
             self.applications.push({ url: value, title: value });
@@ -547,6 +556,8 @@ $(function () {
                     updateVersion(appDBFactory);
                     self.currentAppDBContextFactory(appDBFactory);
                     self.navigationVisible(true);
+                    if (localStorage[value.appid]) self.publishSuccess(parseInt(localStorage[value.appid], 10));
+                    else self.publishSuccess(0);
                 },
                 error: function () {
                     setTimeout(function () {

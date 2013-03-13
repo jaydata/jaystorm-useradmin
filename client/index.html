@@ -29,7 +29,7 @@
     <script src="scripts/jaygrid-table-template.js"></script>
     <script src="scripts/jaygrid.js"></script>
     <script src="scripts/jay-property-editor.js"></script>
-
+    
     <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
     <script src="scripts/JayStormClient/service-app-base.js"></script>
     <script src="scripts/JayStormClient/users-groups.js"></script>
@@ -121,7 +121,7 @@
                     <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: id, class: cssclass }"></a></li>
                 </ul>
             </div>
-            <div class="tab-content">
+            <div class="tab-content main-tab-content">
                 <div class="tab-content-item tab-pane fade">
                     <div id="SchemaManagerUI" data-bind="if: visible">
                         <script type="text/html" id="customizeField">
@@ -450,7 +450,7 @@
                         </script>
 
                         <script type="text/html" id="indicesEditor">
-                            <div>
+                            <div class="inner-table">
                                 <h4 style="display: inline">Add or remove indices</h4>
                                 <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
                                 <div data-bind="with: selectedEntitySet">
@@ -521,6 +521,7 @@
 
                         </script>
 
+                        <!--ko if: adminApiClient.publishSuccess() == 0-->
                         <div class="thumbnails small">
                             <div class="wrapper-mini">
                                 <ul>
@@ -551,9 +552,10 @@
                                 </ul>
                             </div>
                         </div>
+                        <!--/ko-->
 
                         <h1>Manage Database Schemas</h1>
-                        <div class="alert alert-info fade in clear">
+                        <div data-bind="attr: { class: adminApiClient.publishSuccess() == 0 ? 'alert alert-info fade in clear margint50' : 'alert alert-info fade in clear' }">
                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
                             <p>If your application needs to store data, create tables and fields to describe it's shape. You'll be rewarded with an out of the box REST data API with query and CRUD capabilities.</p>
                         </div>
@@ -573,13 +575,13 @@
 
                         <div data-bind="if: currentDatabase">
                             <!-- ko if: currentDatabase().HasChanges -->
-                            <div class="alert alert-danger fright iblock" style="max-width: 600px">
+                            <div class="alert alert-danger" style="float: none;">
                                 <button type="button" class="close" data-dismiss="alert">&#120;</button>
                                 <p><strong>Attention!</strong> This database schema has changed. You need to publish these changes before they take effect.</p>
                             </div>
                             <!-- /ko -->
 
-                            <!--                                    <h5 class="muted">Selected database schema: <span class="jayblue" data-bind="text: currentDatabase().Name"></span></h5>-->
+                            <!--<h5 class="muted">Selected database schema: <span class="jayblue" data-bind="text: currentDatabase().Name"></span></h5>-->
                             <div data-bind="if: IsApplicationDB">
                                 <div class="alert alert-danger fright iblock" style="float: none;">
                                     <button type="button" class="close" data-dismiss="alert">&#120;</button>
@@ -657,6 +659,8 @@
                 </div>
                 <div class="tab-content-item tab-pane fade">
                     <div id="ServiceManagerUI" data-bind="if: visible">
+
+                        <!--ko if: adminApiClient.publishSuccess() == 0-->
                         <div class="thumbnails small">
                             <div class="wrapper-mini">
                                 <ul>
@@ -687,9 +691,10 @@
                                 </ul>
                             </div>
                         </div>
+                        <!--/ko-->
 
                         <h1>Manage Services</h1>
-                        <div class="alert alert-info fade in clear">
+                        <div data-bind="attr: { class: adminApiClient.publishSuccess() == 0 ? 'alert alert-info fade in clear margint50' : 'alert alert-info fade in clear' }">
                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
                             <p>
                                 You can manage your application services here, that is the data endpoint of your app.
@@ -893,8 +898,10 @@
                             <select class="input-medium" data-bind="options: groups, optionsText:'Name',  value: selectedGroup, optionsCaption:'All groups'"></select>
 
                             <span class="iblock actions" data-bind="foreach: tablePermissions">
-                                <label data-bind="text: name, attr: { for: name }"></label>
-                                <input type="checkbox" data-bind="checked: value, attr: { id: name }" />
+                                <span class="label-group">
+                                    <input class="checkbox" type="checkbox" data-bind="checked: value, attr: { id: name }" />
+                                    <label class="label-check" data-bind="text: name, attr: { for: name }"></label>
+                                </span>
                             </span>
 
                             <input class="btn btn-info" type="submit" value="Add permission" />
@@ -1051,10 +1058,12 @@
                     <div id="StaticFileUI" data-bind="if: visible">
                         <h1>Manage static files</h1>
 
+                        <!--ko if: isfreeapp-->
                         <div class="alert alert-danger" style="float: none;" data-bind="if: isfreeapp">
                             <p><strong>Attention!</strong> This is a JayStorm Open application. Your file upload will fail.</p>
                             <p>To use static files create a JayStorm Business application on <a href="https://dashboard.jaystack.com" target="_blank">https://dashboard.jaystack.com</a>.</p>
                         </div>
+                        <!--/ko-->
 
                         <div class="alert alert-info fade in">
                             <button type="button" class="close" data-dismiss="alert">&#120;</button>
@@ -1184,6 +1193,8 @@
                 </div>
                 <div class="tab-content-item tab-pane fade">
                     <div id="DeploymentUI" data-bind="if: visible">
+
+                        <!--ko if: adminApiClient.publishSuccess() == 0-->
                         <div class="thumbnails small">
                             <div class="wrapper-mini">
                                 <ul>
@@ -1214,9 +1225,10 @@
                                 </ul>
                             </div>
                         </div>
+                        <!--/ko-->
 
                         <h1>Application Publish</h1>
-                        <div class="alert alert-info fade in clear">
+                        <div data-bind="attr: { class: adminApiClient.publishSuccess() == 0 ? 'alert alert-info fade in clear margint50' : 'alert alert-info fade in clear' }">
                             <button type="button" class="close" data-dismiss="alert">x</button>
                             <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
                         </div>
@@ -1254,6 +1266,8 @@
                 </div>
                 <div class="tab-content-item tab-pane fade">
                     <div id="AccessClientsUI" data-bind="if: visible">
+
+                        <!--ko if: adminApiClient.publishSuccess() == 0-->
                         <div class="thumbnails small">
                             <div class="wrapper-mini">
                                 <ul>
@@ -1284,10 +1298,11 @@
                                 </ul>
                             </div>
                         </div>
+                        <!--/ko-->
 
                         <h1>API access tutorials</h1>
 
-                        <div class="alert alert-info fade in clear">
+                        <div data-bind="attr: { class: adminApiClient.publishSuccess() == 0 ? 'alert alert-info fade in clear margint50' : 'alert alert-info fade in clear' }">
                             <button type="button" class="close" data-dismiss="alert">x</button>
                             <p>After you have successfully published your JayStorm application, you can access your JayStorm services through standards based OData protocol in every language or application which supports OData. Below you can find a few code snippet examples and tutorials for each of your services in different languages and applications. See more info in the tutorials.</p>
                         </div>
@@ -1389,7 +1404,7 @@
                     <li>
                         <div class="icon file">&nbsp;</div>
                         <div class="item-content">
-                            <h2><a onclick="slideclick(event, this);" id="4" href="#">File manager</a></h2>
+                            <h2><a onclick="slideclick(event, this);" id="5" href="#">File manager</a></h2>
                             <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
                         </div>
                     </li>
