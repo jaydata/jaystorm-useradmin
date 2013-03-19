@@ -183,6 +183,12 @@
                                             </div>
                                         </div>
                                         <div class="control-group">
+                                            <label class="control-label" for="inputLazyLoad">Lazy load</label>
+                                            <div class="controls">
+                                                <input type="checkbox" id="inputLazyLoad" data-bind="checked: data.LazyLoad" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
                                             <label class="control-label" for="inputRequired">Required</label>
                                             <div class="controls">
                                                 <input type="checkbox" id="inputRequired" data-bind="checked: data.Required" />
@@ -257,8 +263,9 @@
                                                     discriminatorValue:$data.data.owner.ElementTypeID(),
                                                     fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
                                                             { name: 'Name', 'hint': 'Field name'},
-                                                            'TypeTemplate',
-                                                            'ElementType','Required', 'Nullable']}">
+                                                            { name: 'TypeTemplate', $displayName: 'Type' },
+                                                            { name: 'ElementType', $displayName: 'Element type' }, 'Required', 'Nullable',
+                                                            { name: 'LazyLoad', $displayName: 'Lazy load' }]}">
 
                                     <div data-name-template="TypeTemplate-editor">
                                         <div data-bind="text: console.log($root)"></div>
