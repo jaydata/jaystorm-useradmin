@@ -1051,7 +1051,7 @@
                         <script type="text/html" id="packageStatus">
                             <i data-bind="css: (value() == null || value() == 'pending') ? 'icon-time' : (value() == 'installed' ? 'icon-ok' : 'icon-ban-circle')"></i>
                             <span data-bind="text: value() != null ? value().charAt(0).toUpperCase() + value().slice(1).toLowerCase() : 'Waiting for deployment'"></span>
-                            <pre style="overflow: auto;" data-bind="visible: value() == 'error', text: owner.StdErr()"></pre>
+                            <pre style="overflow: auto; text-align: left;" data-bind="visible: value() == 'error', text: owner.StdErr()"></pre>
                         </script>
 
                         <div data-bind="jayGrid: { source: context().Packages, fields: [
