@@ -29,33 +29,37 @@
 
     <script src="scripts/jaydata/jaydatamodules/knockout.js"></script>
     <script src="scripts/codeApplication.js"></script>
-    
+
     <script src="scripts/ejs.js"></script>
-    
+
     <script src="scripts/codemirror/lib/codemirror.js" type="text/javascript"></script>
     <link rel="stylesheet" href="scripts/codemirror/lib/codemirror.css" type="text/css">
     <script src="scripts/codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
-    
+
     <script src="scripts/codemirror/lib/util/simple-hint.js" type="text/javascript"></script>
     <link rel="stylesheet" href="scripts/codemirror/lib/util/simple-hint.css" type="text/css">
-    
+
     <script src="scripts/codemirror/lib/util/javascript-hint.js" type="text/javascript"></script>
-    
+
     <script src="scripts/codemirror/lib/util/searchcursor.js" type="text/javascript"></script>
     <script src="scripts/codemirror/lib/util/match-highlighter.js" type="text/javascript"></script>
     <script src="scripts/codemirror/lib/util/runmode.js" type="text/javascript"></script>
-    
+
     <link rel="stylesheet" href="scripts/codemirror/theme/night.css" type="text/css">
     <link rel="stylesheet" href="scripts/codemirror/theme/ambiance.css" type="text/css">
-    
+
     <script src="scripts/jshint.js" type="text/javascript"></script>
-    
+
     <script src="scripts/codemirror.js"></script>
-        
+
     <script type="text/javascript">
         //console.log(window.opener.stormApplications, window.opener.globalAuthorization);
         $(function () {
             ko.applyBindings(new clientApplication().start());
+
+            if (location.href.indexOf("dev-") >= 0) {
+                $("#logo-jaystorm").after("<span class='logo-beta'>&nbsp;</span>");
+            }
         });
     </script>
 </head>
@@ -63,20 +67,22 @@
     <div id="header">
         <div class="navbar navbar-inverse navbar-fixed-top medium">
             <div class="navbar-inner">
-                <a class="brand" href="/">JayStorm Admin</a>
+                <div class="logo-container">
+                    <a id="logo-jaystorm" class="brand" href="/">JayStorm Admin</a>
+                </div>
 
                 <div class="bold12 border-l-gray label-medium">Application: <span class="text-inline jay-blue" data-bind="text: currentApplication().title"></span></div>
-                <div class="bold12 border-l-gray label-medium"><span data-bind="text: config().event ? 'Table: ' : 'Service: '"></span> <span class="text-inline jay-blue" data-bind="text: currentService().Name()"></span></div>
+                <div class="bold12 border-l-gray label-medium"><span data-bind="text: config().event ? 'Table: ' : 'Service: '"></span><span class="text-inline jay-blue" data-bind="text: currentService().Name()"></span></div>
                 <div class="bold12 border-l-gray label-medium">Config type:  <span class="text-inline jay-blue" data-bind="text: '(' + (config().type ? config().type() : 'N/A') + ')'"></span></div>
             </div>
         </div>
     </div>
-    
+
     <div class="full-screen medium">
         <div class="alert alert-warning right">
             <p>If you change the service parameters, you need to publish these changes before they take effect.</p>
         </div>
-        
+
         <h2 class="margint0">Edit source</h2>
         <a href="#" data-bind="css: dirty() ? 'btn btn-danger' : 'btn', click: cancel">Close</a>
         <a href="#" data-bind="visible: dirty(), click: done" class="btn btn-success">Save</a>

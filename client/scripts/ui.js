@@ -41,4 +41,8 @@ $(function () {
             welcome.style.display = "none";
         }, false);
     }
+
+    if (location.href.indexOf("dev-") >= 0) {
+        $("#logo-jaystorm").after("<span class='logo-beta'>&nbsp;</span>");
+    }
 });

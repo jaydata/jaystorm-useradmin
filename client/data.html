@@ -35,6 +35,10 @@
         //console.log(window.opener.stormApplications, window.opener.globalAuthorization);
         $(function () {
             ko.applyBindings(new clientApplication().start());
+
+            if (location.href.indexOf("dev-") >= 0) {
+                $("#logo-jaystorm").after("<span class='logo-beta'>&nbsp;</span>");
+            }
         });
 
         $("ul.nav > li > a").live('click', function () {
@@ -49,7 +53,9 @@
     <div id="header">
         <div class="navbar navbar-inverse navbar-fixed-top data">
             <div class="navbar-inner ">
-                <a class="brand" href="/">JayStorm Admin</a>
+                <div class="logo-container">
+                    <a id="logo-jaystorm" class="brand" href="/">JayStorm Admin</a>
+                </div>
 
                 <form class="form-inline">
                     <div class="fullrow1 ">
