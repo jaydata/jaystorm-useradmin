@@ -13,11 +13,11 @@ $(function () {
     function ClientApplication() {
         var self = this;
         
-        self.adminApi = ko.observable();
+        /*self.adminApi = ko.observable();
         
         $data.service("/adminapi", function (f) {
             self.adminApi(f());
-        });
+        });*/
 
         self.authorization = ko.observable();
 
@@ -67,6 +67,15 @@ $(function () {
         self.currentApplication = ko.observable();
         self.applicationToAdd = ko.observable();
         self.launchFinished = ko.observable();
+        self.publishSuccess = ko.observable(0);
+        
+        self.publishSuccess.subscribe(function(value){
+            console.log('publishSuccess', value);
+            if (value){
+                localStorage[self.currentApplication().appid] = value;
+            }
+        });
+        
         self.addApp = function () {
             value = self.applicationToAdd();
             self.applications.push({ url: value, title: value });
@@ -90,21 +99,48 @@ $(function () {
                     entityfields: '$data.JayStormAPI.EntityField',
                     appdb: appdb.DatabaseID
                 }, function(entityfieldEntity){
-                    if (!c.EntityFields.createNew.memberDefinitions.getMember('InverseFieldID')){
-                        update = true;
-                        c.EntityFields.add(new c.EntityFields.createNew({
-                            Name: 'Id',
-                            Type: 'id',
-                            TypeTemplate: 'Reference',
-                            DatabaseID: appdb.DatabaseID,
-                            EntityID: entityfieldEntity.EntityID
-                        }));
-                    }
+                    return c.EntityFields.filter(function(it){
+                        return it.EntityID == this.entity &&
+                            it.DatabaseID == this.appdb &&
+                            (
+                                it.Name == this.inversefieldid ||
+                                it.Name == this.lazyload
+                            );
+                        }, {
+                            entity: entityfieldEntity.EntityID,
+                            appdb: appdb.DatabaseID,
+                            inversefieldid: 'InverseFieldID',
+                            lazyload: 'LazyLoad'
+                        }).toArray(function(entityfield){
+                            if (entityfield.length < 2){
+                                if (!entityfield.filter(function(it){ return it.Name == 'InverseFieldID'; }).length){
+                                    update = true;
+                                    c.EntityFields.add(new c.EntityFields.createNew({
+                                        Name: 'InverseFieldID',
+                                        Type: 'id',
+                                        TypeTemplate: 'Reference',
+                                        DatabaseID: appdb.DatabaseID,
+                                        EntityID: entityfieldEntity.EntityID
+                                    }));
+                                }
+                                
+                                if (!entityfield.filter(function(it){ return it.Name == 'LazyLoad'; }).length){
+                                    update = true;
+                                    c.EntityFields.add(new c.EntityFields.createNew({
+                                        Name: 'LazyLoad',
+                                        Type: 'boolean',
+                                        TypeTemplate: 'Boolean',
+                                        DatabaseID: appdb.DatabaseID,
+                                        EntityID: entityfieldEntity.EntityID
+                                    }));
+                                }
+                            }
+                        });
                 }).then(function(){
-                    c.TypeTemplates.filter(function(it){ return it.Name == this.geo; }, { geo: 'Geography' }).toArray(function(tt){
-                        if (tt.length){
+                    return c.TypeTemplates/*.filter(function(it){ return it.Name == this.geo; }, { geo: 'Geography' })*/.toArray(function(tt){
+                        if (tt.filter(function(it){ return it.Name == 'Geography' }).length){
                             update = true;
-                            c.TypeTemplates.remove(tt[0]);
+                            c.TypeTemplates.remove(tt.filter(function(it){ return it.Name == 'Geography' })[0]);
                             
                             c.TypeTemplates.add(new c.TypeTemplates.createNew({
                                 Name: 'Geography point',
@@ -120,7 +156,17 @@ $(function () {
                                 TypeDescriptor: '{"Type":"$data.GeometryPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
                             }));
                         }
-                    })
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Binary' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Binary',
+                                Description: 'Binary data',
+                                TypeName: '$data.Blob',
+                                TypeDescriptor: '{"Type":"$data.Blob","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{\\"$contentType\\":\\"application/octet-stream\\"}"}'
+                            }));
+                        }
+                    });
                 }).then(function(){
                 
                 c.EntitySets.single(function(it){
@@ -547,6 +593,8 @@ $(function () {
                     updateVersion(appDBFactory);
                     self.currentAppDBContextFactory(appDBFactory);
                     self.navigationVisible(true);
+                    if (localStorage[value.appid]) self.publishSuccess(parseInt(localStorage[value.appid], 10));
+                    else self.publishSuccess(0);
                 },
                 error: function () {
                     setTimeout(function () {

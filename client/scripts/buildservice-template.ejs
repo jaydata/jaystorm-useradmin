@@ -1,11 +1,25 @@
+<%
+function indent(str){
+    return str.replace(/\n/g, '\n        ');
+}
+
+function trim(str){
+    for (var i = str.length - 1; i > 0; i--){
+        if (str[i] == ' ' || str[i] == '\r' || str[i] == '\n'){
+            str = str.slice(0, i);
+        }else break;
+    }
+    
+    return str;
+}
+%>
+
 module.exports = exports = function(type){
     "use strict";
     var <%=serviceName %>ServiceType = type.extend('<%=serviceName %>ServiceType', {
-
-<% for (var i = 0; i < serviceOperations.length; i++){ %>// <%=serviceOperations[i].Name %> service operation generated from build
-<%=serviceOperations[i].Name %>: <%=serviceOperations[i].FunctionBody %><% if (i < serviceOperations.length - 1){ %>,
+<% for (var i = 0; i < serviceOperations.length; i++){ %>        // <%=serviceOperations[i].Name %> service operation generated from build
+        <%=serviceOperations[i].Name %>: <%=indent(trim(serviceOperations[i].FunctionBody)) %><% if (i < serviceOperations.length - 1){ %>,
 <% } %><% } %>
-
     });
     
     <%=serviceName %>ServiceType.annotateFromVSDoc();

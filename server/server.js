@@ -68,18 +68,27 @@ passport.use(new BasicStrategy ({
                   var data = '';
                   res.on("data", function (d) {
                       data += d;
+                      console.log('basic auth data', d);
                   });
                   res.on("end", function () {
                       var apps = JSON.parse(data);
+                      console.log({ 'username': username, 'apps': apps.apps});
                       done(null, { 'username': username, 'apps': apps.apps});
                   });
 
               } else {
+                  console.log('basic auth done null null');
                   done(null, null);
               }
               
 
           });
+          
+          req.on('error', function(err){
+              console.log(err);
+              done(null, null);
+          })
+          
           req.end();
           //console.dir(req);
       });
@@ -127,11 +136,11 @@ app.use(function (req, res, next) {
     next();
 });
 passport.serializeUser(function (user, done) {
-    console.log("serialize user:" + user.username);
+    //console.log("serialize user:" + user.username);
     done(null, user.username);
 });
 passport.deserializeUser(function (username, done) {
-    console.log("deserialize user");
+    //console.log("deserialize user");
     done(null, { username: username, email: 'foobar' });
 });
 app.use(c.bodyParser());
@@ -140,9 +149,9 @@ app.use(c.cookieParser());
 app.use(c.methodOverride());
 
 app.use('/getAuthorization', function(req, res, next){
-    console.log('passport init', req);
+    //console.log('passport init', req);
     passport.initialize()(req, res, function(){
-        console.log('passport auth', req);
+        //console.log('passport auth', req);
         passport.authenticate('basic', { session: false })(req, res, next);
     });
 });
@@ -180,20 +189,29 @@ app.use('/launch', function (req, res, next) {
             var data = '';
             launchRes.on("data", function (d) {
                 data += d;
+                console.log('launch data', d);
             });
             launchRes.on("end", function () {
                 console.dir("launch finished");
-                console.log(data);
+                console.log('launch data', data);
                 res.end(data);
             });
 
         } else {
+            console.log('launch done null null');
             done(null, null);
+            res.end();
         }
 
 
     });
     console.log("sending: " + JSON.stringify(req.body));
+    
+    launchReq.on('error', function(err){
+        console.log(err);
+        res.end();
+    });
+    
     launchReq.end(JSON.stringify(req.body));
 });
 
@@ -355,11 +373,11 @@ app.use('/logout', function(req, res){
 });
 
 
-var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
+/*var db2Svc = require('./dbtypes/DB2Context.js').serviceType;
 require('./stormAdminAPI');
 app.use('/adminapi', passport.initialize());
 app.use('/adminapi', passport.authenticate('basic', { session: false }));
-app.use("/adminapi", $data.JayService.createAdapter(JayStorm.AdminAPI));
+app.use("/adminapi", $data.JayService.createAdapter(JayStorm.AdminAPI));*/
 
  
 //var provSvc = require('./dbtypes/AWSBroker.js').serviceType;
