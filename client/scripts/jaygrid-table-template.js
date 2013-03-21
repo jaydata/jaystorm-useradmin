@@ -163,12 +163,47 @@ var templateList = [
             data-bind='value: Model.Value, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
     ["jay-data-grid-$data.Geography-default-editor",
+        "Lng:<input type='text' \
+            data-bind='value: Model.Longitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /><br /> \
+        Lat:<input type='text' \
+            data-bind='value: Model.Latitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /><br /> \
+            <!-- ko template: { name: 'jay-data-grid-Modal-picker', data: Model.Modal } --> \
+            <!-- /ko -->"],
+
+    /*["jay-data-grid-$data.Geography-default-display",
+        "<span data-bind='text: Model.Longitude'></span> / <span data-bind='text: Model.Latitude'></span>"],*/
+
+    ["jay-data-grid-$data.Geography-default-display",
+        "<div data-bind='visible: Model.onDisplay(), attr: { id: Model.mapId + \"-display\" }' style='width:100%; height:150px'></div>"],
+
+    ["jay-data-grid-Modal-picker",
+        "<a data-bind='click: onShow, text: btnText, attr: { href: \"#modal_\" + Id }' role='button' class='btn' data-toggle='modal' data-show='true'></a> \
+        \
+        <div data-bind='attr: { id: \"modal_\" + Id }' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'> \
+          <div class='modal-header'> \
+            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button> \
+            <h3 id='myModalLabel' data-bind='text: Title'>Modal header</h3> \
+          </div> \
+          <div class='modal-body'> \
+            <!-- ko template: { name: template, data: Model } --> \
+            <!-- /ko --> \
+          </div> \
+          <div class='modal-footer'> \
+            <button class='btn' data-dismiss='modal' aria-hidden='true'>Close</button> \
+            <button class='btn btn-primary' data-bind='click: valueSelected' data-dismiss='modal'>Change</button> \
+          </div> \
+        </div>"],
+
+    ["jay-data-grid-$data.Geography-Point-picker",
+        "<div data-bind='attr: { id: mapId }' style='width:100%; height:300px'></div>"],
+
+    ["jay-data-grid-$data.Geometry-default-editor",
         "Long:<input type='text' \
             data-bind='value: Model.Longitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' /><br /> \
         Lat:<input type='text' \
             data-bind='value: Model.Latitude, attr: { required: metadata.required }, css: { verror: owner.ValidationErrors }' />"],
 
-    ["jay-data-grid-$data.Geography-default-display",
+    ["jay-data-grid-$data.Geometry-default-display",
         "<span data-bind='text: Model.Longitude'></span> / <span data-bind='text: Model.Latitude'></span>"],
 
     ["jay-data-grid-$data.Date-default-editor",

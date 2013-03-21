@@ -697,7 +697,7 @@
                     var nameSuffix = '';
 
                     if (!(metadata.resolvedName && metadata.stringName)) {
-                        metadata.stringName = Container.getName(metadata.type);
+                        metadata.stringName = Container.getName(metadata.originalType || metadata.type);
                         metadata.resolvedName = Container.resolveName(metadata.type);
                     };
 
@@ -860,7 +860,7 @@
             return model;
         },
         isDecimal: function (val) {
-            return typeof val === 'string' && (/^[0-9]+.[0-9]+$/.test(val) || /^[0-9]+$/.test(val) || /^[-+][0-9]+.[0-9]+$/.test(val) || /^[-+][0-9]+$/.test(val));
+            return typeof val === 'number' || (typeof val === 'string' && (/^[0-9]+.[0-9]+$/.test(val) || /^[0-9]+$/.test(val) || /^[-+][0-9]+.[0-9]+$/.test(val) || /^[-+][0-9]+$/.test(val)));
         },
 
         '$data.Date': function (columnInfo) {
@@ -969,6 +969,13 @@
                 templateName: 'jay-data-grid-$data.Geography-default'
             }
 
+            var defStartPoz = [51.505, -0.09];
+            if (navigator && navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (geo) {
+                    defStartPoz = [geo.coords.latitude, geo.coords.longitude];
+                });
+            }
+
             var self = this;
             model.Longitude.subscribe(function (val) {
                 var geo = columnInfo.value() || new $data.GeographyPoint([0, 0]);
@@ -987,6 +994,73 @@
                 model.Latitude(geo.coordinates[1]);
             });
 
+            //<div data-bind='attr: { Id: Model.mapID }' style='width:100%; height:300px'></div>
+            model.mapId = $data.createGuid().toString().replace(/\-/g, '');
+            var lmap, geo, newGeo = geoVal;
+            console.log(model.mapId);
+            model.onDisplay = function () {
+                setTimeout(function () {
+                    if (columnInfo.value()) {
+                        var dlmap = L.map(model.mapId + '-display').setView([newGeo.latitude, newGeo.longitude], 13);
+
+                        L.tileLayer('http://{s}.tile.cloudmade.com/003d6e8d9af14e7582b462c10e572a1a/997/256/{z}/{x}/{y}.png', {
+                            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                            maxZoom: 18
+                        }).addTo(dlmap);
+                        L.geoJson(geoVal).addTo(dlmap);
+                        console.log('st v2');
+                    }
+                }, 500);
+                return true;
+            };
+
+            model.Modal = {
+                template: 'jay-data-grid-$data.Geography-Point-picker',
+                Id: model.mapId,
+                Model: model,
+                btnText: 'Pick ' + columnInfo.metadata.name,
+                Title: 'Location picker',
+                onShow: function () {
+                    if (!lmap) {
+                        
+                        setTimeout(function () {
+                            var startPoz = [newGeo.latitude, newGeo.longitude];
+                            if (startPoz[0] === 0 && startPoz[1] === 0) {
+                                startPoz = defStartPoz;
+                            }
+
+                            lmap = L.map(model.mapId).setView(startPoz, 13);
+
+                            L.tileLayer('http://{s}.tile.cloudmade.com/003d6e8d9af14e7582b462c10e572a1a/997/256/{z}/{x}/{y}.png', {
+                                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                                maxZoom: 18
+                            }).addTo(lmap);
+                            geo = L.geoJson(geoVal);
+                            geo.addTo(lmap);
+
+                            lmap.on('click', function (e) {
+                                newGeo = new $data.GeographyPoint(e.latlng.lng, e.latlng.lat);
+
+                                lmap.removeLayer(geo);
+                                geo = L.geoJson(newGeo);
+                                geo.addTo(lmap);
+
+                            });
+
+                            $('#' + model.mapId).on('hide', function () {
+                                console.log('hide');
+                            });
+
+                        }, 1000);
+                    };
+
+                },
+                valueSelected: function () {
+                    setTimeout(function () {
+                        columnInfo.value(newGeo);
+                    }, 200);
+                }
+            };
             return model;
         },
         
@@ -995,7 +1069,7 @@
             var model = {
                 Longitude: ko.observable(geoVal.coordinates[0]),
                 Latitude: ko.observable(geoVal.coordinates[1]),
-                templateName: 'jay-data-grid-$data.Geography-default'
+                templateName: 'jay-data-grid-$data.Geometry-default'
             }
 
             var self = this;
@@ -1042,7 +1116,7 @@
         '$data.Array': function (columnInfo) {
             var model = {
                 Value: ko.observable(JSON.stringify(columnInfo.value())),
-                ElementTypeName: columnInfo.metadata.elementType ? Container.getName(columnInfo.metadata.elementType).replace('$data.', '') : 'unknown',
+                ElementTypeName: columnInfo.metadata.elementType ? Container.resolveName(columnInfo.metadata.elementType).replace('$data.', '') : 'unknown',
                 templateName: 'jay-data-grid-$data.Array-default'
             }
 
@@ -1063,7 +1137,7 @@
 
         '$data.Blob': function (columnInfo, ctx) {
             var self = this;
-            if (Container.getName(columnInfo.metadata.type) === 'Edm.Binary' && (!columnInfo.metadata.$contentType || columnInfo.metadata.$contentType === 'image')) {
+            if (Container.getName(columnInfo.metadata.originalType || columnInfo.metadata.type) === 'Edm.Binary' && (!columnInfo.metadata.$contentType || columnInfo.metadata.$contentType === 'image')) {
                 var basevalue = columnInfo.value();
                 var model = {
                     Value: ko.observable(basevalue),

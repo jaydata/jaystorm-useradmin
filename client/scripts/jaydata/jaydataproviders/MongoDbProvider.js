@@ -93,11 +93,12 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
                         $item: {
                             $type: $data.ObjectID,
                             $value: function(meta, data){
-                                var type = Container.resolveName(meta.$type);
+                                return data;
+                                /*var type = Container.resolveName(meta.$type);
                                 var converter = this.context.storageProvider.fieldConverter.fromDb;
                                 var converterFn = converter ? converter[type] : undefined;
                                 
-                                return converter && converter[type] ? converter[type](data) : new (Container.resolveType(type))(data);
+                                return converter && converter[type] ? converter[type](data) : new (Container.resolveType(type))(data);*/
                             }
                         }
                     });
@@ -146,6 +147,8 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
                 
                 if (type !== $data.Array){// && (type.isAssignableTo ? !type.isAssignableTo($data.Entity) : true)){
                     builder.modelBinderConfig.$selector = 'json:' + expression.selector.memberDefinition.name;
+                    //delete builder.modelBinderConfig.$source;
+                    //console.log(builder.modelBinderConfig);
                 }
                 
                 if (builder._binderConfig.$item === builder.modelBinderConfig &&
@@ -153,6 +156,8 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
                     expression.selector.memberDefinition.storageModel.ComplexTypes[expression.selector.memberDefinition.name]){
                     builder.modelBinderConfig.$selectorMemberInfo = builder.modelBinderConfig.$selector;
                     delete builder.modelBinderConfig.$selector;
+                }else{
+                    delete builder.modelBinderConfig.$source;
                 }
             }
         }
@@ -171,7 +176,7 @@ $C('$data.modelBinder.mongoDBModelBinderConfigCompiler', $data.modelBinder.Model
                 if (builder._binderConfig.$item === builder.modelBinderConfig){
                     builder._binderConfig.$item = {
                         $type: builder.modelBinderConfig.$type,
-                        $selector: builder.modelBinderConfig.$selectorMemberInfo,
+                        $selector: builder.modelBinderConfig.$selectorMemberInfo || builder.modelBinderConfig.$selector,
                         $source: expression.memberDefinition.computed ? '_id' : expression.memberName
                     };
                 }else{
@@ -1502,14 +1507,14 @@ $C('$data.storageProviders.mongoDB.mongoDBProvider', $data.StorageProviderBase, 
                         return new $data.mongoDBDriver.ObjectID.createFromHexString(new Buffer(id, 'base64').toString('ascii'));
                     }else return id;
                 },
-                '$data.GeographyPoint': function (g) { return g; },
+                '$data.GeographyPoint': function (g) { return g.coordinates; },
                 '$data.GeographyLineString': function (g) { return g; },
                 '$data.GeographyPolygon': function (g) { return g; },
                 '$data.GeographyMultiPoint': function (g) { return g; },
                 '$data.GeographyMultiLineString': function (g) { return g; },
                 '$data.GeographyMultiPolygon': function (g) { return g; },
                 '$data.GeographyCollection': function (g) { return g; },
-                '$data.GeometryPoint': function (g) { return g; },
+                '$data.GeometryPoint': function (g) { return g.coordinates; },
                 '$data.GeometryLineString': function (g) { return g; },
                 '$data.GeometryPolygon': function (g) { return g; },
                 '$data.GeometryMultiPoint': function (g) { return g; },

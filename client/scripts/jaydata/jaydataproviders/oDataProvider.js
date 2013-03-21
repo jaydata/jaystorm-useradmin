@@ -12,12 +12,35 @@
 //
 // More info: http://jaydata.org
 
+var datajsPatch;
+datajsPatch = function () {
+    if (OData && OData.jsonHandler && 'useJsonLight' in OData.jsonHandler) {
+        console.log('!!!!!!! - patch datajs 1.1.0');
+        var oldread = OData.defaultHandler.read;
+        OData.defaultHandler.read = function (p, context) {
+            delete context.contentType;
+            delete context.dataServiceVersion;
+
+            oldread.apply(this, arguments);
+        };
+        var oldwrite = OData.defaultHandler.write;
+        OData.defaultHandler.write = function (p, context) {
+            delete context.contentType;
+            delete context.dataServiceVersion;
+
+            oldwrite.apply(this, arguments);
+        };
+    }
+    datajsPatch = function () { };
+}
+
 $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null,
 {
     constructor: function (cfg, ctx) {
         if (typeof OData === 'undefined') {
             Guard.raise(new Exception('datajs is required', 'Not Found!'));
         }
+        datajsPatch();
 
         this.SqlCommands = [];
         this.context = ctx;
@@ -26,16 +49,36 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             oDataServiceHost: "/odata.svc",
             serviceUrl: "",
             maxDataServiceVersion: '2.0',
+            dataServiceVersion: undefined,
+            setDataServiceVersionToMax: true,
             user: null,
             password: null,
             withCredentials: false,
-            enableJSONP: false
+            //enableJSONP: undefined,
+            //useJsonLight: undefined
+            UpdateMethod: 'PATCH'
         }, cfg);
+
+        this.fixkDataServiceVersions(cfg);
+
         if (this.context && this.context._buildDbType_generateConvertToFunction && this.buildDbType_generateConvertToFunction) {
             this.context._buildDbType_generateConvertToFunction = this.buildDbType_generateConvertToFunction;
         }
         if (this.context && this.context._buildDbType_modifyInstanceDefinition && this.buildDbType_modifyInstanceDefinition) {
             this.context._buildDbType_modifyInstanceDefinition = this.buildDbType_modifyInstanceDefinition;
+        }
+    },
+    fixkDataServiceVersions: function (cfg) {
+        if (this.providerConfiguration.dataServiceVersion > this.providerConfiguration.maxDataServiceVersion) {
+            this.providerConfiguration.dataServiceVersion = this.providerConfiguration.maxDataServiceVersion;
+        }
+        
+        if (this.providerConfiguration.setDataServiceVersionToMax === true) {
+            this.providerConfiguration.dataServiceVersion = this.providerConfiguration.maxDataServiceVersion;
+        }
+
+        if ((cfg && !cfg.UpdateMethod && this.providerConfiguration.dataServiceVersion < '3.0') || !this.providerConfiguration.dataServiceVersion) {
+            this.providerConfiguration.UpdateMethod = 'MERGE';
         }
     },
     initializeStore: function (callBack) {
@@ -139,7 +182,6 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                 requestUri: this.providerConfiguration.oDataServiceHost + sql.queryText,
                 method: sql.method,
                 data: sql.postData,
-                enableJsonpCallback: this.providerConfiguration.enableJSONP,
                 headers: {
                     MaxDataServiceVersion: this.providerConfiguration.maxDataServiceVersion
                 }
@@ -159,6 +201,17 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                 callBack.error(errorThrow || new Exception('Request failed', 'RequestError', arguments));
             }
         ];
+
+        if (this.providerConfiguration.dataServiceVersion) {
+            requestData[0].headers.DataServiceVersion = this.providerConfiguration.dataServiceVersion;
+        }
+       
+        if (typeof this.providerConfiguration.enableJSONP !== 'undefined') {
+            requestData[0].enableJsonpCallback = this.providerConfiguration.enableJSONP;
+        }
+        if (typeof this.providerConfiguration.useJsonLight !== 'undefined') {
+            requestData[0].useJsonLight = this.providerConfiguration.useJsonLight;
+        }
 
         this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password, this.providerConfiguration.withCredentials);
         //if (this.providerConfiguration.user) {
@@ -204,6 +257,13 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                         MaxDataServiceVersion: this.providerConfiguration.maxDataServiceVersion
                     }
                 };
+                if (this.providerConfiguration.dataServiceVersion) {
+                    request.headers.DataServiceVersion = this.providerConfiguration.dataServiceVersion;
+                }
+                if (typeof this.providerConfiguration.useJsonLight !== 'undefined') {
+                    request.useJsonLight = this.providerConfiguration.useJsonLight;
+                }
+
                 //request.headers = { "Content-Id": convertedItem.length };
                 switch (independentBlocks[index][i].data.entityState) {
                     case $data.EntityState.Unchanged: continue; break;
@@ -213,7 +273,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                         request.data = this.save_getInitData(independentBlocks[index][i], convertedItem);
                         break;
                     case $data.EntityState.Modified:
-                        request.method = "MERGE";
+                        request.method = this.providerConfiguration.UpdateMethod;
                         request.requestUri += independentBlocks[index][i].entitySet.tableName;
                         request.requestUri += "(" + this.getEntityKeysValue(independentBlocks[index][i]) + ")";
                         this.save_addConcurrencyHeader(independentBlocks[index][i], request.headers);
@@ -233,7 +293,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
         var that = this;
 
         var requestData = [request, function (data, response) {
-            if (response.statusCode > 200 && response.statusCode < 300) {
+            if (response.statusCode >= 200 && response.statusCode < 300) {
                 var item = convertedItem[0];
                 if (response.statusCode == 204) {
                     if (response.headers.ETag || response.headers.Etag || response.headers.etag) {
@@ -283,7 +343,10 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             for (var i = 0; i < independentBlocks[index].length; i++) {
                 convertedItem.push(independentBlocks[index][i].data);
                 var request = {};
-                request.headers = { "Content-Id": convertedItem.length };
+                request.headers = {
+                    "Content-Id": convertedItem.length,
+                    MaxDataServiceVersion: this.providerConfiguration.maxDataServiceVersion
+                };
                 switch (independentBlocks[index][i].data.entityState) {
                     case $data.EntityState.Unchanged: continue; break;
                     case $data.EntityState.Added:
@@ -292,7 +355,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                         request.data = this.save_getInitData(independentBlocks[index][i], convertedItem);
                         break;
                     case $data.EntityState.Modified:
-                        request.method = "MERGE";
+                        request.method = this.providerConfiguration.UpdateMethod;
                         request.requestUri = independentBlocks[index][i].entitySet.tableName;
                         request.requestUri += "(" + this.getEntityKeysValue(independentBlocks[index][i]) + ")";
                         this.save_addConcurrencyHeader(independentBlocks[index][i], request.headers);
@@ -305,6 +368,10 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                         this.save_addConcurrencyHeader(independentBlocks[index][i], request.headers);
                         break;
                     default: Guard.raise(new Exception("Not supported Entity state"));
+                }
+
+                if (this.providerConfiguration.dataServiceVersion) {
+                    request.headers.DataServiceVersion = this.providerConfiguration.dataServiceVersion;
                 }
                 batchRequests.push(request);
             }
@@ -326,7 +393,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                 var errors = [];
 
                 for (var i = 0; i < result.length; i++) {
-                    if (result[i].statusCode > 200 && result[i].statusCode < 300) {
+                    if (result[i].statusCode >= 200 && result[i].statusCode < 300) {
                         var item = convertedItem[i];
                         if (result[i].statusCode == 204) {
                             if (result[i].headers.ETag || result[i].headers.Etag || result[i].headers.etag) {
@@ -368,6 +435,13 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             callBack.error(new Exception((e.response || {}).body, e.message, e));
         }, OData.batchHandler];
 
+        if (this.providerConfiguration.dataServiceVersion) {
+            requestData[0].headers.DataServiceVersion = this.providerConfiguration.dataServiceVersion;
+        }
+        if (typeof this.providerConfiguration.useJsonLight !== 'undefined') {
+            requestData[0].useJsonLight = this.providerConfiguration.useJsonLight;
+        }
+
         this.appendBasicAuth(requestData[0], this.providerConfiguration.user, this.providerConfiguration.password, this.providerConfiguration.withCredentials);
         //if (this.providerConfiguration.user) {
         //    requestData[0].user = this.providerConfiguration.user;
@@ -382,8 +456,12 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
         var serializableObject = {}
         item.physicalData.getType().memberDefinitions.asArray().forEach(function (memdef) {
             if (memdef.kind == $data.MemberTypes.navProperty || memdef.kind == $data.MemberTypes.complexProperty || (memdef.kind == $data.MemberTypes.property && !memdef.notMapped)) {
-                if (typeof memdef.concurrencyMode === 'undefined' && (memdef.key === true || item.data.entityState === $data.EntityState.Added || item.data.changedProperties.some(function(def){ return def.name === memdef.name; })))
-                    serializableObject[memdef.name] = item.physicalData[memdef.name];
+                if (typeof memdef.concurrencyMode === 'undefined' && (memdef.key === true || item.data.entityState === $data.EntityState.Added || item.data.changedProperties.some(function (def) { return def.name === memdef.name; }))) {
+                    if (item.physicalData[memdef.name] instanceof $data.Date || !item.physicalData[memdef.name])
+                        serializableObject[memdef.name] = item.physicalData[memdef.name];
+                    else
+                        serializableObject[memdef.name] = JSON.parse(JSON.stringify(item.physicalData[memdef.name]));
+                }
             }
         }, this);
         return serializableObject;
@@ -642,7 +720,9 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                 '$data.Number': function (number) { return number; },
                 '$data.Date': function (dbData) {
                     if (dbData) {
-                        if (dbData.substring(0, 6) === '/Date(') {
+                        if (dbData instanceof Date) {
+                            return dbData;
+                        } else if (dbData.substring(0, 6) === '/Date(') {
                             return new Date(parseInt(dbData.substr(6)));
                         } else {
                             //ISODate without Z? Safari compatible with Z
@@ -685,20 +765,20 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
                 '$data.Blob': function (blob) { return blob; },
                 '$data.Object': function (o) { return JSON.stringify(o); },
                 '$data.Array': function (o) { return JSON.stringify(o); },
-                '$data.GeographyPoint': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeographyLineString': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeographyPolygon': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeographyMultiPoint': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeographyMultiLineString': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeographyMultiPolygon': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeographyCollection': function (g) { if (g) { return $data.Geography.stringifyToUrl(g); } return g; },
-                '$data.GeometryPoint': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
-                '$data.GeometryLineString': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
-                '$data.GeometryPolygon': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
-                '$data.GeometryMultiPoint': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
-                '$data.GeometryMultiLineString': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
-                '$data.GeometryMultiPolygon': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
-                '$data.GeometryCollection': function (g) { if (g) { return $data.Geometry.stringifyToUrl(g); } return g; },
+                '$data.GeographyPoint': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeographyLineString': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeographyPolygon': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeographyMultiPoint': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeographyMultiLineString': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeographyMultiPolygon': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeographyCollection': function (g) { if (g) { return $data.GeographyBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryPoint': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryLineString': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryPolygon': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryMultiPoint': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryMultiLineString': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryMultiPolygon': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
+                '$data.GeometryCollection': function (g) { if (g) { return $data.GeometryBase.stringifyToUrl(g); } return g; },
                 '$data.Guid': function (guid) { return guid ? ("guid'" + guid.value + "'") : guid; }
 }
         }
@@ -756,7 +836,7 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             var field = memDefs[i];
             if (field.key) {
                 keyValue = entity.data[field.name];
-                switch (Container.getName(field.dataType)) {
+                switch (Container.getName(field.originalType)) {
                     case "$data.Guid":
                     case "Edm.Guid":
                         keyValue = ("guid'" + (keyValue ? keyValue.value : keyValue)  + "'");
@@ -794,6 +874,14 @@ $C('$data.storageProviders.oData.oDataProvider', $data.StorageProviderBase, null
             return result.join(",");
         }
         return keyValue;
+    },
+    getFieldUrl: function (entity, fieldName, entitySet) {
+        var keyPart = this.getEntityKeysValue({ data: entity });
+        var servicehost = this.providerConfiguration.oDataServiceHost
+        if (servicehost.lastIndexOf('/') === servicehost.length)
+            servicehost = servicehost.substring(0, servicehost.length - 1);
+
+        return servicehost + '/' + entitySet.tableName + '(' + keyPart + ')/' + fieldName + '/$value';
     },/*
     getServiceMetadata: function () {
         $data.ajax(this._setAjaxAuthHeader({
@@ -919,6 +1007,7 @@ $C('$data.storageProviders.oData.oDataCompiler', $data.Expressions.EntityExpress
             }
         }
         query.queryText = queryText;
+        query.postData = queryFragments.postData;
         
         return {
             queryText: queryText,
@@ -997,10 +1086,10 @@ $C('$data.storageProviders.oData.oDataCompiler', $data.Expressions.EntityExpress
         }
     },
     VisitServiceOperationExpression: function (expression, context) {
-        if (expression.bindedEntity) {
-            context.urlText += "/" + expression.bindedEntity.entitySet.tableName;
-            if (expression.bindedEntity.data instanceof $data.Entity) {
-                context.urlText += '(' + this.provider.getEntityKeysValue(expression.bindedEntity) + ')';
+        if (expression.boundItem) {
+            context.urlText += "/" + expression.boundItem.entitySet.tableName;
+            if (expression.boundItem.data instanceof $data.Entity) {
+                context.urlText += '(' + this.provider.getEntityKeysValue(expression.boundItem) + ')';
             }
         }
         context.urlText += "/" + expression.cfg.serviceName;
@@ -1035,7 +1124,10 @@ $C('$data.storageProviders.oData.oDataCompiler', $data.Expressions.EntityExpress
             }
         } else {
             context.postData = context.postData || {};
-            context.postData[expression.name] = expression.value;
+            if(expression.value instanceof $data.Date)
+                context.postData[expression.name] = expression.value;
+            else
+                context.postData[expression.name] = JSON.parse(JSON.stringify(expression.value));
         }
     },
 //    VisitConstantExpression: function (expression, context) {
@@ -1188,7 +1280,7 @@ $C('$data.storageProviders.oData.oDataCompiler', $data.Expressions.EntityExpress
         var exprParams = [];
         var definedParams = expression.operation.memberDefinition.method.params;
         if (expression.parameters && expression.parameters[0] &&
-            expression.parameters[0].value && typeof expression.parameters[0].value === 'object' && definedParams && definedParams[0] &&
+            expression.parameters[0].value && typeof expression.parameters[0].value === 'object' && expression.parameters[0].value.constructor === $data.Object && definedParams && definedParams[0] &&
             (Container.resolveType(definedParams[0].type) !== $data.Object || definedParams[0].name in expression.parameters[0].value)) {
 
             if (expression.parameters[0] instanceof $data.Expressions.ObjectLiteralExpression) {
@@ -1375,7 +1467,7 @@ $C('$data.storageProviders.oData.oDataCompiler', $data.Expressions.EntityExpress
         var exprParams = [];
         var definedParams = expression.operation.memberDefinition.method.params;
         if (expression.parameters && expression.parameters[0] &&
-            expression.parameters[0].value && typeof expression.parameters[0].value === 'object' && definedParams && definedParams[0] &&
+            expression.parameters[0].value && typeof expression.parameters[0].value === 'object' && expression.parameters[0].value.constructor === $data.Object && definedParams && definedParams[0] &&
             (Container.resolveType(definedParams[0].type) !== $data.Object || definedParams[0].name in expression.parameters[0].value)) {
 
             if (expression.parameters[0] instanceof $data.Expressions.ObjectLiteralExpression) {

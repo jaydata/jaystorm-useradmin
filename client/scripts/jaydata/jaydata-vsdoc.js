@@ -1,4 +1,4 @@
-// JayData 1.2.3
+// JayData 1.2.7
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -6,12 +6,12 @@
 // practices to access and manipulate data from various online and offline sources.
 //
 // Credits:
-//     Hajnalka Battancs, D√°niel J√≥zsef, J√°nos Roden, L√°szl√≥ Horv√°th, P√©ter Nochta
-//     P√©ter Zentai, R√≥bert B√≥nay, Szabolcs Czinege, Viktor Borza, Viktor L√°z√°r,
-//     Zolt√°n Gyebrovszki
+//     Hajnalka Battancs, D·niel JÛzsef, J·nos Roden, L·szlÛ Horv·th, PÈter Nochta
+//     PÈter Zentai, RÛbert BÛnay, Szabolcs Czinege, Viktor Borza, Viktor L·z·r,
+//     Zolt·n Gyebrovszki, G·bor Dolla
 //
 // More info: http://jaydata.org
-Ôªø/*
+/*
 
 IMPORTANT:
 !!!  Do not reference this file to html!  !!!
@@ -63,8 +63,8 @@ if (!console.error) console.error = function () { };
     /// Collection of JayData services
     ///</summary>
     $data.__namespace = true;
-    $data.version = "JayData 1.2.3";
-    $data.versionNumber = "1.2.3";
+    $data.version = "JayData 1.2.7";
+    $data.versionNumber = "1.2.7";
     $data.root = {};
 
 })($data);
@@ -247,7 +247,17 @@ Object.isNullOrUndefined = function (value) {
         };
     }
 
+    if (!String.prototype.trimLeft) {
+        String.prototype.trimLeft = function () {
+            return this.replace(/^\s+/, "");
+        }
+    }
 
+    if (!String.prototype.trimRight) {
+        String.prototype.trimRight = function () {
+            return this.replace(/\s+$/, "");
+        }
+    }
 
 })();// This file is derived from jslint.js
 // 2011-06-12
@@ -7155,9 +7165,8 @@ JAYLINT = (function () {
         }
     }
 
-
     function MemberDefinition(memberDefinitionData, definedClass) {
-        
+
         ///<field name="name" type="String">*</field>
         ///<field name="dataType" type="Object">*</field>
         ///<field name="elementType" type="Object"></field>
@@ -7177,7 +7186,7 @@ JAYLINT = (function () {
 
         this.kind = MemberTypes.property;
         //this.definedBy = definedClass;
-        Object.defineProperty(this, 'definedBy', { value: definedClass, enumerable:false, configurable: false, writable: false });
+        Object.defineProperty(this, 'definedBy', { value: definedClass, enumerable: false, configurable: false, writable: false });
         if (memberDefinitionData) {
             if (typeof memberDefinitionData === 'function' || typeof memberDefinitionData.asFunction === 'function') {
                 this.method = memberDefinitionData;
@@ -7187,10 +7196,12 @@ JAYLINT = (function () {
                 this.configurable = true;
                 if (typeof memberDefinitionData === "number") {
                     this.value = memberDefinitionData;
-                    this.dataType = "integer";
+                    this.type = $data.Integer;
+                    this.dataType = $data.Integer;
                 } else if (typeof memberDefinitionData === "string") {
                     this.value = memberDefinitionData;
-                    this.dataType = typeof memberDefinitionData;
+                    this.dataType = $data.String;
+                    this.type = $data.String;
                 } else {
                     for (var item in memberDefinitionData) {
                         if (memberDefinitionData.hasOwnProperty(item)) {
@@ -7204,10 +7215,13 @@ JAYLINT = (function () {
             } else {
                 this.type = this.dataType;
             }
+
+            this.originalType = this.type;
+            if (this.elementType !== undefined) {
+                this.originalElementType = this.elementType;
+            }
         }
     }
-
-
     MemberDefinition.prototype.createPropertyDescriptor = function (classFunction, value) {
         ///<returns type="Object" />
         var pd = this;
@@ -7238,15 +7252,103 @@ JAYLINT = (function () {
         var pd = this;
         return {
             enumerable: false, writable: false, configurable: false,
-            value: function (callback) { return this.getProperty(pd, callback); }
+            value: function (callback, tran) { return this.getProperty(pd, callback, tran); }
         };
     };
     MemberDefinition.prototype.createSetMethod = function () {
         var pd = this;
         return {
             enumerable: false, writable: false, configurable: false,
-            value: function (value, callback) { return this.setProperty(pd, value, callback); }
+            value: function (value, callback, tran) { return this.setProperty(pd, value, callback, tran); }
         };
+    };
+    MemberDefinition.translateDefinition = function (memDef, name, classFunction) {
+        var holder = classFunction;
+        var memberDefinition;
+        
+        if (memDef.type && Container.isTypeRegistered(memDef.type)) {
+            holder = Container.resolveType(memDef.type);
+            if (typeof holder.translateDefinition === 'function') {
+                memberDefinition = holder.translateDefinition.apply(holder, arguments);
+                memberDefinition.name = memberDefinition.name || name;
+            } else {
+                holder = classFunction;
+            }
+        }
+
+
+        if (!(memberDefinition instanceof MemberDefinition)) {
+            memberDefinition = new MemberDefinition(memberDefinition || memDef, holder);
+            memberDefinition.name = name;
+        }
+        classFunction.resolverThunks = classFunction.resolverThunks || [];
+        classFunction.childResolverThunks = classFunction.childResolverThunks || [];
+
+
+        var t = memberDefinition.type;
+        var et = memberDefinition.elementType;
+
+        function addChildThunk(referencedType) {
+            if (referencedType && referencedType.isAssignableTo && $data.Entity && referencedType.isAssignableTo($data.Entity)) {
+                classFunction.childResolverThunks.push(function () {
+                    if (referencedType.resolveForwardDeclarations) {
+                        referencedType.resolveForwardDeclarations();
+                    }
+                });
+            }
+        }
+
+        addChildThunk(t);
+        addChildThunk(et);
+
+        if ("string" === typeof t) {
+            if ("@" === t[0]) {
+                memberDefinition.type = t.substr(1);
+                memberDefinition.dataType = t.substr(1);
+            } else {
+                //forward declared types get this callback when type is registered
+                classFunction.resolverThunks.push(function () {
+                    var rt = classFunction.container.resolveType(t);
+                    addChildThunk(rt);
+                    memberDefinition.type = rt;
+                    memberDefinition.dataType = rt;
+                });
+            }
+        }
+
+        if (et) {
+            if ("string" === typeof et) {
+                if ("@" === et[0]) {
+                    memberDefinition.elementType = et.substr(1);
+                } else {
+                    //forward declared types get this callback when type is registered
+                    classFunction.resolverThunks.push(function () {
+                        var rt = classFunction.container.resolveType(et);
+                        addChildThunk(rt);
+                        memberDefinition.elementType = rt;
+                    });
+
+                }
+            }
+        }
+
+
+        //if (!classFunction)
+
+        classFunction.resolveForwardDeclarations = function () {
+            classFunction.resolveForwardDeclarations = function () { };
+            $data.Trace.log("resolving: " + classFunction.fullName);
+            this.resolverThunks.forEach(function (thunk) {
+                thunk();
+            });
+            //this.resolverThunks = [];
+            this.childResolverThunks.forEach(function (thunk) {
+                thunk();
+            });
+            //this.childResolverThunks = [];
+        }
+
+        return memberDefinition;
     };
 
     MemberDefinition.prototype.toJSON = function () {
@@ -7261,16 +7363,18 @@ JAYLINT = (function () {
 
     //TODO global/window
     $data.MemberDefinition = window["MemberDefinition"] = MemberDefinition;
-    
+
     var memberDefinitionPrefix = '$';
     function MemberDefinitionCollection() { };
     MemberDefinitionCollection.prototype = {
-		clearCache: function(){
-			this.arrayCache = undefined;
-			this.pubMapPropsCache = undefined;
-			this.keyPropsCache = undefined;
-			this.propByTypeCache = undefined;
-		},
+        clearCache: function () {
+            this.arrayCache = undefined;
+            this.pubMapPropsCache = undefined;
+            this.keyPropsCache = undefined;
+            this.propByTypeCache = undefined;
+            this.pubMapMethodsCache = undefined;
+            this.pubMapPropNamesCache = undefined;
+        },
         asArray: function () {
             if (!this.arrayCache) {
                 this.arrayCache = [];
@@ -7282,99 +7386,62 @@ JAYLINT = (function () {
             return this.arrayCache;
         },
         getPublicMappedProperties: function () {
-			if (!this.pubMapPropsCache){
-				this.pubMapPropsCache = [];
-				for (var i in this){
-					if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'property' && !this[i].notMapped && this[i].enumerable)
-						this.pubMapPropsCache.push(this[i]);
-				}
-			}
-			return this.pubMapPropsCache;// || (this.pubMapPropsCache = this.asArray().filter(function (m) { return m.kind == 'property' && !m.notMapped && m.enumerable; }));
-		},
-		getPublicMappedPropertyNames: function(){
-		    if (!this.pubMapPropNamesCache){
-		        this.pubMapPropNamesCache = [];
-		        for (var i in this){
-					if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'property' && !this[i].notMapped && this[i].enumerable)
-						this.pubMapPropNamesCache.push(this[i].name);
-				}
-		    }
-		    return this.pubMapPropNamesCache;
-		},
+            if (!this.pubMapPropsCache) {
+                this.pubMapPropsCache = [];
+                for (var i in this) {
+                    if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'property' && !this[i].notMapped && this[i].enumerable)
+                        this.pubMapPropsCache.push(this[i]);
+                }
+            }
+            return this.pubMapPropsCache;// || (this.pubMapPropsCache = this.asArray().filter(function (m) { return m.kind == 'property' && !m.notMapped && m.enumerable; }));
+        },
+        getPublicMappedPropertyNames: function () {
+            if (!this.pubMapPropNamesCache) {
+                this.pubMapPropNamesCache = [];
+                for (var i in this) {
+                    if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'property' && !this[i].notMapped && this[i].enumerable)
+                        this.pubMapPropNamesCache.push(this[i].name);
+                }
+            }
+            return this.pubMapPropNamesCache;
+        },
         getKeyProperties: function () {
-			if (!this.keyPropsCache){
-				this.keyPropsCache = [];
-				for (var i in this){
-					if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'property' && this[i].key)
-						this.keyPropsCache.push(this[i]);
-				}
-			}
-			return this.keyPropsCache;
-			//return this.keyPropsCache || (this.keyPropsCache = this.asArray().filter(function (m) { return m.kind == 'property' && m.key; }));
-		},
-		getPublicMappedMethods: function(){
-		    if (!this.pubMapMethodsCache){
-				this.pubMapMethodsCache = [];
-				for (var i in this){
-					if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'method' && this[i].method/* && this.hasOwnProperty(i)*/)
-						this.pubMapMethodsCache.push(this[i]);
-				}
-			}
-			return this.pubMapMethodsCache;
-		},
+            if (!this.keyPropsCache) {
+                this.keyPropsCache = [];
+                for (var i in this) {
+                    if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'property' && this[i].key)
+                        this.keyPropsCache.push(this[i]);
+                }
+            }
+            return this.keyPropsCache;
+            //return this.keyPropsCache || (this.keyPropsCache = this.asArray().filter(function (m) { return m.kind == 'property' && m.key; }));
+        },
+        getPublicMappedMethods: function () {
+            if (!this.pubMapMethodsCache) {
+                this.pubMapMethodsCache = [];
+                for (var i in this) {
+                    if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].kind == 'method' && this[i].method/* && this.hasOwnProperty(i)*/)
+                        this.pubMapMethodsCache.push(this[i]);
+                }
+            }
+            return this.pubMapMethodsCache;
+        },
         getPropertyByType: function (type) {
-			if (!this.propByTypeCache){
-				this.propByTypeCache = [];
-				for (var i in this){
-					if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].dataType == type)
-						this.propByTypeCache.push(this[i]);
-				}
-			}
-			return this.propByTypeCache;
-			//return this.propByTypeCache || (this.propByTypeCache = this.asArray().filter(function (m) { return m.dataType == type; }));
-		},
+            if (!this.propByTypeCache) {
+                this.propByTypeCache = [];
+                for (var i in this) {
+                    if (i.indexOf(memberDefinitionPrefix) === 0 && this[i].dataType == type)
+                        this.propByTypeCache.push(this[i]);
+                }
+            }
+            return this.propByTypeCache;
+            //return this.propByTypeCache || (this.propByTypeCache = this.asArray().filter(function (m) { return m.dataType == type; }));
+        },
         getMember: function (name) { return this[memberDefinitionPrefix + name]; },
         setMember: function (value) { this[memberDefinitionPrefix + value.name] = value; }
     };
     MemberDefinitionCollection.prototype.constructor = MemberDefinitionCollection;
     $data.MemberDefinitionCollection = window["MemberDefinitionCollection"] = MemberDefinitionCollection;
-
-    
-    eval('function Base() { };');
-
-    $data.Base = Base;
-
-    $data.Base.fullName = '$data.Base';
-    if (!$data.Base.name) {
-        $data.Base.name = "Base";
-    };
-
-    $data.Base.prototype.storeProperty = function (memberDefinition, value) {
-        var backingFieldName = "_" + memberDefinition.name;
-        if (!this[backingFieldName]) {
-            Object.defineProperty(this, backingFieldName, memberDefinition.createStorePropertyDescriptor(value));
-        }
-        else {
-            this[backingFieldName] = value;
-        }
-    };
-
-    $data.Base.prototype.retrieveProperty = function (memberDefinition) {
-        var backingFieldName = "_" + memberDefinition.name;
-        return this[backingFieldName];
-    };
-
-    $data.Base.prototype.setProperty = function (memberDefinition, value, callback) {
-        this[memberDefinition.name] = value;
-        callback();
-    };
-    $data.Base.prototype.getProperty = function (memberDefinition, callback) {
-        callback.apply(this, [this[memberDefinition.name]]);
-    };
-    $data.Base.extend = function (name, instanceDefinition, classDefinition) {
-        return $data.Class.define(name, null, null, instanceDefinition, classDefinition);
-    };
-    //window['Base'] = Base;
 
     function ClassEngineBase() {
         this.classNames = {};
@@ -7395,563 +7462,456 @@ JAYLINT = (function () {
     MemberTypes.field = "field";
 
     $data.MemberTypes = MemberTypes;
-    
-    function classToJSON(){
-        var ret = {};
-        for (var i in this){
-            if (this.hasOwnProperty(i)){
-                ret[i] = this[i];
-            }
-        }
-        return ret;
-    }
-    
-    $data.Base.toJSON = classToJSON;
 
-    function TypeCreator() {
-
-    }
-
-    function TypeCreateStep(definedBy, initFunc) {
-        this.definedBy = definedBy;
-        this.initfunc = initFunc;
-    }
-    TypeCreateStep.constructor = "constructor";
-    TypeCreateStep.classConstructor = "classConstructor";
-    TypeCreateStep.mixin = "mixin";
-    TypeCreateStep.propagation = "propagation";
-
-    function TypeCreateObject()
-    {
-        this._createOrder = [];
-        this._createOrder.calculated = false;
-        this.keyIndex = [];
-
-        this.constructorKeys = [];
-        this.mixinKeys = [];
-        this.propagationKeys = [];
-
-        this.steppes = {};
-
-        this.addStep = function (stepType, defined, typeCreateFunc) {
-            this._createOrder.calculated = false;
-            var key = defined.name + '_' + stepType;
-            if (this.steppes[key])
-                Guard.raise(new Exception("ERROR: '" + key + "' already defined!", "Type build error"));
-
-            switch (stepType) {
-                case TypeCreateStep.constructor:
-                case TypeCreateStep.classConstructor:
-                    this.constructorKeys.push(key);
-                    break;
-                case TypeCreateStep.mixin:
-                    this.mixinKeys.push(key);
-                    break;
-                case TypeCreateStep.propagation:
-                    this.propagationKeys.push(key);
-                    break;
-                default:
-                    return;
-            }
-
-            this.steppes[key] = new TypeCreateStep(defined, typeCreateFunc);
-        };
-        this.keyCount = function(){
-            return this.constructorKeys.length + this.mixinKeys.length + this.propagationKeys.length;
-        };
-
-        this.getOrderedSteppes = function () {
-            if (this._createOrder.calculated == false) {
-                var _this = this;
-                //function _concatStep(key) {
-                //    _this._createOrder.push(_this.steppes[key]);
-                //}
-
-                this._createOrder = [];
-                for (var i = 0, l = mixinKeys.length; i < l; i++) {
-                    _this._createOrder.push(_this.steppes[mixinKeys[i]]);
-                }
-                for (var i = 0, l = constructorKeys.length; i < l; i++) {
-                    _this._createOrder.push(_this.steppes[constructorKeys[i]]);
-                }
-                for (var i = 0, l = propagationKeys.length; i < l; i++) {
-                    _this._createOrder.push(_this.steppes[propagationKeys[i]]);
-                }
-                //this.mixinKeys.forEach(_concatStep);
-                //this.constructorKeys.forEach(_concatStep);
-                //this.propagationKeys.forEach(_concatStep);
-
-                this._createOrder.calculated = true;
-            }
-
-            return this._createOrder;
-        };
-    }
+    //function classToJSON() {
+    //    var ret = {};
+    //    for (var i in this) {
+    //        if (this.hasOwnProperty(i)) {
+    //            ret[i] = this[i];
+    //        }
+    //    }
+    //    return ret;
+    //}
+    //$data.Base.toJSON = classToJSON;
 
     ClassEngineBase.prototype = {
 
-    getClass: function(classReference) {
+        //getClass: function (classReference) {
+        //},
 
-    },
+        //getProperties: function (classFunction) {
+        //    return classFunction.propertyDefinitions;
+        //},
 
-    getProperties: function (classFunction) {
-        return classFunction.propertyDefinitions;
-    },
+        define: function (className, baseClass, container, instanceDefinition, classDefinition) {
+            /// <signature>
+            ///     <summary>Creates a Jaydata type</summary>
+            ///     <param name="className" type="String">Name of the class</param>
+            ///     <param name="baseClass" type="Function">Basetype of the class</param>
+            ///     <param name="interfaces" type="Object" elementType="Function" />
+            ///     <param name="instanceDefinition" type="Object">Class definition (properties, methods, etc)</param>
+            ///     <param name="classDefinition" type="Object">Class static definition</param>
+            ///     <example>
+            ///         
+            ///         var t = new $data.Class.define('Types.A', $data.Base, null, {
+            ///             constructor: function(){ },
+            ///             func1: function(){ },
+            ///             member1: { type: 'string' }
+            ///         }, { 
+            ///             staticFunc1: function() {}    
+            ///         })
+            ///         
+            ///     </example>
+            /// </signature>
 
+            return this.defineEx(className, [{ type: baseClass }], container, instanceDefinition, classDefinition);
+        },
+        defineEx: function (className, baseClasses, container, instanceDefinition, classDefinition) {
+            /// <signature>
+            ///     <summary>Creates a Jaydata type</summary>
+            ///     <param name="className" type="String">Name of the class</param>
+            ///     <param name="baseClasses" type="Array" elementType="Functions">Basetypes of the class. First is a real base, others are mixins</param>
+            ///     <param name="interfaces" type="Object" elementType="Function" />
+            ///     <param name="instanceDefinition" type="Object">Class definition (properties, methods, etc)</param>
+            ///     <param name="classDefinition" type="Object">Class static definition</param>
+            ///     <example>
+            ///         
+            ///         var t = new $data.Class.define('Types.A', [$data.Base, $data.Mixin1, $data.Mixin2], null, {
+            ///             constructor: function(){ },
+            ///             func1: function(){ },
+            ///             member1: { type: 'string' }
+            ///         }, { 
+            ///             staticFunc1: function() {}    
+            ///         })
+            ///         
+            ///     </example>
+            /// </signature>
+            /// <signature>
+            ///     <summary>Creates a Jaydata type</summary>
+            ///     <param name="className" type="String">Name of the class</param>
+            ///     <param name="baseClasses" type="Array" elementType="Object">Basetypes of the class. First is a real base, others are mixins or propagations</param>
+            ///     <param name="interfaces" type="Object" elementType="Function" />
+            ///     <param name="instanceDefinition" type="Object">Class definition (properties, methods, etc)</param>
+            ///     <param name="classDefinition" type="Object">Class static definition</param>
+            ///     <example>
+            ///         
+            ///         var t = new $data.Class.define('Types.A', [
+            ///                         { type: $data.Base, params: [1, 'secondParameterValue', new ConstructorParameter(0)] },
+            ///                         { type: $data.Mixin1, },
+            ///                         { type: $data.Mixin2, },
+            ///                         { type: $data.Propagation1, params: [new ConstructorParameter(1)], propagateTo:'Propagation1' },
+            ///                         { type: $data.Propagation2, params: ['firstParameterValue'], propagateTo:'Propagation2' }
+            ///                     ], null, {
+            ///             constructor: function(){ },
+            ///             func1: function(){ },
+            ///             member1: { type: 'string' }
+            ///         }, { 
+            ///             staticFunc1: function() {}    
+            ///         })
+            ///         
+            ///     </example>
+            /// </signature>
 
+            container = container || $data.Container;
 
-    define: function (className, baseClass, interfaces, instanceDefinition, classDefinition) {
-        /// <signature>
-        ///     <summary>Creates a Jaydata type</summary>
-        ///     <param name="className" type="String">Name of the class</param>
-        ///     <param name="baseClass" type="Function">Basetype of the class</param>
-        ///     <param name="interfaces" type="Object" elementType="Function" />
-        ///     <param name="instanceDefinition" type="Object">Class definition (properties, methods, etc)</param>
-        ///     <param name="classDefinition" type="Object">Class static definition</param>
-        ///     <example>
-        ///         
-        ///         var t = new $data.Class.define('Types.A', $data.Base, null, {
-        ///             constructor: function(){ },
-        ///             func1: function(){ },
-        ///             member1: { type: 'string' }
-        ///         }, { 
-        ///             staticFunc1: function() {}    
-        ///         })
-        ///         
-        ///     </example>
-        /// </signature>
-
-        return this.defineEx(className, [{ type: baseClass }], interfaces, instanceDefinition, classDefinition);
-    },
-    defineEx: function (className, baseClasses, interfaces, instanceDefinition, classDefinition) {
-        /// <signature>
-        ///     <summary>Creates a Jaydata type</summary>
-        ///     <param name="className" type="String">Name of the class</param>
-        ///     <param name="baseClasses" type="Array" elementType="Functions">Basetypes of the class. First is a real base, others are mixins</param>
-        ///     <param name="interfaces" type="Object" elementType="Function" />
-        ///     <param name="instanceDefinition" type="Object">Class definition (properties, methods, etc)</param>
-        ///     <param name="classDefinition" type="Object">Class static definition</param>
-        ///     <example>
-        ///         
-        ///         var t = new $data.Class.define('Types.A', [$data.Base, $data.Mixin1, $data.Mixin2], null, {
-        ///             constructor: function(){ },
-        ///             func1: function(){ },
-        ///             member1: { type: 'string' }
-        ///         }, { 
-        ///             staticFunc1: function() {}    
-        ///         })
-        ///         
-        ///     </example>
-        /// </signature>
-        /// <signature>
-        ///     <summary>Creates a Jaydata type</summary>
-        ///     <param name="className" type="String">Name of the class</param>
-        ///     <param name="baseClasses" type="Array" elementType="Object">Basetypes of the class. First is a real base, others are mixins or propagations</param>
-        ///     <param name="interfaces" type="Object" elementType="Function" />
-        ///     <param name="instanceDefinition" type="Object">Class definition (properties, methods, etc)</param>
-        ///     <param name="classDefinition" type="Object">Class static definition</param>
-        ///     <example>
-        ///         
-        ///         var t = new $data.Class.define('Types.A', [
-        ///                         { type: $data.Base, params: [1, 'secondParameterValue', new ConstructorParameter(0)] },
-        ///                         { type: $data.Mixin1, },
-        ///                         { type: $data.Mixin2, },
-        ///                         { type: $data.Propagation1, params: [new ConstructorParameter(1)], propagateTo:'Propagation1' },
-        ///                         { type: $data.Propagation2, params: ['firstParameterValue'], propagateTo:'Propagation2' }
-        ///                     ], null, {
-        ///             constructor: function(){ },
-        ///             func1: function(){ },
-        ///             member1: { type: 'string' }
-        ///         }, { 
-        ///             staticFunc1: function() {}    
-        ///         })
-        ///         
-        ///     </example>
-        /// </signature>
-
-        //il("!defineClass was invoked:" + className);
-
-        if (baseClasses.length == 0) {
-            baseClasses.push({ type: $data.Base });
-        } else if (baseClasses.length > 0 && !baseClasses[0].type){
-            baseClasses[0].type = $data.Base;
-        }
-        for (var i = 0, l=baseClasses.length; i < l; i++){
-            if (typeof baseClasses[i] === 'function')
-                baseClasses[i] = { type: baseClasses[i] };
-        }
-
-        var providedCtor = instanceDefinition ? instanceDefinition.constructor : undefined;
-
-        var classNameParts = className.split('.');
-        var shortClassName = classNameParts.splice(classNameParts.length - 1, 1)[0];
-
-        var root = window;
-        for (var i = 0; i < classNameParts.length; i++){
-            var part = classNameParts[i];
-            if (!root[part]) {
-                //console.log("namespace missing:" + part + ", creating");
-                var ns = {};
-                ns.__namespace = true;
-                root[part] = ns;
+            if (baseClasses.length == 0) {
+                baseClasses.push({ type: $data.Base });
+            } else if (baseClasses.length > 0 && !baseClasses[0].type) {
+                baseClasses[0].type = $data.Base;
             }
-            root = root[part];
-        }
-        
-        /*classNameParts.forEach(function (part) {
-            if (!root[part]) {
-                //console.log("namespace missing:" + part + ", creating");
-                var ns = {};
-                ns.__namespace = true;
-                root[part] = ns;
+            for (var i = 0, l = baseClasses.length; i < l; i++) {
+                if (typeof baseClasses[i] === 'function')
+                    baseClasses[i] = { type: baseClasses[i] };
             }
-            root = root[part];
-        });*/
 
-        var classFunction = null;
-        classFunction = this.classFunctionBuilder(shortClassName, baseClasses, classDefinition, instanceDefinition);
-        classFunction.fullName = className;
-        classFunction.namespace = classNameParts.join('.'); //classname splitted
+            var providedCtor = instanceDefinition ? instanceDefinition.constructor : undefined;
 
-        this.buildType(classFunction, baseClasses, instanceDefinition, classDefinition);
+            var classNameParts = className.split('.');
+            var shortClassName = classNameParts.splice(classNameParts.length - 1, 1)[0];
 
-        classFunction.name = shortClassName;
-        Container.registerType(className, classFunction);
-
-        if (typeof intellisense !== 'undefined') {
-            if (instanceDefinition && instanceDefinition.constructor) {
-                intellisense.annotate(classFunction, instanceDefinition.constructor);
-            }
-        }
-
-        root[shortClassName] = this.classNames[className] = classFunction;
-        //classFunction.toJSON = classToJSON;
-        var baseCount = classFunction.baseTypes.length;
-        for (var i = 0; i < baseCount; i++) {
-            var b = classFunction.baseTypes[i];
-            if ("inheritedTypeProcessor" in b) {
-                b.inheritedTypeProcessor(classFunction);
-            }
-        }
-        //classFunction.prototype.constructor = instanceDefinition.constructor;
-        //classFunction.constructor = instanceDefinition.constructor;
-        //classFunction.toJSON = function () { return classFunction.memberDefinitions.filter( function(md) { return md; };
-        return classFunction;
-    },
-    classFunctionBuilder: function (name, base, classDefinition, instanceDefinition) {
-        var body = this.bodyBuilder(base, classDefinition, instanceDefinition);
-        return new Function('base', 'classDefinition', 'instanceDefinition', 'name', 'return function ' + name + ' (){ ' +
-            body + ' \n}; ')(base, classDefinition, instanceDefinition, name);
-    },
-    bodyBuilder: function (bases, classDefinition, instanceDefinition) {
-        var mixin = '';
-        var body = '';
-        var propagation = '';
-
-        for (var i = 0, l = bases.length; i < l; i++) {
-            var base = bases[i];
-            var index = i;
-            if (index == 0) { //ctor func
-                if (base && base.type && base.type !== $data.Base) {
-                    body += '    var baseArguments = $data.typeSystem.createCtorParams(arguments, base[' + index + '].params, this); \n';
-                    body += '    ' + base.type.fullName + '.apply(this, baseArguments); \n';
+            var root = container === $data.Container ? window : container;
+            for (var i = 0; i < classNameParts.length; i++) {
+                var part = classNameParts[i];
+                if (!root[part]) {
+                    var ns = {};
+                    ns.__namespace = true;
+                    root[part] = ns;
                 }
-            } else {
-                if (base && base.type && base.propagateTo) {
-                    //propagation
-                    propagation += '    ' + (!propagation ? 'var ' : '' + '') + 'propagationArguments = $data.typeSystem.createCtorParams(arguments, base[' + index + '].params, this); \n';
-                    propagation += '    this["' + base.propagateTo + '"] =  Object.create(' + base.type.fullName + '.prototype); \n' +
-                                   '    ' + base.type.fullName + '.apply(this["' + base.propagateTo + '"], propagationArguments); \n';
-                }
-                else if (base && base.type && base.type.memberDefinitions && base.type.memberDefinitions.$constructor && !base.propagateTo) {
-                    //mixin
-                    mixin += '    ' + base.type.fullName + '.memberDefinitions.$constructor.method.apply(this); \n';
+                root = root[part];
+            }
+
+
+            var classFunction = null;
+            classFunction = this.classFunctionBuilder(shortClassName, baseClasses, classDefinition, instanceDefinition);
+            classFunction.fullName = className;
+            classFunction.namespace = classNameParts.join('.'); //classname splitted
+            classFunction.name = shortClassName;
+            classFunction.container = container;
+            classFunction.container.registerType(className, classFunction);
+
+            this.buildType(classFunction, baseClasses, instanceDefinition, classDefinition);
+
+
+
+            if (typeof intellisense !== 'undefined') {
+                if (instanceDefinition && instanceDefinition.constructor) {
+                    intellisense.annotate(classFunction, instanceDefinition.constructor);
                 }
             }
-        }
-        if (instanceDefinition && instanceDefinition.constructor != Object) 
-            body += "    instanceDefinition.constructor.apply(this, arguments); \n";
 
-        return '\n    //mixins \n' + mixin + '\n    //construction \n' + body + '\n    //propagations \n' + propagation;
-    },
-
-    buildType: function (classFunction, baseClasses, instanceDefinition, classDefinition) {
-        var baseClass = baseClasses[0].type;
-        classFunction.inheritsFrom = baseClass;
-
-        if (baseClass) {
-            classFunction.prototype = Object.create(baseClass.prototype);
-            classFunction.memberDefinitions = Object.create(baseClass.memberDefinitions || new MemberDefinitionCollection());
-			classFunction.memberDefinitions.clearCache();
-
-			var staticDefs = baseClass.staticDefinitions;
-			if (staticDefs){
-				staticDefs = staticDefs.asArray();
-				if (staticDefs) {
-            		for(var i = 0; i < staticDefs.length; i++) {
-						this.buildMember(classFunction, staticDefs[i], undefined, 'staticDefinitions');
-            		}
-				}
-			}
-			classFunction.baseTypes = baseClass.baseTypes ? [].concat(baseClass.baseTypes) : [];
-            for (var i = 0; i < baseClasses.length; i++){
-                classFunction.baseTypes.push(baseClasses[i].type);
+            root[shortClassName] = this.classNames[className] = classFunction;
+            //classFunction.toJSON = classToJSON;
+            var baseCount = classFunction.baseTypes.length;
+            for (var i = 0; i < baseCount; i++) {
+                var b = classFunction.baseTypes[i];
+                if ("inheritedTypeProcessor" in b) {
+                    b.inheritedTypeProcessor(classFunction);
+                }
             }
-            //classFunction.baseTypes = (baseClass.baseTypes || []).concat(baseClasses.map(function (base) { return base.type; }));
-            if (!classFunction.isAssignableTo) {
-                Object.defineProperty(classFunction, "isAssignableTo", {
-                    value: function (type) {
-                        return this === type || this.baseTypes.indexOf(type) >= 0;
-                    },
-                    writable: false,
-                    enumerable: false,
-                    configurable: false
-                });
+            //classFunction.prototype.constructor = instanceDefinition.constructor;
+            //classFunction.constructor = instanceDefinition.constructor;
+            //classFunction.toJSON = function () { return classFunction.memberDefinitions.filter( function(md) { return md; };
+            return classFunction;
+        },
+        classFunctionBuilder: function (name, base, classDefinition, instanceDefinition) {
+            var body = this.bodyBuilder(base, classDefinition, instanceDefinition);
+            return new Function('base', 'classDefinition', 'instanceDefinition', 'name', 'return function ' + name + ' (){ ' +
+                body + ' \n}; ')(base, classDefinition, instanceDefinition, name);
+        },
+        bodyBuilder: function (bases, classDefinition, instanceDefinition) {
+            var mixin = '';
+            var body = '';
+            var propagation = '';
+
+            for (var i = 0, l = bases.length; i < l; i++) {
+                var base = bases[i];
+                var index = i;
+                if (index == 0) { //ctor func
+                    if (base && base.type && base.type !== $data.Base && base.type.fullName) {
+                        body += '    var baseArguments = $data.typeSystem.createCtorParams(arguments, base[' + index + '].params, this); \n';
+                        body += '    ' + base.type.fullName + '.apply(this, baseArguments); \n';
+                    }
+                } else {
+                    if (base && base.type && base.propagateTo) {
+                        //propagation
+                        propagation += '    ' + (!propagation ? 'var ' : '' + '') + 'propagationArguments = $data.typeSystem.createCtorParams(arguments, base[' + index + '].params, this); \n';
+                        propagation += '    this["' + base.propagateTo + '"] =  Object.create(' + base.type.fullName + '.prototype); \n' +
+                                       '    ' + base.type.fullName + '.apply(this["' + base.propagateTo + '"], propagationArguments); \n';
+                    }
+                    else if (base && base.type && base.type.memberDefinitions && base.type.memberDefinitions.$constructor && !base.propagateTo) {
+                        //mixin
+                        mixin += '    ' + base.type.fullName + '.memberDefinitions.$constructor.method.apply(this); \n';
+                    }
+                }
             }
-        }
+            if (instanceDefinition && instanceDefinition.constructor != Object)
+                body += "    instanceDefinition.constructor.apply(this, arguments); \n";
 
-        if (classDefinition) {
-            this.buildStaticMembers(classFunction, classDefinition);
+            return '\n    //mixins \n' + mixin + '\n    //construction \n' + body + '\n    //propagations \n' + propagation;
+        },
 
-            if (classDefinition.constructor)
-                classFunction.classConstructor = classDefinition.constructor;
-        }
+        buildType: function (classFunction, baseClasses, instanceDefinition, classDefinition) {
+            var baseClass = baseClasses[0].type;
+            classFunction.inheritsFrom = baseClass;
 
-        if (instanceDefinition) {
-            this.buildInstanceMembers(classFunction, instanceDefinition);
-        }
+            if (baseClass) {
+                classFunction.prototype = Object.create(baseClass.prototype);
+                classFunction.memberDefinitions = Object.create(baseClass.memberDefinitions || new MemberDefinitionCollection());
+                classFunction.memberDefinitions.clearCache();
 
-        var mixins = [].concat(baseClasses);
-        mixins.shift();
-        if (Object.keys(mixins).length > 0)
-            this.buildInstanceMixins(classFunction, mixins);
-
-        classFunction.__class = true;
-
-        classFunction.prototype.constructor = classFunction;
-
-        Object.defineProperty(classFunction.prototype, "getType", {
-            value: function () {
-                return classFunction;
-            },
-            writable: false,
-            enumerable: false,
-            configurable: false
-        });
-
-
-        classFunction.extend = function (name, instanceDefinition, classDefinition) {
-            return $data.Class.define(name, classFunction, null, instanceDefinition, classDefinition);
-        };
-
-        Object.defineProperty(classFunction, "getMemberDefinition", {
-            value: function (name) {
-                return classFunction.memberDefinitions.getMember(name);
+                var staticDefs = baseClass.staticDefinitions;
+                if (staticDefs) {
+                    staticDefs = staticDefs.asArray();
+                    if (staticDefs) {
+                        for (var i = 0; i < staticDefs.length; i++) {
+                            this.buildMember(classFunction, staticDefs[i], undefined, 'staticDefinitions');
+                        }
+                    }
+                }
+                classFunction.baseTypes = baseClass.baseTypes ? [].concat(baseClass.baseTypes) : [];
+                for (var i = 0; i < baseClasses.length; i++) {
+                    classFunction.baseTypes.push(baseClasses[i].type);
+                }
+                //classFunction.baseTypes = (baseClass.baseTypes || []).concat(baseClasses.map(function (base) { return base.type; }));
+                if (!classFunction.isAssignableTo) {
+                    Object.defineProperty(classFunction, "isAssignableTo", {
+                        value: function (type) {
+                            return this === type || this.baseTypes.indexOf(type) >= 0;
+                        },
+                        writable: false,
+                        enumerable: false,
+                        configurable: false
+                    });
+                }
             }
-        });
 
-    },
+            if (classDefinition) {
+                this.buildStaticMembers(classFunction, classDefinition);
 
-    addMethod: function (holder, name, method, propagation) {
-        if (!propagation || (typeof intellisense !== 'undefined')) {
-            holder[name] = method;
+                if (classDefinition.constructor)
+                    classFunction.classConstructor = classDefinition.constructor;
+            }
+
+            if (instanceDefinition) {
+                this.buildInstanceMembers(classFunction, instanceDefinition);
+            }
+
+            var mixins = [].concat(baseClasses);
+            mixins.shift();
+            if (Object.keys(mixins).length > 0)
+                this.buildInstanceMixins(classFunction, mixins);
+
+            classFunction.__class = true;
+
+            classFunction.prototype.constructor = classFunction;
+
+            Object.defineProperty(classFunction.prototype, "getType", {
+                value: function () {
+                    return classFunction;
+                },
+                writable: false,
+                enumerable: false,
+                configurable: false
+            });
+        },
+
+        addMethod: function (holder, name, method, propagation) {
+            if (!propagation || (typeof intellisense !== 'undefined')) {
+                holder[name] = method;
             } else {
                 holder[name] = function () {
                     return method.apply(this[propagation], arguments);
                 };
             }
-    },
+        },
 
-    addProperty: function (holder, name, propertyDescriptor, propagation) {
-        
-        //holder[name] = {};
+        addProperty: function (holder, name, propertyDescriptor, propagation) {
 
-        if (propagation)
-        {
-            propertyDescriptor.configurable = true;
-            if (propertyDescriptor.get)
-            {
-                var origGet = propertyDescriptor.get;
-                propertyDescriptor.get = function () {
-                    if (!this[propagation])
-                        Guard.raise(new Exception("not inicialized"));
-                    return origGet.apply(this[propagation], arguments);
-                };
+            //holder[name] = {};
+
+            if (propagation) {
+                propertyDescriptor.configurable = true;
+                if (propertyDescriptor.get) {
+                    var origGet = propertyDescriptor.get;
+                    propertyDescriptor.get = function () {
+                        if (!this[propagation])
+                            Guard.raise(new Exception("not inicialized"));
+                        return origGet.apply(this[propagation], arguments);
+                    };
+                }
+                if (propertyDescriptor.set) {
+                    var origSet = propertyDescriptor.set;
+                    propertyDescriptor.set = function () {
+                        if (!this[propagation])
+                            Guard.raise(new Exception("not inicialized"));
+                        origSet.apply(this[propagation], arguments);
+                    };
+                }
             }
-            if (propertyDescriptor.set) {
-                var origSet = propertyDescriptor.set;
-                propertyDescriptor.set = function () {
-                    if (!this[propagation])
-                        Guard.raise(new Exception("not inicialized"));
-                    origSet.apply(this[propagation], arguments);
-                };
+
+            Object.defineProperty(holder, name, propertyDescriptor);
+        },
+
+        addField: function (holder, name, field) {
+            Guard.raise("not implemented");
+        },
+
+        buildMethod: function (classFunction, memberDefinition, propagation) {
+            ///<param name="classFunction" type="Function">The object that will receive member</param>
+            ///<param name="memberDefinition" type="MemberDefinition">the newly added member</param>
+            var holder = memberDefinition.classMember ? classFunction : classFunction.prototype;
+            this.addMethod(holder, memberDefinition.name, memberDefinition.method, propagation);
+        },
+
+        buildProperty: function (classFunction, memberDefinition, propagation) {
+            ///<param name="classFunction" type="Function">The object that will receive member</param>
+            ///<param name="memberDefinition" type="MemberDefinition">the newly added member</param>
+            var holder = memberDefinition.classMember ? classFunction : classFunction.prototype;
+            var pd = memberDefinition.createPropertyDescriptor(classFunction);
+            this.addProperty(holder, memberDefinition.name, pd, propagation);
+
+            //if lazyload TODO
+            if (!memberDefinition.classMember && classFunction.__setPropertyfunctions == true && memberDefinition.withoutGetSetMethod !== true &&
+                !('get_' + memberDefinition.name in holder || 'set_' + memberDefinition.name in holder)) {
+                var pdGetMethod = memberDefinition.createGetMethod();
+                this.addProperty(holder, 'get_' + memberDefinition.name, pdGetMethod, propagation);
+
+                var pdSetMethod = memberDefinition.createSetMethod();
+                this.addProperty(holder, 'set_' + memberDefinition.name, pdSetMethod, propagation);
             }
-        }
-
-        Object.defineProperty(holder, name, propertyDescriptor);
-    },
-
-    addField: function(holder, name, field) {
-        Guard.raise("not implemented");
-    },
-
-    buildMethod: function (classFunction, memberDefinition, propagation) {
-        ///<param name="classFunction" type="Function">The object that will receive member</param>
-        ///<param name="memberDefinition" type="MemberDefinition">the newly added member</param>
-        var holder = memberDefinition.classMember ? classFunction : classFunction.prototype;
-        this.addMethod(holder, memberDefinition.name, memberDefinition.method, propagation);
-    },
-
-    buildProperty: function (classFunction, memberDefinition, propagation) {
-        ///<param name="classFunction" type="Function">The object that will receive member</param>
-        ///<param name="memberDefinition" type="MemberDefinition">the newly added member</param>
-        var holder = memberDefinition.classMember ? classFunction : classFunction.prototype;
-        var pd = memberDefinition.createPropertyDescriptor(classFunction);
-        this.addProperty(holder, memberDefinition.name, pd, propagation);
-
-        //if lazyload TODO
-        if (!memberDefinition.classMember && classFunction.__setPropertyfunctions == true) {
-            var pdGetMethod = memberDefinition.createGetMethod();
-            this.addProperty(holder, 'get_' + memberDefinition.name, pdGetMethod, propagation);
-
-            var pdSetMethod = memberDefinition.createSetMethod();
-            this.addProperty(holder, 'set_' + memberDefinition.name, pdSetMethod, propagation);
-        }
-    },
+        },
 
 
-    buildMember: function (classFunction, memberDefinition, propagation, memberCollectionName) {
-        ///<param name="memberDefinition" type="MemberDefinition" />
-        memberCollectionName = memberCollectionName || 'memberDefinitions';
-        classFunction[memberCollectionName] = classFunction[memberCollectionName] || new MemberDefinitionCollection();
+        buildMember: function (classFunction, memberDefinition, propagation, memberCollectionName) {
+            ///<param name="memberDefinition" type="MemberDefinition" />
+            memberCollectionName = memberCollectionName || 'memberDefinitions';
+            classFunction[memberCollectionName] = classFunction[memberCollectionName] || new MemberDefinitionCollection();
+            classFunction[memberCollectionName].setMember(memberDefinition);
 
-        classFunction[memberCollectionName].setMember(memberDefinition);
-
-        switch (memberDefinition.kind) {
-            case MemberTypes.method:
-                this.buildMethod(classFunction, memberDefinition, propagation);
-                break;
-            case MemberTypes.navProperty:
-            case MemberTypes.complexProperty:
-            case MemberTypes.property:
-                this.buildProperty(classFunction, memberDefinition, propagation);
-                break;
-            default: Guard.raise("Unknown member type: " + memberDefinition.kind + "," + memberDefinition.name);
-        }
-    },
-
-    buildStaticMembers: function (classFunction, memberListDefinition) {
-        ///<param name="classFunction" type="Object">The class constructor that will be extended</param>
-        ///<param name="memberListDefinition" type="Object"></param>
-        var t = this;
-        for (var item in memberListDefinition)
-        {
-            if (memberListDefinition.hasOwnProperty(item)) {
-                var memberDefinition = new MemberDefinition(memberListDefinition[item], classFunction);
-                memberDefinition.name = item;
-                memberDefinition.classMember = true;
-                t.buildMember(classFunction, memberDefinition, undefined, 'staticDefinitions');
+            switch (memberDefinition.kind) {
+                case MemberTypes.method:
+                    this.buildMethod(classFunction, memberDefinition, propagation);
+                    break;
+                case MemberTypes.navProperty:
+                case MemberTypes.complexProperty:
+                case MemberTypes.property:
+                    this.buildProperty(classFunction, memberDefinition, propagation);
+                    break;
+                default: Guard.raise("Unknown member type: " + memberDefinition.kind + "," + memberDefinition.name);
             }
-        }
-    },
+        },
 
-    buildInstanceMembers: function (classFunction, memberListDefinition) {
-        ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
-        ///<param name="memberListDefinition" type="Object"></param>
-        ///pinning t outside of the closure seems actually faster then passing in the this  and referencing
-        var t = this;
-        for (var item in memberListDefinition) {
-            if (memberListDefinition.hasOwnProperty(item)) {
-                var memberDefinition = new MemberDefinition(memberListDefinition[item], classFunction);
-
-                memberDefinition.name = item;
-                t.buildMember(classFunction, memberDefinition);
+        buildStaticMembers: function (classFunction, memberListDefinition) {
+            ///<param name="classFunction" type="Object">The class constructor that will be extended</param>
+            ///<param name="memberListDefinition" type="Object"></param>
+            var t = this;
+            for (var item in memberListDefinition) {
+                if (memberListDefinition.hasOwnProperty(item)) {
+                    var memberDefinition = MemberDefinition.translateDefinition(memberListDefinition[item], item, classFunction);
+                    memberDefinition.classMember = true;
+                    t.buildMember(classFunction, memberDefinition, undefined, 'staticDefinitions');
+                }
             }
-        }
-    },
+        },
 
-    copyMembers: function(sourceType, targetType) {
-        ///<param name="sourceType" type="Function" />
-        ///<param name="targetType" type="Function" />
-        function il(msg) {
-            if (typeof intellisense === 'undefined') {
-                return;
+        buildInstanceMembers: function (classFunction, memberListDefinition) {
+            ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
+            ///<param name="memberListDefinition" type="Object"></param>
+            ///pinning t outside of the closure seems actually faster then passing in the this  and referencing
+            var t = this;
+            for (var item in memberListDefinition) {
+                if (memberListDefinition.hasOwnProperty(item)) {
+                    var memberDefinition = MemberDefinition.translateDefinition(memberListDefinition[item], item, classFunction);
+                    t.buildMember(classFunction, memberDefinition, undefined, 'memberDefinitions');
+                }
             }
-            intellisense.logMessage(msg);
-        }
+        },
 
-        Object.keys(sourceType.prototype).forEach(function (item, i, src) {
-            if (item !== 'constructor' && item !== 'toString') {
-                il("copying item:" + item);
-                targetType.prototype[item] = sourceType[item];
+        copyMembers: function (sourceType, targetType) {
+            ///<param name="sourceType" type="Function" />
+            ///<param name="targetType" type="Function" />
+            function il(msg) {
+                if (typeof intellisense === 'undefined') {
+                    return;
+                }
+                intellisense.logMessage(msg);
             }
-        });
-    },
 
-    buildInstanceMixins: function (classFunction, mixinList) {
-        ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
-        ///<param name="mixinList" type="Array"></param>
+            Object.keys(sourceType.prototype).forEach(function (item, i, src) {
+                if (item !== 'constructor' && item !== 'toString') {
+                    il("copying item:" + item);
+                    targetType.prototype[item] = sourceType[item];
+                }
+            });
+        },
 
-        classFunction.mixins = classFunction.mixins || [];
-        classFunction.propagations = classFunction.propagations || [];
+        buildInstanceMixins: function (classFunction, mixinList) {
+            ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
+            ///<param name="mixinList" type="Array"></param>
 
-        for(var i = 0; i < mixinList.length; i++) {
-            var item = mixinList[i];
-            //if (classFunction.memberDefinitions.getMember(item.type.name)) {
-            if (item.propagateTo) {
-                this.buildInstancePropagation(classFunction, item);
-                classFunction.propagations.push(item);
-                classFunction.propagations[item.type.name] = true;
-            } else {
-                this.buildInstanceMixin(classFunction, item);
-                classFunction.mixins.push(item);
-                classFunction.mixins[item.type.name] = true;
-            }
-        };
-    },
-    buildInstanceMixin: function (classFunction, typeObj) {
-        ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
-        ///<param name="typeObj" type="Object"></param>
+            classFunction.mixins = classFunction.mixins || [];
+            classFunction.propagations = classFunction.propagations || [];
 
-        var memberDefs = typeObj.type.memberDefinitions.asArray();
-        for (var i = 0, l = memberDefs.length; i < l; i++) {
-            var itemName = memberDefs[i].name;
-            if (itemName !== 'constructor' && !classFunction.memberDefinitions.getMember(itemName)) {
-                this.buildMember(classFunction, memberDefs[i]);
-            }
-        }
+            for (var i = 0; i < mixinList.length; i++) {
+                var item = mixinList[i];
+                //if (classFunction.memberDefinitions.getMember(item.type.name)) {
+                if (item.propagateTo) {
+                    this.buildInstancePropagation(classFunction, item);
+                    classFunction.propagations.push(item);
+                    classFunction.propagations[item.type.name] = true;
+                } else {
+                    this.buildInstanceMixin(classFunction, item);
+                    classFunction.mixins.push(item);
+                    classFunction.mixins[item.type.name] = true;
+                }
+            };
+        },
+        buildInstanceMixin: function (classFunction, typeObj) {
+            ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
+            ///<param name="typeObj" type="Object"></param>
 
-        if (typeObj.type.staticDefinitions) {
-            var staticDefs = typeObj.type.staticDefinitions.asArray();
-            for (var i = 0, l = staticDefs.length; i < l; i++) {
-                var itemName = staticDefs[i].name;
+            var memberDefs = typeObj.type.memberDefinitions.asArray();
+            for (var i = 0, l = memberDefs.length; i < l; i++) {
+                var itemName = memberDefs[i].name;
                 if (itemName !== 'constructor' && !classFunction.memberDefinitions.getMember(itemName)) {
-                    this.buildMember(classFunction, staticDefs[i], undefined, 'staticDefinitions');
+                    this.buildMember(classFunction, memberDefs[i]);
+                }
+            }
+
+            if (typeObj.type.staticDefinitions) {
+                var staticDefs = typeObj.type.staticDefinitions.asArray();
+                for (var i = 0, l = staticDefs.length; i < l; i++) {
+                    var itemName = staticDefs[i].name;
+                    if (itemName !== 'constructor' && !classFunction.memberDefinitions.getMember(itemName)) {
+                        this.buildMember(classFunction, staticDefs[i], undefined, 'staticDefinitions');
+                    }
+                }
+            }
+        },
+        buildInstancePropagation: function (classFunction, typeObj) {
+            ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
+            ///<param name="typeObj" type="Object"></param>
+
+            var memberDefs = typeObj.type.memberDefinitions.asArray();
+            for (var i = 0, l = memberDefs.length; i < l; i++) {
+                var itemName = memberDefs[i].name;
+                if (itemName !== 'constructor' && !classFunction.memberDefinitions.getMember(itemName)) {
+                    this.buildMember(classFunction, memberDefs[i], typeObj.propagateTo);
                 }
             }
         }
-    },
-    buildInstancePropagation: function (classFunction, typeObj) {
-        ///<param name="classFunction" type="Function">The class constructor whose prototype will be extended</param>
-        ///<param name="typeObj" type="Object"></param>
 
-        var memberDefs = typeObj.type.memberDefinitions.asArray();
-        for (var i = 0, l = memberDefs.length; i < l; i++) {
-            var itemName = memberDefs[i].name;
-            if (itemName !== 'constructor' && !classFunction.memberDefinitions.getMember(itemName)) {
-                this.buildMember(classFunction, memberDefs[i], typeObj.propagateTo);
-            }
-            }
-    }
-
-};
+    };
 
     $data.Class = Class = new ClassEngineBase();
 
-
-(function (global) {
-
-    function ContainerCtor() {
+    //(function (global) {
+    global = window;
+    function ContainerCtor(parentContainer) {
+        var parent = parentContainer;
+        if (parent) {
+            parent.addChildContainer(this);
+        }
 
         var classNames = {};
         var consolidatedClassNames = [];
@@ -7975,6 +7935,20 @@ JAYLINT = (function () {
             return inst;
         };
 
+        var pendingResolutions = {};
+        this.pendingResolutions = pendingResolutions;
+
+        function addPendingResolution(name, onResolved) {
+            pendingResolutions[name] = pendingResolutions[name] || [];
+            pendingResolutions[name].push(onResolved);
+        }
+
+        this.addChildContainer = function (container) {
+            //children.push(container);
+        }
+
+        this.createInstance = function (type, parameters) { return IoC(type, parameters); };
+
         this.mapType = function (aliasTypeOrName, realTypeOrName) {
             Guard.requireValue("aliasType", aliasTypeOrName);
             Guard.requireValue("realType", realTypeOrName);
@@ -7985,10 +7959,62 @@ JAYLINT = (function () {
             mappedTo[aliasPos] = realPos;
         },
 
-        this.resolve = function (type, parameters) {
-            var classFunction = this.resolveType(type, parameters);
-            return new classFunction(parameters);
+        //this.resolve = function (type, parameters) {
+        //    var classFunction = this.resolveType(type, parameters);
+        //    return new classFunction(parameters);
+        //};
+
+
+
+        this.isPrimitiveType = function (type) {
+            var t = this.resolveType(type);
+
+            switch (true) {
+                case t === Number:
+                case t === String:
+                case t === Date:
+                case t === Boolean:
+                case t === Array:
+                case t === Object:
+
+                case t === $data.Number:
+                case t === $data.Integer:
+                case t === $data.Date:
+                case t === $data.String:
+                case t === $data.Boolean:
+                case t === $data.Array:
+                case t === $data.Object:
+                case t === $data.Guid:
+
+                case t === $data.SimpleBase:
+                case t === $data.Geospatial:
+                case t === $data.GeographyBase:
+                case t === $data.GeographyPoint:
+                case t === $data.GeographyLineString:
+                case t === $data.GeographyPolygon:
+                case t === $data.GeographyMultiPoint:
+                case t === $data.GeographyMultiLineString:
+                case t === $data.GeographyMultiPolygon:
+                case t === $data.GeographyCollection:
+                case t === $data.GeometryBase:
+                case t === $data.GeometryPoint:
+                case t === $data.GeometryLineString:
+                case t === $data.GeometryPolygon:
+                case t === $data.GeometryMultiPoint:
+                case t === $data.GeometryMultiLineString:
+                case t === $data.GeometryMultiPolygon:
+                case t === $data.GeometryCollection:
+
+                    return true;
+                default:
+                    return false;
+            }
+
+            //return t === Number || t === String || t === Date || t === String || t === Boolean || t === Array || t === Object ||
+            //    t === $data.Number || t === $data.Integer || t === $data.Date || t === $data.String || t === $data.Boolean || t === $data.Array || t === $data.Object ||
+            //    t === $data.GeographyPoint || t === $data.Guid;
         };
+
 
         this.resolveName = function (type) {
             var t = this.resolveType(type);
@@ -7996,32 +8022,62 @@ JAYLINT = (function () {
             return consolidatedClassNames[tPos];
         };
 
-        this.isPrimitiveType = function(type) {
-            var t = this.resolveType(type);
-            return t === Number || t === String || t === Date || t === String || t === Boolean || t === Array || t === Object ||
-                t === $data.Number || t === $data.Integer || t === $data.Date || t === $data.String || t === $data.Boolean || t === $data.Array || t === $data.Object ||
-                t === $data.Geography || t === $data.Guid;
+        this.resolveType = function (typeOrName, onResolved) {
+            //if ("string" === typeof typeOrName) {
+            //    console.log("@@@@String type!!!", typeOrName)
+            //}
+            var t = typeOrName;
+            t = this.getType(t, onResolved ? true : false, onResolved);
+            var posT = classTypes.indexOf(t);
+            return typeof mappedTo[posT] === 'undefined' ? t : classTypes[mappedTo[posT]];
         };
 
-        this.resolveType = function (typeOrName) {
-            var t = typeOrName;
-            t = this.getType(t);
-            var posT = classTypes.indexOf(t);
-			return typeof mappedTo[posT] === 'undefined' ? t : classTypes[mappedTo[posT]];
+
+
+        this.getType = function (typeOrName, doNotThrow, onResolved) {
+            Guard.requireValue("typeOrName", typeOrName);
+            if (typeof typeOrName === 'function') {
+                return typeOrName;
+            };
+
+            if (!(typeOrName in classNames)) {
+                if (parent) {
+                    var tp = parent.getType(typeOrName, true);
+                    if (tp) return tp;
+                }
+                if (onResolved) {
+                    addPendingResolution(typeOrName, onResolved);
+                    return;
+                }
+                else if (doNotThrow) {
+                    return undefined;
+                } else {
+                    Guard.raise(new Exception("Unable to resolve type:" + typeOrName));
+                }
+            };
+            var result = classTypes[classNames[typeOrName]];
+            if (onResolved) {
+                onResolved(result);
+            }
+            return result;
+        };
+
+        this.getName = function (typeOrName) {
+            var t = this.getType(typeOrName);
+            var tPos = classTypes.indexOf(t);
+            if (tPos == -1)
+                Guard.raise("unknown type to request name for: " + typeOrName);
+            return consolidatedClassNames[tPos];
         };
 
         this.getTypes = function () {
             var keys = Object.keys(classNames);
             var ret = [];
-            for (var i = 0; i < keys.length; i++){
+            for (var i = 0; i < keys.length; i++) {
                 var className = keys[i];
                 ret.push({ name: className, type: classTypes[classNames[className]], toString: function () { return this.name; } });
             }
             return ret;
-            
-            /*return Object.keys(classNames).map(function (className, index) {
-                return { name: className, type: classTypes[classNames[className]], toString: function () { return this.name; } };
-            });*/
         };
 
         //this.getTypeName( in type);
@@ -8029,13 +8085,31 @@ JAYLINT = (function () {
         //this.inferTypeFromValue = function (value) {
 
         this.getTypeName = function (value) {
+            //TODO refactor
             switch (typeof value) {
                 case 'object':
                     if (value == null) return '$data.Object';
                     if (value instanceof Array) return '$data.Array';
                     if (value.getType) return value.getType().fullName;
                     if (value instanceof Date) return '$data.Date';
-                    if (value instanceof $data.Geography) return '$data.Geography';
+                    if (value instanceof $data.GeographyPoint) return '$data.GeographyPoint';
+                    if (value instanceof $data.GeographyLineString) return '$data.GeographyLineString';
+                    if (value instanceof $data.GeographyPolygon) return '$data.GeographyPolygon';
+                    if (value instanceof $data.GeographyMultiPoint) return '$data.GeographyMultiPoint';
+                    if (value instanceof $data.GeographyMultiLineString) return '$data.GeographyMultiLineString';
+                    if (value instanceof $data.GeographyMultiPolygon) return '$data.GeographyMultiPolygon';
+                    if (value instanceof $data.GeographyCollection) return '$data.GeographyCollection';
+                    if (value instanceof $data.GeographyBase) return '$data.GeographyBase';
+                    if (value instanceof $data.GeometryPoint) return '$data.GeometryPoint';
+                    if (value instanceof $data.GeometryLineString) return '$data.GeometryLineString';
+                    if (value instanceof $data.GeometryPolygon) return '$data.GeometryPolygon';
+                    if (value instanceof $data.GeometryMultiPoint) return '$data.GeometryMultiPoint';
+                    if (value instanceof $data.GeometryMultiLineString) return '$data.GeometryMultiLineString';
+                    if (value instanceof $data.GeometryMultiPolygon) return '$data.GeometryMultiPolygon';
+                    if (value instanceof $data.GeometryCollection) return '$data.GeometryCollection';
+                    if (value instanceof $data.GeometryBase) return '$data.GeometryBase';
+                    if (value instanceof $data.Geospatial) return '$data.Geospatial';
+                    if (value instanceof $data.SimpleBase) return '$data.SimpleBase';
                     if (value instanceof $data.Guid) return '$data.Guid';
                     //if(value instanceof "number") return
                 default:
@@ -8055,39 +8129,30 @@ JAYLINT = (function () {
             Guard.raise("Unimplemented");
         };
 
-        this.getType = function (typeOrName) {
-            Guard.requireValue("typeOrName", typeOrName);
-            if (typeof typeOrName === 'function') {
-                return typeOrName;
-            };
 
-            if (!(typeOrName in classNames)) {
-                Guard.raise(new Exception("Unable to resolve type:" + typeOrName));
-            };
-            return classTypes[classNames[typeOrName]];
+
+        this.getDefault = function (typeOrName) {
+            var t = this.resolveType(typeOrName);
+            switch (t) {
+                case $data.Number: return 0.0;
+                case $data.Integer: return 0;
+                case $data.String: return null;
+                case $data.Boolean: return false;
+                default: return null;
+            }
         };
-
-        this.getName = function (typeOrName) {
-            var t = this.getType(typeOrName);
-            var tPos = classTypes.indexOf(t);
-            if (tPos == -1)
-                Guard.raise("unknown type to request name for: " + typeOrName);
-            return consolidatedClassNames[tPos];
-        };
-
-		this.getDefault = function (typeOrName) {
-			var t = this.resolveType(typeOrName);
-			switch (t){
-				case $data.Number: return 0.0;
-				case $data.Integer: return 0;
-				case $data.String: return null;
-				case $data.Boolean: return false;
-				default: return null;
-			}
-		};
 
         //name array ['', '', '']
-        this.registerType = function(nameOrNamesArray, type, factoryFunc) {
+        this.getIndex = function (typeOrName) {
+            var t = this.resolveType(typeOrName);
+            return classTypes.indexOf(t);
+        }
+
+        this.resolveByIndex = function (index) {
+            return classTypes[index];
+        }
+
+        this.registerType = function (nameOrNamesArray, type, factoryFunc) {
             ///<signature>
             ///<summary>Registers a type and optionally a lifetimeManager with a name
             ///that can be used to later resolve the type or create new instances</summary>
@@ -8118,18 +8183,21 @@ JAYLINT = (function () {
                 type = self.resolveType(type);
             }
 
+            var namesArray = [];
             if (typeof nameOrNamesArray === 'string') {
                 var tmp = [];
                 tmp.push(nameOrNamesArray);
-                nameOrNamesArray = tmp;
+                namesArray = tmp;
+            } else {
+                namesArray = nameOrNamesArray;
             }
 
-            for (var i = 0; i < nameOrNamesArray.length; i++) {
-                var parts = nameOrNamesArray[i].split('.');
+            for (var i = 0; i < namesArray.length; i++) {
+                var parts = namesArray[i].split('.');
                 var item = {};
                 item.shortName = parts[parts.length - 1];
-                item.fullName = nameOrNamesArray[i];
-                nameOrNamesArray[i] = item;
+                item.fullName = namesArray[i];
+                namesArray[i] = item;
             }
 
             //if (type.
@@ -8141,17 +8209,15 @@ JAYLINT = (function () {
                 intellisense.annotate(creatorFnc, type);
             }
 
-            for (var i = 0, l = nameOrNamesArray.length; i < l; i++) {
-                var item = nameOrNamesArray[i];
+            for (var i = 0, l = namesArray.length; i < l; i++) {
+                var item = namesArray[i];
                 if (!(("create" + item.shortName) in self)) {
                     if (typeof factoryFunc === 'function') {
                         self["create" + item.shortName] = factoryFunc;
                     } else {
                         self["create" + item.shortName] = creatorFnc;
                     }
-                }/* else {
-                    //if (console) { console.warn("warning: short names overlap:" + item.shortName + ", Container.create" + item.shortName + " has not been updated"); }
-                };*/
+                }
 
                 var typePos = classTypes.indexOf(type);
                 if (typePos == -1) {
@@ -8161,31 +8227,45 @@ JAYLINT = (function () {
                     consolidatedClassNames[typePos] = item.fullName;
                 };
 
-                /*if (item.fullName in classNames) {
-                    //console.warn("warning:!!! This typename has already been registered:" + item.fullName);
-                };*/
                 classNames[item.fullName] = typePos;
-            }
 
-			if (!type.name){
-				type.name = nameOrNamesArray[0].shortName;
-			}
+                var pending = pendingResolutions[item.fullName] || [];
+                if (pending.length > 0) {
+                    pending.forEach(function (t) {
+                        t(type);
+                    });
+                    pendingResolutions[item.fullName] = [];
+                }
+            }
+            if (parent) {
+                parent.registerType.apply(parent, arguments);
+            }
+            if (!type.name) {
+                type.name = namesArray[0].shortName;
+            }
         };
     }
+    $data.ContainerClass = ContainerCtor;
 
     $data.Number = typeof Number !== 'undefined' ? Number : function JayNumber() { };
-    $data.Integer = typeof Integer !== 'undefined' ? Integer : function JayInteger() {  };
+    $data.Integer = typeof Integer !== 'undefined' ? Integer : function JayInteger() { };
     $data.Date = typeof Date !== 'undefined' ? Date : function JayDate() { };
     $data.String = typeof String !== 'undefined' ? String : function JayString() { };
     $data.Boolean = typeof Boolean !== 'undefined' ? Boolean : function JayBoolean() { };
     $data.Blob = /*typeof Blob !== 'undefined' ? Blob :*/ function JayBlob() { };
     $data.Array = typeof Array !== 'undefined' ? Array : function JayArray() { };
     $data.Object = typeof Object !== 'undefined' ? Object : function JayObject() { };
-    $data.ObjectID = typeof ObjectID !== 'undefined' ? ObjectID : function JayObjectID(){};
+    $data.ObjectID = typeof ObjectID !== 'undefined' ? ObjectID : function JayObjectID() { };
     $data.Function = Function;
 
     var c;
+        
     global["Container"] = $data.Container = c = global["C$"] = new ContainerCtor();
+
+    $data.createContainer = function () {
+        return new ContainerCtor($data.Container);
+    }
+
     c.registerType(["$data.Number", "number", "float", "real", "decimal", "JayNumber"], $data.Number);
     c.registerType(["$data.Integer", "int", "integer", "int16", "int32", "int64", "JayInteger"], $data.Integer);
     c.registerType(["$data.String", "string", "text", "character", "JayString"], $data.String);
@@ -8199,50 +8279,144 @@ JAYLINT = (function () {
     c.registerType(["$data.Function", "Function", "function"], $data.Function);
     c.registerType(['$data.ObjectID', 'ObjectID', 'objectId', 'objectid', 'ID', 'Id', 'id', 'JayObjectID'], $data.ObjectID);
 
-})(window);
+    //})(window);
 
-global["$C"] = function () { Class.define.apply(Class, arguments); };
+    global["$C"] = function () { Class.define.apply(Class, arguments); };
 
 
-$data.Class.ConstructorParameter = ConstructorParameter = $data.Class.define('ConstructorParameter', null, null, {
-    constructor: function (paramIndex) {
-        ///<param name="paramIndex" type="integer" />
-        this.paramIndex = paramIndex;
+    var storeProperty = function (memberDefinition, value) {
+        var backingFieldName = "_" + memberDefinition.name;
+        if (!this[backingFieldName]) {
+            Object.defineProperty(this, backingFieldName, memberDefinition.createStorePropertyDescriptor(value));
+        }
+        else {
+            this[backingFieldName] = value;
+        }
+    };
+    var retrieveProperty = function (memberDefinition) {
+        var backingFieldName = "_" + memberDefinition.name;
+        return this[backingFieldName];
+    };
+
+
+    $data.Class.define('$data.Base', function Base() { }, null, {
+        storeProperty: storeProperty,
+        retrieveProperty: retrieveProperty,
+        setProperty: function (memberDefinition, value, callback) {
+            this[memberDefinition.name] = value;
+            callback();
+        },
+        getProperty: function (memberDefinition, callback) {
+            callback.apply(this, [this[memberDefinition.name]]);
+        }
+    }, {
+        create: function () { return Container.createInstance(this, arguments); },
+        extend: function (name, container, instanceDefinition, classDefinition) {
+            if (container && !(container instanceof ContainerCtor)) {
+                classDefinition = instanceDefinition;
+                instanceDefinition = container;
+                container = undefined;
+            }
+            return $data.Class.define(name, this, container, instanceDefinition, classDefinition);
+        },
+        getMemberDefinition: function (name) {
+            return this.memberDefinitions.getMember(name);
+        },
+        addProperty: function (name, getterOrType, setterOrGetter, setter) {
+            var _getter = getterOrType;
+            var _setter = setterOrGetter;
+            var _type;
+            if (typeof _getter === 'string') {
+                _type = getterOrType;
+                _getter = setterOrGetter;
+                _setter = setter;
+            }
+
+            var propDef = {
+                notMapped: true,
+                storeOnObject: true,
+                get: typeof _getter === 'function' ? _getter : function () { },
+                set: typeof _setter === 'function' ? _setter : function () { },
+                type: _type
+            };
+
+            var memberDefinition = MemberDefinition.translateDefinition(propDef, name, this);
+            $data.Class.buildMember(this, memberDefinition);
+
+            this.memberDefinitions.clearCache();
+
+            return this;
+        },
+        addMember: function (name, definition, isClassMember) {
+            var memberDefinition = MemberDefinition.translateDefinition(definition, name, this);
+
+            if (isClassMember) {
+                memberDefinition.classMember = true;
+                $data.Class.buildMember(this, memberDefinition, undefined, 'staticDefinitions');
+                this.staticDefinitions.clearCache();
+            } else {
+                $data.Class.buildMember(this, memberDefinition);
+                this.memberDefinitions.clearCache();
+            }
+            return this;
+        },
+        describeField: function (name, definition) {
+            var memDef = this.memberDefinitions.getMember(name);
+            if (!memDef) {
+                this.addMember(name, definition);
+            } else {
+                Guard.raise(new Exception("Field '" + name + "' already defined!", "Invalid operation"));
+            }
+            return this;
+        },
+        storeProperty: storeProperty,
+        retrieveProperty: retrieveProperty
+    });
+
+
+    //override after typeSystem initialized
+
+
+    $data.Class.ConstructorParameter = ConstructorParameter = $data.Class.define('ConstructorParameter', null, null, {
+        constructor: function (paramIndex) {
+            ///<param name="paramIndex" type="integer" />
+            this.paramIndex = paramIndex;
+        },
+        paramIndex: {}
+    });
+    /*$data.Class.MixinParameter = MixinParameter = $data.Class.define('MixinParameter', null, null, {
+        constructor: function (typeName) {
+            ///<param name="paramIndex" type="integer">
+            this.typeName = typeName;
+        },
+        typeName: {}
+    });*/
+
+    //var e = new Entity();
+
+
+    /*$data.Interface = Class.define("Interface", null, null, {
+        constructor: function() { Guard.raise("Can not create an interface"); }
     },
-    paramIndex: {}
-});
-/*$data.Class.MixinParameter = MixinParameter = $data.Class.define('MixinParameter', null, null, {
-    constructor: function (typeName) {
-        ///<param name="paramIndex" type="integer">
-        this.typeName = typeName;
-    },
-    typeName: {}
-});*/
+    {
+        define: function (name, definition) {
+            var result = Class.define(name, $data.Interface, null, null, definition);
+            delete result.__class;
+            result.__interface = true;
+            return result;
+        }
+    });
+    
+    
+    
+    $data.Observable = Observable = Class.define("Observable", null, null, {
+        propertyChanged: { dataType: $data.Event }
+    }, { 
+        createFromInstance: function(instance) {
+            var propNames = instance.getClass().memberDefinitions.f
+        }
+    });*/
 
-//var e = new Entity();
-
-
-/*$data.Interface = Class.define("Interface", null, null, {
-    constructor: function() { Guard.raise("Can not create an interface"); }
-},
-{
-    define: function (name, definition) {
-        var result = Class.define(name, $data.Interface, null, null, definition);
-        delete result.__class;
-        result.__interface = true;
-        return result;
-    }
-});
-
-
-
-$data.Observable = Observable = Class.define("Observable", null, null, {
-    propertyChanged: { dataType: $data.Event }
-}, { 
-    createFromInstance: function(instance) {
-        var propNames = instance.getClass().memberDefinitions.f
-    }
-});*/
 
 
 })($data, window);
@@ -8292,7 +8466,7 @@ $data.typeSystem = {
         /// <param name="object" type="Object">Object to extend target with.</param>
         /// <param name="objectN" optional="true" parameterArray="true" type="Object">Object to extend target with.</param>
         /// </signature>        
-    	/// <returns></returns>
+        /// <returns></returns>
         if (typeof target !== 'object' && typeof target !== 'function')
             Guard.raise('Target must be object or function');
 
@@ -8303,7 +8477,7 @@ $data.typeSystem = {
             for (key in obj) {
                 target[key] = obj[key];
             }
-        }        
+        }
         return target;
     },
     createCallbackSetting: function (callBack, defaultSetting) {
@@ -8321,9 +8495,14 @@ $data.typeSystem = {
         if (typeof callBack == 'function') {
             return this.extend(setting, { success: callBack });
         }
-        return this.extend(setting, callBack);
+
+        var clb = this.extend(setting, callBack);
+        function wrapCode(fn) { var t = this; function r() { fn.apply(t, arguments); fn = function () { } } return r; }
+        clb.error = wrapCode(clb.error);
+
+        return clb;
     },
-    createCtorParams: function(source, indexes, thisObj) {
+    createCtorParams: function (source, indexes, thisObj) {
         ///<param name="source" type="Array" />Paramerter array
         ///<param name="indexes" type="Array" />
         ///<param name="thisObj" type="Object" />
@@ -8342,17 +8521,14 @@ $data.typeSystem = {
         }
         return source;
     },
-    writePropertyValues: function (obj)
-    {
-        if (obj && obj.getType && obj.getType().memberDefinitions)
-        {
+    writePropertyValues: function (obj) {
+        if (obj && obj.getType && obj.getType().memberDefinitions) {
             this.writeProperties(obj, obj.getType().memberDefinitions.asArray().filter(
                 function (md) { return (md.kind == "property" || md.kind == "navProperty" || md.kind == "complexProperty") && !md.prototypeProperty; }
                 ));
         }
     },
-    writeProperties: function (obj, members)
-    {
+    writeProperties: function (obj, members) {
         var defines = {};
         for (var i = 0, l = members.length; i < l; i++) {
             var memDef = members[i];
@@ -8362,8 +8538,7 @@ $data.typeSystem = {
         Object.defineProperties(obj, defines);
 
     },
-    writeProperty: function (obj, member, value)
-    {
+    writeProperty: function (obj, member, value) {
         var memDef = typeof member === 'string' ? obj.getType().memberDefinitions.getMember(member) : member;
         if (memDef) {
             var propDef = memDef.createPropertyDescriptor(null, value);
@@ -8371,6 +8546,10 @@ $data.typeSystem = {
             Object.defineProperty(obj, memDef.name, propDef);
         }
     }
+};
+
+$data.debug = function () {
+    console.log.apply(console, arguments);
 };
 $data.Class.define('$data.TraceBase', null, null, {
     log: function () { },
@@ -8398,32 +8577,375 @@ $data.Class.define('$data.Logger', $data.TraceBase, null, {
         return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '.' + date.getMilliseconds();
     }
 });
-$data.Geography = function Geography(lon, lat) {
-    if (lon && typeof lon === 'object' && Array.isArray(lon.coordinates)) {
-        this.longitude = lon.coordinates[0];
-        this.latitude = lon.coordinates[1];
-    } else {
-        this.longitude = lon || 0;
-        this.latitude = lat || 0;
-    }
-};
-$data.Container.registerType(['$data.Geography', 'Geography', 'geography', 'geo'], $data.Geography);
+/* $data.SimpleBase */
+$data.SimpleBase = function SimpleBase(data) {
+    if (typeof data === 'object' && data) {
+        if (Array.isArray(this.constructor.validMembers)) {
+            for (var i = 0; i < this.constructor.validMembers.length; i++) {
+                var name = this.constructor.validMembers[i];
 
-$data.Geography.prototype.toJSON = function () {
-    return {
-
-        //http://www.odata.org/blog/2011/5/3/geospatial-data-support-in-odata but http://services.odata.org/V3/OData/OData.svc/Suppliers(1) has this values
-        //__metadata: { type: 'Edm.GeographyPoint' },
-        type: 'Point',
-        coordinates: [this.longitude, this.latitude]/*,
-        crs: {
-            type: 'name',
-            properties: {
-                name: "EPSG:4326"
+                if (data[name] !== undefined) {
+                    this[name] = data[name];
+                }
             }
-        }*/
+
+        } else {
+            delete data.type;
+            $data.typeSystem.extend(this, data);
+        }
+    }
+}
+$data.SimpleBase.registerType = function (name, type, base) {
+    base = base || $data.SimpleBase;
+
+    type.type = name;
+    type.prototype = Object.create(base.prototype);
+    type.prototype.constructor = type;
+}
+$data.Container.registerType(['$data.SimpleBase', 'SimpleBase'], $data.SimpleBase);$data.Geospatial = function Geospatial() {
+    this.type = this.constructor.type;
+    if (Array.isArray(this.constructor.validMembers)) {
+        for (var i = 0; i < this.constructor.validMembers.length; i++) {
+            var name = this.constructor.validMembers[i];
+            this[name] = undefined;
+        }
+    }
+
+    $data.SimpleBase.apply(this, arguments);
+    this.type = this.constructor.type || 'Unknown';
+};
+$data.SimpleBase.registerType('Geospatial', $data.Geospatial);
+$data.Container.registerType(['$data.Geospatial', 'Geospatial'], $data.Geospatial);
+
+$data.point = function (arg) {
+    if (arg && arg.crs) {
+        if (arg.crs.properties && arg.crs.properties.name === $data.GeometryBase.defaultCrs.properties.name) {
+            return new $data.GeometryPoint(arg);
+        } else {
+            return new $data.GeographyPoint(arg);
+        }
+    } else if(arg) {
+        if ('x' in arg && 'y' in arg) {
+            return new $data.GeometryPoint(arg.x, arg.y);
+        } else if ('longitude' in arg && 'latitude' in arg) {
+            return new $data.GeographyPoint(arg.longitude, arg.latitude);
+        } else if ('lng' in arg && 'lat' in arg) {
+            return new $data.GeographyPoint(arg.lng, arg.lat);
+        }
+    }
+};/* $data.GeographyBase */
+$data.GeographyBase = function GeographyBase() {
+    $data.Geospatial.apply(this, arguments);
+
+    this.crs = $data.GeographyBase.defaultCrs;
+};
+
+$data.GeographyBase.defaultCrs = {
+    properties: {
+        name: 'EPSG:4326'
+    },
+    type: 'name'
+};
+
+$data.GeographyBase.parseFromString = function (strData) {
+    var lparenIdx = strData.indexOf('(');
+    if(lparenIdx >= 0){
+        var name = strData.substring(0, lparenIdx).toLowerCase();
+        var type = $data.GeographyBase.registered[name];
+
+        if (type && type.parseFromString && type != $data.GeographyBase) {
+            return type.parseFromString(strData);
+        } else {
+            Guard.raise(new Exception('parseFromString', 'Not Implemented', strData));
+        }
     }
 };
+$data.GeographyBase.stringifyToUrl = function (geoData) {
+    if (geoData instanceof $data.GeographyBase && geoData.constructor && geoData.constructor.stringifyToUrl) {
+        return geoData.constructor.stringifyToUrl(geoData);
+    } else if (geoData instanceof $data.GeographyBase && geoData.constructor && Array.isArray(geoData.constructor.validMembers) && geoData.constructor.validMembers[0] === 'coordinates') {
+        var data = "geography'" + geoData.type.toUpperCase() + '(';
+        function buildArray(d, context) {
+            if (Array.isArray(d[0])) {
+                
+                for (var i = 0; i < d.length; i++) {
+                    if (i > 0) data += ',';
+                    if (Array.isArray(d[i][0]))
+                        data += '(';
+
+                    buildArray(d[i]);
+
+                    if (Array.isArray(d[i][0]))
+                        data += ')';
+                }
+                
+            } else {
+                data += d.join(' ');
+            }
+        }
+        buildArray(geoData.coordinates, data);
+        
+        data += ")'";
+        return data;
+    } else {
+        Guard.raise(new Exception('stringifyToUrl on instance type', 'Not Implemented', geoData));
+    }
+};
+$data.GeographyBase.registerType = function (name, type, base) {
+    $data.SimpleBase.registerType(name, type, base || $data.GeographyBase);
+
+    $data.GeographyBase.registered = $data.GeographyBase.registered || {};
+    $data.GeographyBase.registered[name.toLowerCase()] = type;
+};
+$data.SimpleBase.registerType('GeographyBase', $data.GeographyBase, $data.Geospatial);
+$data.Container.registerType(['$data.GeographyBase'], $data.GeographyBase);
+
+/* $data.GeographyPoint */
+$data.GeographyPoint = function GeographyPoint(lon, lat) {
+    if (lon && typeof lon === 'object' && Array.isArray(lon)) {
+        $data.GeographyBase.call(this, { coordinates: lon });
+    } else if (lon && typeof lon === 'object') {
+        $data.GeographyBase.call(this, lon);
+    } else {
+        $data.GeographyBase.call(this, { coordinates: [lon || 0, lat || 0] });
+    }
+};
+$data.GeographyPoint.parseFromString = function (strData) {
+    var data = strData.substring(strData.indexOf('(') + 1, strData.lastIndexOf(')'));
+    var values = data.split(' ');
+
+    return new $data.GeographyPoint(parseFloat(values[0]), parseFloat(values[1]));
+};
+$data.GeographyPoint.validMembers = ['coordinates'];
+$data.GeographyBase.registerType('Point', $data.GeographyPoint);
+Object.defineProperty($data.GeographyPoint.prototype, 'longitude', { get: function () { return this.coordinates[0]; }, set: function (v) { this.coordinates[0] = v; } });
+Object.defineProperty($data.GeographyPoint.prototype, 'latitude', { get: function () { return this.coordinates[1]; }, set: function (v) { this.coordinates[1] = v; } });
+$data.Container.registerType(['$data.GeographyPoint', 'GeographyPoint', '$data.Geography', 'Geography', 'geography', 'geo'], $data.GeographyPoint);
+$data.Geography = $data.GeographyPoint;
+
+/* $data.GeographyLineString */
+$data.GeographyLineString = function GeographyLineString(data) {
+    if (Array.isArray(data)) {
+        $data.GeographyBase.call(this, { coordinates: data });
+    } else {
+        $data.GeographyBase.call(this, data);
+    }
+};
+$data.GeographyLineString.validMembers = ['coordinates'];
+$data.GeographyBase.registerType('LineString', $data.GeographyLineString);
+$data.Container.registerType(['$data.GeographyLineString', 'GeographyLineString'], $data.GeographyLineString);
+
+/* $data.GeographyPolygon */
+$data.GeographyPolygon = function GeographyPolygon(data) {
+    if (Array.isArray(data)) {
+        $data.GeographyBase.call(this, { coordinates: data });
+    } else {
+        $data.GeographyBase.call(this, data);
+    }
+};
+$data.GeographyPolygon.validMembers = ['coordinates'];
+$data.GeographyBase.registerType('Polygon', $data.GeographyPolygon);
+$data.Container.registerType(['$data.GeographyPolygon', 'GeographyPolygon'], $data.GeographyPolygon);
+
+/* $data.GeographyMultiPoint */
+$data.GeographyMultiPoint = function GeographyMultiPoint(data) {
+    if (Array.isArray(data)) {
+        $data.GeographyBase.call(this, { coordinates: data });
+    } else {
+        $data.GeographyBase.call(this, data);
+    }
+};
+$data.GeographyMultiPoint.validMembers = ['coordinates'];
+$data.GeographyBase.registerType('MultiPoint', $data.GeographyMultiPoint);
+$data.Container.registerType(['$data.GeographyMultiPoint', 'GeographyMultiPoint'], $data.GeographyMultiPoint);
+
+/* $data.GeographyMultiLineString */
+$data.GeographyMultiLineString = function GeographyMultiLineString(data) {
+    if (Array.isArray(data)) {
+        $data.GeographyBase.call(this, { coordinates: data });
+    } else {
+        $data.GeographyBase.call(this, data);
+    }
+};
+$data.GeographyMultiLineString.validMembers = ['coordinates'];
+$data.GeographyBase.registerType('MultiLineString', $data.GeographyMultiLineString);
+$data.Container.registerType(['$data.GeographyMultiLineString', 'GeographyMultiLineString'], $data.GeographyMultiLineString);
+
+/* $data.GeographyMultiPolygon */
+$data.GeographyMultiPolygon = function GeographyMultiPolygon(data) {
+    if (Array.isArray(data)) {
+        $data.GeographyBase.call(this, { coordinates: data });
+    } else {
+        $data.GeographyBase.call(this, data);
+    }
+};
+$data.GeographyMultiPolygon.validMembers = ['coordinates'];
+$data.GeographyBase.registerType('MultiPolygon', $data.GeographyMultiPolygon);
+$data.Container.registerType(['$data.GeographyMultiPolygon', 'GeographyMultiPolygon'], $data.GeographyMultiPolygon);
+
+/* $data.GeographyCollection */
+$data.GeographyCollection = function GeographyCollection(data) {
+    $data.GeographyBase.call(this, data);
+};
+$data.GeographyBase.registerType('GeometryCollection', $data.GeographyCollection);
+$data.Container.registerType(['$data.GeographyCollection', 'GeographyCollection'], $data.GeographyCollection);
+
+/* $data.Geometry */
+$data.GeometryBase = function GeometryBase() {
+    $data.Geospatial.apply(this, arguments);
+
+    this.crs = $data.GeometryBase.defaultCrs;
+};
+
+$data.GeometryBase.defaultCrs = {
+    properties: {
+        name: 'EPSG:0'
+    },
+    type: 'name'
+};
+
+$data.GeometryBase.parseFromString = function (strData) {
+    var lparenIdx = strData.indexOf('(');
+    if (lparenIdx >= 0) {
+        var name = strData.substring(0, lparenIdx).toLowerCase();
+        var type = $data.GeometryBase.registered[name];
+
+        if (type && type.parseFromString && type != $data.GeometryBase) {
+            return type.parseFromString(strData);
+        } else {
+            Guard.raise(new Exception('parseFromString', 'Not Implemented', strData));
+        }
+    }
+};
+$data.GeometryBase.stringifyToUrl = function (geoData) {
+    if (geoData instanceof $data.GeometryBase && geoData.constructor && geoData.constructor.stringifyToUrl) {
+        return geoData.constructor.stringifyToUrl(geoData);
+    } else if (geoData instanceof $data.GeometryBase && geoData.constructor && Array.isArray(geoData.constructor.validMembers) && geoData.constructor.validMembers[0] === 'coordinates') {
+        var data = "geometry'" + geoData.type.toUpperCase() + '(';
+        function buildArray(d, context) {
+            if (Array.isArray(d[0])) {
+
+                for (var i = 0; i < d.length; i++) {
+                    if (i > 0) data += ',';
+                    if (Array.isArray(d[i][0]))
+                        data += '(';
+
+                    buildArray(d[i]);
+
+                    if (Array.isArray(d[i][0]))
+                        data += ')';
+                }
+
+            } else {
+                data += d.join(' ');
+            }
+        }
+        buildArray(geoData.coordinates, data);
+
+        data += ")'";
+        return data;
+    } else {
+        Guard.raise(new Exception('stringifyToUrl on instance type', 'Not Implemented', geoData));
+    }
+};
+$data.GeometryBase.registerType = function (name, type, base) {
+    $data.SimpleBase.registerType(name, type, base || $data.GeometryBase);
+
+    $data.GeometryBase.registered = $data.GeometryBase.registered || {};
+    $data.GeometryBase.registered[name.toLowerCase()] = type;
+};
+$data.SimpleBase.registerType('GeometryBase', $data.GeometryBase, $data.Geospatial);
+$data.Container.registerType(['$data.GeometryBase'], $data.GeometryBase);
+
+/* $data.GeometryPoint */
+$data.GeometryPoint = function GeometryPoint(lon, lat) {
+    if (lon && typeof lon === 'object' && Array.isArray(lon)) {
+        $data.GeometryBase.call(this, { coordinates: lon });
+    } else if (lon && typeof lon === 'object') {
+        $data.GeometryBase.call(this, lon);
+    } else {
+        $data.GeometryBase.call(this, { coordinates: [lon || 0, lat || 0] });
+    }
+};
+$data.GeometryPoint.parseFromString = function (strData) {
+    var data = strData.substring(strData.indexOf('(') + 1, strData.lastIndexOf(')'));
+    var values = data.split(' ');
+
+    return new $data.GeometryPoint(parseFloat(values[0]), parseFloat(values[1]));
+};
+$data.GeometryPoint.validMembers = ['coordinates'];
+$data.GeometryBase.registerType('Point', $data.GeometryPoint);
+Object.defineProperty($data.GeometryPoint.prototype, 'x', { get: function () { return this.coordinates[0]; }, set: function (v) { this.coordinates[0] = v; } });
+Object.defineProperty($data.GeometryPoint.prototype, 'y', { get: function () { return this.coordinates[1]; }, set: function (v) { this.coordinates[1] = v; } });
+$data.Container.registerType(['$data.GeometryPoint', 'GeometryPoint'], $data.GeometryPoint);
+
+/* $data.GeometryLineString */
+$data.GeometryLineString = function GeometryLineString(data) {
+    if (Array.isArray(data)) {
+        $data.GeometryBase.call(this, { coordinates: data });
+    } else {
+        $data.GeometryBase.call(this, data);
+    }
+};
+$data.GeometryLineString.validMembers = ['coordinates'];
+$data.GeometryBase.registerType('LineString', $data.GeometryLineString);
+$data.Container.registerType(['$data.GeometryLineString', 'GeometryLineString'], $data.GeometryLineString);
+
+/* $data.GeometryPolygon */
+$data.GeometryPolygon = function GeometryPolygon(data) {
+    if (Array.isArray(data)) {
+        $data.GeometryBase.call(this, { coordinates: data });
+    } else {
+        $data.GeometryBase.call(this, data);
+    }
+};
+$data.GeometryPolygon.validMembers = ['coordinates'];
+$data.GeometryBase.registerType('Polygon', $data.GeometryPolygon);
+$data.Container.registerType(['$data.GeometryPolygon', 'GeometryPolygon'], $data.GeometryPolygon);
+
+/* $data.GeometryMultiPoint */
+$data.GeometryMultiPoint = function GeometryMultiPoint(data) {
+    if (Array.isArray(data)) {
+        $data.GeometryBase.call(this, { coordinates: data });
+    } else {
+        $data.GeometryBase.call(this, data);
+    }
+};
+$data.GeometryMultiPoint.validMembers = ['coordinates'];
+$data.GeometryBase.registerType('MultiPoint', $data.GeometryMultiPoint);
+$data.Container.registerType(['$data.GeometryMultiPoint', 'GeometryMultiPoint'], $data.GeometryMultiPoint);
+
+/* $data.GeometryMultiLineString */
+$data.GeometryMultiLineString = function GeometryMultiLineString(data) {
+    if (Array.isArray(data)) {
+        $data.GeometryBase.call(this, { coordinates: data });
+    } else {
+        $data.GeometryBase.call(this, data);
+    }
+};
+$data.GeometryMultiLineString.validMembers = ['coordinates'];
+$data.GeometryBase.registerType('MultiLineString', $data.GeometryMultiLineString);
+$data.Container.registerType(['$data.GeometryMultiLineString', 'GeometryMultiLineString'], $data.GeometryMultiLineString);
+
+/* $data.GeometryMultiPolygon */
+$data.GeometryMultiPolygon = function GeometryMultiPolygon(data) {
+    if (Array.isArray(data)) {
+        $data.GeometryBase.call(this, { coordinates: data });
+    } else {
+        $data.GeometryBase.call(this, data);
+    }
+};
+$data.GeometryMultiPolygon.validMembers = ['coordinates'];
+$data.GeometryBase.registerType('MultiPolygon', $data.GeometryMultiPolygon);
+$data.Container.registerType(['$data.GeometryMultiPolygon', 'GeometryMultiPolygon'], $data.GeometryMultiPolygon);
+
+/* $data.GeometryCollection */
+$data.GeometryCollection = function GeometryCollection(data) {
+    $data.GeometryBase.call(this, data);
+};
+$data.GeometryBase.registerType('GeometryCollection', $data.GeometryCollection);
+$data.Container.registerType(['$data.GeometryCollection', 'GeometryCollection'], $data.GeometryCollection);
+
 $data.Guid = function Guid(value) {
     ///<param name="value" type="string" />
 
@@ -8559,7 +9081,59 @@ $data.parseGuid = function (guid) {
 
     function Edm_GeographyPoint() { };
     $data.Container.registerType('Edm.GeographyPoint', Edm_GeographyPoint);
-    $data.Container.mapType(Edm_GeographyPoint, $data.Geography);
+    $data.Container.mapType(Edm_GeographyPoint, $data.GeographyPoint);
+
+    function Edm_GeographyLineString() { };
+    $data.Container.registerType('Edm.GeographyLineString', Edm_GeographyLineString);
+    $data.Container.mapType(Edm_GeographyLineString, $data.GeographyLineString);
+
+    function Edm_GeographyPolygon() { };
+    $data.Container.registerType('Edm.GeographyPolygon', Edm_GeographyPolygon);
+    $data.Container.mapType(Edm_GeographyPolygon, $data.GeographyPolygon);
+
+    function Edm_GeographyMultiPoint() { };
+    $data.Container.registerType('Edm.GeographyMultiPoint', Edm_GeographyMultiPoint);
+    $data.Container.mapType(Edm_GeographyMultiPoint, $data.GeographyMultiPoint);
+
+    function Edm_GeographyMultiLineString() { };
+    $data.Container.registerType('Edm.GeographyMultiLineString', Edm_GeographyMultiLineString);
+    $data.Container.mapType(Edm_GeographyMultiLineString, $data.GeographyMultiLineString);
+
+    function Edm_GeographyMultiPolygon() { };
+    $data.Container.registerType('Edm.GeographyMultiPolygon', Edm_GeographyMultiPolygon);
+    $data.Container.mapType(Edm_GeographyMultiPolygon, $data.GeographyMultiPolygon);
+
+    function Edm_GeographyCollection() { };
+    $data.Container.registerType('Edm.GeographyCollection', Edm_GeographyCollection);
+    $data.Container.mapType(Edm_GeographyCollection, $data.GeographyCollection);
+
+    function Edm_GeometryPoint() { };
+    $data.Container.registerType('Edm.GeometryPoint', Edm_GeometryPoint);
+    $data.Container.mapType(Edm_GeometryPoint, $data.GeometryPoint);
+
+    function Edm_GeometryLineString() { };
+    $data.Container.registerType('Edm.GeometryLineString', Edm_GeometryLineString);
+    $data.Container.mapType(Edm_GeometryLineString, $data.GeometryLineString);
+
+    function Edm_GeometryPolygon() { };
+    $data.Container.registerType('Edm.GeometryPolygon', Edm_GeometryPolygon);
+    $data.Container.mapType(Edm_GeometryPolygon, $data.GeometryPolygon);
+
+    function Edm_GeometryMultiPoint() { };
+    $data.Container.registerType('Edm.GeometryMultiPoint', Edm_GeometryMultiPoint);
+    $data.Container.mapType(Edm_GeometryMultiPoint, $data.GeometryMultiPoint);
+
+    function Edm_GeometryMultiLineString() { };
+    $data.Container.registerType('Edm.GeometryMultiLineString', Edm_GeometryMultiLineString);
+    $data.Container.mapType(Edm_GeometryMultiLineString, $data.GeometryMultiLineString);
+
+    function Edm_GeometryMultiPolygon() { };
+    $data.Container.registerType('Edm.GeometryMultiPolygon', Edm_GeometryMultiPolygon);
+    $data.Container.mapType(Edm_GeometryMultiPolygon, $data.GeometryMultiPolygon);
+
+    function Edm_GeometryCollection() { };
+    $data.Container.registerType('Edm.GeometryCollection', Edm_GeometryCollection);
+    $data.Container.mapType(Edm_GeometryCollection, $data.GeometryCollection);
 
 })($data);$data.StringFunctions = {
     startsWith: function () {
@@ -8569,6 +9143,9 @@ $data.parseGuid = function (guid) {
             str = arguments[1];
         } else if (arguments.length == 1 && typeof this === 'string') {
             self = this;
+            str = arguments[0];
+        } else if (this instanceof String) {
+            self = this.valueOf();
             str = arguments[0];
         } else
             return false;;
@@ -8583,6 +9160,9 @@ $data.parseGuid = function (guid) {
         } else if (arguments.length == 1 && typeof this === 'string') {
             self = this;
             str = arguments[0];
+        } else if (this instanceof String) {
+            self = this.valueOf();
+            str = arguments[0];
         } else
             return false;
 
@@ -8595,6 +9175,9 @@ $data.parseGuid = function (guid) {
             str = arguments[1];
         } else if (arguments.length == 1 && typeof this === 'string') {
             self = this;
+            str = arguments[0];
+        } else if (this instanceof String) {
+            self = this.valueOf();
             str = arguments[0];
         } else
             return false;
@@ -8724,6 +9307,7 @@ $data.Class.define("$data.Expressions.ExpressionType", null, null, {}, {
     Filter: "Filter",
     First: "First",
     Count: "Count",
+    InlineCount: "InlineCount",
     Single: "Single",
     Some: "Some",
     Every: "Every",
@@ -8734,6 +9318,8 @@ $data.Class.define("$data.Expressions.ExpressionType", null, null, {}, {
     EntityMember: "EntityMember",
     EntityFieldOperation: "EntityFieldOperation",
     FrameOperation: "FrameOperation",
+    EntityFunctionOperation: "EntityFunctionOperation",
+    ContextFunctionOperation: "ContextFunctionOperation",
     EntityBinary: "EntityBinary",
     Code: "Code",
     ParametricQuery: "ParametricQuery",
@@ -8745,7 +9331,12 @@ $data.Class.define("$data.Expressions.ExpressionType", null, null, {}, {
     Skip: "Skip",
     OrderBy: "OrderBy",
     OrderByDescending: "OrderByDescending",
-    Include: "Include"
+    Include: "Include",
+
+    IndexedPhysicalAnd:"IndexedDBPhysicalAndFilterExpression",
+    IndexedLogicalAnd:"IndexedDBLogicalAndFilterExpression",
+    IndexedLogicalOr: "IndexedDBLogicalOrFilterExpression",
+    IndexedLogicalIn: "IndexedDBLogicalInFilterExpression"
 });
 
 $data.BinaryOperator = function () {
@@ -9620,6 +10211,9 @@ $C('$data.Expressions.ExpressionVisitor', null, null,
                     case $data.Expressions.UnaryExpression:
                         result = this.VisitUnary(eNode, context);
                         break;
+                    case $data.Expressions.EntityContextExpression:
+                        result = this.VisitEntityContext(eNode, context);
+                        break;
                     default:
                         debugger;
                         break;
@@ -9749,6 +10343,13 @@ $C('$data.Expressions.ExpressionVisitor', null, null,
             return new $data.Expressions.UnaryExpression(operand, eNode.operator, eNode.nodeType);
         },
 
+        VisitEntityContext: function (eNode, context) {
+            ///<param name="eNode" type="$data.Expressions.ParameterExpression" />
+            ///<returns type="$data.Expressions.EntityContextExpression" />
+            //var result  = new $data.Expressions.ParameterExpression(eNode.name, eNode.type, eNode.nodeType);
+            return eNode;
+        },
+
         VisitDecision: function (eNode, context) {
             ///<summary></summary>
             ///<param name="eNode" type="$data.Expressions.ExpressionNodeTypes.DecisionExpressionNode"/>
@@ -9856,22 +10457,26 @@ $C("$data.Expressions.GlobalContextProcessor", $data.Expressions.ParameterProces
 
 
 $C("$data.Expressions.ConstantValueResolver", $data.Expressions.ParameterProcessor, null, {
-    constructor: function (paramsObject, global) {
+    constructor: function (paramsObject, global, scopeContext) {
         ///<param name="global" type="object" />
         this.globalResolver = Container.createGlobalContextProcessor(global);
         this.paramResolver = Container.createGlobalContextProcessor(paramsObject);
         this.paramsObject = paramsObject;
+        this.scopeContext = scopeContext;
     },
 
     canResolve: function (paramExpression) {
         ///<param name="paramExpression" type="$data.Expressions.ParameterExpression" />
-        return (paramExpression.nodeType == $data.Expressions.ExpressionType.This && this.paramsObject) 
+        return (paramExpression.name === '$context') || (paramExpression.nodeType == $data.Expressions.ExpressionType.This && this.paramsObject)
                     ? true : (this.paramResolver.canResolve(paramExpression) || this.globalResolver.canResolve(paramExpression));
     },
 
     resolve: function (paramExpression) {
         ///<param name="paramExpression" type="$data.Expressions.ParameterExpression" />
         ///<returns type="$data.Expressions.ExpressionNode" />
+        if (paramExpression.name === '$context') {
+            return Container.createEntityContextExpression(this.scopeContext);
+        }
         if (paramExpression.nodeType == $data.Expressions.ExpressionType.This) {
             return Container.createConstantExpression(this.paramsObject, typeof this.paramsObject, 'this');
         }
@@ -10120,6 +10725,12 @@ $C('$data.Expressions.ParameterResolverVisitor', $data.Expressions.ExpressionVis
         var body  = call.member;
         var args = call.args;
 
+        function convertToValue(arg) {
+            if (arg instanceof $data.Expressions.ConstantExpression)
+                return arg.value;
+            return arg;
+        };
+
         if (isExecutable(args, body, obj)) {
             var fn = body.value;
             if (typeof fn === 'string' && obj.value) {
@@ -10129,7 +10740,7 @@ $C('$data.Expressions.ParameterResolverVisitor', $data.Expressions.ExpressionVis
                 //TODO dig that name out from somewhere
                 Guard.raise("Constant expression is not a method...");
             }
-            var value = eNode.implementation(obj.value, fn, args);
+            var value = eNode.implementation(obj.value, fn, args.map(convertToValue));
             return new $data.Expressions.ConstantExpression(value);
         }
         return call;
@@ -10919,6 +11530,26 @@ $C('$data.Expressions.LogicalSchemaBinderVisitor',
                 result = Container.createFrameOperationExpression(exp, member, args);
                 return result;
                 
+            case exp instanceof $data.Expressions.EntityExpression:
+                var operation = this.scopeContext.resolveTypeOperations(member.value, exp, context.frameType);
+                if (!operation) {
+                    Guard.raise("Unknown entity function operation: " + member.getJSON());
+                }
+
+                member = Container.createMemberInfoExpression(operation);
+                result = Container.createEntityFunctionOperationExpression(exp, member, args);
+                return result;
+                break;
+            case exp instanceof $data.Expressions.EntityContextExpression:
+                var operation = this.scopeContext.resolveContextOperations(member.value, exp, context.frameType);
+                if (!operation) {
+                    Guard.raise("Unknown entity function operation: " + member.getJSON());
+                }
+
+                member = Container.createMemberInfoExpression(operation);
+                result = Container.createContextFunctionOperationExpression(exp, member, args);
+                return result;
+                break;
             default:
                 Guard.raise("VisitCall: Only fields can have operations: " + expression.getType().name);
                 //TODO we must not alter the visited tree
@@ -11300,6 +11931,15 @@ $C('$data.Expressions.EntityExpression', $data.Expressions.ExpressionNode, null,
         return expression;
     },
 
+    VisitInlineCountExpression: function (expression, context) {
+        var source = this.Visit(expression.source, context);
+        var selector = this.Visit(expression.selector, context);
+        if (source !== expression.source || selector !== expression.selector) {
+            return Container.createInlineCountExpression(source, selector, expression.params, expression.instance);
+        }
+        return expression;
+    },
+
     VisitFilterExpression: function (expression, context) {
         var source = this.Visit(expression.source, context);
         var selector = this.Visit(expression.selector, context);
@@ -11337,7 +11977,60 @@ $C('$data.Expressions.EntityExpression', $data.Expressions.ExpressionNode, null,
         return expression;
     }
 });
-$C('$data.Expressions.EntityFieldExpression', $data.Expressions.ExpressionNode, null, {
+$C('$data.Expressions.ExpressionMonitor', $data.Expressions.EntityExpressionVisitor, null, {
+    constructor: function (monitorDefinition) {
+        this.Visit = function (expression, context) {
+
+            var result = expression;
+            var methodName;
+            if (this.canVisit(expression)) {
+
+                //if (monitorDefinition.FilterExpressionNode) {
+
+                //};
+
+                if (monitorDefinition.VisitExpressionNode) {
+                    monitorDefinition.VisitExpressionNode.apply(monitorDefinition, arguments);
+                };
+
+                methodName = "Visit" + expression.getType().name;
+                if (methodName in monitorDefinition) {
+                    result = monitorDefinition[methodName].apply(monitorDefinition, arguments);
+                }
+            }
+
+
+            //apply is about 3-4 times faster then call on webkit
+
+            var args = arguments;
+            if (result !== expression) args = [result, context];
+            result = $data.Expressions.EntityExpressionVisitor.prototype.Visit.apply(this, args);
+
+            args = [result, context];
+
+            if (this.canVisit(result)) {
+                var expressionTypeName = result.getType().name;
+                if (monitorDefinition.MonitorExpressionNode) {
+                    monitorDefinition.MonitorExpressionNode.apply(monitorDefinition, args);
+                }
+                methodName = "Monitor" + expressionTypeName;
+                if (methodName in monitorDefinition) {
+                    monitorDefinition[methodName].apply(monitorDefinition, args);
+                }
+
+                if (monitorDefinition.MutateExpressionNode) {
+                    monitorDefinition.MutateExpressionNode.apply(monitorDefinition, args);
+                }
+                methodName = "Mutate" + expressionTypeName;
+                if (methodName in monitorDefinition) {
+                    result = monitorDefinition[methodName].apply(monitorDefinition, args);
+                }
+
+            }
+            return result;
+        };
+    }
+});$C('$data.Expressions.EntityFieldExpression', $data.Expressions.ExpressionNode, null, {
     constructor: function (source, selector) {
         ///<param name="source" type="$data.Entity.EntityExpression" />
         ///<param name="selector" type="$data.Entity.MemberInfoExpression" />
@@ -11424,7 +12117,9 @@ $C('$data.Expressions.EntityFieldOperationExpression', $data.Expressions.Express
                 this.storageModel = this.source.storageModel;
                 break;
             default:
-                Guard.raise("Unknown source type for EntitySetExpression: " + this.source.getType().name);
+                Guard.raise("take and skip must be the last expressions in the chain!");
+                //Guard.raise("Unknown source type for EntitySetExpression: " + this.getType().name);
+                break;
         }
 
         // suspicious code
@@ -11446,6 +12141,14 @@ $C('$data.Expressions.FrameOperationExpression', $data.Expressions.ExpressionNod
     nodeType: { value: $data.Expressions.ExpressionType.FrameOperation }
 
 });
+
+$C('$data.Expressions.EntityFunctionOperationExpression', $data.Expressions.FrameOperationExpression, null, {
+    nodeType: { value: $data.Expressions.ExpressionType.EntityFunctionOperation }
+});
+
+$C('$data.Expressions.ContextFunctionOperationExpression', $data.Expressions.FrameOperationExpression, null, {
+    nodeType: { value: $data.Expressions.ExpressionType.ContextFunctionOperation }
+});
 $C('$data.Expressions.FilterExpression', $data.Expressions.EntitySetExpression, null, {
     constructor: function (source, selector) {
         ///<signature>
@@ -11459,6 +12162,12 @@ $C('$data.Expressions.FilterExpression', $data.Expressions.EntitySetExpression, 
         this.resultType = $data.Array;
     },
     nodeType: { value: $data.Expressions.ExpressionType.Filter, enumerable: true }
+});
+
+$C('$data.Expressions.InlineCountExpression', $data.Expressions.EntitySetExpression, null, {
+    constructor: function (source, selector) {
+    },
+    nodeType: { value: $data.Expressions.ExpressionType.InlineCount, enumerable: true }
 });
 
 $C('$data.Expressions.FrameOperator', $data.Expressions.ExpressionNode, null, {
@@ -11635,7 +12344,7 @@ $C('$data.Expressions.QueryExpressionCreator', $data.Expressions.EntityExpressio
         //TODO rename classes to reflex variable names
         //TODO engage localValueResolver here
         //var globalVariableResolver = Container.createGlobalContextProcessor(window);
-        var constantResolver = Container.createConstantValueResolver(expression.parameters, window);
+        var constantResolver = Container.createConstantValueResolver(expression.parameters, window, this.scopeContext);
         var parameterProcessor = Container.createParameterResolverVisitor();
 
         jsCodeTree = parameterProcessor.Visit(jsCodeTree, constantResolver);
@@ -11661,6 +12370,17 @@ $C('$data.Expressions.QueryExpressionCreator', $data.Expressions.EntityExpressio
         var selector = this.Visit(expression.selector, context);
         if (source !== expression.source || selector !== expression.selector) {
             return Container.createFilterExpression(source, selector, expression.params, expression.instance);
+        }
+        return expression;
+    },
+
+    VisitInlineCountExpression: function (expression, context) {
+        var source = this.Visit(expression.source, context);
+        context = context || {};
+        context.frameType = expression.getType();
+        var selector = this.Visit(expression.selector, context);
+        if (source !== expression.source || selector !== expression.selector) {
+            return Container.createInlineCountExpression(source, selector, expression.params, expression.instance);
         }
         return expression;
     },
@@ -11710,7 +12430,7 @@ $C('$data.Expressions.QueryExpressionCreator', $data.Expressions.EntityExpressio
 });
 
 $C('$data.Expressions.ServiceOperationExpression', $data.Expressions.ExpressionNode, null, {
-    constructor: function (source, selector, params, cfg) {
+    constructor: function (source, selector, params, cfg, boundItem) {
         ///<signature>
         ///<param name="source" type="$data.Expressions.EntityContextExpression" />
         ///<param name="selector" type="$data.Expressions.MemberInfoExpression" />
@@ -11724,6 +12444,7 @@ $C('$data.Expressions.ServiceOperationExpression', $data.Expressions.ExpressionN
         this.selector = selector
         this.params = params
         this.cfg = cfg;
+        this.boundItem = boundItem;
 
         function findContext() {
             //TODO: use source from function parameter and return a value at the end of the function
@@ -11739,7 +12460,7 @@ $C('$data.Expressions.ServiceOperationExpression', $data.Expressions.ExpressionN
         var c = findContext();
         switch (true) {
             case this.source instanceof $data.Expressions.EntityContextExpression:
-                this.elementType = cfg.elementType ? Container.resolveType(cfg.elementType) : Container.resolveType(cfg.returnType);
+                this.elementType = cfg.elementType ? Container.resolveType(cfg.elementType) : (this.elementType ? Container.resolveType(cfg.returnType) : null);
                 this.storageModel = cfg.elementType ? c.instance._storageModel.getStorageModel(Container.resolveType(cfg.elementType)) : null;
                 break;
             default:
@@ -11748,7 +12469,406 @@ $C('$data.Expressions.ServiceOperationExpression', $data.Expressions.ExpressionN
 
     },
     nodeType: { value: $data.Expressions.ExpressionType.ServiceOperation, enumerable: true }
-});
+});$C('$data.Expressions.ContinuationExpressionBuilder', $data.Expressions.EntityExpressionVisitor, null, {
+    constructor: function (mode) {
+        this.mode = mode;
+    },
+    compile: function (query) {
+
+        var findContext = { mode: "find", skipExists: false };
+        this.Visit(query.expression, findContext);
+
+        var result = {
+            skip: findContext.skipSize,
+            take: findContext.pageSize,
+            message: ''
+        }
+
+
+        if ('pageSize' in findContext) {
+            var expression;
+            var context = { mode: this.mode, pageSize: findContext.pageSize };
+
+            if (!findContext.skipExists && (findContext.pageSize)) {
+                context.append = true;
+                expression = this.Visit(query.expression, context);
+
+            } else if (findContext.skipExists) {
+                expression = this.Visit(query.expression, context)
+            }
+
+            if (!context.abort) {
+                result.expression = expression
+            }
+            else {
+                result.skip = (result.skip || 0) - result.take;
+                result.message = 'Invalid skip value!';
+            }
+        }else{
+            result.message = 'take expression not defined in the chain!';
+        }
+
+        return result;
+    },
+    VisitPagingExpression: function (expression, context) {
+
+        switch (context.mode) {
+            case 'find':
+                if (expression.nodeType === $data.Expressions.ExpressionType.Take) {
+                    context.pageSize = expression.amount.value;
+                } else {
+                    context.skipSize = expression.amount.value;
+                    context.skipExists = true;
+                }
+                break;
+            case 'prev':
+                if (expression.nodeType === $data.Expressions.ExpressionType.Skip) {
+                    var amount = expression.amount.value - context.pageSize;
+                    context.abort = amount < 0 && expression.amount.value >= context.pageSize;
+
+                    var constExp = Container.createConstantExpression(Math.max(amount, 0), "number");
+                    return Container.createPagingExpression(expression.source, constExp, expression.nodeType);
+                } else if (context.append) {
+                    //no skip expression, skip: 0, no prev
+                    context.abort = true;
+                }
+                break;
+            case 'next':
+                if (expression.nodeType === $data.Expressions.ExpressionType.Skip) {
+                    var amount = context.pageSize + expression.amount.value;
+                    var constExp = Container.createConstantExpression(amount, "number");
+                    return Container.createPagingExpression(expression.source, constExp, expression.nodeType);
+                } else if (context.append) {
+                    //no skip expression, skip: 0
+                    var constExp = Container.createConstantExpression(context.pageSize, "number");
+                    return Container.createPagingExpression(expression, constExp, $data.Expressions.ExpressionType.Skip);
+                }
+                break;
+            default:
+        }
+
+        this.Visit(expression.source, context);
+    }
+});$data.Class.define('$data.dbClient.DbCommand', null, null,
+{
+    connection: {},
+    parameters: {},
+    execute: function (callback) {
+        Guard.raise("Pure class");
+    }
+}, null);$data.Class.define('$data.dbClient.DbConnection', null, null,
+{
+    connectionParams: {},
+    database: {},
+    isOpen: function () {
+        Guard.raise("Pure class");
+    },
+    open: function () {
+        Guard.raise("Pure class");
+    },
+    close: function () {
+        Guard.raise("Pure class");
+    },
+    createCommand: function () {
+        Guard.raise("Pure class");
+    }
+}, null);$data.Class.define('$data.dbClient.openDatabaseClient.OpenDbCommand', $data.dbClient.DbCommand, null,
+{
+    constructor: function (con, queryStr, params) {
+        this.query = queryStr;
+        this.connection = con;
+        this.parameters = params;
+    },
+    executeNonQuery: function (callback, tran, isWrite) {
+        callback = $data.typeSystem.createCallbackSetting(callback);
+        this.exec(this.query, this.parameters, callback.success, callback.error, tran, isWrite);
+    },
+    executeQuery: function (callback, tran, isWrite) {
+        callback = $data.typeSystem.createCallbackSetting(callback);
+        this.exec(this.query, this.parameters, callback.success, callback.error, tran, isWrite);
+    },
+    exec: function (query, parameters, callback, errorhandler, transaction, isWrite) {
+        // suspicious code
+        /*if (console) {
+            //console.log(query);
+        }*/
+        this.connection.open({
+            error: errorhandler,
+            success: function (tran) {
+                var single = false;
+                if (!(query instanceof Array)) {
+                    single = true;
+                    query = [query];
+                    parameters = [parameters];
+                }
+
+                var results = [];
+                var remainingCommands = 0;
+
+                function decClb() {
+                    if (--remainingCommands == 0) {
+                        callback(single ? results[0] : results, transaction);
+                    }
+                }
+
+                query.forEach(function (q, i) {
+                    remainingCommands++;
+                    if (q) {
+                        tran.executeSql(
+                            query[i],
+                            parameters[i],
+                            function (trx, result) {
+                                var r = { rows: [] };
+                                try {
+                                    r.insertId = result.insertId;
+                                } catch (e) {
+                                    // If insertId is present, no rows are returned
+                                    r.rowsAffected = result.rowsAffected;
+                                    var maxItem = result.rows.length;
+                                    for (var j = 0; j < maxItem; j++) {
+                                        r.rows.push(result.rows.item(j));
+                                    }
+                                }
+                                results[i] = r;
+                                decClb(trx);
+                            },
+                            function (trx, err) {
+                                var _q = q;
+                                var _i = i;
+
+                                if (errorhandler)
+                                    errorhandler(err);
+
+                                return true;
+                            }
+                        );
+                    } else {
+                        results[i] = null;
+                        decClb();
+                    }
+                });
+            }
+        }, transaction, isWrite);
+    }
+}, null);$data.Class.define('$data.dbClient.openDatabaseClient.OpenDbConnection', $data.dbClient.DbConnection, null,
+{
+    constructor: function (params) {
+        this.connectionParams = params;
+    },
+    isOpen: function () {
+        return this.database !== null && this.database !== undefined && this.transaction !== null && this.transaction !== undefined;
+    },
+    open: function (callBack, tran, isWrite) {
+        if (isWrite === undefined)
+            isWrite = true;
+	callBack.oncomplete = callBack.oncomplete || function(){};
+        if (tran) {
+            callBack.success(tran.transaction);
+        } else if (this.database) {
+            if (isWrite) {
+                this.database.transaction(function (tran) { callBack.success(tran); }, callBack.error, callBack.oncomplete);
+            } else {
+                this.database.readTransaction(function (tran) { callBack.success(tran); }, callBack.error, callBack.oncomplete);
+            }
+        } else {
+            var p = this.connectionParams;
+            var con = this;
+            this.database = openDatabase(p.fileName, p.version, p.displayName, p.maxSize);
+
+            if (isWrite) {
+                this.database.transaction(function (tran) { callBack.success(tran); }, callBack.error, callBack.oncomplete);
+            } else {
+                this.database.readTransaction(function (tran) { callBack.success(tran); }, callBack.error, callBack.oncomplete);
+            }
+        }
+    },
+    close: function () {
+        this.transaction = undefined;
+        this.database = undefined;
+    },
+    createCommand: function (queryStr, params) {
+        var cmd = new $data.dbClient.openDatabaseClient.OpenDbCommand(this, queryStr, params);
+        return cmd;
+    }
+}, null);
+$data.Class.define('$data.dbClient.jayStorageClient.JayStorageCommand', $data.dbClient.DbCommand, null,
+{
+    constructor: function (con, queryStr, params) {
+        this.query = queryStr;
+        this.connection = con;
+        this.parameters = params;
+    },
+    executeNonQuery: function (callback) {
+        // TODO
+        callback = $data.typeSystem.createCallbackSetting(callback);
+        this.exec(this.query, this.parameters, callback.success, callback.error);
+    },
+    executeQuery: function (callback) {
+        callback = $data.typeSystem.createCallbackSetting(callback);
+        this.exec(this.query, this.parameters, callback.success, callback.error);
+    },
+    exec: function (query, parameters, callback, errorhandler) {
+        if (parameters == null || parameters == undefined) {
+            parameters = {};
+        }
+        var single = false;
+        if (!(query instanceof Array)) {
+            single = true;
+            query = [query];
+            parameters = [parameters];
+        }
+
+        var provider = this;
+        var results = [];
+        var remainingCommands = query.length;
+        var decClb = function () {
+            if (--remainingCommands == 0) {
+                callback(single ? results[0] : results);
+            }
+        };
+
+		query.forEach(function(q, i){
+			if (q){
+				$data.ajax({
+					url: 'http' + (this.connection.connectionParams.storage.ssl ? 's' : '') + '://' + this.connection.connectionParams.storage.src.replace('http://', '').replace('https://', '') + '?db=' + this.connection.connectionParams.storage.key,
+					type: 'POST',
+					headers: {
+						'X-PINGOTHER': 'pingpong'
+					},
+					data: { query: q, parameters: parameters[i] },
+					dataType: 'json',
+					contentType: 'application/json;charset=UTF-8',
+					success: function(data){
+						if (data && data.error){
+							console.log('JayStorage error', data.error);
+							errorhandler(data.error);
+							return;
+						}
+						if (this.lastID){
+							results[i] = { insertId: this.lastID, rows: (data || { rows: [] }).rows };
+						}else results[i] = { rows: (data || { rows: [] }).rows };
+ 						decClb();
+					}
+				});
+			}else{
+				results[i] = null;
+				decClb();
+			}
+		}, this);
+    }
+}, null);$data.Class.define('$data.dbClient.jayStorageClient.JayStorageConnection', $data.dbClient.DbConnection, null,
+{
+    constructor: function (params) {
+        this.connectionParams = params;
+    },
+    isOpen: function () {
+		return true;
+        //return this.database !== null && this.database !== undefined;
+    },
+    open: function () {
+        /*if (this.database == null) {
+            var p = this.connectionParams;
+            this.database = new sqLiteModule.Database(p.fileName);
+        }*/
+    },
+    close: function () {
+        //not supported yet (performance issue)
+    },
+    createCommand: function (queryStr, params) {
+        var cmd = new $data.dbClient.jayStorageClient.JayStorageCommand(this, queryStr, params);
+        return cmd;
+    }
+}, null);$data.Class.define('$data.dbClient.sqLiteNJClient.SqLiteNjCommand', $data.dbClient.DbCommand, null,
+{
+    constructor: function (con, queryStr, params) {
+        this.query = queryStr;
+        this.connection = con;
+        this.parameters = params;
+    },
+    executeNonQuery: function (callback) {
+        // TODO
+        callback = $data.typeSystem.createCallbackSetting(callback);
+        this.exec(this.query, this.parameters, callback.success, callback.error);
+    },
+    executeQuery: function (callback) {
+        callback = $data.typeSystem.createCallbackSetting(callback);
+        this.exec(this.query, this.parameters, callback.success, callback.error);
+    },
+    exec: function (query, parameters, callback, errorhandler) {
+        if (!this.connection.isOpen()) {
+            this.connection.open();
+        }
+        if (parameters == null || parameters == undefined) {
+            parameters = {};
+        }
+        var single = false;
+        if (!(query instanceof Array)) {
+            single = true;
+            query = [query];
+            parameters = [parameters];
+        }
+
+        var provider = this;
+        var results = [];
+        var remainingCommands = 0;
+        var decClb = function () {
+            if (--remainingCommands == 0) {
+                provider.connection.database.exec('COMMIT');
+                callback(single ? results[0] : results);
+            }
+        };
+        provider.connection.database.exec('BEGIN');
+        query.forEach(function (q, i) {
+            remainingCommands++;
+            if (q) {
+                var sqlClb = function (error, rows) {
+                    if (error != null) {
+                        errorhandler(error);
+                        return;
+                    }
+                    if (this.lastID) {
+                        results[i] = { insertId: this.lastID, rows: [] };
+                    } else {
+                        results[i] = { rows: rows };
+                    }
+                    decClb();
+                };
+
+                var stmt = provider.connection.database.prepare(q, parameters[i]);
+                if (q.indexOf('SELECT') == 0) {
+                    stmt.all(sqlClb);
+                } else {
+                    stmt.run(sqlClb);
+                }
+                stmt.finalize();
+            } else {
+                results[i] = null;
+                decClb();
+            }
+        }, this);
+    }
+}, null);$data.Class.define('$data.dbClient.sqLiteNJClient.SqLiteNjConnection', $data.dbClient.DbConnection, null,
+{
+    constructor: function (params) {
+        this.connectionParams = params;
+    },
+    isOpen: function () {
+        return this.database !== null && this.database !== undefined;
+    },
+    open: function () {
+        if (this.database == null) {
+            var p = this.connectionParams;
+            this.database = new sqLiteModule.Database(p.fileName);
+        }
+    },
+    close: function () {
+        //not supported yet (performance issue)
+    },
+    createCommand: function (queryStr, params) {
+        var cmd = new $data.dbClient.sqLiteNJClient.SqLiteNjCommand(this, queryStr, params);
+        return cmd;
+    }
+}, null);
 $data.Class.define('$data.Validation.ValidationError', null, null, {
     constructor: function (message, propertyDefinition, type) {
         ///<param name="message" type="string" />
@@ -11965,6 +13085,23 @@ $data.Class.define('$data.Notifications.ChangeCollector', $data.Notifications.Ch
 
         return result;
     }
+}, null);$data.Class.define('$data.Transaction', null, null, {
+    constructor: function () {
+        this._objectId = (new Date()).getTime();
+        $data.Trace.log("create: ", this._objectId);
+
+        this.oncomplete = new $data.Event("oncomplete", this);
+        this.onerror = new $data.Event("onerror", this);
+    },
+    abort: function () {
+        Guard.raise(new Exception('Not Implemented', 'Not Implemented', arguments));
+    },
+
+    _objectId: { type: $data.Integer },
+    transaction: { type: $data.Object },
+
+    oncomplete: { type: $data.Event },
+    onerror: { type: $data.Event }
 }, null);$data.Class.define('$data.Access', null, null, {}, {
     isAuthorized: function(access, user, sets, callback){
         var pHandler = new $data.PromiseHandler();
@@ -12189,6 +13326,24 @@ $data.Event = Event = $data.Class.define("$data.Event", null, null, {
                 });
             }
         };
+        this.fireCancelAble = function (eventData, snder) {
+            var snd = snder || sender || this;
+            //eventData.eventName = name;
+            ///<value name="subscriberList type="Array" />
+            var isValid = true;
+            if (subscriberList) {
+                subscriberList.forEach(function (subscriber) {
+                    ///<param name="subscriber" type="EventSubscriber" />
+                    try {
+                        isValid = isValid && (subscriber.handler.call(subscriber.thisArg, snd, eventData, subscriber.state) === false ? false : true);
+                    } catch (ex) {
+                        console.log("unhandled exception in event handler. exception suppressed");
+                        console.dir(ex);
+                    }
+                });
+            }
+            return isValid;
+        };
     }
 });
 
@@ -12223,8 +13378,10 @@ var PropertyValidationEventData = $data.Class.define("PropertyValidationEventDat
     cancel: {}
 });
 
+
+
 $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
-    constructor: function (initData) {
+    constructor: function (initData, newInstanceOptions) {
         /// <description>
         ///     This class provide a light weight, object-relational interface between 
         ///     your javascript code and database.
@@ -12250,30 +13407,61 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         /// <field name="changedProperties" type="Array">array of MemberDefinition</field>
 
         this.initData = {};
-        if (this.getType().__copyPropertiesToInstance) {
+        var thisType = this.getType();
+        if (thisType.__copyPropertiesToInstance) {
             $data.typeSystem.writePropertyValues(this);
         }
 
         var ctx = null;
         this.context = ctx;
+        if ("setDefaultValues" in thisType) {
+            if (!newInstanceOptions || newInstanceOptions.setDefaultValues !== false) {
+                if (!initData || Object.keys(initData).length < 1) {
+                    initData = thisType.setDefaultValues(initData);
+                }
+            }
+        }
 
-        if (arguments.length == 1 && typeof initData === "object") {
-            var typeMemDefs = this.getType().memberDefinitions;
-            var memDefNames = typeMemDefs.getPublicMappedPropertyNames();//.map(function (memDef) { return memDef.name; });
-            //            if (Object.keys(initData).every(function (key) { return memDefNames.indexOf(key) != -1; })) {
-            //                this.initData = initData;
-            //            }
-            this.initData = {};
+        if (typeof initData === "object") {
+            var typeMemDefs = thisType.memberDefinitions;
+            var memDefNames = typeMemDefs.getPublicMappedPropertyNames();
+
             for (var i in initData) {
                 if (memDefNames.indexOf(i) > -1) {
                     var type = Container.resolveType(typeMemDefs.getMember(i).type);
                     if (!Object.isNullOrUndefined(initData[i])) {
                         if (type === $data.Date && typeof initData[i] === 'string')
                             this.initData[i] = new Date(initData[i]);
-                        else if (type === $data.Geography && typeof initData[i] === 'object' && !(initData[i] instanceof $data.Geography))
-                            this.initData[i] = new $data.Geography(initData[i]);
+                        else if (type === $data.GeographyPoint && typeof initData[i] === 'object' && !(initData[i] instanceof $data.GeographyPoint))
+                            this.initData[i] = new $data.GeographyPoint(initData[i]);
+                        else if(type === $data.GeographyLineString && !(initData[i] instanceof $data.GeographyLineString))
+                            this.initData[i] = new $data.GeographyLineString(initData[i]);
+                        else if (type === $data.GeographyPolygon && !(initData[i] instanceof $data.GeographyPolygon))
+                            this.initData[i] = new $data.GeographyPolygon(initData[i]);
+                        else if (type === $data.GeographyMultiPoint && !(initData[i] instanceof $data.GeographyMultiPoint))
+                            this.initData[i] = new $data.GeographyMultiPoint(initData[i]);
+                        else if (type === $data.GeographyMultiLineString && !(initData[i] instanceof $data.GeographyMultiLineString))
+                            this.initData[i] = new $data.GeographyMultiLineString(initData[i]);
+                        else if (type === $data.GeographyMultiPolygon && !(initData[i] instanceof $data.GeographyMultiPolygon))
+                            this.initData[i] = new $data.GeographyMultiPolygon(initData[i]);
+                        else if (type === $data.GeographyCollection && !(initData[i] instanceof $data.GeographyCollection))
+                            this.initData[i] = new $data.GeographyCollection(initData[i]);
+                        else if (type === $data.GeometryPoint && typeof initData[i] === 'object' && !(initData[i] instanceof $data.GeometryPoint))
+                            this.initData[i] = new $data.GeometryPoint(initData[i]);
+                        else if (type === $data.GeometryLineString && !(initData[i] instanceof $data.GeometryLineString))
+                            this.initData[i] = new $data.GeometryLineString(initData[i]);
+                        else if (type === $data.GeometryPolygon && !(initData[i] instanceof $data.GeometryPolygon))
+                            this.initData[i] = new $data.GeometryPolygon(initData[i]);
+                        else if (type === $data.GeometryMultiPoint && !(initData[i] instanceof $data.GeometryMultiPoint))
+                            this.initData[i] = new $data.GeometryMultiPoint(initData[i]);
+                        else if (type === $data.GeometryMultiLineString && !(initData[i] instanceof $data.GeometryMultiLineString))
+                            this.initData[i] = new $data.GeometryMultiLineString(initData[i]);
+                        else if (type === $data.GeometryMultiPolygon && !(initData[i] instanceof $data.GeometryMultiPolygon))
+                            this.initData[i] = new $data.GeometryMultiPolygon(initData[i]);
+                        else if (type === $data.GeometryCollection && !(initData[i] instanceof $data.GeometryCollection))
+                            this.initData[i] = new $data.GeometryCollection(initData[i]);
                         else if (type === $data.Guid && !(initData[i] instanceof $data.Guid))
-                            this.initData[i] = $data.parseGuid(initData[i]);
+                            this.initData[i] = initData[i] ? $data.parseGuid(initData[i]) : undefined;
                         else {
                             this.initData[i] = initData[i];
                         }
@@ -12283,9 +13471,15 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
                 }
             }
 
-            this.changedProperties = undefined;
-            this.entityState = undefined;
         }
+
+        if (newInstanceOptions && newInstanceOptions.entityBuilder) {
+            newInstanceOptions.entityBuilder(this, thisType.memberDefinitions.asArray(), thisType);
+        }
+
+        this.changedProperties = undefined;
+        this.entityState = undefined;
+
     },
     toString: function () {
         /// <summary>Returns a string that represents the current $data.Entity</summary>
@@ -12313,15 +13507,13 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         }
         var entityPk = this.getType().memberDefinitions.getKeyProperties();
         for (var i = 0; i < entityPk.length; i++) {
-            if (this[entityPk[i].name] == entity[entityPk[i].name]) {
-                return true;
+            if (this[entityPk[i].name] != entity[entityPk[i].name]) {
+                return false;
             }
         }
-        return false;
+        return true;
     },
-    //propertyChanging: { dataType: $data.Event, storeOnObject: true, monitorChanges: false, notMapped: true, enumerable: false },
 
-    //propertyChanged: { dataType: $data.Event, storeOnObject: true, monitorChanges: false, notMapped: true, enumerable: false },
     propertyChanging: {
         dataType: $data.Event, storeOnObject: true, monitorChanges: false, notMapped: true, enumerable: false, prototypeProperty: true,
         get: function () {
@@ -12332,6 +13524,7 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         },
         set: function (value) { this._propertyChanging = value; }
     },
+
     propertyChanged: {
         dataType: $data.Event, storeOnObject: true, monitorChanges: false, notMapped: true, enumerable: false, prototypeProperty: true,
         get: function () {
@@ -12342,6 +13535,7 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         },
         set: function (value) { this._propertyChanged = value; }
     },
+
     propertyValidationError: {
         dataType: $data.Event, storeOnObject: true, monitorChanges: false, notMapped: true, enumerable: false, prototypeProperty: true,
         get: function () {
@@ -12358,7 +13552,6 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         /// <param name="memberDefinition" type="MemberDefinition" />
         /// <param name="value" />
 
-        //if (origValue == value) return;
         value = this.typeConversion(memberDefinition, value);
         var eventData = null;
         if (memberDefinition.monitorChanges != false && (this._propertyChanging || this._propertyChanged || "instancePropertyChanged" in this.constructor)) {
@@ -12415,27 +13608,33 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
     },
     typeConversion: function (memberDefinition, value) {
         var convertedValue = value;
+        
         if (typeof value === 'string' && !memberDefinition.concurrencyMode) {
             switch (Container.resolveName(memberDefinition.type)) {
                 case '$data.Guid':
+                    if (value === '') return undefined;
                     convertedValue = $data.parseGuid(value);
                     break;
                 case '$data.Integer':
+                    if (value === '') return undefined;
                     convertedValue = parseInt(value);
                     if (isNaN(convertedValue))
                         throw Guard.raise(new Exception('TypeError: ', 'value not convertable to $data.Integer', [memberDefinition, value]));
                     break;
                 case '$data.Number':
+                    if (value === '') return undefined;
                     convertedValue = parseFloat(value);
                     if (isNaN(convertedValue))
                         throw Guard.raise(new Exception('TypeError: ', 'value not convertable to $data.Number', [memberDefinition, value]));
                     break;
                 case '$data.Date':
+                    if (value === '') return undefined;
                     convertedValue = new Date(value);
                     if (isNaN(convertedValue.valueOf()))
                         throw Guard.raise(new Exception('TypeError: ', 'value not convertable to $data.Date', [memberDefinition, value]));
                     break;
                 case '$data.Boolean':
+                    if (value === '') return undefined;
                     switch (value.toLowerCase()) {
                         case 'true': 
                             convertedValue = true;
@@ -12448,11 +13647,14 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
                     }
                     break;
                 case '$data.Object':
+                    if (value === '') return undefined;
                     try {
                         convertedValue = JSON.parse(value);
                     } catch (e) {
                         throw Guard.raise(new Exception('TypeError: ', e.toString(), [memberDefinition, value]));
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -12474,7 +13676,7 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
     },
 
     // protected
-    getProperty: function (memberDefinition, callback) {
+    getProperty: function (memberDefinition, callback, tran) {
         /// <summary>Retrieve value of member</summary>
         /// <param name="memberDefinition" type="MemberDefinition" />
         /// <param name="callback" type="Function">
@@ -12484,23 +13686,32 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
         /// </param>
         /// <returns>value associated for [i]memberDefinition[/i]</returns>
 
+        callback = $data.typeSystem.createCallbackSetting(callback);
         if (this[memberDefinition.name] != undefined) {
-            callback(this[memberDefinition.name]);
+            if (tran instanceof $data.Transaction)
+                callback.success(this[memberDefinition.name], tran);
+            else
+                callback.success(this[memberDefinition.name]);
             return;
         }
 
         if (!this.context)
             Guard.raise(new Exception('Entity not in context', 'Invalid operation'));
 
-        return this.context.loadItemProperty(this, memberDefinition, callback);
+        return this.context.loadItemProperty(this, memberDefinition, callback, tran);
     },
     // protected
-    setProperty: function (memberDefinition, value, callback) {
+    setProperty: function (memberDefinition, value, callback, tran) {
         /// <param name="memberDefinition" type="MemberDefinition" />
         /// <param name="value" />
         /// <param name="callback" type="Function">done</param>
         this[memberDefinition.name] = value;
-        callback();
+        
+        //callback = $data.typeSystem.createCallbackSetting(callback);
+        var pHandler = new $data.PromiseHandler();
+        callback = pHandler.createCallback(callback);
+        callback.success(this[memberDefinition.name]);
+        return pHandler.getPromise();
     },
 
     isValid: function () {
@@ -12566,331 +13777,118 @@ $data.Entity = Entity = $data.Class.define("$data.Entity", null, null, {
     //    this.__onReadyList.push(callback);
     //},
 
+    remove: function () {
+        if ($data.ItemStore && 'EntityInstanceRemove' in $data.ItemStore)
+            return $data.ItemStore.EntityInstanceRemove.apply(this, arguments);
+        else
+            throw 'not implemented'; //todo
+    },
+    save: function () {
+        if ($data.ItemStore && 'EntityInstanceSave' in $data.ItemStore)
+            return $data.ItemStore.EntityInstanceSave.apply(this, arguments);
+        else
+            throw 'not implemented'; //todo
+    },
+    refresh: function () {
+        if ($data.ItemStore && 'EntityInstanceSave' in $data.ItemStore)
+            return $data.ItemStore.EntityInstanceRefresh.apply(this, arguments);
+        else
+            throw 'not implemented'; //todo
+    },
+    storeToken: { type: Object, monitorChanges: false, notMapped: true, storeOnObject: true },
 
-    promiseWrapper: function (action, store, options) {
-
-        var self = this;
-        var pHandler = new $data.PromiseHandler();
-        var deferred = pHandler.deferred;
-        var pHandlerResult = pHandler.getPromise();
-        try {
-            var contextFactory = $data.Entity.getDefaultItemStoreFactory(self, store, options);
-            var context = contextFactory();
-            context.onReady(function () {
-                var result = action(context);
-                context.saveChanges({
-                    success: function () {
-                        deferred.resolve(result);
-                    },
-                    error: function (err) {
-                        deferred.reject(err);
-                    }
-                });
-            });
-            //var set = context.getEntitySetFromElementType(entity.getType());
-            
-        } catch (error) {
-            deferred.reject(error);
+    getFieldUrl: function (field) {
+        if (this.context) {
+            return this.context.getFieldUrl(this, field);
+        } else if (this.getType().storeToken && typeof this.getType().storeToken.factory === 'function') {
+            var context = this.getType().storeToken.factory();
+            return context.getFieldUrl(this, field);
+        } else if (this.getType().storeToken){
+            try {
+                var ctx = $data.ItemStore._getContextPromise('default', this.getType());
+                if (ctx instanceof $data.EntityContext) {
+                    return ctx.getFieldUrl(this, field);
+                }
+            } catch (e) {
+            }
         }
-        //deferred.resolve("!");
-
-        return pHandlerResult;
-    },
-
-    remove: function (store, options, callback) {
-        var self = this;
-        return self.promiseWrapper(function (context) {
-            context.remove(self);
-            return self;
-        });
-    },
-
-
-
-    save: function(store, options) {
-        var self = this;
-        return self.promiseWrapper(function (context) {
-           var key = self.getType().memberDefinitions.getKeyProperties()[0];
-            //return context.add(self);
-           if (self[key.name]) {
-               context.attach(self, true);
-               return self;
-
-           } else {
-               return context.add(self);
-           }
-        }, store, options);
+        return '#';
     }
- 
-}, {
+},
+{
     //create get_[property] and set_[property] functions for properties
     __setPropertyfunctions: { value: true, notMapped: true, enumerable: false, storeOnObject: true },
     //copy public properties to current instance
     __copyPropertiesToInstance: { value: false, notMapped: true, enumerable: false, storeOnObject: true },
-     
-    defaultItemStoreFactory: { value: undefined },
-    
 
     inheritedTypeProcessor: function (type) {
+        if ($data.ItemStore && 'EntityInheritedTypeProcessor' in $data.ItemStore)
+            $data.ItemStore.EntityInheritedTypeProcessor.apply(this, arguments);
 
-        function findById (set, keyValue) {
+        //default value setter method factory
+        type.defaultValues = {};
 
-            //var callback = $data.typeSystem.createCallbackSetting(cb);
-            //todo multifield key support
-            var key = set.defaultType.memberDefinitions.getKeyProperties()[0];
-            if ("filter" in set.entityContext.storageProvider.supportedSetOperations) {
-                return set.filter("it." + key.name + " == this.value", { value: keyValue });
-            } else {
-                return {
-                    toArray: function (cb) {
-                        var pHandler = new $data.PromiseHandler();
-                        var deferred = pHandler.deferred;
-                        var promise = pHandler.getPromise();
-                        set.toArray({
-                            success: function (items) {
-                                for (var i = 0; i < items.length; i++) {
-                                    if (items[i][key.name] === keyValue) {
-                                        //deferred.resolve(items[i]);
-                                        cb.success(items[i]);
-                                        return items[i];
-                                    }
-                                }
-                                cb.error(new Error("unknown id"));
-                                //deferred.reject(new Error("unknown id"));
-                            },
-                            error: function (error) {
-                                cb.error(error);
-                                //console.log(error);
-                                //deferred.reject(error);
-                            }
-                        });
+        type.memberDefinitions.asArray().forEach(function (pd) {
+            if (pd.hasOwnProperty("defaultValue")) {
+                type.defaultValues[pd.name] = pd.defaultValue;
+            }
+        });
 
+        if (Object.keys(type.defaultValues).length > 0) {
+            type.setDefaultValues = function (initData, instance) {
+                initData = initData || {};
+                var dv = type.defaultValues;
+                for (var n in dv) {
+                    if (!(n in initData)) {
+                        var value = dv[n];
+                        if ("function" === typeof value) {
+                            initData[n] = dv[n](n, instance);
+                        } else {
+                            initData[n] = dv[n];
+                        }
                     }
                 }
-                
+                return initData;
             }
-
-        };
-
-        type.get = function (key, store, options) {
-            var result = new Type({ Id: key });
-            result.defaultItemStore = store;
-            result.refresh();
-        },
-
-        type.removeAll = function (store, options) {
-
-            var self = this;
-            var pHandler = new $data.PromiseHandler();
-            var deferred = pHandler.deferred;
-            var pHandlerResult = pHandler.getPromise();
-            try {
-                var contextFactory = $data.Entity.getDefaultItemStoreFactory(type, store, options);
-                var context = contextFactory();
-                context.onReady(function () {
-                    var set = context.getEntitySetFromElementType(type);
-                    //var result = action(context);
-                    set.toArray({
-                        success: function (items) {
-                            items.forEach(function (item) {
-                                context.remove(item);
-                            });
-                            context.saveChanges({
-                                success: function () {
-                                    deferred.resolve(items);
-                                },
-                                error: function (err) {
-                                    deferred.reject(err);
-                                }
-                            });
-                        },
-                        error: function (err) {
-                            deferred.reject(err);
-                        }
-                    });
-                });
-            } catch (error) {
-                deferred.reject(error);
-            }
-            //deferred.resolve("!");
-
-            return pHandlerResult;
-        },
-        type.readAll = function (store, options) {
-            //return the entity
-            //refresh when ready
-            var pHandler = new $data.PromiseHandler();
-            var deferred = pHandler.deferred;
-            var promise = pHandler.getPromise();
-            var storeFactory = $data.Entity.getDefaultItemStoreFactory(type, store, options);
-            var store = storeFactory();
-            store.onReady(function () {
-                var set = store.getEntitySetFromElementType(type);
-                set.toArray({
-                    success: function (items) {
-                        //callback(items, null);
-                        deferred.resolve(items);
-                    },
-                    error: function (err) {
-                        //callback(null, err);
-                        deferred.reject(err);
-                    }
-                });
-            });
-            //var keyFields
-            return promise;
-        };
-
-        type.read = function (key, store, options) {
-            //return the entity
-            //refresh when ready
-            var pHandler = new $data.PromiseHandler();
-            var deferred = pHandler.deferred;
-            var promise = pHandler.getPromise();
-            var storeFactory = $data.Entity.getDefaultItemStoreFactory(type, store, options);
-            var store = storeFactory();
-            store.onReady(function () {
-                var set = store.getEntitySetFromElementType(type);
-                var itemsQuery = findById(set, key);
-                itemsQuery.toArray({
-                    success: function (items) {
-                        //callback(items, null);
-                        if (items.length < 1) {
-                            deferred.reject(new Error("Not items found by that key"));
-                        } else {
-                            if (items.length === 1) {
-                                deferred.resolve(items[0]);
-                            } else {
-                                deferred.resolve(items);
-                            }
-                        }
-                    },
-                    error: function (err) {
-                        //callback(null, err);
-                        deferred.reject(err);
-                    }
-                });
-            });
-            //var keyFields
-            return promise;
-        };
-
-        type.save = function ( initData, store, options) {
-            var instance = new type(initData);
-            return instance.save();
-        };
-
-        type.remove = function (key, store, options) {
-            var entityPk = type.memberDefinitions.getKeyProperties();
-            var obj = {};
-            obj[entityPk[0].name] = key;
-            var inst = new type(obj);
-            return inst.remove();
-        };
-        type.itemCount = function () {
-
-        };
-
-        type.filter = function (predicate, thisArgs, store, options) {
-            var pHandler = new $data.PromiseHandler();
-            var deferred = pHandler.deferred;
-            var promise = pHandler.getPromise();
-            var storeFactory = $data.Entity.getDefaultItemStoreFactory(type, store, options);
-            var store = storeFactory();
-            store.onReady(function () {
-                var set = store.getEntitySetFromElementType(type);
-                set.toArray({
-                    success: function (items) {
-                        deferred.resolve(items.filter(predicate, thisArgs));
-                    },
-                    error: function (err) {
-                        //callback(null, err);
-                        deferred.reject(err);
-                    }
-                });
-            });
-            return promise;
-        };
-
-        type.first = function (predicate, thisArgs, store, options) {
-            var pHandler = new $data.PromiseHandler();
-            var deferred = pHandler.deferred;
-            var promise = pHandler.getPromise();
-            var storeFactory = $data.Entity.getDefaultItemStoreFactory(type, store, options);
-            var store = storeFactory();
-            store.onReady(function () {
-                var set = store.getEntitySetFromElementType(type);
-                set.toArray({
-                    success: function (items) {
-                        deferred.resolve(items.filter(predicate, thisArgs)[0]);
-                    },
-                    error: function (err) {
-                        //callback(null, err);
-                        deferred.reject(err);
-                    }
-                });
-            });
-            return promise;
-        };
-
-        if (typeof String.prototype.startsWith !== 'function') {
-            String.prototype.startsWith = function (str) {
-                return this.indexOf(str) === 0;
-            };
-        }
-        if (typeof String.prototype.endsWith !== 'function') {
-            String.prototype.endsWith = function (str) {
-                return this.slice(-str.length) === str;
-            };
-        }
-        if (typeof String.prototype.contains !== 'function') {
-            String.prototype.contains = function (str) {
-                return this.indexOf(str) >= 0;
-            };
         }
     },
 
-    getDefaultItemStoreFactory: function (instanceOrType, store, options) {
 
-        //function resolveStoreName(store, options) {
-        //    if (!store) {
-        //        var type = ("function" === typeof instanceOrType) ? instanceOrType : instanceOrType.getType();
-        //        var typeName = $data.Container.resolveName(type) + "_items";
-        //        var typeName = typeName.replace(".", "_");
-        //        store = "local:" + typeName;
-        //    } else {
-        //        var splitStore = store.split(":");
-        //        if (splitStore.length < 2) {
-        //            //if 
-        //        }
-        //    }
-        //}
-
-        var type = ("function" === typeof instanceOrType) ? instanceOrType : instanceOrType.getType();
-        var typeName = $data.Container.resolveName(type) + "_items";
-        var typeName = typeName.replace(".", "_");
-        store = "local:" + typeName;
-
-        //provider = 'indexedDb';
-        var provider = 'local';
-
-        var inMemoryType = $data.EntityContext.extend(typeName, {
-            'Items': { type: $data.EntitySet, elementType: type }
-        });
-
-        var factory = function () {
-            return new inMemoryType({ name: provider, databaseName: typeName });
+    //Type Events
+    addEventListener: function(eventName, fn) {
+        var delegateName = "on" + eventName;
+        if (!(delegateName in this)) {
+            this[delegateName] = new $data.Event(eventName, this);
         }
-        return factory;
+        this[delegateName].attach(fn);
+    },
+    removeEventListener: function(eventName, fn) {
+        var delegateName = "on" + eventName;
+        if (!(delegateName in this)) {
+            return;
+        }
+        this[delegateName].detach(fn);
+    },
+    raiseEvent: function(eventName, data) {
+        var delegateName = "on" + eventName;
+        if (!(delegateName in this)) {
+            return;
+        }
+        this[delegateName].fire(data);
+    },
+
+    getFieldNames: function () {
+        return this.memberDefinitions.getPublicMappedPropertyNames();
     }
+
 });
 
 
-
-
-$data.__nameCache = {};
-
-$data.define = function (name, definition) {
+$data.define = function (name, container, definition) {
+    if (container && !(container instanceof $data.ContainerClass)) {
+        definition = container;
+        container = undefined;
+    }
     if (!definition) {
         throw new Error("json object type is not supported yet");
     }
@@ -12898,22 +13896,33 @@ $data.define = function (name, definition) {
     var hasKey = false;
     var keyFields = [];
     Object.keys(definition).forEach(function (fieldName) {
-        if (Object.hasOwnProperty(definition[fieldName],"type")) {
-            var propDef = definition[fieldName]; 
+        var propDef = definition[fieldName];
+        if (typeof propDef === 'object' && ("type" in propDef || "get" in propDef || "set" in propDef)) {
+
             _def[fieldName] = propDef;
             if (propDef.key) {
                 keyFields.push(propDef);
             }
 
+            if (("get" in propDef || "set" in propDef) && (!('notMapped' in propDef) || propDef.notMapped === true)) {
+                propDef.notMapped = true;
+                propDef.storeOnObject = true;
+            }
+            if ("get" in propDef && !("set" in propDef)) {
+                propDef.set = function () { };
+            } else if ("set" in propDef && !("get" in propDef)) {
+                propDef.get = function () { };
+            }
+
         } else {
-            _def[fieldName] = { type: definition[fieldName] };
+            _def[fieldName] = { type: propDef };
         }
     });
 
     if (keyFields.length < 1) {
         var keyProp;
         switch (true) {
-            case "id" in _def: 
+            case "id" in _def:
                 keyProp = "id";
                 break;
             case "Id" in _def:
@@ -12935,15 +13944,15 @@ $data.define = function (name, definition) {
     }
 
 
-    var entityType = $data.Entity.extend(name, _def);
-    $data.__nameCache[name] = entityType;
+    var entityType = $data.Entity.extend(name, container, _def);
     return entityType;
 }
-
 $data.implementation = function (name) {
-    var result = $data.__nameCache[name];
-    return result;
-}
+    return Container.resolveType(name);
+};
+
+
+
 
 $data.Class.define('$data.StorageModel', null, null, {
     constructor: function () {
@@ -12960,7 +13969,7 @@ $data.Class.define('$data.StorageModel', null, null, {
     TableOptions: { value: undefined },
     ComplexTypes: {},
     Associations: {},
-    EntitySetReference: {}
+    ContextType: {}
 }, null);
 $data.Class.define('$data.Association', null, null, {
     constructor: function (initParam) {
@@ -12989,9 +13998,13 @@ $data.Class.define('$data.ComplexType', $data.Association, null, {}, null);
 
 $data.Class.define('$data.EntityContext', null, null,
 {
-    constructor: function (storageProviderCfg){
+    constructor: function (storageProviderCfg) {
         /// <description>Provides facilities for querying and working with entity data as objects.</description>
         ///<param name="storageProviderCfg" type="Object">Storage provider specific configuration object.</param>
+
+        if ($data.ItemStore && 'ContextRegister' in $data.ItemStore)
+            $data.ItemStore.ContextRegister.apply(this, arguments);
+
 
         if ("string" === typeof storageProviderCfg) {
             if (0 === storageProviderCfg.indexOf("http")) {
@@ -13001,7 +14014,7 @@ $data.Class.define('$data.EntityContext', null, null,
                 }
             } else {
                 storageProviderCfg = {
-                    name: "sqLite",
+                    name: "local",
                     databaseName: storageProviderCfg
                 }
             }
@@ -13018,6 +14031,17 @@ $data.Class.define('$data.EntityContext', null, null,
         this._storageModel = [];
 
         var ctx = this;
+        ctx._isOK = false;
+
+        var origSuccessInitProvider = this._successInitProvider;
+        this._successInitProvider = function (errorOrContext) {
+            if (errorOrContext instanceof $data.EntityContext) {
+                origSuccessInitProvider(ctx);
+            } else {
+                origSuccessInitProvider(ctx, errorOrContext);
+            }
+        }
+
         this._storageModel.getStorageModel = function (typeName) {
             var resolvedType = Container.resolveType(typeName);
 
@@ -13035,25 +14059,30 @@ $data.Class.define('$data.EntityContext', null, null,
         }
         var i = 0, providerType;
         var providerList = [].concat(storageProviderCfg.name);
-        var callBack = $data.typeSystem.createCallbackSetting({ success: this._successInitProvider });
+        var callBack = $data.typeSystem.createCallbackSetting({ success: this._successInitProvider, error: this._successInitProvider });
+
+        this._initStorageModelSync();
+        ctx._initializeEntitySets(ctx.getType());
+
         $data.StorageProviderLoader.load(providerList, {
             success: function (providerType) {
                 ctx.storageProvider = new providerType(storageProviderCfg, ctx);
                 ctx.storageProvider.setContext(ctx);
                 ctx.stateManager = new $data.EntityStateManager(ctx);
 
-                if (storageProviderCfg.name in ctx.getType()._storageModelCache) {
-                    ctx._storageModel = ctx.getType()._storageModelCache[storageProviderCfg.name];
+                var contextType = ctx.getType();
+                if (providerType.name in contextType._storageModelCache) {
+                    ctx._storageModel = contextType._storageModelCache[providerType.name];
                 } else {
                     ctx._initializeStorageModel();
-                    ctx.getType()._storageModelCache[storageProviderCfg.name] = ctx._storageModel;
+                    contextType._storageModelCache[providerType.name] = ctx._storageModel;
                 }
 
-                ctx._initializeEntitySets(ctx.constructor);
+                //ctx._initializeEntitySets(contextType);
                 if (storageProviderCfg && storageProviderCfg.user) Object.defineProperty(ctx, 'user', { value: storageProviderCfg.user, enumerable: true });
                 if (storageProviderCfg && storageProviderCfg.checkPermission) Object.defineProperty(ctx, 'checkPermission', { value: storageProviderCfg.checkPermission, enumerable: true });
 
-                ctx._isOK = false;
+                //ctx._isOK = false;
                 if (ctx.storageProvider) {
                     ctx.storageProvider.initializeStore(callBack);
                 }
@@ -13065,7 +14094,7 @@ $data.Class.define('$data.EntityContext', null, null,
 
 
 
-        this.addEventListener = function(eventName, fn) {
+        this.addEventListener = function (eventName, fn) {
             var delegateName = "on" + eventName;
             if (!(delegateName in this)) {
                 this[delegateName] = new $data.Event(eventName, this);
@@ -13073,47 +14102,80 @@ $data.Class.define('$data.EntityContext', null, null,
             this[delegateName].attach(fn);
         };
 
-        this.removeEventListener = function(eventName, fn) {
+        this.removeEventListener = function (eventName, fn) {
             var delegateName = "on" + eventName;
             if (!(delegateName in this)) {
                 return;
             }
-            this[delegateName].attach(fn);
+            this[delegateName].detach(fn);
         };
 
-        this.raiseEvent = function(eventName, data) {
+        this.raiseEvent = function (eventName, data) {
             var delegateName = "on" + eventName;
             if (!(delegateName in this)) {
                 return;
             }
             this[delegateName].fire(data);
         };
-        /*
-        while (!(providerType = $data.StorageProviderBase.getProvider(storageProviderCfg.name[i])) && i < storageProviderCfg.name.length) i++;
-        if (providerType){
-            this.storageProvider = new providerType(storageProviderCfg, this);
-            this.storageProvider.setContext(this);
-            this.stateManager = new $data.EntityStateManager(this);
 
-            if (storageProviderCfg.name in this.getType()._storageModelCache){
-                this._storageModel = this.getType()._storageModelCache[storageProviderCfg.name];
-            }else{
-                this._initializeStorageModel();
-                this.getType()._storageModelCache[storageProviderCfg.name] = this._storageModel;
-            }
-        }else{
-            Guard.raise(new Exception("Provider fallback failed!", "Not Found"));
-        }
-        this._initializeEntitySets(this.constructor);
-        this._user = (storageProviderCfg && storageProviderCfg.user) || user;
 
-        this._isOK = false;
-        var callBack = $data.typeSystem.createCallbackSetting({ success: this._successInitProvider });
-        if (this.storageProvider){
-            this.storageProvider.initializeStore(callBack);
-        }
-        */
+        this.ready = this.onReady();
     },
+    beginTransaction: function () {
+        var tables = null;
+        var callBack = null;
+        var isWrite = false;
+
+        switch (arguments.length) {
+            case 3:
+                tables = arguments[0];
+                isWrite = arguments[1];
+                callBack = arguments[2];
+                break;
+            case 2:
+                if (arguments[0] instanceof $data.Array) {
+                    tables = arguments[0];
+                } else {
+                    isWrite = arguments[0];
+                }
+                callBack = arguments[1];
+                break;
+            case 1:
+                callBack = arguments[0];
+                break;
+            case 0:
+                break;
+            default: throw new Exception("Begin tran is async function!"); break;
+        }
+
+        var pHandler = new $data.PromiseHandler();
+        callBack = pHandler.createCallback(callBack);
+
+        //callBack = $data.typeSystem.createCallbackSetting(callBack);
+        this.storageProvider._beginTran(tables, isWrite, callBack);
+
+        return pHandler.getPromise();
+    },
+    _isReturnTransaction: function (transaction) {
+        return transaction instanceof $data.Base || transaction === 'returnTransaction';
+    },
+    _applyTransaction: function (scope, cb, args, transaction, isReturnTransaction) {
+        if (isReturnTransaction === true) {
+            if (transaction instanceof $data.Transaction) {
+                Array.prototype.push.call(args, transaction);
+                cb.apply(scope, args);
+            } else {
+                this.beginTransaction(function (tran) {
+                    Array.prototype.push.call(args, tran);
+                    cb.apply(scope, args);
+                });
+            }
+        }
+        else {
+            cb.apply(scope, args);
+        }
+    },
+
     getDataType: function (dataType) {
         // Obsolate
         if (typeof dataType == "string") {
@@ -13124,10 +14186,7 @@ $data.Class.define('$data.EntityContext', null, null,
         return dataType;
     },
     _initializeEntitySets: function (ctor) {
-        /*if (ctor.inheritsFrom !== null && ctor.inheritsFrom !== undefined) {
-            this._initializeEntitySets(ctor.inheritsFrom);
-        }*/
-        //this._storageModel.forEach(function (storageModel) {
+
         for (var i = 0, l = this._storageModel.length; i < l; i++){
             var storageModel = this._storageModel[i];
             this[storageModel.ItemName] = new $data.EntitySet(storageModel.LogicalType, this, storageModel.ItemName, storageModel.EventHandlers);
@@ -13138,29 +14197,33 @@ $data.Class.define('$data.EntityContext', null, null,
             sm.eventHandlers = storageModel.EventHandlers;
             this._entitySetReferences[storageModel.LogicalType.name] = sm;
 
-            storageModel.EntitySetReference = sm;
-        }
-        //}, this);
-    },
-    _initializeStorageModel: function () {
+            this._initializeActions(sm, ctor, ctor.getMemberDefinition(storageModel.ItemName));
 
-        //this.getType().memberDefinitions.asArray().forEach(function (item) {
+        }
+
+    },
+
+    _initStorageModelSync: function() {
         var _memDefArray = this.getType().memberDefinitions.asArray();
+
+
         for (var i = 0; i < _memDefArray.length; i++) {
             var item = _memDefArray[i];
-
-
-
             if ('dataType' in item) {
                 var itemResolvedDataType = Container.resolveType(item.dataType);
                 if (itemResolvedDataType && itemResolvedDataType.isAssignableTo && itemResolvedDataType.isAssignableTo($data.EntitySet)) {
+                    var elementType = Container.resolveType(item.elementType);
                     var storageModel = new $data.StorageModel();
                     storageModel.TableName = item.tableName || item.name;
                     storageModel.TableOptions = item.tableOptions;
                     storageModel.ItemName = item.name;
-                    storageModel.LogicalType = Container.resolveType(item.elementType);
-                    storageModel.LogicalTypeName = storageModel.LogicalType.name;
+                    storageModel.LogicalType = elementType;
+                    storageModel.LogicalTypeName = elementType.name;
                     storageModel.PhysicalTypeName = $data.EntityContext._convertLogicalTypeNameToPhysical(storageModel.LogicalTypeName);
+                    storageModel.ContextType = this.getType();
+		    if (item.indices) {
+                        storageModel.indices = item.indices;
+                    }
                     if (item.beforeCreate) {
                         if (!storageModel.EventHandlers) storageModel.EventHandlers = {};
                         storageModel.EventHandlers.beforeCreate = item.beforeCreate;
@@ -13197,12 +14260,18 @@ $data.Class.define('$data.EntityContext', null, null,
                 }
             }
         }
-        //}, this);
+
+    },
+    _initializeStorageModel: function () {
+
+        
+        var _memDefArray = this.getType().memberDefinitions.asArray();
+        
 
         if (typeof intellisense !== 'undefined')
             return;
 
-        //this._storageModel.forEach(function (storageModel) {
+        
         for (var i = 0; i < this._storageModel.length; i++) {
             var storageModel = this._storageModel[i];
 
@@ -13211,7 +14280,6 @@ $data.Class.define('$data.EntityContext', null, null,
 
             storageModel.Associations = storageModel.Associations || [];
             storageModel.ComplexTypes = storageModel.ComplexTypes || [];
-            //storageModel.LogicalType.memberDefinitions.getPublicMappedProperties().forEach(function (memDef) {
             for (var j = 0; j < storageModel.LogicalType.memberDefinitions.getPublicMappedProperties().length; j++) {
                 var memDef = storageModel.LogicalType.memberDefinitions.getPublicMappedProperties()[j];
                 ///<param name="memDef" type="MemberDefinition">Member definition instance</param>
@@ -13229,10 +14297,9 @@ $data.Class.define('$data.EntityContext', null, null,
 
                 this._buildDbType_navigationPropertyComplite(memDef, memDefResolvedDataType, storageModel);
 
-
-
                 //var memDef_dataType = this.getDataType(memDef.dataType);
-                if ((memDefResolvedDataType === $data.Array || (memDefResolvedDataType.isAssignableTo && memDefResolvedDataType.isAssignableTo($data.EntitySet))) && (memDef.inverseProperty && memDef.inverseProperty !== '$$unbound')) {
+                if ((memDefResolvedDataType === $data.Array || (memDefResolvedDataType.isAssignableTo && memDefResolvedDataType.isAssignableTo($data.EntitySet))) &&
+                    (memDef.inverseProperty && memDef.inverseProperty !== '$$unbound')) {
                     this._buildDbType_Collection_OneManyDefinition(dbEntityInstanceDefinition, storageModel, memDefResolvedDataType, memDef);
                 } else {
                     if (memDef.inverseProperty) {
@@ -13273,16 +14340,32 @@ $data.Class.define('$data.EntityContext', null, null,
                     }
                 }
             }
-            //}, this);
             this._buildDbType_modifyInstanceDefinition(dbEntityInstanceDefinition, storageModel, this);
             var dbEntityClassDefinition = {};
             dbEntityClassDefinition.convertTo = this._buildDbType_generateConvertToFunction(storageModel, this);
             this._buildDbType_modifyClassDefinition(dbEntityClassDefinition, storageModel, this);
 
             //create physical type
-            storageModel.PhysicalType = $data.Class.define(storageModel.PhysicalTypeName, $data.Entity, null, dbEntityInstanceDefinition, dbEntityClassDefinition);
+            //TODO
+            storageModel.PhysicalType = $data.Class.define(storageModel.PhysicalTypeName, $data.Entity, storageModel.LogicalType.container, dbEntityInstanceDefinition, dbEntityClassDefinition);
         }
-        //}, this);
+    },
+    _initializeActions: function (es, ctor, esDef) {
+        if (esDef && esDef.actions) {
+            var actionKeys = Object.keys(esDef.actions);
+            for (var i = 0; i < actionKeys.length; i++) {
+                var actionName = actionKeys[i];
+                var action = esDef.actions[actionName];
+                if (typeof action === 'function') {
+                    es[actionName] = action;
+                } else {
+                    var actionDef = $data.MemberDefinition.translateDefinition(action, actionName, ctor);
+                    if (actionDef instanceof $data.MemberDefinition && actionDef.kind === $data.MemberTypes.method) {
+                        es[actionName] = actionDef.method;
+                    }
+                }
+            }
+        }
     },
     _buildDbType_navigationPropertyComplite: function (memDef, memDefResolvedDataType, storageModel) {
         if (!memDef.inverseProperty) {
@@ -13297,10 +14380,6 @@ $data.Class.define('$data.EntityContext', null, null,
                         if ((m.inverseProperty == memDef.name) && (Container.resolveType(m.dataType) === Container.resolveType(storageModel.LogicalType)))
                             refMemDefs.push(m);
                     }
-
-                    //refMemDefs = refStorageModel.LogicalType.memberDefinitions.getPublicMappedProperties().filter(function (m) {
-                    //    return ((m.inverseProperty == memDef.name) && (Container.resolveType(m.dataType) === Container.resolveType(storageModel.LogicalType)))
-                    //});
                 }
             } else {
                 var refStorageModel = this._storageModel.getStorageModel(memDefResolvedDataType);
@@ -13309,21 +14388,11 @@ $data.Class.define('$data.EntityContext', null, null,
                     var pubDefs = refStorageModel.LogicalType.memberDefinitions.getPublicMappedProperties();
                     for (var i = 0; i < pubDefs.length; i++) {
                         var m = pubDefs[i];
-                        if(m.elementType && ((m.inverseProperty == memDef.name) && (Container.resolveType(m.elementType) === storageModel.LogicalType)))
+                        if (m.elementType && ((m.inverseProperty == memDef.name) && (Container.resolveType(m.elementType) === storageModel.LogicalType)))
                             refMemDefs.push(m);
                         else if ((m.inverseProperty == memDef.name) && (Container.resolveType(m.dataType) === storageModel.LogicalType))
                             refMemDefs.push(m);
                     }
-
-
-                    //refMemDefs = refStorageModel.LogicalType.memberDefinitions.getPublicMappedProperties().filter(function (m) {
-                    //    if (m.elementType) {
-                    //        return ((m.inverseProperty == memDef.name) && (Container.resolveType(m.elementType) === storageModel.LogicalType))
-                    //    } else {
-                    //        return ((m.inverseProperty == memDef.name) && (Container.resolveType(m.dataType) === storageModel.LogicalType))
-                    //    }
-
-                    //});
                 }
             }
             if (refMemDefs) {
@@ -13453,7 +14522,7 @@ $data.Class.define('$data.EntityContext', null, null,
 
         this._addNavigationPropertyDefinition(dbEntityInstanceDefinition, memDef, memDef.name);
 
-        association = this._addAssociationElement(storageModel.LogicalType,
+        var association = this._addAssociationElement(storageModel.LogicalType,
                                                  memDef.required ? "0..1" : "1",
                                                  memDef.name,
                                                  refereedStorageModel.LogicalType,
@@ -13497,14 +14566,26 @@ $data.Class.define('$data.EntityContext', null, null,
         });
     },
 
-    _successInitProvider: function (result) {
-        if (result != undefined && result._isOK != undefined) {
-            result._isOK = true;
-            if (result.onReadyFunction) {
-                result.onReadyFunction(result);
+    _successInitProvider: function (context, error) {
+        if (context instanceof $data.EntityContext && context._isOK !== undefined) {
+            if (!error) {
+                context._isOK = true;
+                if (context.onReadyFunction) {
+                    for (var i = 0; i < context.onReadyFunction.length; i++) {
+                        context.onReadyFunction[i].success(context);
+                    }
+                    context.onReadyFunction = undefined;
+                }
+            } else {
+                context._isOK = error;
+                if (context.onReadyFunction) {
+                    for (var i = 0; i < context.onReadyFunction.length; i++) {
+                        context.onReadyFunction[i].error(error);
+                    }
+                    context.onReadyFunction = undefined;
+                }
             }
         }
-
     },
     onReady: function (fn) {
         /// <signature>
@@ -13529,12 +14610,18 @@ $data.Class.define('$data.EntityContext', null, null,
         /// </signature>
         var pHandler = new $data.PromiseHandler();
         var callBack = pHandler.createCallback(fn);
-        this.onReadyFunction = callBack.success;
-        if (this._isOK) {
+        if (this._isOK === true) {
             callBack.success(this);
+        } else if (this._isOK !== false) {
+            callBack.error(this._isOK);
+        } else {
+            this.onReadyFunction = this.onReadyFunction || [];
+            this.onReadyFunction.push(callBack);
         }
+
         return pHandler.getPromise();
     },
+    ready: { type: $data.Promise },
     getEntitySetFromElementType: function (elementType) {
         /// <signature>
         ///     <summary>Gets the matching EntitySet for an element type.</summary>
@@ -13554,15 +14641,22 @@ $data.Class.define('$data.EntityContext', null, null,
         }
         return result;
     },
-    executeQuery: function (queryable, callBack) {
+    executeQuery: function (queryable, callBack, transaction) {
         var query = new $data.Query(queryable.expression, queryable.defaultType, this);
+        query.transaction = transaction instanceof $data.Transaction ? transaction : undefined;
+        var returnTransaction = this._isReturnTransaction(transaction);
+
         callBack = $data.typeSystem.createCallbackSetting(callBack);
         var that = this;
         var clbWrapper = {};
         clbWrapper.success = function (query) {
             query.buildResultSet(that);
+
+            if ($data.ItemStore && 'QueryResultModifier' in $data.ItemStore)
+                $data.ItemStore.QueryResultModifier.call(that, query);
+
             var successResult;
-            
+
             if (query.expression.nodeType === $data.Expressions.ExpressionType.Single ||
                 query.expression.nodeType === $data.Expressions.ExpressionType.Count ||
                 query.expression.nodeType === $data.Expressions.ExpressionType.BatchDelete ||
@@ -13582,86 +14676,116 @@ $data.Class.define('$data.EntityContext', null, null,
 
                 successResult = query.result[0];
             } else {
+                if (typeof query.__count === 'number' && query.result)
+                    query.result.totalCount = query.__count;
+
+                that.storageProvider._buildContinuationFunction(that, query);
+
                 successResult = query.result;
             }
-            
-            var readyFn = function(){
-                callBack.success(successResult);
+
+            var readyFn = function () {
+                that._applyTransaction(callBack, callBack.success, [successResult], query.transaction, returnTransaction);
+
+                /*if (returnTransaction === true) {
+                    if (query.transaction)
+                        callBack.success(successResult, query.transaction);
+                    else {
+                        that.beginTransaction(function (tran) {
+                            callBack.success(successResult, tran);
+                        });
+                    }
+                }
+                else
+                    callBack.success(successResult);*/
             };
-            
+
             var i = 0;
             var sets = query.getEntitySets();
-            
-            var callbackFn = function(){
+
+            var callbackFn = function () {
                 var es = sets[i];
-                if (es.afterRead){
+                if (es.afterRead) {
                     i++;
                     var r = es.afterRead.call(this, successResult, sets, query);
-                    if (typeof r === 'function'){
+                    if (typeof r === 'function') {
                         r.call(this, i < sets.length ? callbackFn : readyFn, successResult, sets, query);
-                    }else{
-                        if (i < sets.length){
+                    } else {
+                        if (i < sets.length) {
                             callbackFn();
-                        }else readyFn();
+                        } else readyFn();
                     }
-                }else readyFn();
+                } else readyFn();
             }
-            
+
             if (sets.length) callbackFn();
             else readyFn();
         };
-        
-        clbWrapper.error = callBack.error;
+
+        clbWrapper.error = function () {
+            if(returnTransaction)
+                callBack.error.apply(this, arguments);
+            else
+                callBack.error.apply(this, Array.prototype.filter.call(arguments, function (p) { return !(p instanceof $data.Transaction); }));
+        };
         var sets = query.getEntitySets();
-        
-        var authorizedFn = function(){
+
+        var authorizedFn = function () {
             var ex = true;
             var wait = false;
             var ctx = that;
-            
-            var readyFn = function(cancel){
+
+            var readyFn = function (cancel) {
                 if (cancel === false) ex = false;
-                
-                if (ex) ctx.storageProvider.executeQuery(query, clbWrapper);
-                else{
+
+                if (ex) {
+                    if (query.transaction) {
+                        ctx.storageProvider.executeQuery(query, clbWrapper);
+                    } else {
+                        ctx.beginTransaction(function (tran) {
+                            query.transaction = tran;
+                            ctx.storageProvider.executeQuery(query, clbWrapper);
+                        });
+                    }
+                } else {
                     query.rawDataList = [];
                     query.result = [];
                     clbWrapper.success(query);
                 }
             };
-            
+
             var i = 0;
-            var callbackFn = function(cancel){
+            var callbackFn = function (cancel) {
                 if (cancel === false) ex = false;
-                
+
                 var es = sets[i];
-                if (es.beforeRead){
+                if (es.beforeRead) {
                     i++;
                     var r = es.beforeRead.call(this, sets, query);
-                    if (typeof r === 'function'){
+                    if (typeof r === 'function') {
                         r.call(this, (i < sets.length && ex) ? callbackFn : readyFn, sets, query);
-                    }else{
+                    } else {
                         if (r === false) ex = false;
-                        
-                        if (i < sets.length && ex){
+
+                        if (i < sets.length && ex) {
                             callbackFn();
-                        }else readyFn();
+                        } else readyFn();
                     }
-                }else readyFn();
+                } else readyFn();
             };
-            
+
             if (sets.length) callbackFn();
             else readyFn();
         };
-        
-        if (this.user && this.checkPermission){
+
+        if (this.user && this.checkPermission) {
             this.checkPermission(query.expression.nodeType === $data.Expressions.ExpressionType.BatchDelete ? $data.Access.DeleteBatch : $data.Access.Read, this.user, sets, {
                 success: authorizedFn,
                 error: clbWrapper.error
             });
-        }else authorizedFn();
+        } else authorizedFn();
     },
-    saveChanges: function (callback) {
+    saveChanges: function (callback, transaction) {
         /// <signature>
         ///     <summary>
         ///         Saves the changes made to the context.
@@ -13687,6 +14811,7 @@ $data.Class.define('$data.EntityContext', null, null,
         var pHandler = new $data.PromiseHandler();
         var clbWrapper = pHandler.createCallback(callback);
         var pHandlerResult = pHandler.getPromise();
+        var returnTransaction = this._isReturnTransaction(transaction);
 
         var skipItems = [];
         while (trackedEntities.length > 0) {
@@ -13718,6 +14843,9 @@ $data.Class.define('$data.EntityContext', null, null,
                         }
                     }
                 }
+
+                //type before events with items
+                this.processEntityTypeBeforeEventHandler(skipItems, entityCachedItem);
 
                 var navigationProperties = [];
                 var smPhyMemDefs = sModel.PhysicalType.memberDefinitions.asArray();
@@ -13857,7 +14985,13 @@ $data.Class.define('$data.EntityContext', null, null,
         var ctx = this;
         if (changedEntities.length == 0) {
             this.stateManager.trackedEntities.length = 0;
-            clbWrapper.success(0);
+            ctx._applyTransaction(clbWrapper, clbWrapper.success, [0], transaction, returnTransaction);
+
+            /*if (returnTransaction) {
+                clbWrapper.success(0, transaction);
+            } else {
+                clbWrapper.success(0);
+            }*/
             return pHandlerResult;
         }
 
@@ -13872,7 +15006,20 @@ $data.Class.define('$data.EntityContext', null, null,
                 for (var j = 0; j < entity.data.getType().memberDefinitions.getPublicMappedProperties().length; j++) {
                     var memDef = entity.data.getType().memberDefinitions.getPublicMappedProperties()[j];
 
-                    if (memDef.required && !memDef.computed && !entity.data[memDef.name]) entity.data[memDef.name] = Container.getDefault(memDef.dataType);
+                    var memDefType = Container.resolveType(memDef.type);
+                    if (memDef.required && !memDef.computed && !entity.data[memDef.name]) {
+                        switch (memDefType) {
+                            case $data.String:
+                            case $data.Number:
+                            case $data.Integer:
+                            case $data.Date:
+                            case $data.Boolean:
+                                entity.data[memDef.name] = Container.getDefault(memDef.dataType);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
                 //}, this);
             }
@@ -13886,37 +15033,37 @@ $data.Class.define('$data.EntityContext', null, null,
             clbWrapper.error(errors);
             return pHandlerResult;
         }
-        
+
         var access = $data.Access.None;
-        
+
         var eventData = {};
         var sets = [];
-        for (var i = 0; i < changedEntities.length; i++){
+        for (var i = 0; i < changedEntities.length; i++) {
             var it = changedEntities[i];
             var n = it.entitySet.elementType.name;
             sets.push(it.entitySet.name);
             var es = this._entitySetReferences[n];
-            if (es.beforeCreate || es.beforeUpdate || es.beforeDelete || (this.user && this.checkPermission)){
+            if (es.beforeCreate || es.beforeUpdate || es.beforeDelete || (this.user && this.checkPermission)) {
                 if (!eventData[n]) eventData[n] = {};
-                
-                switch (it.data.entityState){
+
+                switch (it.data.entityState) {
                     case $data.EntityState.Added:
                         access |= $data.Access.Create;
-                        if (es.beforeCreate){
+                        if (es.beforeCreate) {
                             if (!eventData[n].createAll) eventData[n].createAll = [];
                             eventData[n].createAll.push(it);
                         }
                         break;
                     case $data.EntityState.Modified:
                         access |= $data.Access.Update;
-                        if (es.beforeUpdate){
+                        if (es.beforeUpdate) {
                             if (!eventData[n].modifyAll) eventData[n].modifyAll = [];
                             eventData[n].modifyAll.push(it);
                         }
                         break;
                     case $data.EntityState.Deleted:
                         access |= $data.Access.Delete;
-                        if (es.beforeDelete){
+                        if (es.beforeDelete) {
                             if (!eventData[n].deleteAll) eventData[n].deleteAll = [];
                             eventData[n].deleteAll.push(it);
                         }
@@ -13924,29 +15071,51 @@ $data.Class.define('$data.EntityContext', null, null,
                 }
             }
         }
-        
-        var readyFn = function(cancel){
-            if (cancel === false){
+
+        var readyFn = function (cancel) {
+            if (cancel === false) {
                 cancelEvent = 'async';
                 changedEntities.length = 0;
             }
-            
-            if (changedEntities.length){
+
+            if (changedEntities.length) {
                 //console.log('changedEntities: ', changedEntities.map(function(it){ return it.data.initData; }));
-                ctx.storageProvider.saveChanges({
-                    success: function () {
-                        ctx._postProcessSavedItems(clbWrapper, changedEntities);
+
+                var innerCallback = {
+                    success: function (tran) {
+                        ctx._postProcessSavedItems(clbWrapper, changedEntities, tran, returnTransaction);
                     },
-                    error: clbWrapper.error
-                }, changedEntities);
-            }else if (cancelEvent){
+                    error: function () {
+                        //TODO remove trans from args;
+                        if (returnTransaction)
+                            clbWrapper.error.apply(this, arguments);
+                        else
+                            clbWrapper.error.apply(this, Array.prototype.filter.call(arguments, function (p) { return !(p instanceof $data.Transaction); }));
+                    }
+                };
+
+                if (transaction instanceof $data.Transaction){
+                    ctx.storageProvider.saveChanges(innerCallback, changedEntities, transaction);
+                } else {
+                    ctx.beginTransaction(true, function (tran) {
+                        ctx.storageProvider.saveChanges(innerCallback, changedEntities, tran);
+                    });
+                }
+            } else if (cancelEvent) {
                 clbWrapper.error(new Exception('Cancelled event in ' + cancelEvent, 'CancelEvent'));
-            }else clbWrapper.success(0);
-            
+            } else {
+                ctx._applyTransaction(clbWrapper, clbWrapper.success, [0], transaction, returnTransaction);
+
+                /*if(returnTransaction)
+                    clbWrapper.success(0, transaction);
+                else
+                    clbWrapper.success(0);*/
+            };
+
             /*else if (cancelEvent) clbWrapper.error(new $data.Exception('saveChanges cancelled from event [' + cancelEvent + ']'));
             else Guard.raise('No changed entities');*/
         };
-        
+
         var cancelEvent;
         var ies = Object.getOwnPropertyNames(eventData);
         var i = 0;
@@ -13956,36 +15125,36 @@ $data.Class.define('$data.EntityContext', null, null,
             beforeDelete: 'deleteAll',
             beforeUpdate: 'modifyAll'
         };
-        
-        var callbackFn = function(cancel){
-            if (cancel === false){
+
+        var callbackFn = function (cancel) {
+            if (cancel === false) {
                 cancelEvent = 'async';
                 changedEntities.length = 0;
-                
+
                 readyFn(cancel);
                 return;
             }
-        
+
             var es = ctx._entitySetReferences[ies[i]];
             var c = cmd.pop();
             var ed = eventData[ies[i]];
             var all = ed[cmdAll[c]];
-            
+
             if (all) {
                 var m = [];
                 for (var im = 0; im < all.length; im++) {
                     m.push(all[im].data);
                 }
                 //var m = all.map(function(it){ return it.data; });
-                if (!cmd.length){
+                if (!cmd.length) {
                     cmd = ['beforeUpdate', 'beforeDelete', 'beforeCreate'];
                     i++;
                 }
-                
+
                 var r = es[c].call(ctx, m);
-                if (typeof r === 'function'){
+                if (typeof r === 'function') {
                     r.call(ctx, (i < ies.length && !cancelEvent) ? callbackFn : readyFn, m);
-                }else if (r === false){
+                } else if (r === false) {
                     cancelEvent = (es.name + '.' + c);
                     //all.forEach(function (it) {
                     for (var index = 0; index < all.length; index++) {
@@ -13995,40 +15164,92 @@ $data.Class.define('$data.EntityContext', null, null,
                         changedEntities.splice(ix, 1);
                     }
                     //});
-                    
+
                     readyFn();
-                }else{
+                } else {
                     if (i < ies.length && !cancelEvent) callbackFn();
                     else readyFn();
                 }
-            }else{
-                if (!cmd.length){
+            } else {
+                if (!cmd.length) {
                     cmd = ['beforeUpdate', 'beforeDelete', 'beforeCreate'];
                     i++;
                 }
-                
+
                 if (i < ies.length && !cancelEvent) callbackFn();
                 else readyFn();
             }
         };
-        
-        if (this.user && this.checkPermission){
+
+        if (this.user && this.checkPermission) {
             this.checkPermission(access, this.user, sets, {
-                success: function(){
+                success: function () {
                     if (i < ies.length) callbackFn();
                     else readyFn();
                 },
                 error: clbWrapper.error
             });
-        }else{
+        } else {
             if (i < ies.length) callbackFn();
             else readyFn();
         }
-        
+
         return pHandlerResult;
     },
+
+    processEntityTypeBeforeEventHandler: function (skipItems, entityCachedItem) {
+        if (!entityCachedItem.skipSave) {
+            var entity = entityCachedItem.data;
+            var entityType = entity.getType();
+            var state = entity.entityState;
+
+            switch (true) {
+                case state === $data.EntityState.Added && entityType.onbeforeCreate instanceof $data.Event:
+                    if (entityType.onbeforeCreate.fireCancelAble(entity) === false) {
+                        entityCachedItem.skipSave = true;
+                        skipItems.push(entity);
+                    }
+                    break;
+                case state === $data.EntityState.Modified && entityType.onbeforeUpdate instanceof $data.Event:
+                    if (entityType.onbeforeUpdate.fireCancelAble(entity) === false) {
+                        entityCachedItem.skipSave = true;
+                        skipItems.push(entity);
+                    }
+                    break;
+                case state === $data.EntityState.Deleted && entityType.onbeforeDelete instanceof $data.Event:
+                    if (entityType.onbeforeDelete.fireCancelAble(entity) === false) {
+                        entityCachedItem.skipSave = true;
+                        skipItems.push(entity);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    },
+    processEntityTypeAfterEventHandler: function (entityCachedItem) {
+        var entity = entityCachedItem.data;
+        var entityType = entity.getType();
+        var state = entity.entityState;
+
+        switch (true) {
+            case state === $data.EntityState.Added && entityType.onafterCreate instanceof $data.Event:
+                entityType.onafterCreate.fire(entity);
+                break;
+            case state === $data.EntityState.Modified && entityType.onafterUpdate instanceof $data.Event:
+                entityType.onafterUpdate.fire(entity);
+                break;
+            case state === $data.EntityState.Deleted && entityType.onafterDelete instanceof $data.Event:
+                entityType.onafterDelete.fire(entity);
+                break;
+            default:
+                break;
+        }
+    },
+
+
     prepareRequest: function () { },
-    _postProcessSavedItems: function (callBack, changedEntities) {
+    _postProcessSavedItems: function (callBack, changedEntities, transaction, returnTransaction) {
         if (this.ChangeCollector && this.ChangeCollector instanceof $data.Notifications.ChangeCollectorBase)
             this.ChangeCollector.processChangedData(changedEntities);
 
@@ -14038,13 +15259,15 @@ $data.Class.define('$data.EntityContext', null, null,
         for (var i = 0; i < changedEntities.length; i++) {
             var entity = changedEntities[i];
 
+            //type after events with items
+            this.processEntityTypeAfterEventHandler(entity);
 
             var oes = entity.data.entityState;
-            
+
             entity.data.entityState = $data.EntityState.Unchanged;
             entity.data.changedProperties = [];
             entity.physicalData = undefined;
-            
+
             var n = entity.entitySet.elementType.name;
             var es = ctx._entitySetReferences[n];
 
@@ -14052,37 +15275,37 @@ $data.Class.define('$data.EntityContext', null, null,
             var eventName = undefined;
             switch (oes) {
                 case $data.EntityState.Added:
-                    eventName  = 'added';
+                    eventName = 'added';
                     break;
                 case $data.EntityState.Deleted:
-                    eventName  = 'deleted';
+                    eventName = 'deleted';
                     break;
                 case $data.EntityState.Modified:
-                    eventName  = 'updated';
+                    eventName = 'updated';
                     break;
             }
             if (eventName) {
                 this.raiseEvent(eventName, entity);
             }
 
-            if (es.afterCreate || es.afterUpdate || es.afterDelete){
+            if (es.afterCreate || es.afterUpdate || es.afterDelete) {
                 if (!eventData[n]) eventData[n] = {};
-                    
-                switch (oes){
+
+                switch (oes) {
                     case $data.EntityState.Added:
-                        if (es.afterCreate){
+                        if (es.afterCreate) {
                             if (!eventData[n].createAll) eventData[n].createAll = [];
                             eventData[n].createAll.push(entity);
                         }
                         break;
                     case $data.EntityState.Modified:
-                        if (es.afterUpdate){
+                        if (es.afterUpdate) {
                             if (!eventData[n].modifyAll) eventData[n].modifyAll = [];
                             eventData[n].modifyAll.push(entity);
                         }
                         break;
                     case $data.EntityState.Deleted:
-                        if (es.afterDelete){
+                        if (es.afterDelete) {
                             if (!eventData[n].deleteAll) eventData[n].deleteAll = [];
                             eventData[n].deleteAll.push(entity);
                         }
@@ -14091,7 +15314,7 @@ $data.Class.define('$data.EntityContext', null, null,
             }
         }
         //});
-        
+
         var ies = Object.getOwnPropertyNames(eventData);
         var i = 0;
         var ctx = this;
@@ -14101,16 +15324,21 @@ $data.Class.define('$data.EntityContext', null, null,
             afterDelete: 'deleteAll',
             afterUpdate: 'modifyAll'
         };
-        
-        var readyFn = function(){
+
+        var readyFn = function () {
             if (!ctx.trackChanges) {
                 ctx.stateManager.reset();
             }
-            
-            callBack.success(changedEntities.length);
+
+            ctx._applyTransaction(callBack, callBack.success, [changedEntities.length], transaction, returnTransaction);
+
+            /*if (returnTransaction)
+                callBack.success(changedEntities.length, transaction);
+            else
+                callBack.success(changedEntities.length);*/
         };
-        
-        var callbackFn = function(){
+
+        var callbackFn = function () {
             var es = ctx._entitySetReferences[ies[i]];
             var c = cmd.pop();
             var ed = eventData[ies[i]];
@@ -14121,29 +15349,29 @@ $data.Class.define('$data.EntityContext', null, null,
                     m.push(all[im].data);
                 }
                 //var m = all.map(function(it){ return it.data; });
-                if (!cmd.length){
+                if (!cmd.length) {
                     cmd = ['afterUpdate', 'afterDelete', 'afterCreate'];
                     i++;
                 }
-                
+
                 var r = es[c].call(ctx, m);
-                if (typeof r === 'function'){
+                if (typeof r === 'function') {
                     r.call(ctx, i < ies.length ? callbackFn : readyFn, m);
-                }else{
+                } else {
                     if (i < ies.length) callbackFn();
                     else readyFn();
                 }
-            }else{
-                if (!cmd.length){
+            } else {
+                if (!cmd.length) {
                     cmd = ['afterUpdate', 'afterDelete', 'afterCreate'];
                     i++;
                 }
-                
+
                 if (i < ies.length) callbackFn();
                 else readyFn();
             }
         };
-        
+
         if (i < ies.length) callbackFn();
         else readyFn();
     },
@@ -14161,7 +15389,7 @@ $data.Class.define('$data.EntityContext', null, null,
         }
     },
 
-    loadItemProperty: function (entity, property, callback) {
+    loadItemProperty: function (entity, property, callback, transaction) {
         /// <signature>
         ///     <summary>Loads a property of the entity through the storage provider.</summary>
         ///     <param name="entity" type="$data.Entity">Entity object</param>
@@ -14205,11 +15433,18 @@ $data.Class.define('$data.EntityContext', null, null,
         Guard.requireType('entity', entity, $data.Entity);
 
         var memberDefinition = typeof property === 'string' ? entity.getType().memberDefinitions.getMember(property) : property;
+        var returnTransaction = this._isReturnTransaction(transaction);
 
         if (entity[memberDefinition.name] != undefined) {
+
             var pHandler = new $data.PromiseHandler();
             callBack = pHandler.createCallback(callback);
-            callback.success(entity[memberDefinition.name]);
+            this._applyTransaction(callback, callback.success, [entity[memberDefinition.name]], transaction, returnTransaction);
+            /*if (returnTransaction)
+                callback.success(entity[memberDefinition.name], transaction);
+            else
+                callback.success(entity[memberDefinition.name]);*/
+                
             return pHandler.getPromise();
         }
 
@@ -14253,9 +15488,10 @@ $data.Class.define('$data.EntityContext', null, null,
             //});
             filterFunc += "; }"
 
-            return storageModel.EntitySetReference
+            var entitySet = this.getEntitySetFromElementType(entity.getType());
+            return entitySet
                 .map('function (e) { return e.' + memberDefinition.name + ' }')
-                .single(filterFunc, filterParams, callback);
+                .single(filterFunc, filterParams, callback, transaction);
         } else {
             //multipleSide
 
@@ -14276,7 +15512,7 @@ $data.Class.define('$data.EntityContext', null, null,
             var entitySet = this.getEntitySetFromElementType(elementType);
             return entitySet
                 .filter(filterFunc, filterParams)
-                .toArray(callback);
+                .toArray(callback, transaction);
         }
 
     },
@@ -14306,8 +15542,15 @@ $data.Class.define('$data.EntityContext', null, null,
     resolveSetOperations: function (operation, expression, frameType) {
         return this.storageProvider.resolveSetOperations(operation, expression, frameType);
     },
+    resolveTypeOperations: function (operation, expression, frameType) {
+        return this.storageProvider.resolveTypeOperations(operation, expression, frameType);
+    },
+    resolveContextOperations: function (operation, expression, frameType) {
+        return this.storageProvider.resolveContextOperations(operation, expression, frameType);
+    },
+
     _generateServiceOperationQueryable: function (functionName, returnEntitySet, arg, parameters) {
-        if(typeof console !== 'undefined' && console.log)
+        if (typeof console !== 'undefined' && console.log)
             console.log('Obsolate: _generateServiceOperationQueryable, $data.EntityContext');
 
         var params = [];
@@ -14347,7 +15590,7 @@ $data.Class.define('$data.EntityContext', null, null,
         return entitySet.attachOrGet(entity);
     },
 
-    addMany: function(entities) {
+    addMany: function (entities) {
         /// <summary>
         ///     Adds several entities to their matching entity set.
         /// </summary>
@@ -14385,8 +15628,37 @@ $data.Class.define('$data.EntityContext', null, null,
         }
         var entitySet = this.getEntitySetFromElementType(entity.getType());
         return entitySet.remove(entity);
+    },
+    storeToken: { type: Object },
+
+    getFieldUrl: function (entity, member, collection) {
+        try {
+            var entitySet = typeof collection === 'string' ? this[collection] : collection;
+            var fieldName = typeof member === 'string' ? member : member.name;
+            if (entity instanceof $data.Entity) {
+                entitySet = this.getEntitySetFromElementType(entity.getType());
+            } else if (!Object.isNullOrUndefined(entity) && entity.constructor !== $data.Object) { //just a single key
+                var keyDef = entitySet.elementType.memberDefinitions.getKeyProperties()[0];
+                var key = {};
+                key[keyDef.name] = entity;
+                entity = key;
+            }
+
+            //key object
+            if (!(entity instanceof $data.Entity)) {
+                entity = new entitySet.elementType(entity);
+            }
+
+            return this.storageProvider.getFieldUrl(entity, fieldName, entitySet);
+        } catch (e) {}
+        return '#';
     }
 }, {
+    inheritedTypeProcessor: function(type) {
+        if (type.resolveForwardDeclarations) {
+            type.resolveForwardDeclarations();
+        }
+    },
     generateServiceOperation: function (cfg) {
 
         var fn;
@@ -14424,8 +15696,28 @@ $data.Class.define('$data.EntityContext', null, null,
 
         } else {
             fn = function () {
+                var context = this;
 
-                var virtualEntitySet = cfg.elementType ? this.getEntitySetFromElementType(Container.resolveType(cfg.elementType)) : null;
+                var boundItem;
+                if (this instanceof $data.Entity) {
+                    if (!cfg.method) {
+                        cfg.method = 'POST';
+                    }
+
+                    if (this.context) {
+                        context = this.context;
+                    } else {
+                        Guard.raise('entity not attached into context');
+                        return;
+                    }
+
+                    boundItem = {
+                        data: this,
+                        entitySet: context.getEntitySetFromElementType(this.getType())
+                    };
+                }
+
+                var virtualEntitySet = cfg.elementType ? context.getEntitySetFromElementType(Container.resolveType(cfg.elementType)) : null;
 
                 var paramConstExpression = null;
                 if (cfg.params) {
@@ -14438,12 +15730,13 @@ $data.Class.define('$data.EntityContext', null, null,
                     }
                 }
 
-                var ec = Container.createEntityContextExpression(this);
-                var memberdef = this.getType().getMemberDefinition(cfg.serviceName);
+                var ec = Container.createEntityContextExpression(context);
+                var memberdef = (boundItem ? boundItem.data : context).getType().getMemberDefinition(cfg.serviceName);
                 var es = Container.createServiceOperationExpression(ec,
                         Container.createMemberInfoExpression(memberdef),
                         paramConstExpression,
-                        cfg);
+                        cfg,
+                        boundItem);
 
                 //Get callback function
                 var clb = arguments[arguments.length - 1];
@@ -14460,10 +15753,10 @@ $data.Class.define('$data.EntityContext', null, null,
                     return q;
                 }
                 else {
-                    var returnType = Container.resolveType(cfg.returnType);
+                    var returnType = cfg.returnType ? Container.resolveType(cfg.returnType) : null;
 
-                    var q = Container.createQueryable(this, es);
-                    q.defaultType = returnType;
+                    var q = Container.createQueryable(context, es);
+                    q.defaultType = returnType || $data.Object;
 
                     if (returnType === $data.Queryable) {
                         q.defaultType = Container.resolveType(cfg.elementType);
@@ -14483,8 +15776,7 @@ $data.Class.define('$data.EntityContext', null, null,
         if (cfg.params) {
             for (var i = 0; i < cfg.params.length; i++) {
                 var param = cfg.params[i];
-                for (var name in param)
-                {
+                for (var name in param) {
                     params.push({
                         name: name,
                         type: param[name]
@@ -14520,29 +15812,368 @@ $data.Class.define('$data.QueryProvider', null, null,
     }
 }, null);$data.Class.define('$data.ModelBinder', null, null, {
 
-    constructor: function(context){
+    constructor: function (context) {
         this.context = context;
-        this.cache = {};
+        this.providerName = null;
+        if (this.context.storageProvider && typeof this.context.storageProvider.getType === 'function') {
+            this.references = !(this.context.storageProvider.providerConfiguration.modelBinderOptimization || false);
+            for (var i in $data.RegisteredStorageProviders) {
+                if ($data.RegisteredStorageProviders[i] === this.context.storageProvider.getType()) {
+                    this.providerName = i;
+                }
+            }
+        }
     },
 
-    deepExtend: function(o, r){
-        if (o === null || o === undefined){
-            o = r;
-            return;
+    _deepExtend: function (o, r) {
+        if (o === null || o === undefined) {
+            return r;
         }
-        for (var i in r){
-            if (o.hasOwnProperty(i)){
-                if (typeof r[i] === 'object'){
-                    if (Array.isArray(r[i])){
-                        for (var j = 0; j < r[i].length; j++){
-                            if (o[i].indexOf(r[i][j]) < 0){
+        for (var i in r) {
+            if (o.hasOwnProperty(i)) {
+                if (typeof r[i] === 'object') {
+                    if (Array.isArray(r[i])) {
+                        for (var j = 0; j < r[i].length; j++) {
+                            if (o[i].indexOf(r[i][j]) < 0) {
                                 o[i].push(r[i][j]);
                             }
                         }
-                    }else this.deepExtend(o[i], r[i]);
+                    } else this._deepExtend(o[i], r[i]);
                 }
-            }else{
+            } else {
                 o[i] = r[i];
+            }
+        }
+        if (o instanceof $data.Entity)
+            o.changedProperties = undefined;
+        return o;
+    },
+
+    _buildSelector: function (meta, context) {
+        if (meta.$selector) {
+            if (!(Array.isArray(meta.$selector))) {
+                meta.$selector = [meta.$selector];
+            }
+
+            for (var i = 0; i < meta.$selector.length; i++) {
+                var selector = meta.$selector[i].replace('json:', '');
+                context.src += 'if(';
+                var path = selector.split('.');
+                for (var j = 0; j < path.length; j++) {
+                    context.src += 'di.' + path.slice(0, j + 1).join('.') + (j < path.length - 1 ? ' && ' : ' !== undefined && typeof di.' + selector + ' === "object"');
+                }
+                context.src += '){di = di.' + selector + ';}' + (i < meta.$selector.length - 1 ? 'else ' : '');
+            }
+
+            context.src += 'if (di === null){';
+            if (context.iter) context.src += context.iter + ' = null;';
+            context.src += 'return null;';
+            context.src += '}';
+        }
+    },
+
+    _buildKey: function (name, type, keys, context, data) {
+        if (keys) {
+            var type = Container.resolveType(type);
+            var typeIndex = Container.getIndex(type);
+            type = type.fullName || type.name;
+            context.src += 'var ' + name + 'Fn = function(di){';
+            if (!(Array.isArray(keys)) || keys.length == 1) {
+                if (typeof keys !== 'string') keys = keys[0];
+                context.src += 'if (typeof di.' + keys + ' === "undefined") return undefined;';
+                context.src += 'if (di.' + keys + ' === null) return null;';
+                context.src += 'var key = ("' + type + '_' + typeIndex + '_' + keys + '#" + di.' + keys + ');';
+            } else {
+                context.src += 'var key = "";';
+                for (var i = 0; i < keys.length; i++) {
+                    var id = typeof keys[i] !== 'object' ? keys[i] : keys[i].$source;
+                    context.src += 'if (typeof di.' + id + ' === "undefined") return undefined;';
+                    context.src += 'if (di.' + id + ' === null) return null;';
+                    context.src += 'key += ("' + type + '_' + typeIndex + '_' + id + '#" + di.' + id + ');';
+                }
+            }
+
+            context.src += 'return key;};';
+        }
+
+        context.src += 'var ' + name + ' = ' + (keys ? name + 'Fn(' + (data || 'di') + ')' : 'undefined') + ';';
+    },
+
+    build: function (meta, context) {
+        if (meta.$selector) {
+            if (!(Array.isArray(meta.$selector))) meta.$selector = [meta.$selector];
+            for (var i = 0; i < meta.$selector.length; i++) {
+                meta.$selector[i] = meta.$selector[i].replace('json:', '');
+            }
+        }
+
+        if (meta.$value) {
+            if (typeof meta.$value === 'function') {
+                if (!context.forEach) context.src += 'var di = data;';
+                context.src += 'var fn = function(){ return meta' + (context.meta.length ? '.' + context.meta.join('.') : '') + '.$value.call(self, meta' + (context.meta.length ? '.' + context.meta.join('.') : '') + ', di); };';
+                if (meta.$type) {
+                    var type = Container.resolveName(Container.resolveType(meta.$type));
+                    var typeIndex = Container.getIndex(Container.resolveType(meta.$type));
+                    var converter = this.context.storageProvider.fieldConverter.fromDb[type];
+                    if (converter) {
+                        context.item = 'self.context.storageProvider.fieldConverter.fromDb["' + type + '"](fn())';
+                    } else {
+                        context.item = 'new (Container.resolveByIndex(' + typeIndex + '))(fn())';
+                    }
+                } else context.item = 'fn()';
+            } else if (meta.$type) {
+                var type = Container.resolveName(Container.resolveType(meta.$type));
+                var typeIndex = Container.getIndex(Container.resolveType(meta.$type));
+                var converter = this.context.storageProvider.fieldConverter.fromDb[type];
+                if (converter) {
+                    context.item = 'self.context.storageProvider.fieldConverter.fromDb["' + type + '"](' + meta.$value + ')';
+                } else {
+                    context.item = 'new (Container.resolveByIndex(' + typeIndex + '))(' + meta.$value + ')';
+                }
+            } else context.item = meta.$value;
+        } else if (meta.$source) {
+            var type = Container.resolveName(Container.resolveType(meta.$type));
+            var typeIndex = Container.getIndex(Container.resolveType(meta.$type));
+            var converter = this.context.storageProvider.fieldConverter.fromDb[type];
+            var item = '_' + type.replace(/\./gi, '_') + '_';
+            if (!context.forEach) context.src += 'var di = data;';
+            context.item = item;
+            this._buildSelector(meta, context);
+            if (converter) {
+                context.src += 'var ' + item + ' = self.context.storageProvider.fieldConverter.fromDb["' + type + '"](di.' + meta.$source + ');';
+            } else {
+                context.src += 'var ' + item + ' = new (Container.resolveByIndex(' + typeIndex + '))(di.' + meta.$source + ');';
+            }
+        } else if (meta.$item) {
+            context.meta.push('$item');
+            var iter = (context.item && context.current ? context.item + '.' + context.current : (context.item ? context.item : 'result'));
+            if (iter.indexOf('.') < 0) context.src += 'var ' + iter + ';';
+            context.src += 'var fn = function(di){';
+            if (meta.$selector) {
+                context.src += 'if (typeof di !== "undefined" && !(Array.isArray(di))){';
+                this._buildSelector(meta, context);
+                context.src += '}';
+            }
+            if (this.references && meta.$keys) this._buildKey('forKey', meta.$type, meta.$keys, context);
+            //else if (this.references && meta.$item && meta.$item.$keys) this._buildKey('forKey', meta.$type, meta.$item.$keys, context);
+            //else context.src += 'var forKey = typeof itemKey !== "undefined" ? itemKey : undefined;';
+            /*context.src += 'if (typeof forKey !== "undefined" && forKey){';
+            context.src += 'if (cache[forKey]){';
+            context.src += iter + ' = cache[forKey];'; 
+            context.src += '}else{';
+            context.src += iter + ' = [];';
+            context.src += 'cache[forKey] = ' + iter + ';';
+            context.src += '}';
+            context.src += '}else{';
+            context.src += iter + ' = [];';
+            context.src += '}';*/
+            context.src += iter + ' = typeof ' + iter + ' == "undefined" ? [] : ' + iter + ';';
+            //context.src += iter + ' = [];';
+            context.iter = iter;
+            if (this.references && meta.$item.$keys) {
+                var keycacheName = 'keycache_' + iter.replace(/\./gi, '_');
+                context.src += 'var ' + keycacheName + ';';
+                context.src += 'var kci = keycacheIter.indexOf(' + iter + ');';
+                context.src += 'if (kci < 0){';
+                context.src += keycacheName + ' = [];';
+                context.src += 'keycache.push(' + keycacheName + ');';
+                context.src += 'keycacheIter.push(' + iter + ');';
+                context.src += '}else{';
+                context.src += keycacheName + ' = keycache[kci];';
+                context.src += '}';
+                //context.src += 'var ' + keycacheName + ' = ' + (meta.$item.$keys ? '[]' : 'null') + ';';
+            }
+            context.iter = undefined;
+            context.forEach = true;
+            var itemForKey = 'itemForKey_' + iter.replace(/\./gi, '_');
+            context.src += 'var forEachFn = function(di, i){';
+            context.src += 'var diBackup = di;';
+            if (this.providerName == "sqLite" && this.references && meta.$item.$keys) this._buildKey(itemForKey, meta.$type, meta.$item.$keys, context);
+            var item = context.item || 'iter';
+            context.item = item;
+            if (!meta.$item.$source) {
+                this._buildSelector(meta.$item, context);
+            }
+            this.build(meta.$item, context);
+            if (this.references && meta.$keys) {
+                context.src += 'if (forKey){';
+                context.src += 'if (cache[forKey]){';
+                context.src += iter + ' = cache[forKey];';
+                context.src += 'if (' + iter + '.indexOf(' + (context.item || item) + ') < 0){';
+                context.src += iter + '.push(' + (context.item || item) + ');';
+                context.src += '}}else{';
+                context.src += 'cache[forKey] = ' + iter + ';';
+                context.src += iter + '.push(' + (context.item || item) + ');';
+                context.src += '}}else{';
+                if (this.references && meta.$item.$keys) this._buildKey('cacheKey', meta.$type, meta.$item.$keys, context, 'diBackup');
+                context.src += 'if (typeof cacheKey != "undefined" && cacheKey !== null){';
+                context.src += 'if (keycache_' + iter.replace(/\./gi, '_') + ' && cacheKey){';
+                context.src += 'if (keycache_' + iter.replace(/\./gi, '_') + '.indexOf(cacheKey) < 0){';
+                context.src += iter + '.push(' + (context.item || item) + ');';
+                context.src += 'keycache_' + iter.replace(/\./gi, '_') + '.push(cacheKey);';
+                context.src += '}';
+                context.src += '}else{';
+                context.src += iter + '.push(' + (context.item || item) + ');';
+                context.src += '}';
+                context.src += '}';
+                context.src += '}';
+            } else {
+                if (this.references && meta.$item.$keys) {
+                    context.src += 'if (typeof ' + itemForKey + ' !== "undefined" && ' + itemForKey + ' !== null){';
+                    context.src += 'if (typeof keycache_' + iter.replace(/\./gi, '_') + ' !== "undefined" && ' + itemForKey + '){';
+                    context.src += 'if (keycache_' + iter.replace(/\./gi, '_') + '.indexOf(' + itemForKey + ') < 0){';
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                    context.src += 'keycache_' + iter.replace(/\./gi, '_') + '.push(' + itemForKey + ');'
+                    context.src += '}}else{';
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                    context.src += '}}else{';
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                    context.src += '}';
+                    /*context.src += 'if (typeof itemKey !== "undefined" && itemKey !== null){';
+                    context.src += 'if (typeof keycache_' + iter.replace(/\./gi, '_') + ' !== "undefined" && itemKey){';
+                    context.src += 'if (keycache_' + iter.replace(/\./gi, '_') + '.indexOf(itemKey) < 0){';
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                    context.src += 'keycache_' + iter.replace(/\./gi, '_') + '.push(itemKey);'
+                    context.src += '}}else{';
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                    context.src += '}}else{';
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                    context.src += '}';*/
+                } else {
+                    context.src += iter + '.push(' + (context.item || item) + ');';
+                }
+            }
+            context.src += '};';
+            context.src += 'if (Array.isArray(di)) di.forEach(forEachFn);';
+            context.src += 'else forEachFn(di, 0);';
+            context.forEach = false;
+            context.item = null;
+            context.src += '};fn(typeof di === "undefined" ? data : di);'
+            context.meta.pop();
+        } else if (meta.$type) {
+            if (!context.forEach) {
+                context.src += 'if (typeof di === "undefined"){';
+                context.src += 'var di = data;';
+                this._buildSelector(meta, context);
+                context.src += '}';
+            }
+            var resolvedType = Container.resolveType(meta.$type);
+            var type = Container.resolveName(resolvedType);
+            var typeIndex = Container.getIndex(resolvedType);
+            var isEntityType = resolvedType.isAssignableTo && resolvedType.isAssignableTo($data.Entity);
+            var item = '_' + type.replace(/\./gi, '_') + '_';
+            if (context.item == item) item += 'new_';
+            context.item = item;
+
+
+            var isPrimitive = false;
+            if (!meta.$source && !meta.$value && resolvedType !== $data.Array && resolvedType !== $data.Object && !resolvedType.isAssignableTo)
+                isPrimitive = true;
+            if (resolvedType === $data.Object || resolvedType === $data.Array) {
+                var keys = Object.keys(meta);
+                if (keys.length == 1 || (keys.length == 2 && meta.$selector)) isPrimitive = true;
+            }
+
+            if (isPrimitive) {
+                var converter = this.context.storageProvider.fieldConverter.fromDb[type];
+                if (converter) {
+                    context.src += 'var ' + item + ' = di != undefined ? self.context.storageProvider.fieldConverter.fromDb["' + type + '"](di) : di;';
+                } else {
+                    context.src += 'var ' + item + ' = di;';
+                }
+            } else {
+                if (this.references && meta.$keys) {
+                    this._buildKey('itemKey', meta.$type, meta.$keys, context);
+                    context.src += 'if (itemKey === null) return null;';
+                    context.src += 'var ' + item + ';';
+                    context.src += 'if (itemKey && cache[itemKey]){';
+                    context.src += item + ' = cache[itemKey];';
+                    context.src += '}else{';
+                    if (isEntityType) {
+                        context.src += item + ' = new (Container.resolveByIndex(' + typeIndex + '))(undefined, { setDefaultValues: false });';
+                    } else {
+                        context.src += item + ' = new (Container.resolveByIndex(' + typeIndex + '))();';
+                    }
+                    context.src += 'if (itemKey){';
+                    context.src += 'cache[itemKey] = ' + item + ';';
+                    context.src += '}';
+                    context.src += '}';
+                } else {
+                    if (isEntityType) {
+                        context.src += 'var ' + item + ' = new (Container.resolveByIndex(' + typeIndex + '))(undefined, { setDefaultValues: false });';
+                    } else {
+                        context.src += 'var ' + item + ' = new (Container.resolveByIndex(' + typeIndex + '))();';
+                    }
+                }
+            }
+            for (var i in meta) {
+                if (i.indexOf('$') < 0) {
+                    context.current = i;
+                    if (!meta[i].$item) {
+                        if (meta[i].$value) {
+                            context.meta.push(i);
+                            var item = context.item;
+                            this.build(meta[i], context);
+                            context.src += item + '.' + i + ' = ' + context.item + ';';
+                            context.item = item;
+                            context.meta.pop();
+                        } else if (meta[i].$source) {
+                            context.src += 'var fn = function(di){';
+                            this._buildSelector(meta[i], context);
+                            if (meta[i].$type) {
+                                var type = Container.resolveName(Container.resolveType(meta[i].$type));
+                                var typeIndex = Container.getIndex(Container.resolveType(meta[i].$type));
+                                var converter = this.context.storageProvider.fieldConverter.fromDb[type];
+                                if (converter) {
+                                    context.src += 'return self.context.storageProvider.fieldConverter.fromDb["' + type + '"](di.' + meta[i].$source + ');';
+                                } else {
+                                    context.src += 'return new (Container.resolveByIndex(' + typeIndex + '))(di.' + meta[i].$source + ');';
+                                }
+                            } else {
+                                context.src += item + '.' + i + ' = di.' + meta[i].$source + ';';
+                            }
+                            context.src += '};';
+                            if (meta[i].$type) context.src += item + '.' + i + ' = fn(di);';
+                            else context.src += 'fn(di);';
+                        } else if (meta[i].$type) {
+                            context.meta.push(i);
+                            context.src += 'var fn = function(di){';
+                            this._buildSelector(meta[i], context);
+                            this.build(meta[i], context);
+                            context.src += 'return ' + context.item + ';};';
+                            if (meta[i].$type === $data.Object) context.src += item + '.' + i + ' = self._deepExtend(' + item + '.' + i + ', fn(di));';
+                            else context.src += item + '.' + i + ' = fn(di);';
+                            context.item = item;
+                            context.meta.pop();
+                        } else if (meta.$type) {
+                            var memDef = Container.resolveType(meta.$type).memberDefinitions.getMember(i);
+                            var type = Container.resolveName(memDef.type);
+                            var entityType = Container.resolveType(meta.$type);
+                            var entityTypeIndex = Container.getIndex(meta.$type);
+                            var converter = this.context.storageProvider.fieldConverter.fromDb[type];
+                            if (this.providerName && memDef && memDef.converter && memDef.converter[this.providerName] && typeof memDef.converter[this.providerName].fromDb == 'function') {
+                                context.src += item + '.' + i + ' = Container.resolveByIndex("' + entityTypeIndex + '").memberDefinitions.getMember("' + i + '").converter.' + this.providerName + '.fromDb(di.' + meta[i] + ', Container.resolveByIndex("' + entityTypeIndex + '").memberDefinitions.getMember("' + i + '"), self.context, Container.resolveByIndex("' + entityTypeIndex + '"));';
+                            } else if (converter) {
+                                context.src += item + '.' + i + ' = self.context.storageProvider.fieldConverter.fromDb["' + type + '"](di.' + meta[i] + ');';
+                            } else {
+                                //var type = Container.resolveName(Container.resolveType(type.memberDefinitions.getMember(i).type));
+                                var typeIndex = Container.getIndex(Container.resolveType(type.memberDefinitions.getMember(i).type));
+                                context.src += item + '.' + i + ' = new (Container.resolveByIndex(' + typeIndex + '))(di.' + meta[i] + ');';
+                            }
+                        }
+                    } else {
+                        context.meta.push(i);
+                        this.build(meta[i], context);
+                        context.item = item;
+                        context.meta.pop();
+                    }
+                }
+            }
+            if (this.references && meta.$keys) {
+                context.src += 'if (' + item + ' instanceof $data.Entity){' + item + '.changedProperties = undefined;}';
+                //context.src += '}';
+            } else {
+                context.src += 'if (' + item + ' instanceof $data.Entity){' + item + '.changedProperties = undefined;}';
             }
         }
     },
@@ -14551,230 +16182,21 @@ $data.Class.define('$data.QueryProvider', null, null,
         if (!Object.getOwnPropertyNames(meta).length) {
             return data;
         }
-        var data = data;
-        var result;
-
-        if (meta.$selector){
-			var metaSelector = meta.$selector;
-			if (!(metaSelector instanceof Array)){
-				metaSelector = [metaSelector];
-			}
-
-			var i = 0;
-			var part;
-			while (i < metaSelector.length){
-				part = data;
-				var selector = metaSelector[i];
-				var type = selector.split(':');
-				switch (type[0]){
-					case 'json':
-						var path = type[1].split('.');
-						while (path.length) {
-						    if (typeof part[path[0]] === 'undefined') {
-								if (i === metaSelector.length){
-									return undefined;
-								}else if (path.length){
-									break;
-								}
-							}else{
-								part = part[path[0]];
-								path = path.slice(1);
-								if (part === null) return part;
-							}
-						}
-						if (!path.length){
-							i = metaSelector.length;
-						}
-						break;
-					case 'css':
-					case 'xml':
-						if (part.querySelector){
-							part = part[meta.$item ? 'querySelectorAll' : 'querySelector'](type[1]);
-						}else{
-							part = $(part).find(type[1]);
-							if (!meta.$item) part = part[0];
-						}
-						break;
-				}
-				i++;
-			}
-
-			data = part;
-			if (!data){
-				return data;
-			}
-        }
-        
-        if (meta.$type) {
-            var resolvedType = Container.resolveType(meta.$type);
-            var isPrimitive = false;
-            if (!meta.$source && !meta.$value && resolvedType !== $data.Array && resolvedType !== $data.Object && !resolvedType.isAssignableTo)
-                isPrimitive = true;
-            if (resolvedType === $data.Object || resolvedType === $data.Array){
-                var keys = Object.keys(meta);
-                if (keys.length == 1 || (keys.length == 2 && meta.$selector)) isPrimitive = true;
-            }
-
-            var type = Container.resolveName(meta.$type);
-            var converter = this.context.storageProvider.fieldConverter.fromDb[type];
-            if (isPrimitive) {
-                if (data != undefined && converter)
-                    return converter(data);
-                else
-                    return data;
-            } else {
-                result = converter ? converter() : new (Container.resolveType(meta.$type))(); //Container['create' + Container.resolveType(meta.$type).name]();
-            }
-        }
-
-		if (meta.$value){
-			if (typeof meta.$value === 'function'){
-				result = meta.$value.call(this, meta, data);
-            }else if (meta.$type){
-                var type = Container.resolveName(meta.$type);
-                var converter = this.context.storageProvider.fieldConverter.fromDb[type];
-                result = converter ? converter(meta.$value) : new (Container.resolveType(meta.$type))(meta.$value); //Container['create' + Container.resolveType(meta.$type).name](meta.$value);
-            }else result = meta.$value;
-        }else if (meta.$source){
-            if (meta.$type){
-                var type = Container.resolveName(meta.$type);
-                var converter = this.context.storageProvider.fieldConverter.fromDb[type];
-                result = converter ? converter(data[meta.$source]) : new (Container.resolveType(meta.$type))(data[meta.$source]); //Container['create' + Container.resolveType(meta.$type).name](data[meta.$source]);
-            }else result = (meta.$source.split(':')[0] == 'attr' && data.getAttribute) ? data.getAttribute(meta.$source.split(':')[1]) : (meta.$source == 'textContent' && !data[meta.$source] ? $(data).text() : data[meta.$source]);
-        } else if (meta.$item) {
-            var keycache;
-            if (meta.$item.$keys) keycache = [];
-            
-            if (Array.isArray(data)) {
-                for (var i = 0; i < data.length; i++) {
-                    var key = '';
-                    if (meta.$keys) for (var j = 0; j < meta.$keys.length; j++) { key += (meta.$type + '_' + meta.$keys[j] + '#' + data[i][meta.$keys[j]]); }
-                    var r = this.call(data[i], meta.$item);
-                    if (key){
-                        if (this.cache[key]){
-                            result = this.cache[key];
-                            if (result.indexOf(r) < 0){
-                                result.push(r);
-                            }
-                        }else{
-                            this.cache[key] = result;
-                            result.push(r);
-                        }
-                    }else{
-                        var key = '';
-                        if (meta.$item.$keys) for (var j = 0; j < meta.$item.$keys.length; j++) {
-                            if (typeof data[i][meta.$item.$keys[j]] === 'undefined'){
-                                key = undefined;
-                                break;
-                            }
-                            key += (meta.$type + '_' + meta.$item.$keys[j] + '#' + data[i][meta.$item.$keys[j]]);
-                        }
-                        if (keycache && key){
-                            if (keycache.indexOf(key) < 0){
-                                result.push(r);
-                                keycache.push(key);
-                            }
-                        }else result.push(r);
-                    }
-                }
-            } else {
-                var key = '';
-                if (meta.$keys) for (var j = 0; j < meta.$keys.length; j++) { key += (meta.$type + '_' + meta.$keys[j] + '#' + data[meta.$keys[j]]); }
-                var r = this.call(data, meta.$item);
-                if (key){
-                    if (this.cache[key]){
-                        result = this.cache[key];
-                        if (result.indexOf(r) < 0){
-                            result.push(r);
-                        }
-                    }else{
-                        this.cache[key] = result;
-                        result.push(r);
-                    }
-                }else{
-                    var key = '';
-                    if (meta.$item.$keys) for (var j = 0; j < meta.$item.$keys.length; j++) {
-                        if (typeof data[meta.$item.$keys[j]] === 'undefined'){
-                            key = undefined;
-                            break;
-                        }
-                        key += (meta.$type + '_' + meta.$item.$keys[j] + '#' + data[meta.$item.$keys[j]]);
-                    }
-                    if (keycache && key){
-                        if (keycache.indexOf(key) < 0){
-                            result.push(r);
-                            keycache.push(key);
-                        }
-                    }else result.push(r);
-                }
-            }
-        }else{
-            var key = '';
-            if (meta.$keys){
-                for (var j = 0; j < meta.$keys.length; j++) { key += (meta.$type + '_' + meta.$keys[j] + '#' + data[meta.$keys[j]]); }
-                if (!this.cache[key]){
-                    for (var j in meta){
-                        if (j.indexOf('$') < 0){
-                            if (!meta[j].$item) {
-                                if (meta[j].$type || meta[j].$source) { result[j] = this.call(data, meta[j]); }
-                                else if (meta.$type) {
-                                    var type = Container.resolveName(meta.$type.memberDefinitions.getMember(j).type);
-                                    var converter = this.context.storageProvider.fieldConverter.fromDb[type];
-                                    result[j] = converter ? converter(data[meta[j]]) : new (Container.resolveType(meta.$type.memberDefinitions.getMember(j).type))(data[meta[j]]); //Container['create' + Container.resolveType(meta.$type.memberDefinitions.getMember(j).type).name](data[meta[j]]);
-                                } else { result[j] = meta[j].$source ? data[meta[j].$source] : data[meta[j]]; }
-                            } else { result[j] = this.call(data, meta[j]); }
-                        }
-                    }
-                    this.cache[key] = result;
-                }else{
-                    result = this.cache[key];
-                    for (var j in meta){
-                        if (j.indexOf('$') < 0){
-                            if (meta[j].$item) {
-                                if (meta[j].$item.$keys){
-                                    var key = '';
-                                    for (var k = 0; k < meta[j].$item.$keys.length; k++) { key += (meta[j].$item.$type + '_' + meta[j].$item.$keys[k] + '#' + data[meta[j].$item.$keys[k]]); }
-                                    var r = this.call(data, meta[j].$item);
-                                    if (!this.cache[key]){
-                                        this.cache[key] = r;
-                                        result[j].push(r);
-                                    }else{
-                                        if (result[j].indexOf(this.cache[key]) < 0){
-                                            result[j].push(this.cache[key]);
-                                        }
-                                    }
-                                }else{
-                                    result[j].push(this.call(data, meta[j].$item));
-                                }
-                            }else{
-                                if (typeof meta[j] === 'object'){
-                                    var r = this.call(data, meta[j]);
-                                    this.deepExtend(result[j], r);
-                                }
-                            }
-                        }
-                    }
-                }
-            }else{
-                for (var j in meta){
-                    if (j.indexOf('$') < 0){
-                        if (!meta[j].$item) {
-                            if (meta[j].$type || meta[j].$source) { result[j] = this.call(data, meta[j]); }
-                            else if (meta.$type) {
-                                var type = Container.resolveName(Container.resolveType(meta.$type).memberDefinitions.getMember(j).type);
-                                var converter = this.context.storageProvider.fieldConverter.fromDb[type];
-                                result[j] = converter ? converter(data[meta[j]]) : new (Container.resolveType(meta.$type.memberDefinitions.getMember(j).type))(data[meta[j]]); //Container['create' + Container.resolveType(meta.$type.memberDefinitions.getMember(j).type).name](data[meta[j]]);
-                            } else { result[j] = meta[j].$source ? data[meta[j].$source] : data[meta[j]]; }
-                        } else { result[j] = this.call(data, meta[j]); }
-                    }
-                }
-            }
-        }
-
-
-		if (result instanceof $data.Entity)
-		    result.changedProperties = undefined;
-        return result;
+        var context = {
+            src: '',
+            meta: []
+        };
+        context.src += 'var self = this;';
+        context.src += 'var result;';
+        context.src += 'var cache = {};';
+        context.src += 'var keycache = [];';
+        context.src += 'var keycacheIter = [];';
+        this.build(meta, context);
+        if (context.item) context.src += 'if (typeof result === "undefined") result = ' + context.item + ';';
+        context.src += 'return result;';
+        var fn = new Function('meta', 'data', context.src).bind(this);
+        var ret = fn(meta, data);
+        return ret;
     }
 });
 $C('$data.queryBuilder', null, null, {
@@ -15007,7 +16429,7 @@ $data.Class.define('$data.Queryable', null, null,
         return this.map(projection, thisArg, mappedTo);
     },
 
-    length: function (onResult) {
+    length: function (onResult, transaction) {
 		///	<summary>Returns the number of entities (or projected object) in a query as the callback parameter.</summary>
         ///	<param name="onResult" type="Function">A callback function</param>
         ///	<returns type="$data.Promise" />
@@ -15041,20 +16463,20 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(countExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper);
+            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
 		
         return pHandler.getPromise();
     },
-	count: function (onResult) {
+	count: function (onResult, transaction) {
 		///<summary>Count is a convenience alias for C# developers. Use length instead.</summary>
 		///<returns type="$data.Integer" />
-        return this.length(onResult);
+	    return this.length(onResult, transaction);
     },
 
-    forEach: function (iterator) {
+	forEach: function (iterator, transaction) {
 		///	<summary>Calls the iterator function for all entity (or projected object) in the query.</summary>
         ///	<param name="iterator" type="Function">Iterator function</param>
         ///	<returns type="$data.Promise" />
@@ -15081,7 +16503,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(forEachExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper);
+            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15089,7 +16511,7 @@ $data.Class.define('$data.Queryable', null, null,
         return pHandler.getPromise();
     },
 
-    toArray: function (onResult_items) {
+	toArray: function (onResult_items, transaction) {
 		///	<summary>Returns the query result as the callback parameter.</summary>
         ///	<param name="onResult_items" type="Function">A callback function</param>
         ///	<returns type="$data.Promise" />
@@ -15133,7 +16555,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(toArrayExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper);
+            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15141,7 +16563,7 @@ $data.Class.define('$data.Queryable', null, null,
         return pHandler.getPromise();
     },
 
-    single: function (filterPredicate, thisArg, onResult) {
+	single: function (filterPredicate, thisArg, onResult, transaction) {
 		///	<summary>Filters a set of entities using a boolean expression and returns a single element or throws an error if more than one element is filtered.</summary>
         ///	<param name="onResult_items" type="Function">A callback function</param>
         ///	<returns type="$data.Promise" />
@@ -15189,7 +16611,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(singleExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper);
+            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15197,7 +16619,7 @@ $data.Class.define('$data.Queryable', null, null,
         return pHandler.getPromise();
     },
 
-    some: function (filterPredicate, thisArg, onResult) {
+	some: function (filterPredicate, thisArg, onResult, transaction) {
         ///	<summary>Filters a set of entities using a boolean expression and returns true if the query has any result element.</summary>
         ///	<param name="filterPredicate" type="Function">Filter function</param>
         ///	<param name="thisArg" type="Function">The query parameters for filter function</param>
@@ -15247,7 +16669,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(someExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper);
+            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15255,7 +16677,7 @@ $data.Class.define('$data.Queryable', null, null,
         return pHandler.getPromise();
     },
 
-    every: function (filterPredicate, thisArg, onResult) {
+	every: function (filterPredicate, thisArg, onResult, transaction) {
         ///	<summary>Filters a set of entities using a boolean expression and returns true if all elements of the EntitySet is in the result set.</summary>
         ///	<param name="filterPredicate" type="Function">Filter function</param>
         ///	<param name="thisArg" type="Function">The query parameters for filter function</param>
@@ -15305,7 +16727,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(everyExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper);
+            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15441,7 +16863,7 @@ $data.Class.define('$data.Queryable', null, null,
         return q;
     },
 
-    first: function (filterPredicate, thisArg, onResult) {
+    first: function (filterPredicate, thisArg, onResult, transaction) {
 		///	<summary>Filters a set of entities using a boolean expression and returns the first element.</summary>
         ///	<param name="onResult_items" type="Function">A callback function</param>
         ///	<returns type="$data.Promise" />
@@ -15486,7 +16908,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(firstExpression);
             q.entityContext.log({ event: "EntityExpression", data: expression });
 
-            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper);
+            q.entityContext.executeQuery(Container.createQueryable(q, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15516,7 +16938,15 @@ $data.Class.define('$data.Queryable', null, null,
         var takeExp = Container.createIncludeExpression(this.expression, constExp);
         return Container.createQueryable(this, takeExp);
     },
-    removeAll: function (onResult) {
+
+    withInlineCount: function (selector) {
+        this._checkOperation('withInlineCount');
+        var constExp = Container.createConstantExpression(selector || 'allpages', "string");
+        var inlineCountExp = Container.createInlineCountExpression(this.expression, constExp);
+        return Container.createQueryable(this, inlineCountExp);
+    },
+
+    removeAll: function (onResult, transaction) {
         ///	<summary>Delete the query result and returns the number of deleted entities in a query as the callback parameter.</summary>
         ///	<param name="onResult" type="Function">A callback function</param>
         ///	<returns type="$data.Promise" />
@@ -15550,7 +16980,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(batchDeleteExpression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper);
+            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15559,7 +16989,7 @@ $data.Class.define('$data.Queryable', null, null,
     },
 
 
-    _runQuery: function (onResult_items) {
+    _runQuery: function (onResult_items, transaction) {
         var pHandler = new $data.PromiseHandler();
         var cbWrapper = pHandler.createCallback(onResult_items);
 
@@ -15568,7 +16998,7 @@ $data.Class.define('$data.Queryable', null, null,
             var expression = preparator.Visit(this.expression);
             this.entityContext.log({ event: "EntityExpression", data: expression });
 
-            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper);
+            this.entityContext.executeQuery(Container.createQueryable(this, expression), cbWrapper, transaction);
         } catch (e) {
             cbWrapper.error(e);
         }
@@ -15985,6 +17415,12 @@ $data.Class.defineEx('$data.EntitySet',
 
         return this.entityContext.loadItemProperty(entity, memberDefinition, callback);
     },
+    saveChanges: function () {
+        return this.entityContext.saveChanges.apply(this.entityContext, arguments);
+    },
+    addProperty: function (name, getter, setter) {
+        return this.elementType.addProperty.apply(this.elementType, arguments);
+    },
     expression: {
         get: function () {
             if (!this._expression) {
@@ -16003,6 +17439,9 @@ $data.Class.defineEx('$data.EntitySet',
         set: function (value) {
             this._expression = value;
         }
+    },
+    getFieldUrl: function (keys, field) {
+        return this.entityContext.getFieldUrl(keys, field, this);
     }
 }, null);
 $data.EntityState = {
@@ -16024,7 +17463,670 @@ $data.EntityState = {
     reset: function () {
         this.trackedEntities = [];
     }
-}, null);Exception = function(message, name, data) {
+}, null);$data.Class.define('$data.ItemStoreClass', null, null, {
+    constructor: function () {
+        var self = this;
+        self.itemStoreConfig = {
+            aliases: {},
+            contextTypes: {}
+        }
+
+        self.resetStoreToDefault('local', true);
+        $data.addStore = function () {
+            return self.addItemStoreAlias.apply(self, arguments);
+        };
+        $data.implementation = self.implementation;
+
+        $data.Entity.addMember('storeToken', {
+            get: function () {
+                if (this.storeConfigs && this.storeConfigs['default'])
+                    return this.storeConfigs.stores[this.storeConfigs['default']];
+            },
+            set: function (value) {
+                self._setTypeStoreConfig(this, 'default', value);
+            } 
+        }, true);
+    },
+    itemStoreConfig: {},
+
+    addItemStoreAlias: function (name, contextFactoryOrToken, isDefault) {
+        var self = this;
+        var promise = new $data.PromiseHandler();
+        var callback = promise.createCallback();
+
+        if ('string' === typeof name) {
+            //storeToken
+            if ('object' === typeof contextFactoryOrToken && 'factory' in contextFactoryOrToken) {
+                var type = Container.resolveType(contextFactoryOrToken.typeName);
+
+                self.itemStoreConfig.aliases[name] = contextFactoryOrToken.factory;
+                self.itemStoreConfig.contextTypes[name] = type;
+                if (isDefault) {
+                    self.itemStoreConfig['default'] = name;
+                }
+
+                callback.success();
+                return promise.getPromise();
+            }
+                //contextFactory
+            else if ('function' === typeof contextFactoryOrToken) {
+                var preContext = contextFactoryOrToken();
+                var contextPromise;
+                if (preContext && preContext instanceof $data.EntityContext) {
+                    callback.success(preContext);
+                    contextPromise = promise.getPromise();
+                } else {
+                    contextPromise = preContext;
+                }
+
+                return contextPromise.then(function (ctx) {
+                    if (typeof ctx === 'function') {
+                        //factory resolve factory
+                        return self.addItemStoreAlias(name, ctx, isDefault);
+                    }
+
+                    if (ctx instanceof $data.EntityContext) {
+                        return ctx.onReady()
+                            .then(function (ctx) {
+                                self.itemStoreConfig.aliases[name] = contextFactoryOrToken;
+                                self.itemStoreConfig.contextTypes[name] = ctx.getType();
+                                if (isDefault) {
+                                    self.itemStoreConfig['default'] = name;
+                                }
+
+                                return ctx;
+                            });
+                    } else {
+                        promise = new $data.PromiseHandler();
+                        callback = promise.createCallback();
+                        callback.error(new Exception('factory dont have context instance', 'Invalid arguments'));
+                        return promise.getPromise();
+                    }
+                });
+            }
+        }
+
+        callback.error(new Exception('Name or factory missing', 'Invalid arguments'));
+        return promise.getPromise();
+    },
+    resetStoreToDefault: function (name, isDefault) {
+        this.itemStoreConfig.aliases[name] = this._getDefaultItemStoreFactory;
+        delete this.itemStoreConfig.contextTypes[name];
+        if (isDefault) {
+            this.itemStoreConfig['default'] = name;
+        }
+    },
+    _setStoreAlias: function (entity, storeToken) {
+        if ('object' === typeof storeToken && !entity.storeToken)
+            entity.storeToken = storeToken
+        return entity;
+    },
+    _getStoreAlias: function (entity, storeAlias) {
+        var type;
+        if (entity instanceof $data.Entity) {
+            var alias = storeAlias || entity.storeToken;
+            if (alias) {
+                return alias;
+            } else {
+                type = entity.getType();
+            }
+        } else {
+            type = entity;
+        }
+
+        return storeAlias || (type.storeConfigs ? type.storeConfigs['default'] : undefined) || type.storeToken;
+    },
+    _getStoreContext: function (aliasOrToken, type, nullIfInvalid) {
+        var contextPromise = this._getContextPromise(aliasOrToken, type);
+
+        if (!contextPromise || contextPromise instanceof $data.EntityContext) {
+            var promise = new $data.PromiseHandler();
+            var callback = promise.createCallback();
+            callback.success(contextPromise);
+            contextPromise = promise.getPromise();
+        }
+
+        return contextPromise.then(function (context) {
+            if (context instanceof $data.EntityContext) {
+                return context.onReady();
+            } else if (nullIfInvalid) {
+                return null;
+            } else {
+                var promise = new $data.PromiseHandler();
+                var callback = promise.createCallback();
+                callback.error(new Exception('factory return type error', 'Error'));
+                return promise.getPromise();
+            }
+        });
+    },
+    _getContextPromise: function (aliasOrToken, type) {
+        /*Token*/
+        if (aliasOrToken && 'object' === typeof aliasOrToken && 'function' === typeof aliasOrToken.factory) {
+            return aliasOrToken.factory(type);
+        } else if (aliasOrToken && 'object' === typeof aliasOrToken && 'object' === typeof aliasOrToken.args && 'string' === typeof aliasOrToken.typeName) {
+            var type = Container.resolveType(aliasOrToken.typeName);
+            return new type(JSON.parse(JSON.stringify(aliasOrToken.args)));
+        }
+            /*resolve alias from type (Token)*/
+        else if (aliasOrToken && 'string' === typeof aliasOrToken && type.storeConfigs && type.storeConfigs.stores[aliasOrToken] && typeof type.storeConfigs.stores[aliasOrToken].factory === 'function') {
+            return type.storeConfigs.stores[aliasOrToken].factory();
+        }
+            /*resolve alias from type (constructor options)*/
+        else if (aliasOrToken && 'string' === typeof aliasOrToken && type.storeConfigs && type.storeConfigs.stores[aliasOrToken]) {
+            return this._getDefaultItemStoreFactory(type, type.storeConfigs.stores[aliasOrToken]);
+        }
+            /*resolve alias from ItemStore (factories)*/
+        else if (aliasOrToken && 'string' === typeof aliasOrToken && this.itemStoreConfig.aliases[aliasOrToken]) {
+            return this.itemStoreConfig.aliases[aliasOrToken](type);
+        }
+            /*token is factory*/
+        else if (aliasOrToken && 'function' === typeof aliasOrToken) {
+            return aliasOrToken();
+        }
+            /*default no hint*/
+        else {
+            return this.itemStoreConfig.aliases[this.itemStoreConfig['default']](type);
+        }
+
+    },
+    _getStoreEntitySet: function (storeAlias, instanceOrType) {
+        var aliasOrToken = this._getStoreAlias(instanceOrType, storeAlias);
+        var type = ("function" === typeof instanceOrType) ? instanceOrType : instanceOrType.getType();;
+
+        return this._getStoreContext(aliasOrToken, type)
+            .then(function (ctx) {
+                var entitySet = ctx.getEntitySetFromElementType(type);
+                if (!entitySet) {
+                    var d = new $data.PromiseHandler();
+                    var callback = d.createCallback();
+                    callback.error("EntitySet not exist for " + type.fullName);
+                    return d.getPromise();
+                }
+                return entitySet;
+            });
+    },
+    _getDefaultItemStoreFactory: function (instanceOrType, storeConfig) {
+        if (instanceOrType) {
+            var type = ("function" === typeof instanceOrType) ? instanceOrType : instanceOrType.getType();
+            var typeName = $data.Container.resolveName(type) + "_items";
+            var typeName = typeName.replace(/\./g, "_");
+
+            var storeConfig = $data.typeSystem.extend({
+                collectionName: 'Items',
+                tableName: typeName,
+                initParam: { provider: 'local', databaseName: typeName }
+            }, storeConfig);
+
+            if (storeConfig.tableName && !storeConfig.collectionName)
+                storeConfig.collectionName = storeConfig.tableName;
+
+            var contextDef = {};
+            contextDef[storeConfig.collectionName] = { type: $data.EntitySet, elementType: type }
+            if (storeConfig.tableName)
+                contextDef[storeConfig.collectionName]['tableName'] = storeConfig.tableName;
+
+            var inMemoryType = $data.EntityContext.extend(typeName, contextDef);
+            return new inMemoryType(storeConfig.initParam);
+        }
+        return undefined;
+    },
+    implementation: function (name, contextOrAlias) {
+        var self = $data.ItemStore;
+        var result;
+
+        if (typeof contextOrAlias === 'string') {
+            contextOrAlias = self.itemStoreConfig.contextTypes[contextOrAlias]
+        } else if (contextOrAlias instanceof $data.EntityContext) {
+            contextOrAlias = contextOrAlias.getType();
+        } else if (!(typeof contextOrAlias === 'function' && contextOrAlias.isAssignableTo)) {
+            contextOrAlias = self.itemStoreConfig.contextTypes[self.itemStoreConfig['default']];
+        }
+
+        if (contextOrAlias) {
+            result = self._resolveFromContext(contextOrAlias, name);
+        }
+
+        if (!result) {
+            result = Container.resolveType(name);
+        }
+
+        return result;
+    },
+    _resolveFromContext: function (contextType, name) {
+        var memDefs = contextType.memberDefinitions.getPublicMappedProperties();
+        for (var i = 0; i < memDefs.length; i++) {
+            var memDef = memDefs[i];
+            if (memDef.type) {
+                var memDefType = Container.resolveType(memDef.type);
+                if (memDefType.isAssignableTo && memDefType.isAssignableTo($data.EntitySet)) {
+                    var elementType = Container.resolveType(memDef.elementType);
+                    if (elementType.name === name) {
+                        return elementType;
+                    }
+                }
+            }
+        }
+        return null;
+    },
+
+
+    //Entity Instance
+    EntityInstanceSave: function (storeAlias, hint) {
+        var self = $data.ItemStore;
+        var entity = this;
+        return self._getStoreEntitySet(storeAlias, entity)
+            .then(function (entitySet) {
+                return self._getSaveMode(entity, entitySet, hint, storeAlias)
+                    .then(function (mode) {
+                        mode = mode || 'add';
+                        switch (mode) {
+                            case 'add':
+                                entitySet.add(entity);
+                                break;
+                            case 'attach':
+                                entitySet.attach(entity, true);
+                                entity.entityState = $data.EntityState.Modified;
+                                break;
+                            default:
+                                var d = new $data.PromiseHandler();
+                                var callback = d.createCallback();
+                                callback.error('save mode not supported: ' + mode);
+                                return d.getPromise();
+                        }
+
+                        return entitySet.entityContext.saveChanges()
+                            .then(function () { self._setStoreAlias(entity, entitySet.entityContext.storeToken); return entity; });
+                    });
+            });
+    },
+    EntityInstanceRemove: function (storeAlias) {
+        var self = $data.ItemStore;
+        var entity = this;
+        return self._getStoreEntitySet(storeAlias, entity)
+            .then(function (entitySet) {
+                entitySet.remove(entity);
+
+                return entitySet.entityContext.saveChanges()
+                    .then(function () { return entity; });
+            });
+    },
+    EntityInstanceRefresh: function (storeAlias, keepStore) {
+        var self = $data.ItemStore;
+        var entity = this;
+        var entityType = entity.getType();
+
+        var key = self._getKeyObjectFromEntity(entity, entityType);
+
+        return entityType.read(key, storeAlias)
+            .then(function (loadedEntity) {
+                entityType.memberDefinitions.getPublicMappedProperties().forEach(function (memDef) {
+                    entity[memDef.name] = loadedEntity[memDef.name];
+                });
+                entity.storeToken = (keepStore ? entity.storeToken : undefined) || loadedEntity.storeToken;
+                entity.changedProperties = undefined;
+                return entity;
+            });
+    },
+
+    //Entity Type
+    EntityInheritedTypeProcessor: function (type) {
+        var self = $data.ItemStore;
+        type.readAll = self.EntityTypeReadAll(type);
+        type.read = self.EntityTypeRead(type);
+        type.removeAll = self.EntityTypeRemoveAll(type);
+        type.remove = self.EntityTypeRemove(type);
+        type.get = self.EntityTypeGet(type); //Not complete
+        type.save = self.EntityTypeSave(type);
+        type.addMany = self.EntityTypeAddMany(type);
+        type.itemCount = self.EntityTypeItemCount(type);
+        type.query = self.EntityTypeQuery(type);
+        type.takeFirst = self.EntityTypeTakeFirst(type);
+
+        type.setStore = self.EntityTypeSetStore(type);
+    },
+    EntityTypeReadAll: function (type) {
+        return function (storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    return entitySet.forEach(function (item) { self._setStoreAlias(item, entitySet.entityContext.storeToken); });
+                });
+        }
+    },
+    EntityTypeRemoveAll: function (type) {
+        return function (storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    return entitySet.toArray().then(function (items) {
+                        items.forEach(function (item) {
+                            entitySet.remove(item);
+                        });
+
+                        return entitySet.entityContext.saveChanges()
+                            .then(function () { return items; });
+                    });
+                });
+        }
+    },
+    EntityTypeRead: function (type) {
+        return function (key, storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    try {
+                        var singleParam = self._findByIdQueryable(entitySet, key);
+                        return entitySet.single(singleParam.predicate, singleParam.thisArgs)
+                            .then(function (item) { return self._setStoreAlias(item, entitySet.entityContext.storeToken); });
+                    } catch (e) {
+                        var d = new $data.PromiseHandler();
+                        var callback = d.createCallback();
+                        callback.error(e);
+                        return d.getPromise();
+                    }
+                });
+        };
+    },
+    EntityTypeGet: function (type) {
+        return function (key, storeAlias) {
+            var self = $data.ItemStore;
+            var item = new type(self._getKeyObjectFromEntity(key));
+            item.refresh(storeAlias);
+            return item;
+        };
+    },
+    EntityTypeSave: function (type) {
+        return function (initData, storeAlias, hint) {
+
+            var self = $data.ItemStore;
+            var instance = new type(initData);
+            return instance.save(storeAlias, hint);
+        }
+    },
+    EntityTypeAddMany: function (type) {
+        return function (initDatas, storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    var items = entitySet.addMany(initDatas);
+                    return entitySet.entityContext.saveChanges()
+                        .then(function () {
+                            return items;
+                        });
+                });
+        }
+    },
+    EntityTypeRemove: function (type) {
+        return function (key, storeAlias) {
+            var self = $data.ItemStore;
+            var entityPk = type.memberDefinitions.getKeyProperties();
+            var entity;
+            if (entityPk.length === 1) {
+                var obj = {};
+                obj[entityPk[0].name] = key;
+                entity = new type(obj);
+            } else {
+                entity = new type(key);
+            }
+            return entity.remove(storeAlias);
+        }
+    },
+    EntityTypeItemCount: function (type) {
+        return function (storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    return entitySet.length();
+                });
+        }
+    },
+    EntityTypeQuery: function (type) {
+        return function (predicate, thisArg, storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    return entitySet.filter(predicate, thisArg).forEach(function (item) { self._setStoreAlias(item, entitySet.entityContext.storeToken); });
+                });
+        }
+    },
+    EntityTypeTakeFirst: function (type) {
+        return function (predicate, thisArg, storeAlias) {
+            var self = $data.ItemStore;
+            return self._getStoreEntitySet(storeAlias, type)
+                .then(function (entitySet) {
+                    return entitySet.first(predicate, thisArg)
+                        .then(function (item) { return self._setStoreAlias(item, entitySet.entityContext.storeToken); });
+                });
+        }
+    },
+
+    EntityTypeSetStore: function (type) {
+        return function (name, config) {
+            if (typeof name === 'object' && typeof config === 'undefined') {
+                config = name;
+                name = 'default';
+            }
+
+            var self = $data.ItemStore;
+
+            var defStoreConfig = {};
+            if (config) {
+                if (config.tableName) {
+                    defStoreConfig.tableName = config.tableName;
+                    delete config.tableName;
+                }
+
+                if (config.collectionName) {
+                    defStoreConfig.collectionName = config.collectionName;
+                    delete config.collectionName;
+                }
+
+                if (typeof config.dataSource === 'string') {
+                    var ds = config.dataSource;
+                    if (ds.lastIndexOf('/') === ds.length - 1) {
+                        ds = ds.substring(0, ds.lastIndexOf('/'));
+                    }
+                    var parsedApiUrl = ds.substring(0, ds.lastIndexOf('/'));
+                    if (!defStoreConfig.tableName)
+                        defStoreConfig.tableName = ds.substring(ds.lastIndexOf('/') + 1);
+
+                    var provider = config.provider || config.name;
+                    switch (provider) {
+                        case 'oData':
+                            config.oDataServiceHost = config.oDataServiceHost || parsedApiUrl;
+                            break;
+                        case 'webApi':
+                            config.apiUrl = config.apiUrl || parsedApiUrl;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+
+            } else {
+                config = { name: 'local' };
+            }
+
+            defStoreConfig.initParam = config;
+            self._setTypeStoreConfig(type, name, defStoreConfig);
+
+            return type;
+        }
+    },
+    _setTypeStoreConfig: function(type, name, config){
+        if (!type.storeConfigs) {
+            type.storeConfigs = {
+                stores: {}
+            };
+        }
+        type.storeConfigs.stores[name] = config;
+        if (name === 'default') {
+            type.storeConfigs['default'] = name;
+        }
+    },
+
+    _findByIdQueryable: function (set, keys) {
+        var keysProps = set.defaultType.memberDefinitions.getKeyProperties();
+        if (keysProps.length > 1 && keys && 'object' === typeof keys) {
+            var predicate = "", thisArgs = {};
+            for (var i = 0; i < keysProps.length; i++) {
+                if (i > 0) predicate += " && ";
+
+                var key = keysProps[i];
+                predicate += "it." + key.name + " == this." + key.name;
+                thisArgs[key.name] = keys[key.name];
+            }
+
+            return {
+                predicate: predicate,
+                thisArgs: thisArgs
+            };
+        } else if (keysProps.length === 1) {
+            return {
+                predicate: "it." + keysProps[0].name + " == this.value",
+                thisArgs: { value: keys }
+            };
+        } else {
+            throw 'invalid keys';
+        }
+    },
+    _getKeyObjectFromEntity: function (obj, entityType) {
+        var key;
+        var keyDefs = entityType.memberDefinitions.getKeyProperties();
+        if (keyDefs.length === 1)
+            key = obj && typeof obj === 'object' ? obj[keyDefs[0].name] : obj;
+        else {
+            key = {};
+
+            for (var i = 0; i < keyDefs.length; i++) {
+                key[keyDefs[0].name] = obj ? obj[keyDefs[0].name] : obj;
+            }
+        }
+
+        return key;
+    },
+    _getSaveMode: function (entity, entitySet, hint, storeAlias) {
+        var self = this;
+        var promise = new $data.PromiseHandler();
+        var callback = promise.createCallback();
+        var entityType = entity.getType();
+
+        switch (true) {
+            case hint === 'update':
+                callback.success('attach'); break;
+            case hint === 'new':
+                callback.success('add'); break;
+            case false === entityType.memberDefinitions.getKeyProperties().every(function (keyDef) { return entity[keyDef.name]; }):
+                callback.success('add'); break;
+            case !!entity.storeToken:
+                callback.success('attach'); break;
+                break;
+            default:
+                //use the current entity store informations
+                storeAlias = this._getStoreAlias(entity, storeAlias);
+                entityType.read(self._getKeyObjectFromEntity(entity, entityType), storeAlias)
+                    .then(function () { callback.success('attach'); })
+                    .fail(function () { callback.success('add'); });
+                break;
+        }
+
+        return promise.getPromise();
+    },
+
+    //EntityContext
+    ContextRegister: function (storageProviderCfg) {
+        //context instance
+        var self = this;
+        var args = JSON.parse(JSON.stringify(storageProviderCfg));
+        this.storeToken = {
+            typeName: this.getType().fullName,
+            args: args,
+            factory: function () {
+                return new (self.getType())(args);
+            }
+        }
+
+        //set elementType storetoken
+        var members = this.getType().memberDefinitions.getPublicMappedProperties();
+        for (var i = 0; i < members.length; i++) {
+            var item = members[i];
+            if (item.type) {
+                var itemResolvedDataType = Container.resolveType(item.type);
+                if (itemResolvedDataType && itemResolvedDataType.isAssignableTo && itemResolvedDataType.isAssignableTo($data.EntitySet)) {
+                    var elementType = Container.resolveType(item.elementType);
+                    if (!elementType.storeToken) {
+                        elementType.storeToken = elementType.storeToken || this.storeToken;
+                    }
+                }
+            }
+        }
+
+    },
+    QueryResultModifier: function (query) {
+        var self = $data.ItemStore;
+        var context = query.context;
+        var type = query.modelBinderConfig.$type;
+        if ('string' === typeof type) {
+            type = Container.resolveType(type);
+        }
+
+        if (type === $data.Array && query.modelBinderConfig.$item && query.modelBinderConfig.$item.$type) {
+            type = query.modelBinderConfig.$item.$type;
+        }
+
+        if ((type && type.isAssignableTo && type.isAssignableTo($data.Entity)) || (typeof type === 'undefined' && query.result && query.result[0] instanceof $data.Entity)) {
+            for (var i = 0; i < query.result.length; i++) {
+                self._setStoreAlias(query.result[i], context.storeToken)
+            }
+        }
+    }
+});
+$data.ItemStore = new $data.ItemStoreClass();
+
+$data.Entity.addMember('field', function (propName) {
+    var def = this.memberDefinitions.getMember(propName);
+    if (def) {
+        if (def.definedBy === this) {
+            return new $data.MemberWrapper(def);
+        } else {
+            Guard.raise(new Exception("Member '" + propName + "' defined on '" + def.definedBy.fullName + "'!", 'Invalid Operation'));
+        }
+    } else {
+        Guard.raise(new Exception("Member '" + propName + "' not exists!", 'Invalid Operation'));
+    }
+
+    return this;
+}, true);
+
+
+$data.Class.define('$data.MemberWrapper', null, null, {
+    constructor: function (memberDefinition) {
+        this.memberDefinition = memberDefinition;
+    },
+    setKey: function (value) {
+        this.memberDefinition.key = value || true;
+        return this;
+    },
+    setComputed: function (value) {
+        this.memberDefinition.computed = value || true;
+        return this;
+    },
+    setRequired: function (value) {
+        this.memberDefinition.required = value || true;
+        return this;
+    },
+    setNullable: function (value) {
+        this.memberDefinition.nullable = value || true;
+        return this;
+    },
+    changeDefinition: function (attr, value) {
+        this.memberDefinition[attr] = value;
+        return this;
+    }
+});
+
+Exception = function(message, name, data) {
     Error.call(this);
 	if (Error.captureStackTrace)
 	    Error.captureStackTrace(this, this.constructor);
@@ -16098,23 +18200,33 @@ Exception.prototype._getStackTrace = function () {
 };
 $data.Class.define('$data.StorageProviderLoaderBase', null, null, {
     isSupported: function (providerName) {
+        $data.Trace.log('Detecting ' + providerName + ' provider support');
+        var supported = true;
         switch (providerName) {
             case 'indexedDb':
-                return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || (window.msIndexedDB && !(/^file:/.test(window.location.href)));
+                supported = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || (window.msIndexedDB && !(/^file:/.test(window.location.href)));
+                break;
             case 'storm':
-                return 'XMLHttpRequest' in window;
+                supported = 'XMLHttpRequest' in window;
+                break;
             case 'webSql':
             case 'sqLite':
-                return 'openDatabase' in window;
+                supported = 'openDatabase' in window;
+                break;
             case 'LocalStore':
-                return 'localStorage' in window && window.localStorage ? true : false;
+                supported = 'localStorage' in window && window.localStorage ? true : false;
+                break;
             case 'sqLite':
-                return 'openDatabase' in window;
+                supported = 'openDatabase' in window;
+                break;
             case 'mongoDB':
-                return $data.mongoDBDriver;
+                supported = $data.mongoDBDriver;
+                break;
             default:
-                return true;
+                break;
         }
+        $data.Trace.log(providerName + ' provider is ' + (supported ? '' : 'not') + ' supported');
+        return supported;
     },
     scriptLoadTimeout: { type: 'int', value: 1000 },
     scriptLoadInterval: { type: 'int', value: 50 },
@@ -16125,6 +18237,7 @@ $data.Class.define('$data.StorageProviderLoaderBase', null, null, {
             'LocalStore': 'jaydata-inmemory',
             'mongoDB': 'jaydata-mongodb',
             'oData': 'jaydata-odata',
+            'webApi': 'jaydata-webapi',
             'sqLite': 'jaydata-sqlite',
             'webSql': 'jaydata-sqlite',
             'storm': 'jaydata-storm'
@@ -16136,55 +18249,73 @@ $data.Class.define('$data.StorageProviderLoaderBase', null, null, {
             'InMemory': 'InMemory',
             'LocalStore': 'InMemory',
             'oData': 'oData',
+            'webApi': 'WebApi',
             'sqLite': 'SqLite',
             'webSql': 'SqLite',
             'storm': 'Storm'
         }
     },
     load: function (providerList, callback) {
+        $data.Trace.log('Loading provider(s): ' + providerList);
         callback = $data.typeSystem.createCallbackSetting(callback);
         var currentProvider = providerList.shift();
 
         while (currentProvider && !this.isSupported(currentProvider)) {
             currentProvider = providerList.shift();
         }
+        
+        $data.Trace.log('First supported provider is ' + currentProvider);
 
-        if (!currentProvider)
+        if (!currentProvider){
+            $data.Trace.log('Provider fallback failed');
             callback.error();
+        }
 
         if ($data.RegisteredStorageProviders) {
+            $data.Trace.log('Is the ' + currentProvider + ' provider already registered?');
             var provider = $data.RegisteredStorageProviders[currentProvider];
             if (provider) {
+                $data.Trace.log(currentProvider + ' provider registered');
                 callback.success(provider)
                 return;
+            }else{
+                $data.Trace.log(currentProvider + ' provider not registered');
             }
         }
 
         if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
             // NodeJS
+            $data.Trace.log('node.js detected trying to load NPM module');
             this.loadNpmModule(currentProvider, providerList, callback);
         } else {
+            $data.Trace.log('Browser detected trying to load provider');
             this.loadProvider(currentProvider, providerList, callback);
         }
     },
     loadProvider: function (currentProvider, providerList, callback) {
         var self = this;
         var mappedName = $data.StorageProviderLoader.ProviderNames[currentProvider] || currentProvider;
+        $data.Trace.log(currentProvider + ' provider is mapped to name ' + mappedName + 'Provider');
         if (mappedName) {
             var url = this.getUrl(mappedName);
+            $data.Trace.log(currentProvider + ' provider from URL: ' + url);
 
             var loader = this.loadScript;
             if (document && document.createElement) {
+                $data.Trace.log('document and document.createElement detected, using script element loader method');
                 loader = this.loadScriptElement;
             }
 
             loader.call(this, url, currentProvider, function (successful) {
                 var provider = $data.RegisteredStorageProviders[currentProvider];
                 if (successful && provider) {
+                    $data.Trace.log(currentProvider + ' provider successfully registered');
                     callback.success(provider);
                 } else if (providerList.length > 0) {
+                    $data.Trace.log(currentProvider + ' provider failed to load, trying to fallback to ' + providerList + ' provider(s)');
                     self.load(providerList, callback);
                 } else {
+                    $data.Trace.log(currentProvider + ' provider failed to load');
                     callback.error();
                 }
             });
@@ -16198,30 +18329,42 @@ $data.Class.define('$data.StorageProviderLoaderBase', null, null, {
         else return 'jaydataproviders/' + providerName + 'Provider.js';
     },
     loadScript: function (url, currentProvider, callback) {
-        if (!url)
+        if (!url){
             callback(false);
+            return;
+        }
 
         function getHttpRequest() {
             if (window.XMLHttpRequest)
                 return new XMLHttpRequest();
             else if (window.ActiveXObject)
                 return new ActiveXObject("MsXml2.XmlHttp");
+            else{
+                $data.Trace.log('XMLHttpRequest or MsXml2.XmlHttp ActiveXObject not found');
+                callback(false);
+                return;
+            }
         }
 
         var oXmlHttp = getHttpRequest();
         oXmlHttp.onreadystatechange = function () {
+            $data.Trace.log('HTTP request is in state: ' + oXmlHttp.readyState);
             if (oXmlHttp.readyState == 4) {
                 if (oXmlHttp.status == 200 || oXmlHttp.status == 304) {
+                    $data.Trace.log('HTTP request succeeded');
+                    $data.Trace.log('HTTP request response text: ' + oXmlHttp.responseText);
                     eval.call(window, oXmlHttp.responseText);
                     if (typeof callback === 'function')
                         callback(true);
+                    else $data.Trace.log('Callback function is undefined');
                 } else {
-                    if (typeof callback === 'function') {
+                    $data.Trace.log('HTTP request status: ', oXmlHttp.status);
+                    if (typeof callback === 'function')
                         callback(false);
-                    }
+                    else $data.Trace.log('Callback function is undefined');
                 }
             }
-        }
+        };
         oXmlHttp.open('GET', url, true);
         oXmlHttp.send(null);
     },
@@ -16231,19 +18374,25 @@ $data.Class.define('$data.StorageProviderLoaderBase', null, null, {
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = url;
+        $data.Trace.log('Appending child ' + script + ' to ' + head);
         head.appendChild(script);
 
         var loadInterval = this.scriptLoadInterval || 50;
-        var iteration = this.scriptLoadTimeout / loadInterval;
+        var iteration = Math.ceil(this.scriptLoadTimeout / loadInterval);
+        $data.Trace.log('Script element watcher iterating ' + iteration + ' times');
         function watcher() {
+            $data.Trace.log('Script element watcher iteration ' + iteration);
             var provider = $data.RegisteredStorageProviders[currentProvider];
             if (provider) {
+                $data.Trace.log(currentProvider + ' provider registered');
                 callback(true);
             } else {
                 iteration--;
                 if (iteration > 0) {
+                    $data.Trace.log('Script element watcher next iteration');
                     setTimeout(watcher, loadInterval);
                 } else {
+                    $data.Trace.log('Script element loader failed');
                     callback(false);
                 }
             }
@@ -16256,7 +18405,10 @@ $data.Class.define('$data.StorageProviderLoaderBase', null, null, {
         try {
             require(this.npmModules[currentProvider]);
             provider = $data.RegisteredStorageProviders[currentProvider];
-        } catch (e) { }
+            $data.Trace.log('NPM module loader successfully registered ' + currentProvider + ' provider');
+        } catch (e) {
+            $data.Trace.log('NPM module loader failed for ' + currentProvider + ' provider');
+        }
 
         if (provider) {
             callback.success(provider);
@@ -16273,14 +18425,17 @@ $data.storageProviders = {
     DbCreationType: {
         Merge: 10,
         DropTableIfChanged: 20,
-        DropAllExistingTables: 30
+        DropTableIfChange: 20,
+        DropAllExistingTables: 30,
+        ErrorIfChange: 40,
+        DropDbIfChange: 50
     }
 }
 
 $data.ConcurrencyMode = { Fixed: 'fixed', None: 'none' };
 $data.Class.define('$data.StorageProviderBase', null, null,
 {
-    constructor: function (schemaConfiguration) {
+    constructor: function (schemaConfiguration, context) {
         this.providerConfiguration = schemaConfiguration || {};
     },
     providers: {},
@@ -16408,6 +18563,139 @@ $data.Class.define('$data.StorageProviderBase', null, null,
         this.context = ctx;
     },
 
+    _buildContinuationFunction: function (context, query) {
+        if (Array.isArray(query.result)) {
+            query.result.next = this._buildPagingMethod(context, query, 'next');
+            query.result.prev = this._buildPagingMethod(context, query, 'prev');
+        }
+    },
+    _buildPagingMethod: function (context, query, mode) {
+        return function (onResult_items) {
+            var pHandler = new $data.PromiseHandler();
+            var cbWrapper = pHandler.createCallback(onResult_items);
+
+            var continuation = new $data.Expressions.ContinuationExpressionBuilder(mode);
+            var continuationResult = continuation.compile(query);
+            if (continuationResult.expression) {
+                var queryable = Container.createQueryable(context, continuationResult.expression);
+                queryable.defaultType = query.defaultType;
+                context.executeQuery(queryable, cbWrapper);
+            } else {
+                cbWrapper.error(new Exception(continuationResult.message, 'Invalid Operation', continuationResult));
+            }
+
+            return pHandler.getPromise();
+        }
+    },
+
+    buildDbType_modifyInstanceDefinition: function (instanceDefinition, storageModel) {
+        var buildDbType_copyPropertyDefinition = function (propertyDefinition, refProp) {
+            var cPropertyDef;
+            if (refProp) {
+                cPropertyDef = JSON.parse(JSON.stringify(instanceDefinition[refProp]));
+                cPropertyDef.kind = propertyDefinition.kind;
+                cPropertyDef.name = propertyDefinition.name;
+                cPropertyDef.notMapped = false;
+            } else {
+                cPropertyDef = JSON.parse(JSON.stringify(propertyDefinition));
+            }
+
+            cPropertyDef.dataType = Container.resolveType(propertyDefinition.dataType);
+            cPropertyDef.type = cPropertyDef.dataType;
+            cPropertyDef.key = false;
+            cPropertyDef.computed = false;
+            return cPropertyDef;
+        };
+        var buildDbType_createConstrain = function (foreignType, dataType, propertyName, prefix) {
+            var constrain = new Object();
+            constrain[foreignType.name] = propertyName;
+            constrain[dataType.name] = prefix + '__' + propertyName;
+            return constrain;
+        };
+
+        if (storageModel.Associations) {
+            storageModel.Associations.forEach(function (association) {
+                var addToEntityDef = false;
+                var foreignType = association.FromType;
+                var dataType = association.ToType;
+                var foreignPropName = association.ToPropertyName;
+
+                association.ReferentialConstraint = association.ReferentialConstraint || [];
+
+                if ((association.FromMultiplicity == "*" && association.ToMultiplicity == "0..1") || (association.FromMultiplicity == "0..1" && association.ToMultiplicity == "1")) {
+                    foreignType = association.ToType;
+                    dataType = association.FromType;
+                    foreignPropName = association.FromPropertyName;
+                    addToEntityDef = true;
+                }
+
+                foreignType.memberDefinitions.getPublicMappedProperties().filter(function (d) { return d.key }).forEach(function (d) {
+                    if (addToEntityDef) {
+                        instanceDefinition[foreignPropName + '__' + d.name] = buildDbType_copyPropertyDefinition(d, foreignPropName);
+                    }
+                    association.ReferentialConstraint.push(buildDbType_createConstrain(foreignType, dataType, d.name, foreignPropName));
+                }, this);
+            }, this);
+        }
+        //Copy complex type properties
+        if (storageModel.ComplexTypes) {
+            storageModel.ComplexTypes.forEach(function (complexType) {
+                complexType.ReferentialConstraint = complexType.ReferentialConstraint || [];
+
+                complexType.ToType.memberDefinitions.getPublicMappedProperties().forEach(function (d) {
+                    instanceDefinition[complexType.FromPropertyName + '__' + d.name] = buildDbType_copyPropertyDefinition(d);
+                    complexType.ReferentialConstraint.push(buildDbType_createConstrain(complexType.ToType, complexType.FromType, d.name, complexType.FromPropertyName));
+                }, this);
+            }, this);
+        }
+    },
+    buildDbType_generateConvertToFunction: function (storageModel) {
+        return function (logicalEntity) {
+            var dbInstance = new storageModel.PhysicalType();
+            dbInstance.entityState = logicalEntity.entityState;
+
+            //logicalEntity.changedProperties.forEach(function(memberDef){
+            //}, this);
+            storageModel.PhysicalType.memberDefinitions.getPublicMappedProperties().forEach(function (property) {
+                if (logicalEntity[property.name] !== undefined) {
+                    dbInstance[property.name] = logicalEntity[property.name];
+                }
+            }, this);
+
+            if (storageModel.Associations) {
+                storageModel.Associations.forEach(function (association) {
+                    if ((association.FromMultiplicity == "*" && association.ToMultiplicity == "0..1") || (association.FromMultiplicity == "0..1" && association.ToMultiplicity == "1")) {
+                        var complexInstance = logicalEntity[association.FromPropertyName];
+                        if (complexInstance !== undefined) {
+                            association.ReferentialConstraint.forEach(function (constrain) {
+                                if (complexInstance !== null) {
+                                    dbInstance[constrain[association.From]] = complexInstance[constrain[association.To]];
+                                } else {
+                                    dbInstance[constrain[association.From]] = null;
+                                }
+                            }, this);
+                        }
+                    }
+                }, this);
+            }
+            if (storageModel.ComplexTypes) {
+                storageModel.ComplexTypes.forEach(function (cmpType) {
+                    var complexInstance = logicalEntity[cmpType.FromPropertyName];
+                    if (complexInstance !== undefined) {
+                        cmpType.ReferentialConstraint.forEach(function (constrain) {
+                            if (complexInstance !== null) {
+                                dbInstance[constrain[cmpType.From]] = complexInstance[constrain[cmpType.To]];
+                            } else {
+                                dbInstance[constrain[cmpType.From]] = null;
+                            }
+                        }, this);
+                    }
+                }, this);
+            }
+            return dbInstance;
+        };
+    },
+
     supportedFieldOperations: {
         value: {
             length: { dataType: "number", allowedIn: "filter, map" },
@@ -16421,14 +18709,34 @@ $data.Class.define('$data.StorageProviderBase', null, null,
     resolveFieldOperation: function (operationName, expression, frameType) {
         ///<summary></summary>
         var result = this.supportedFieldOperations[operationName];
+        if (Array.isArray(result)) {
+            var i = 0;
+            for (; i < result.length; i++) {
+                if (result[i].allowedType === 'default' || Container.resolveType(result[i].allowedType) === Container.resolveType(expression.selector.memberDefinition.type) &&
+                    (frameType && result[i].allowedIn &&
+                        (
+                            (Array.isArray(result[i].allowedIn) && result[i].allowedIn.some(function(type){ return frameType === Container.resolveType(type); })) ||
+                            (!Array.isArray(result[i].allowedIn) && (frameType === Container.resolveType(result[i].allowedIn)))
+                        )
+                    )
+                    ) {
+                    result = result[i];
+                    break;
+                }
+            }
+            if (i === result.length) {
+                result = undefined;
+            }
+        }
+
         if (!result) {
             Guard.raise(new Exception("Field operation '" + operationName + "' is not supported by the provider"));
         };
         if (frameType && result.allowedIn) {
             if ((result.allowedIn instanceof Array && !result.allowedIn.some(function (type) { return frameType === Container.resolveType(type); })) ||
                         (!(result.allowedIn instanceof Array) && frameType !== Container.resolveType(result.allowedIn))) {
-                            Guard.raise(new Exception(operationName + " not supported in: " + frameType.name));
-                        }
+                Guard.raise(new Exception(operationName + " not supported in: " + frameType.name));
+            }
         }
         result.name = operationName;
         return result;
@@ -16450,8 +18758,8 @@ $data.Class.define('$data.StorageProviderBase', null, null,
         if (frameType && result.allowedIn) {
             if ((result.allowedIn instanceof Array && !result.allowedIn.some(function (type) { return frameType === Container.resolveType(type); })) ||
                         (!(result.allowedIn instanceof Array) && frameType !== Container.resolveType(result.allowedIn))) {
-                            Guard.raise(new Exception(operator + " not supported in: " + frameType.name));
-                        }
+                Guard.raise(new Exception(operator + " not supported in: " + frameType.name));
+            }
         }
         result.name = operator;
         return result;
@@ -16472,8 +18780,8 @@ $data.Class.define('$data.StorageProviderBase', null, null,
         if (frameType && result.allowedIn) {
             if ((result.allowedIn instanceof Array && !result.allowedIn.some(function (type) { return frameType === Container.resolveType(type); })) ||
                         (!(result.allowedIn instanceof Array) && frameType !== Container.resolveType(result.allowedIn))) {
-                            Guard.raise(new Exception(operator + " not supported in: " + frameType.name));
-                        }
+                Guard.raise(new Exception(operator + " not supported in: " + frameType.name));
+            }
         }
         result.name = operator;
         return result;
@@ -16501,8 +18809,23 @@ $data.Class.define('$data.StorageProviderBase', null, null,
         return result;
     },
 
+    resolveTypeOperations: function (operation, expression, frameType) {
+        Guard.raise(new Exception("Entity '" + expression.entityType.name + "' Operation '" + operation + "' is not supported by the provider"));
+    },
+
+    resolveContextOperations: function (operation, expression, frameType) {
+        Guard.raise(new Exception("Context '" + expression.instance.getType().name + "' Operation '" + operation + "' is not supported by the provider"));
+    },
 
     makePhysicalTypeDefinition: function (entityDefinition, association) {
+    },
+
+    _beginTran: function (tables, isWrite, callBack) {
+        callBack.success(new $data.Transaction());
+    },
+
+    getFieldUrl: function () {
+        return '#';
     }
 },
 {
@@ -16513,10 +18836,10 @@ $data.Class.define('$data.StorageProviderBase', null, null,
         $data.RegisteredStorageProviders[name] = provider;
     },
     getProvider: function (name) {
-		var provider = $data.RegisteredStorageProviders[name];
-		if (!provider)
+        var provider = $data.RegisteredStorageProviders[name];
+        if (!provider)
             console.warn("Provider not found: '" + name + "'");
-		return provider;
+        return provider;
         /*var provider = $data.RegisteredStorageProviders[name];
         if (!provider)
             Guard.raise(new Exception("Provider not found: '" + name + "'", "Not Found"));
@@ -16557,7 +18880,175 @@ $data.Class.define('$data.StorageProviderBase', null, null,
     }
 })();
 
-$data.Base.extend('$data.EntityWrapper', {
+$data.Class.define('$data.ServiceOperation', null, null, {}, {
+    translateDefinition: function (propertyDef, name, definedBy) {
+        propertyDef.serviceName = name;
+        var memDef = new $data.MemberDefinition(this.generateServiceOperation(propertyDef), this);
+        memDef.name = name;
+        return memDef;
+    },
+    generateServiceOperation: function (cfg) {
+
+        var fn;
+        if (cfg.serviceMethod) {
+            var returnType = cfg.returnType ? Container.resolveType(cfg.returnType) : {};
+            if (returnType.isAssignableTo && returnType.isAssignableTo($data.Queryable)) {
+                fn = cfg.serviceMethod;
+            } else {
+                fn = function () {
+                    var lastParam = arguments[arguments.length - 1];
+
+                    var pHandler = new $data.PromiseHandler();
+                    var cbWrapper;
+
+                    var args = arguments;
+                    if (typeof lastParam === 'function') {
+                        cbWrapper = pHandler.createCallback(lastParam);
+                        arguments[arguments.length - 1] = cbWrapper;
+                    } else {
+                        cbWrapper = pHandler.createCallback();
+                        arguments.push(cbWrapper);
+                    }
+
+                    try {
+                        var result = cfg.serviceMethod.apply(this, arguments);
+                        if (result !== undefined)
+                            cbWrapper.success(result);
+                    } catch (e) {
+                        cbWrapper.error(e);
+                    }
+
+                    return pHandler.getPromise();
+                }
+            }
+
+        } else {
+            fn = function () {
+                var context = this;
+                var memberdef;
+
+                var boundItem;
+                if (this instanceof $data.Entity || this instanceof $data.EntitySet) {
+                    var entitySet;
+                    if (this instanceof $data.Entity) {
+                        if (this.context) {
+                            context = this.context;
+                            entitySet = context.getEntitySetFromElementType(this.getType());
+                        } else if (this.storeToken && typeof this.storeToken.factory === 'function') {
+                            context = this.storeToken.factory();
+                            entitySet = context.getEntitySetFromElementType(this.getType());
+                        } else {
+                            Guard.raise(new Exception("entity can't resolve context", 'Not Found!', entity));
+                            return;
+                        }
+                    } else if (this instanceof $data.EntitySet) {
+                        context = this.entityContext;
+                        entitySet = this;
+
+                        var esDef = context.getType().getMemberDefinition(entitySet.name);
+                        memberdef = $data.MemberDefinition.translateDefinition(esDef.actions[cfg.serviceName], cfg.serviceName, entitySet.getType());
+                    }
+
+
+                    boundItem = {
+                        data: this,
+                        entitySet: entitySet
+                    };
+                }
+
+                var virtualEntitySet = cfg.elementType ? context.getEntitySetFromElementType(Container.resolveType(cfg.elementType)) : null;
+
+                var paramConstExpression = null;
+                if (cfg.params) {
+                    paramConstExpression = [];
+                    //object as parameter
+                    if (arguments[0] && typeof arguments[0] === 'object' && arguments[0].constructor === $data.Object && cfg.params && cfg.params[0] && ((Container.resolveType(cfg.params[0].type) !== $data.Object || cfg.params[0].name in arguments[0]))) {
+                        var argObj = arguments[0];
+                        for (var i = 0; i < cfg.params.length; i++) {
+                            var paramConfig = cfg.params[i];
+                            if (paramConfig.name && paramConfig.type && paramConfig.name in argObj) {
+                                paramConstExpression.push(Container.createConstantExpression(argObj[paramConfig.name], Container.resolveType(paramConfig.type), paramConfig.name));
+                            }
+                        }
+                    }
+                    //arg params
+                    else {
+                        for (var i = 0; i < cfg.params.length; i++) {
+                            if (typeof arguments[i] == 'function') break;
+
+                            //TODO: check params type
+                            var paramConfig = cfg.params[i];
+                            if (paramConfig.name && paramConfig.type && arguments[i] !== undefined) {
+                                paramConstExpression.push(Container.createConstantExpression(arguments[i], Container.resolveType(paramConfig.type), paramConfig.name));
+                            }
+                        }
+                    }
+                }
+
+                var ec = Container.createEntityContextExpression(context);
+                if (!memberdef) {
+                    if (boundItem && boundItem.data) {
+                        memberdef = boundItem.data.getType().getMemberDefinition(cfg.serviceName);
+                    } else {
+                        memberdef = context.getType().getMemberDefinition(cfg.serviceName);
+                    }
+                }
+                var es = Container.createServiceOperationExpression(ec,
+                        Container.createMemberInfoExpression(memberdef),
+                        paramConstExpression,
+                        cfg,
+                        boundItem);
+
+                //Get callback function
+                var clb = arguments[arguments.length - 1];
+                if (!(typeof clb === 'function' || (typeof clb === 'object' /*&& clb.constructor === $data.Object*/ && (typeof clb.success === 'function' || typeof clb.error === 'function')))) {
+                    clb = undefined;
+                }
+
+                if (virtualEntitySet) {
+                    var q = Container.createQueryable(virtualEntitySet, es);
+                    if (clb) {
+                        es.isTerminated = true;
+                        return q._runQuery(clb);
+                    }
+                    return q;
+                }
+                else {
+                    var returnType = cfg.returnType ? Container.resolveType(cfg.returnType) : null;
+
+                    var q = Container.createQueryable(context, es);
+                    q.defaultType = returnType || $data.Object;
+
+                    if (returnType === $data.Queryable) {
+                        q.defaultType = Container.resolveType(cfg.elementType);
+                        if (clb) {
+                            es.isTerminated = true;
+                            return q._runQuery(clb);
+                        }
+                        return q;
+                    }
+                    es.isTerminated = true;
+                    return q._runQuery(clb);
+                }
+            };
+        };
+
+        var params = cfg.params || [];
+        $data.typeSystem.extend(fn, cfg, { params: params });
+
+        return fn;
+    }
+});
+
+$data.Class.define('$data.ServiceAction', $data.ServiceOperation, null, {}, {
+    generateServiceOperation: function (cfg) {
+        if (!cfg.method) {
+            cfg.method = 'POST'; //default Action method is POST
+        }
+
+        return $data.ServiceOperation.generateServiceOperation.apply(this, arguments);
+    }
+});$data.Base.extend('$data.EntityWrapper', {
     getEntity: function () {
         Guard.raise("pure object");
     }
@@ -16660,20 +19151,25 @@ $C('$data.modelBinder.ModelBinderConfigCompiler', $data.Expressions.EntityExpres
         this._defaultModelBinder(expression);
     },
     VisitServiceOperationExpression: function (expression) {
-        var returnType = Container.resolveType(expression.cfg.returnType);
-        if ((typeof returnType.isAssignableTo === 'function' && returnType.isAssignableTo($data.Queryable)) || returnType === $data.Array) {
-            this._defaultModelBinder(expression);
-        } else {
-            var builder = Container.createqueryBuilder();
-            builder.modelBinderConfig['$type'] = returnType;
-            if (typeof returnType.isAssignableTo === 'function' && returnType.isAssignableTo($data.Entity)) {
-                builder.modelBinderConfig['$selector'] = ['json:' + expression.cfg.serviceName];
+        if (expression.cfg.returnType) {
+            var returnType = Container.resolveType(expression.cfg.returnType);
+            if ((typeof returnType.isAssignableTo === 'function' && returnType.isAssignableTo($data.Queryable)) || returnType === $data.Array) {
+                this._defaultModelBinder(expression);
             } else {
-                builder.modelBinderConfig['$source'] = expression.cfg.serviceName;
+                var builder = Container.createqueryBuilder();
+                builder.modelBinderConfig['$type'] = returnType;
+                if (typeof returnType.isAssignableTo === 'function' && returnType.isAssignableTo($data.Entity)) {
+                    builder.modelBinderConfig['$selector'] = ['json:' + expression.cfg.serviceName];
+                } else {
+                    builder.modelBinderConfig['$type'] = returnType;
+                    builder.modelBinderConfig['$value'] = function (a, v) {
+                        return (expression.cfg.serviceName in v) ? v[expression.cfg.serviceName] : v.value;
+                    }
+                }
+                this.VisitExpression(expression, builder);
+                builder.resetModelBinderProperty();
+                this._query.modelBinderConfig = builder.modelBinderConfig;
             }
-            this.VisitExpression(expression, builder);
-            builder.resetModelBinderProperty();
-            this._query.modelBinderConfig = builder.modelBinderConfig;
         }
     },
     VisitCountExpression: function (expression) {
@@ -16820,19 +19316,23 @@ $C('$data.modelBinder.ModelBinderConfigCompiler', $data.Expressions.EntityExpres
             }
         }, this);
     },
-    DefaultSelection: function (builder, type, includes) {
+    DefaultSelection: function (builder, type, allIncludes) {
         //no projection, get all item from entitySet
         builder.modelBinderConfig['$type'] = type;
 
         var storageModel = this._query.context._storageModel.getStorageModel(type);
         this._addPropertyToModelBinderConfig(type, builder);
-        if (includes) {
-            includes.forEach(function (include) {
+        if (allIncludes) {
+            allIncludes.forEach(function (include) {
                 var includes = include.name.split('.');
                 var association = null;
                 var tmpStorageModel = storageModel;
+                var itemCount = 0;
                 for (var i = 0; i < includes.length; i++) {
-                    if (builder.modelBinderConfig.$item) builder.selectModelBinderProperty('$item');
+                    if (builder.modelBinderConfig.$item) {
+                        builder.selectModelBinderProperty('$item');
+                        itemCount++;
+                    }
                     builder.selectModelBinderProperty(includes[i]);
                     association = tmpStorageModel.Associations[includes[i]];
                     tmpStorageModel = this._query.context._storageModel.getStorageModel(association.ToType);
@@ -16853,7 +19353,7 @@ $C('$data.modelBinder.ModelBinderConfigCompiler', $data.Expressions.EntityExpres
                     this._addPropertyToModelBinderConfig(include.type, builder);
                 }
 
-                for (var i = 0; i < includes.length; i++) {
+                for (var i = 0; i < includes.length + itemCount; i++) {
                     builder.popModelBinderProperty();
                 }
             }, this);
@@ -17185,7 +19685,8 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             url: metadataUri,
             user: undefined,
             password: undefined,
-            withCredentials: undefined
+            withCredentials: undefined,
+            httpHeaders: undefined
         };
 
         $data.typeSystem.extend( cnf, config || {});
@@ -17228,16 +19729,28 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
 
             var versionInfo = self._findVersion(xml);
             if (self.xsltRepoUrl) {
-                console.log('XSLT: ' + self.xsltRepoUrl + self._supportedODataVersionXSLT[versionInfo.version])
+                console.log('XSLT: ' + self.xsltRepoUrl + self._supportedODataVersionXSLT)
                 self._loadXMLDoc({ 
-                    metadataUri: self.xsltRepoUrl + self._supportedODataVersionXSLT[versionInfo.version],
+                    metadataUri: self.xsltRepoUrl + self._supportedODataVersionXSLT,
                     user: cnf.user,
                     password: cnf.password,
-                    headers: cnf.headers
+                    httpHeaders: cnf.httpHeaders
                 }, function (xsl, response) {
                     if (response.statusCode < 200 || response.statusCode > 299) {
                         callBack.error(response);
                         return;
+                    }
+                    var text = response.responseText;
+                    text = text.replace('xmlns:edm="@@VERSIONNS@@"', 'xmlns:edm="' + versionInfo.ns + '"');
+                    text = text.replace('@@VERSION@@', versionInfo.version);
+
+                    if (typeof ActiveXObject === 'undefined') {
+                        var parser = new DOMParser();
+                        xsl = parser.parseFromString(text, "text/xml");
+                    } else {
+                        xsl = new ActiveXObject("Microsoft.XMLDOM");
+                        xsl.async = false;
+                        xsl.loadXML(text);
                     }
 
                     self._transform(callBack, versionInfo, xml, xsl, cnf);
@@ -17251,7 +19764,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
     debugMode: { type: 'bool', value: false },
     xsltRepoUrl: { type: 'string', value: '' },
 
-    createFactoryFunc: function (ctxType, cnf) {
+    createFactoryFunc: function (ctxType, cnf, versionInfo) {
         var self = this;
         return function (config) {
             if (ctxType) {
@@ -17261,7 +19774,8 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
                     //maxDataServiceVersion: '',
                     user: cnf.user,
                     password: cnf.password,
-                    withCredentials: cnf.withCredentials
+                    withCredentials: cnf.withCredentials,
+                    maxDataServiceVersion: versionInfo.maxVersion || '3.0'
                 }, config)
 
 
@@ -17275,15 +19789,32 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
     _transform: function (callBack, versionInfo, xml, xsl, cnf) {
         var self = this;
         var codeText = self._processResults(cnf.url, versionInfo, xml, xsl, cnf);
-        eval(codeText);
-        var ctxType = $data.generatedContexts.pop();
-        var factoryFn = self.createFactoryFunc(ctxType, cnf);
+
+        try {
+            eval(codeText);
+        } catch (e) {
+            callBack.error(new Exception('SyntaxError', 'Unexpected model', [e, codeText]));
+            return;
+        }
+
+        var ctxType;
+        if (!$data.generatedContexts || !(ctxType = $data.generatedContexts.pop())) {
+            callBack.error(new Exception('No context found in service', 'Not found', [cnf, codeText]));
+            return;
+        }
+
+        var factoryFn = self.createFactoryFunc(ctxType, cnf, versionInfo);
         this.factoryCache[cnf.url] = [factoryFn, ctxType];
 
-        if (self.debugMode)
+        factoryFn.type = ctxType;
+
+        if (self.debugMode) {
+            factoryFn.codeText = codeText;
             callBack.success(factoryFn, ctxType, codeText);
-        else
+        }
+        else {
             callBack.success(factoryFn, ctxType);
+        }
     },
     _loadXMLDoc: function (cnf, callback) {
         var xhttp = new XMLHttpRequest();
@@ -17295,7 +19826,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
         }
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState === 4) {
-                var response = { requestUri: cnf.metadataUri, statusCode: xhttp.status, statusText: xhttp.statusText };
+                var response = { requestUri: cnf.metadataUri, statusCode: xhttp.status, statusText: xhttp.statusText, responseText: xhttp.responseText };
                 callback(xhttp.responseXML || xhttp.responseText, response);
             }
         };
@@ -17338,7 +19869,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
                     xslproc.addParameter('EntitySetBaseClass', cnf.EntitySetBaseClass);
                     xslproc.addParameter('CollectionBaseClass', cnf.CollectionBaseClass);
                     xslproc.addParameter('DefaultNamespace', cnf.DefaultNamespace);
-
+                    xslproc.addParameter('MaxDataserviceVersion', versionInfo.maxVersion || '3.0');
 
                     xslproc.transform();
                     return xslproc.output;
@@ -17364,12 +19895,12 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             xsltProcessor.setParameter(null, 'EntitySetBaseClass', cnf.EntitySetBaseClass);
             xsltProcessor.setParameter(null, 'CollectionBaseClass', cnf.CollectionBaseClass);
             xsltProcessor.setParameter(null, 'DefaultNamespace', cnf.DefaultNamespace);
+            xsltProcessor.setParameter(null, 'MaxDataserviceVersion', versionInfo.maxVersion || '3.0');
             resultDocument = xsltProcessor.transformToFragment(metadata, document);
 
             return resultDocument.textContent;
         } else if (typeof module !== 'undefined' && typeof require !== 'undefined') {
             var xslt = require('node_xslt');
-            var libxml = require('libxmljs');
 
             return xslt.transform(xslt.readXsltString(transformXslt), xslt.readXmlString(metadata), [
                 'SerivceUri', "'" + cnf.SerivceUri + "'",
@@ -17379,11 +19910,14 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
                 'ContextInstanceName', "'" + cnf.ContextInstanceName + "'",
                 'EntitySetBaseClass', "'" + cnf.EntitySetBaseClass + "'",
                 'CollectionBaseClass', "'" + cnf.CollectionBaseClass + "'",
-                'DefaultNamespace', "'" + cnf.DefaultNamespace + "'"
+                'DefaultNamespace', "'" + cnf.DefaultNamespace + "'",
+                'MaxDataserviceVersion', "'" + (versionInfo.maxVersion || '3.0') + "'"
             ]);
         }
     },
     _findVersion: function (metadata) {
+        var maxDSVersion = '';
+
         if (typeof metadata === 'object' && "getElementsByTagName" in metadata){
             var version = 'http://schemas.microsoft.com/ado/2008/09/edm';
             var item = metadata.getElementsByTagName('Schema');
@@ -17396,32 +19930,36 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             if (item)
                 version = item.value;
 
+            var maxDSVersion = metadata.getElementsByTagName('edmx:DataServices')[0] || metadata.getElementsByTagName('DataServices')[0];
+            if (maxDSVersion)
+                maxDSVersion = maxDSVersion.attributes.getNamedItem('m:MaxDataServiceVersion');
+            if (maxDSVersion && version)
+                maxDSVersion = maxDSVersion.value;
+
+
             var versionNum = this._supportedODataVersions[version];
             return {
                 ns: version,
-                version: versionNum || 'unknown'
+                version: versionNum || 'unknown',
+                maxVersion: maxDSVersion || this._maxDataServiceVersions[version || 'unknown']
             };
         }else if (typeof module !== 'undefined' && typeof require !== 'undefined'){
-            var xslt = require('node_xslt');
-            var libxml = require('libxmljs');
-
             var schemaXml = metadata;
+            
             var schemaNamespace = 'http://schemas.microsoft.com/ado/2008/09/edm';
-
-            /*var parserEvents = {
-             startElementNS: function() {
-             if ('Schema' === arguments[0]){
-             schemaNamespace = arguments[3];
-             }
-             }
-             };
-
-             var parser = new libxml.SaxParser(parserEvents);
-             parser.parseString(schemaXml);*/
+            var version = 'nodejs';
+            for (var i in this._supportedODataVersions){
+                if (schemaXml.search(new RegExp('<Schema.+xmlns=\"' + i + '\"', 'gi')) >= 0){
+                    schemaNamespace = i;
+                    version = this._supportedODataVersions[i];
+                    break;
+                }
+            }
 
             return {
                 ns: schemaNamespace,
-                version: 'nodejs'
+                version: version,
+                maxVersion: this._maxDataServiceVersions[version || 'unknown']
             }
         }
     },
@@ -17430,16 +19968,21 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "http://schemas.microsoft.com/ado/2006/04/edm": "V1",
             "http://schemas.microsoft.com/ado/2008/09/edm": "V2",
             "http://schemas.microsoft.com/ado/2009/11/edm": "V3",
-            "http://schemas.microsoft.com/ado/2007/05/edm": "V11"
+            "http://schemas.microsoft.com/ado/2007/05/edm": "V11",
+            "http://schemas.microsoft.com/ado/2009/08/edm": "V22"
+        }
+    },
+    _maxDataServiceVersions: {
+        value: {
+            "http://schemas.microsoft.com/ado/2006/04/edm": "1.0",
+            "http://schemas.microsoft.com/ado/2008/09/edm": "2.0",
+            "http://schemas.microsoft.com/ado/2009/11/edm": "3.0",
+            "http://schemas.microsoft.com/ado/2007/05/edm": "1.0",
+            "http://schemas.microsoft.com/ado/2009/08/edm": "2.0"
         }
     },
     _supportedODataVersionXSLT: {
-        value: {
-            "V1": 'JayDataContextGen$my.contexterator_OData_V1.xslt',
-            "V2": 'JayDataContextGenerator_OData_V2.xslt',
-            "V3": 'JayDataContextGenerator_OData_V3.xslt',
-            "V11": 'JayDataContextGenerator_OData_V11.xslt'
-        }
+        value: "JayDataContextGenerator.xslt"
     },
     getCurrentXSLTVersion: function (versionInfo, metadata) {
         return this._metadataConverterXSLT.replace('@@VERSIONNS@@', versionInfo.ns).replace('@@VERSION@@', versionInfo.version);
@@ -17491,6 +20034,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" \r\n" +
             "                xmlns:edm=\"@@VERSIONNS@@\" \r\n" +
             "                xmlns:m=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\" \r\n" +
+            "                xmlns:metadata=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\" \r\n" +
             "                xmlns:annot=\"http://schemas.microsoft.com/ado/2009/02/edm/annotation\" \r\n" +
             "                xmlns:exsl=\"http://exslt.org/common\" \r\n" +
             "                xmlns:msxsl=\"urn:schemas-microsoft-com:xslt\" exclude-result-prefixes=\"msxsl\">\r\n" +
@@ -17522,10 +20066,20 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "<xsl:for-each select=\"//edm:EntityType | //edm:ComplexType\" xml:space=\"default\">\r\n" +
             "  <xsl:message terminate=\"no\">Info: generating type <xsl:value-of select=\"concat(../@Namespace, '.', @Name)\"/>\r\n" +
             "</xsl:message>\r\n" +
+            "  <xsl:variable name=\"BaseType\">\r\n" +
+            "    <xsl:choose>\r\n" +
+            "      <xsl:when test=\"@BaseType\">\r\n" +
+            "        <xsl:value-of select=\"@BaseType\"/>\r\n" +
+            "      </xsl:when>\r\n" +
+            "      <xsl:otherwise>\r\n" +
+            "        <xsl:value-of select=\"$EntityBaseClass\"  />\r\n" +
+            "      </xsl:otherwise>\r\n" +
+            "    </xsl:choose>\r\n" +
+            "  </xsl:variable>\r\n" +
             "  <xsl:variable name=\"props\">\r\n" +
             "    <xsl:apply-templates select=\"*\" />\r\n" +
             "  </xsl:variable>\r\n" +
-            "  <xsl:text xml:space=\"preserve\">  </xsl:text><xsl:value-of select=\"$EntityBaseClass\"  />.extend('<xsl:value-of select=\"concat($DefaultNamespace,../@Namespace)\"/>.<xsl:value-of select=\"@Name\"/>', {\r\n" +
+            "  <xsl:text xml:space=\"preserve\">  </xsl:text><xsl:value-of select=\"$BaseType\"  />.extend('<xsl:value-of select=\"concat($DefaultNamespace,../@Namespace)\"/>.<xsl:value-of select=\"@Name\"/>', {\r\n" +
             "    <xsl:choose><xsl:when test=\"function-available('msxsl:node-set')\">\r\n" +
             "    <xsl:for-each select=\"msxsl:node-set($props)/*\">\r\n" +
             "      <xsl:value-of select=\".\"/><xsl:if test=\"position() != last()\">,\r\n" +
@@ -17537,13 +20091,20 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "    </xsl:if></xsl:for-each>\r\n" +
             "    </xsl:otherwise>\r\n" +
             "    </xsl:choose>\r\n" +
+            "    <xsl:variable name=\"currentName\"><xsl:value-of select=\"concat(../@Namespace,'.',@Name)\"/></xsl:variable>\r\n" +
+            "    <xsl:for-each select=\"//edm:FunctionImport[@IsBindable and edm:Parameter[1]/@Type = $currentName]\"><xsl:if test=\"position() = 1\">,\r\n" +
+            "    </xsl:if>\r\n" +
+            "      <xsl:apply-templates select=\".\"></xsl:apply-templates><xsl:if test=\"position() != last()\">,\r\n" +
+            "    </xsl:if>\r\n" +
+            "    </xsl:for-each>\r\n" +
             "  });\r\n" +
             "  \r\n" +
             "</xsl:for-each>\r\n" +
             "\r\n" +
             "<xsl:for-each select=\"//edm:EntityContainer\">\r\n" +
             "  <xsl:text xml:space=\"preserve\">  </xsl:text><xsl:value-of select=\"$ContextBaseClass\"  />.extend('<xsl:value-of select=\"concat(concat($DefaultNamespace,../@Namespace), '.', @Name)\"/>', {\r\n" +
-            "    <xsl:for-each select=\"edm:EntitySet | edm:FunctionImport\">\r\n" +
+            "    <!--or (@IsBindable = 'true' and (@IsAlwaysBindable = 'false' or @m:IsAlwaysBindable = 'false' or @metadata:IsAlwaysBindable = 'false'))-->\r\n" +
+            "    <xsl:for-each select=\"edm:EntitySet | edm:FunctionImport[not(@IsBindable) or @IsBindable = 'false']\">\r\n" +
             "      <xsl:apply-templates select=\".\"></xsl:apply-templates><xsl:if test=\"position() != last()\">,\r\n" +
             "    </xsl:if>\r\n" +
             "    </xsl:for-each>\r\n" +
@@ -17553,7 +20114,7 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "  $data.generatedContexts.push(<xsl:value-of select=\"concat(concat($DefaultNamespace,../@Namespace), '.', @Name)\" />);\r\n" +
             "  <xsl:if test=\"$AutoCreateContext = 'true'\">\r\n" +
             "  /*Context Instance*/\r\n" +
-            "  <xsl:value-of select=\"$DefaultNamespace\"/><xsl:value-of select=\"$ContextInstanceName\" /> = new <xsl:value-of select=\"concat(concat($DefaultNamespace,../@Namespace), '.', @Name)\" />( { name:'oData', oDataServiceHost: '<xsl:value-of select=\"$SerivceUri\" />' });\r\n" +
+            "  <xsl:value-of select=\"$DefaultNamespace\"/><xsl:value-of select=\"$ContextInstanceName\" /> = new <xsl:value-of select=\"concat(concat($DefaultNamespace,../@Namespace), '.', @Name)\" />({ name:'oData', oDataServiceHost: '<xsl:value-of select=\"$SerivceUri\" />' });\r\n" +
             "</xsl:if>\r\n" +
             "\r\n" +
             "</xsl:for-each>\r\n" +
@@ -17564,34 +20125,53 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "\r\n" +
             "  <xsl:template match=\"edm:Key\"></xsl:template>\r\n" +
             "\r\n" +
-            "  <xsl:template match=\"edm:FunctionImport\">'<xsl:value-of select=\"@Name\"/>': $data.EntityContext.generateServiceOperation({ serviceName:'<xsl:value-of select=\"@Name\"/>', returnType: <xsl:apply-templates select=\".\" mode=\"render-return-config\" />, <xsl:apply-templates select=\".\" mode=\"render-elementType-config\" />params: [<xsl:for-each select=\"edm:Parameter\">{ <xsl:value-of select=\"@Name\"/>: '<xsl:apply-templates select=\"@Type\" mode=\"render-functionImport-type\" />' }<xsl:if test=\"position() != last()\">,</xsl:if>\r\n" +
-            "    </xsl:for-each>], method: '<xsl:value-of select=\"@m:HttpMethod\"/>' })</xsl:template>\r\n" +
-            "\r\n" +
-            "  <xsl:template match=\"@Type | @ReturnType\" mode=\"render-functionImport-type\">\r\n" +
-            "    <xsl:variable name=\"curr\" select=\".\"/>\r\n" +
+            "  <xsl:template match=\"edm:FunctionImport\">\r\n" +
+            "    <xsl:text>'</xsl:text>\r\n" +
+            "    <xsl:value-of select=\"@Name\"/>\r\n" +
+            "    <xsl:text>': { type: </xsl:text>\r\n" +
             "    <xsl:choose>\r\n" +
-            "      <xsl:when test=\"//edm:Schema[starts-with($curr, @Namespace)]\"> \r\n" +
-            "        <xsl:value-of select=\"concat($DefaultNamespace,$curr)\" />\r\n" +
+            "      <xsl:when test=\"@IsBindable = 'true'\">\r\n" +
+            "        <xsl:text>$data.ServiceAction</xsl:text>\r\n" +
             "      </xsl:when>\r\n" +
-            "      <xsl:otherwise> \r\n" +
-            "        <xsl:value-of select=\"$curr\"/>\r\n" +
+            "      <xsl:otherwise>\r\n" +
+            "        <xsl:text>$data.ServiceOperation</xsl:text>\r\n" +
             "      </xsl:otherwise>\r\n" +
             "    </xsl:choose>\r\n" +
             "\r\n" +
+            "    <xsl:apply-templates select=\"@*\" mode=\"FunctionImport-mode\"/>\r\n" +
+            "\r\n" +
+            "    <xsl:variable name=\"IsBindable\">\r\n" +
+            "      <xsl:value-of select=\"@IsBindable\"/>\r\n" +
+            "    </xsl:variable>\r\n" +
+            "    <xsl:text>, params: [</xsl:text>\r\n" +
+            "    <xsl:for-each select=\"edm:Parameter[($IsBindable = 'true' and position() > 1) or (($IsBindable = 'false' or $IsBindable = '') and position() > 0)]\">\r\n" +
+            "      <xsl:text>{ name: '</xsl:text>\r\n" +
+            "      <xsl:value-of select=\"@Name\"/>\r\n" +
+            "      <xsl:text>', type: '</xsl:text>\r\n" +
+            "      <xsl:apply-templates select=\"@Type\" mode=\"render-functionImport-type\" />\r\n" +
+            "      <xsl:text>' }</xsl:text>\r\n" +
+            "      <xsl:if test=\"position() != last()\">, </xsl:if>\r\n" +
+            "    </xsl:for-each>    \r\n" +
+            "    <xsl:text>]</xsl:text>\r\n" +
+            "\r\n" +
+            "    <xsl:text> }</xsl:text>\r\n" +
             "  </xsl:template>\r\n" +
             "  \r\n" +
-            "  <xsl:template match=\"edm:FunctionImport\" mode=\"render-return-config\">\r\n" +
+            "  <xsl:template match=\"@ReturnType\" mode=\"FunctionImport-mode\">\r\n" +
+            "    <xsl:text>, returnType: </xsl:text>\r\n" +
             "    <xsl:choose>\r\n" +
-            "      <xsl:when test=\"not(@ReturnType)\">null</xsl:when>\r\n" +
-            "      <xsl:when test=\"starts-with(@ReturnType, 'Collection')\">$data.Queryable</xsl:when>\r\n" +
-            "      <xsl:otherwise> '<xsl:apply-templates select=\"@ReturnType\" mode=\"render-functionImport-type\" />' </xsl:otherwise>\r\n" +
+            "      <xsl:when test=\"not(.)\">null</xsl:when>\r\n" +
+            "      <xsl:when test=\"starts-with(., 'Collection')\">$data.Queryable</xsl:when>\r\n" +
+            "      <xsl:otherwise>\r\n" +
+            "        <xsl:text>'</xsl:text>\r\n" +
+            "        <xsl:apply-templates select=\".\" mode=\"render-functionImport-type\" />\r\n" +
+            "        <xsl:text>'</xsl:text>\r\n" +
+            "      </xsl:otherwise>\r\n" +
             "    </xsl:choose>\r\n" +
-            "  </xsl:template>\r\n" +
-            "  \r\n" +
-            "  <xsl:template match=\"edm:FunctionImport\" mode=\"render-elementType-config\">\r\n" +
-            "    <xsl:if test=\"starts-with(@ReturnType, 'Collection')\">\r\n" +
-            "      <xsl:variable name=\"len\" select=\"string-length(@ReturnType)-12\"/>\r\n" +
-            "      <xsl:variable name=\"curr\" select=\"substring(@ReturnType,12,$len)\"/>\r\n" +
+            "\r\n" +
+            "    <xsl:if test=\"starts-with(., 'Collection')\">\r\n" +
+            "      <xsl:variable name=\"len\" select=\"string-length(.)-12\"/>\r\n" +
+            "      <xsl:variable name=\"curr\" select=\"substring(.,12,$len)\"/>\r\n" +
             "      <xsl:variable name=\"ElementType\" >\r\n" +
             "        <xsl:choose>\r\n" +
             "          <xsl:when test=\"//edm:Schema[starts-with($curr, @Namespace)]\">\r\n" +
@@ -17601,10 +20181,64 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "            <xsl:value-of select=\"$curr\" />\r\n" +
             "          </xsl:otherwise>\r\n" +
             "        </xsl:choose>\r\n" +
-            "      </xsl:variable>elementType: '<xsl:value-of select=\"$ElementType\"/>', </xsl:if>\r\n" +
+            "      </xsl:variable>\r\n" +
+            "      <xsl:text>, elementType: '</xsl:text>\r\n" +
+            "      <xsl:value-of select=\"$ElementType\"/>\r\n" +
+            "      <xsl:text>'</xsl:text>\r\n" +
+            "    </xsl:if>\r\n" +
+            "  </xsl:template>\r\n" +
+            "  <xsl:template match=\"@Name\" mode=\"FunctionImport-mode\"></xsl:template>\r\n" +
+            "  <xsl:template match=\"@m:HttpMethod\" mode=\"FunctionImport-mode\">\r\n" +
+            "    <xsl:text>, method: '</xsl:text>\r\n" +
+            "    <xsl:value-of select=\".\"/>\r\n" +
+            "    <xsl:text>'</xsl:text>\r\n" +
+            "  </xsl:template>\r\n" +
+            "  <xsl:template match=\"@IsBindable | @IsSideEffecting | @IsAlwaysBindable | @m:IsAlwaysBindable | @metadata:IsAlwaysBindable | @IsComposable\" mode=\"FunctionImport-mode\">\r\n" +
+            "    <xsl:text>, </xsl:text>\r\n" +
+            "    <xsl:call-template name=\"GetAttributeName\">\r\n" +
+            "      <xsl:with-param name=\"Name\" select=\"name()\" />\r\n" +
+            "    </xsl:call-template>\r\n" +
+            "    <xsl:text>: </xsl:text>\r\n" +
+            "    <xsl:value-of select=\".\"/>\r\n" +
+            "  </xsl:template>\r\n" +
+            "  <xsl:template match=\"@*\" mode=\"FunctionImport-mode\">\r\n" +
+            "    <xsl:text>, '</xsl:text>\r\n" +
+            "    <xsl:call-template name=\"GetAttributeName\">\r\n" +
+            "      <xsl:with-param name=\"Name\" select=\"name()\" />\r\n" +
+            "    </xsl:call-template>\r\n" +
+            "    <xsl:text>': '</xsl:text>\r\n" +
+            "    <xsl:value-of select=\".\"/>        \r\n" +
+            "    <xsl:text>'</xsl:text>\r\n" +
+            "  </xsl:template>\r\n" +
+            "  <xsl:template name=\"GetAttributeName\">\r\n" +
+            "    <xsl:param name=\"Name\" />\r\n" +
+            "    <xsl:choose>\r\n" +
+            "      <xsl:when test=\"contains($Name, ':')\">\r\n" +
+            "        <xsl:value-of select=\"substring-after($Name, ':')\"/>\r\n" +
+            "      </xsl:when>\r\n" +
+            "      <xsl:otherwise>\r\n" +
+            "        <xsl:value-of select=\"$Name\"/>\r\n" +
+            "      </xsl:otherwise>\r\n" +
+            "    </xsl:choose>\r\n" +
             "  </xsl:template>\r\n" +
             "\r\n" +
-            "  <xsl:template match=\"edm:EntitySet\">'<xsl:value-of select=\"@Name\"/>': { type: <xsl:value-of select=\"$EntitySetBaseClass\"  />, elementType: <xsl:value-of select=\"concat($DefaultNamespace,@EntityType)\"/> }</xsl:template>\r\n" +
+            "  <xsl:template match=\"edm:EntitySet\">'<xsl:value-of select=\"@Name\"/>': { type: <xsl:value-of select=\"$EntitySetBaseClass\"  />, elementType: <xsl:value-of select=\"concat($DefaultNamespace,@EntityType)\"/><xsl:text> </xsl:text><xsl:apply-templates select=\".\" mode=\"Collection-Actions\" />}</xsl:template>\r\n" +
+            "\r\n" +
+            "  <xsl:template match=\"edm:EntitySet\" mode=\"Collection-Actions\">\r\n" +
+            "    <xsl:variable name=\"CollectionType\" select=\"concat('Collection(', @EntityType, ')')\" />\r\n" +
+            "    <xsl:for-each select=\"//edm:FunctionImport[edm:Parameter[1]/@Type = $CollectionType]\">\r\n" +
+            "      <xsl:if test=\"position() = 1\">\r\n" +
+            "        <xsl:text>, actions: { \r\n" +
+            "        </xsl:text>\r\n" +
+            "      </xsl:if>\r\n" +
+            "        <xsl:apply-templates select=\".\"></xsl:apply-templates><xsl:if test=\"position() != last()\">,\r\n" +
+            "        </xsl:if>\r\n" +
+            "      <xsl:if test=\"position() = last()\">\r\n" +
+            "        <xsl:text>\r\n" +
+            "      }</xsl:text>\r\n" +
+            "      </xsl:if>\r\n" +
+            "    </xsl:for-each>\r\n" +
+            "  </xsl:template>\r\n" +
             "  \r\n" +
             "  <xsl:template match=\"edm:Property | edm:NavigationProperty\">\r\n" +
             "    <property>\r\n" +
@@ -17749,14 +20383,59 @@ $data.Class.define('$data.MetadataLoaderClass', null, null, {
             "  <!--<xsl:template match=\"*\">\r\n" +
             "    !<xsl:value-of select=\"name()\"/>!\r\n" +
             "  </xsl:template>-->\r\n" +
-            "</xsl:stylesheet>\r\n"
+            "</xsl:stylesheet>"
     }
 
 });
 
 $data.MetadataLoader = new $data.MetadataLoaderClass();
-$data.service = function (serviceUri, cb, config) {
-    $data.MetadataLoader.load(serviceUri, cb, config);
+$data.service = function (serviceUri, config, cb) {
+    var _url, _config, _callback;
+    function getParam(paramValue) {
+        switch (typeof paramValue) {
+            case 'object':
+                if (typeof paramValue.success === 'function' || typeof paramValue.error === 'function') {
+                    _callback = paramValue;
+                } else {
+                    _config = paramValue;
+                }
+                break;
+            case 'function':
+                _callback = paramValue;
+                break;
+            default:
+                break;
+        }
+    }
+    getParam(config);
+    getParam(cb);
+
+    if (typeof serviceUri === 'object') {
+        _config = $data.typeSystem.extend(serviceUri, _config);
+        serviceUri = serviceUri.url;
+        delete _config.url;
+    }
+
+    var pHandler = new $data.PromiseHandler();
+    _callback = pHandler.createCallback(_callback);
+
+    $data.MetadataLoader.load(serviceUri, {
+        success: function (factory) {
+            var type = factory.type;
+            //register to local store
+            if (_config) {
+                var storeAlias = _config.serviceName || _config.storeAlias;
+                if (storeAlias && 'addStore' in $data) {
+                    $data.addStore(storeAlias, factory, _config.isDefault === undefined || _config.isDefault)
+                }
+            }
+
+            _callback.success(factory, type);
+        },
+        error: _callback.error
+    }, _config);
+
+    return pHandler.getPromise();
 };
 (function ($data) {
     if (typeof jQuery !== 'undefined') {
@@ -17791,4 +20470,51 @@ $data.service = function (serviceUri, cb, config) {
 
         $data.PromiseHandler = $data.Deferred;
     }
+})($data);
+(function ($data) {
+
+    $data.initService = function (apiKey, options) {
+        var d = new $data.PromiseHandler();
+        var cfg;
+
+        if (typeof apiKey === 'object') {
+            //appId, serviceName, ownerid, isSSL, port, license, url
+            cfg = apiKey;
+            var protocol = cfg.isSSL || cfg.isSSL === undefined ? 'https' : 'http';
+            var port = cfg.port ? (':' + cfg.port) : '';
+
+            if (typeof cfg.license === 'string' && cfg.license.toLowerCase() === 'business') {
+                if (cfg.appId && cfg.serviceName) {
+                    apiKey = protocol + '://' + cfg.appId + '.jaystack.net' + port + '/' + cfg.serviceName;
+                } else {
+                    apiKey = cfg.url;
+                }
+            } else {
+                if (cfg.ownerId && cfg.appId && cfg.serviceName) {
+                    apiKey = protocol + '://open.jaystack.net/' + cfg.ownerId + '/' + cfg.appId + '/api/' + cfg.serviceName;
+                } else {
+                    apiKey = cfg.url;
+                }
+            }
+
+            delete cfg.url;
+            cfg = $data.typeSystem.extend(cfg, options);
+        } else {
+            cfg = options;
+        }
+
+        $data.service(apiKey, cfg).then(function (factory) {
+            var ctx = factory();
+            return ctx.onReady()
+                .then(function (context) {
+                    context.serviceFactory = factory;
+                    d.deferred.resolve(context, factory, factory.type);
+                }).fail(function () {
+                    d.deferred.reject.apply(d.deferred, arguments);
+                });
+        });
+
+        return d.getPromise();
+    };
+
 })($data);
