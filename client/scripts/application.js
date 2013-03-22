@@ -20,6 +20,8 @@ $(function () {
         });*/
 
         self.authorization = ko.observable();
+        self.visible = ko.observable(false);
+        self.context = ko.observable(false);
 
         function getAuthroization(succ, err) {
             var xhr = new XMLHttpRequest();
