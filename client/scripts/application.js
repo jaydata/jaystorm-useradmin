@@ -735,6 +735,7 @@ $(function () {
             
             var serviceUri = serviceUri; //serviceUri.replace("http://", "");
             
+            $data.MetadataLoader.factoryCache = undefined;
             $data.service(serviceUri, {
                 success: function (factory) {
                     var appDBFactory = function () {
