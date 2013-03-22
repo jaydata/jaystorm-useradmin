@@ -184,12 +184,14 @@
                                                 <input type="checkbox" id="inputNullable" data-bind="checked: data.Nullable" />
                                             </div>
                                         </div>
+                                        <!-- ko if: $root.lazyLoadNotSupported -->
                                         <div class="control-group">
                                             <label class="control-label" for="inputLazyLoad">Lazy load</label>
                                             <div class="controls">
                                                 <input type="checkbox" id="inputLazyLoad" data-bind="checked: data.LazyLoad" />
                                             </div>
                                         </div>
+                                        <!-- /ko -->
                                         <div class="control-group">
                                             <label class="control-label" for="inputRequired">Required</label>
                                             <div class="controls">
@@ -263,11 +265,11 @@
                                                     elementTypes: $root.elementTypes,
                                                     defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
                                                     discriminatorValue:$data.data.owner.ElementTypeID(),
-                                                    fields:[{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
+                                                    fields: [{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
                                                             { name: 'Name', 'hint': 'Field name'},
                                                             { name: 'TypeTemplate', $displayName: 'Type' },
                                                             { name: 'ElementType', $displayName: 'Element type' }, 'Required', 'Nullable',
-                                                            { name: 'LazyLoad', $displayName: 'Lazy load' }]}">
+                                                            $root.lazyLoadNotSupported() ? { name: 'LazyLoad', $displayName: 'Lazy load' } : undefined]}">
 
                                     <div data-name-template="TypeTemplate-editor">
                                         <div data-bind="text: console.log($root)"></div>

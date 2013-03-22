@@ -85,7 +85,7 @@
                         }
                         j++;
                     }
-                } else {
+                } else if (typeof propname === 'object' && propname) {
                     //if object then is a memDef
                     console.log("fakefield");
                     if (fields[i].isVirtual) {
@@ -1004,7 +1004,7 @@
                         var dlmap = L.map(model.mapId + '-display').setView([newGeo.latitude, newGeo.longitude], 13);
 
                         L.tileLayer('http://{s}.tile.cloudmade.com/003d6e8d9af14e7582b462c10e572a1a/997/256/{z}/{x}/{y}.png', {
-                            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery \A9 <a href="http://cloudmade.com">CloudMade</a>',
                             maxZoom: 18
                         }).addTo(dlmap);
                         L.geoJson(geoVal).addTo(dlmap);
@@ -1032,7 +1032,7 @@
                             lmap = L.map(model.mapId).setView(startPoz, 13);
 
                             L.tileLayer('http://{s}.tile.cloudmade.com/003d6e8d9af14e7582b462c10e572a1a/997/256/{z}/{x}/{y}.png', {
-                                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+                                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery \A9 <a href="http://cloudmade.com">CloudMade</a>',
                                 maxZoom: 18
                             }).addTo(lmap);
                             geo = L.geoJson(geoVal);

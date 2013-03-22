@@ -5,6 +5,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         self.databases = ko.observableArray([]);
         self.indicesNotSupported = ko.observable();
+        self.lazyLoadNotSupported = ko.observable();
         //self.databases = ko.observable();
 
         self.clickDb = function(){
@@ -54,6 +55,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                 self.currentDatabaseName(ko.utils.unwrapObservable(db.Name));
                 self.IsApplicationDB(db.Name() === 'ApplicationDB');
                 self.indicesNotSupported(!!adminApiClient.currentAppDBContextFactory()().Indices);
+                self.lazyLoadNotSupported(!!adminApiClient.currentAppDBContextFactory()().EntityFields.createNew.memberDefinitions.getMember('LazyLoad'));
                 
                 self.typeTemplates([]);
                 adminApiClient.currentAppDBContextFactory()().TypeTemplates.forEach(function(it){
