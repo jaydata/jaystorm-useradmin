@@ -44,7 +44,6 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                     self.launchInit(false);
                 }
             });
-
         }
 
         self.appContext.subscribe(function (ctx) {
@@ -63,8 +62,34 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                     if (changesDef) {
                         registerEntitySetWatch(eSet);
                     }
-
                 }
+                
+                var c = adminApiClient.currentAppDBContextFactory()();
+                
+                c.onReady(function(){
+                    c.AppItems.first(function(it){ return it.AppId == this.appid && it.Type == this.update; }, {
+                        appid: adminApiClient.currentApplication().appid,
+                        update: 'ApplicationManagerUpdate'
+                    }, function(update){
+                        self.changedObjects.push({
+                            CollectionName: 'JayStorm',
+                            Items: ko.observableArray([{
+                                Name: 'Update to version ' + update.Data.version,
+                                _wrappedType: {
+                                    memberDefinitions: {
+                                        getMember: function(){
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }])
+                        });
+                        
+                        self.hasChanges(true);
+                        self.launchDisabled(false);
+                        self.launchInit(false);
+                    });
+                });
             }
         });
         
@@ -119,8 +144,10 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 var changes = changeGroups[i];
                 var items = changes.Items();
                 for (var j = 0; j < items.length; j++) {
-                    changes.EntitySet.attach(items[j]);
-                    items[j].HasChanges(false);
+                    if (changes.EntitySet){
+                        changes.EntitySet.attach(items[j]);
+                        items[j].HasChanges(false);
+                    }
                 }
             }
 
@@ -139,6 +166,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                     self.hasChanges(false);
                     self.launchDisabled(false);
                     self.application.publishSuccess(self.application.publishSuccess() + 1);
+                    
+                    adminApiClient.currentApplication(adminApiClient.currentApplication());
                 });
             }, 3000);
         });

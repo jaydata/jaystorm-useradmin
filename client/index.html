@@ -82,6 +82,10 @@
 <body>
     <div id="AppUI">
         <div class="navbar navbar-inverse navbar-fixed-top AppUI">
+            <div class="alert alert-danger fade in" style="position: fixed; right: 1em; top: 4.5em;" data-bind="if: adminUpdate, visible: adminUpdate">
+                <strong>JayStorm updated to v1.1</strong><br>Please publish your application the new features to be available in your application.
+            </div>
+            
             <div class="navbar-inner">
                 <div class="logo-container">
                     <a id="logo-jaystorm" class="brand" href="/">JayStorm Admin</a>
@@ -265,7 +269,7 @@
                                                     elementTypes: $root.elementTypes,
                                                     defaultValues: { 'DatabaseID' : $root.currentDatabaseID },
                                                     discriminatorValue:$data.data.owner.ElementTypeID(),
-                                                    fields: [{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false}, 
+                                                    fields: [/*{name: 'Index','$width':'25px', '$displayName':'#', '$editable':false},*/ 
                                                             { name: 'Name', 'hint': 'Field name'},
                                                             { name: 'TypeTemplate', $displayName: 'Type' },
                                                             { name: 'ElementType', $displayName: 'Element type' }, 'Required', 'Nullable',

@@ -68,6 +68,7 @@ $(function () {
         self.applicationToAdd = ko.observable();
         self.launchFinished = ko.observable();
         self.publishSuccess = ko.observable(0);
+        self.adminUpdate = ko.observable(false);
         
         self.publishSuccess.subscribe(function(value){
             console.log('publishSuccess', value);
@@ -88,6 +89,15 @@ $(function () {
             console.log('updateVersion');
             var c = appDBFactory();
             var update = false;
+            
+            c.AppItems.filter(function(it){ return it.AppId == this.appid && it.Type == this.update; }, {
+                appid: adminApiClient.currentApplication().appid,
+                update: 'ApplicationManagerUpdate'
+            }).length(function(updates){
+                if (updates){
+                    adminApiClient.adminUpdate(true);
+                }
+            });
             
             c.Databases.single(function(it){ return it.Name == this.appdb; }, { appdb: 'ApplicationDB' }, function(appdb){
                 var packageEntity, indexEntity, indexKeyEntity, serviceOperationEntity;
@@ -119,6 +129,7 @@ $(function () {
                                         Name: 'InverseFieldID',
                                         Type: 'id',
                                         TypeTemplate: 'Reference',
+                                        Nullable: true,
                                         DatabaseID: appdb.DatabaseID,
                                         EntityID: entityfieldEntity.EntityID
                                     }));
@@ -130,6 +141,7 @@ $(function () {
                                         Name: 'LazyLoad',
                                         Type: 'boolean',
                                         TypeTemplate: 'Boolean',
+                                        Nullable: true,
                                         DatabaseID: appdb.DatabaseID,
                                         EntityID: entityfieldEntity.EntityID
                                     }));
@@ -141,19 +153,155 @@ $(function () {
                         if (tt.filter(function(it){ return it.Name == 'Geography' }).length){
                             update = true;
                             c.TypeTemplates.remove(tt.filter(function(it){ return it.Name == 'Geography' })[0]);
-                            
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'GUID' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'GUID',
+                                Description: 'Globally unique identifier',
+                                TypeName: '$data.Guid',
+                                TypeDescriptor: '{"Type":"$data.Guid","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography point' }).length){
+                            update = true;
                             c.TypeTemplates.add(new c.TypeTemplates.createNew({
                                 Name: 'Geography point',
                                 Description: 'Spherical location point',
                                 TypeName: '$data.GeographyPoint',
                                 TypeDescriptor: '{"Type":"$data.GeographyPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
                             }));
-                            
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography line string' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography line string',
+                                Description: 'Spherical line string',
+                                TypeName: '$data.GeographyLineString',
+                                TypeDescriptor: '{"Type":"$data.GeographyLineString","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography polygon' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography polygon',
+                                Description: 'Spherical polygon',
+                                TypeName: '$data.GeographyPolygon',
+                                TypeDescriptor: '{"Type":"$data.GeographyPolygon","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography multi point' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography multi point',
+                                Description: 'Spherical multi point',
+                                TypeName: '$data.GeographyMultiPoint',
+                                TypeDescriptor: '{"Type":"$data.GeographyMultiPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography multi line string' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography multi line string',
+                                Description: 'Spherical multi line string',
+                                TypeName: '$data.GeographyMultiLineString',
+                                TypeDescriptor: '{"Type":"$data.GeographyMultiLineString","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography multi polygon' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography multi polygon',
+                                Description: 'Spherical multi polygon',
+                                TypeName: '$data.GeographyMultiPolygon',
+                                TypeDescriptor: '{"Type":"$data.GeographyMultiPolygon","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geography collection' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geography collection',
+                                Description: 'Spherical collection',
+                                TypeName: '$data.GeographyCollection',
+                                TypeDescriptor: '{"Type":"$data.GeographyCollection","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry point' }).length){
+                            update = true;
                             c.TypeTemplates.add(new c.TypeTemplates.createNew({
                                 Name: 'Geometry point',
                                 Description: 'Euclidean location point',
                                 TypeName: '$data.GeometryPoint',
                                 TypeDescriptor: '{"Type":"$data.GeometryPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry line string' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry line string',
+                                Description: 'Euclidean line string',
+                                TypeName: '$data.GeometryLineString',
+                                TypeDescriptor: '{"Type":"$data.GeometryLineString","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry polygon' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry polygon',
+                                Description: 'Euclidean polygon',
+                                TypeName: '$data.GeometryPolygon',
+                                TypeDescriptor: '{"Type":"$data.GeometryPolygon","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry multi point' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry multi point',
+                                Description: 'Euclidean multi point',
+                                TypeName: '$data.GeometryMultiPoint',
+                                TypeDescriptor: '{"Type":"$data.GeometryMultiPoint","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry multi line string' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry multi line string',
+                                Description: 'Euclidean multi line string',
+                                TypeName: '$data.GeometryMultiLineString',
+                                TypeDescriptor: '{"Type":"$data.GeometryMultiLineString","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry multi polygon' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry multi polygon',
+                                Description: 'Euclidean multi polygon',
+                                TypeName: '$data.GeometryMultiPolygon',
+                                TypeDescriptor: '{"Type":"$data.GeometryMultiPolygon","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+                        
+                        if (!tt.filter(function(it){ return it.Name == 'Geometry collection' }).length){
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Geometry collection',
+                                Description: 'Euclidean collection',
+                                TypeName: '$data.GeometryCollection',
+                                TypeDescriptor: '{"Type":"$data.GeometryCollection","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
                             }));
                         }
                         
@@ -485,8 +633,17 @@ $(function () {
                                         }));
                                     }
                                     
+                                    c.AppItems.add(new c.AppItems.createNew({
+                                        Id: $data.Guid.NewGuid(),
+                                        AppId: self.currentApplication().appid,
+                                        Type: 'ApplicationManagerUpdate',
+                                        Data: { version: 1.1 },
+                                        CreationDate: new Date()
+                                    }));
+                                    
                                     c.saveChanges(function(){
-                                        alert('JayStorm updated to v1.1\n\nPlease publish your application and reload the Application Manager to apply.');
+                                        adminApiClient.adminUpdate(true);
+                                        //alert('JayStorm updated to v1.1\n\nPlease publish your application and reload the Application Manager to apply.');
                                     }).fail(function(err){
                                         console.error(err);
                                         alert(err);
@@ -670,6 +827,32 @@ $(function () {
                     if (xhr.status == 200) {
                         self.launchResult(xhr.responseText);
                         self.launchFinished(new Date());
+                        
+                        var c = self.currentAppDBContextFactory()();
+                        c.onReady(function(){
+                            var fn = function(){
+                                c.AppItems.filter(function(it){ return it.AppId == this.appid && it.Type == this.update; }, {
+                                    appid: adminApiClient.currentApplication().appid,
+                                    update: 'ApplicationManagerUpdate'
+                                }).toArray(function(updates){
+                                    for (var i = 0; i < updates.length; i++){
+                                        c.AppItems.remove(updates[i]);
+                                    }
+                                    
+                                    c.saveChanges(function(){
+                                        adminApiClient.adminUpdate(false);
+                                    }).fail(function(err){
+                                        alert(err);
+                                    });
+                                }).fail(function(){
+                                    setTimeout(fn, 1000);
+                                });
+                            };
+                            
+                            fn();
+                        }).fail(function(err){
+                            alert(err);
+                        });
                     } else {
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }
