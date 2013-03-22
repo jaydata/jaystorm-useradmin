@@ -81,7 +81,7 @@
 </head>
 <body>
     <div id="AppUI">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top AppUI">
             <div class="navbar-inner">
                 <div class="logo-container">
                     <a id="logo-jaystorm" class="brand" href="/">JayStorm Admin</a>
@@ -112,7 +112,7 @@
         </div>
 
         <div class="tabbable tabs-left main-tab">
-            <div class="tabbable tabs-left tab-left-container">
+            <div class="tabbable tabs-left tab-left-container AppUI">
                 <h2 class="menu-title">App config</h2>
                 <ul id="nav-1" class="nav nav-tabs tabs-left-hl" data-bind="visible: currentApplication, foreach:menuItems">
                     <li><a href="#" data-bind="visible: $root.navigationVisible, click: $root.show, text: title, attr: { id: $index, class: cssclass }"></a></li>

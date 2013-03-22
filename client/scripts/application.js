@@ -20,8 +20,6 @@ $(function () {
         });*/
 
         self.authorization = ko.observable();
-        self.visible = ko.observable(false);
-        self.context = ko.observable(false);
 
         function getAuthroization(succ, err) {
             var xhr = new XMLHttpRequest();
@@ -706,8 +704,10 @@ $(function () {
 
     }
 
-
-    ko.applyBindings(adminApiClient = new ClientApplication(), document.getElementById("AppUI"));
+    adminApiClient = new ClientApplication();
+    var appui = document.querySelectorAll('.AppUI');
+    for (var i = 0; i < appui.length; i++)
+        ko.applyBindings(adminApiClient, appui[i]);
 
 });
 
