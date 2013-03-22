@@ -28,7 +28,7 @@ $<%=service.Name%>Service = new <%= service.Name %>Service(DEFAULT_ODATA_SERVICE
 // you'll need this if your database operation needs authentication/authorization
 // $<%=service.Name%>Service->Credential = new WindowsCredential('scott','tiger');
 
-<% if (service.DatabaseID){ %>
+<% if (service.DatabaseID && serviceType.memberDefinitions.getPublicMappedProperties()[0] && serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1]){ %>
 // #get all rows from an entityset
 $query = $<%=service.Name%>Service-><%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>();
 $items = $query->Execute()->Result;

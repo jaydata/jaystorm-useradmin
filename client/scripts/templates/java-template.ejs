@@ -34,7 +34,7 @@ public class ODataExample {
 		
 		ODataConsumer c = ODataConsumers.create("<%=app.url + service.Name %>");
 		
-<% if (service.DatabaseID){ %>
+<% if (service.DatabaseID && serviceType.memberDefinitions.getPublicMappedProperties()[0] && serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1]){ %>
 		OQueryRequest<OEntity> result = c.getEntities("<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>");
 		
 		Enumerable<OEntity> entities = result.execute().take(2);

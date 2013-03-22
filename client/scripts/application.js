@@ -43,6 +43,7 @@ $(function () {
                                                     appid: item.appid,
                                                     url: item.url + '/' || 'https://' + item.appid + '.jaystack.net/',
                                                     title: item.name,
+                                                    name: item.name,
                                                     isfreeapp: item.isfreeapp
                                                 }
                                         });

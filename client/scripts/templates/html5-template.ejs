@@ -51,7 +51,7 @@
             // "factory" is a context factory method
             // "type" is your context type
             
-            <% if (service.DatabaseID){ %>
+            <% if (service.DatabaseID && serviceType.memberDefinitions.getPublicMappedProperties()[0] && serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1]){ %>
             // get all data from the <%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %> table
             <%=service.Name %>.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>.toArray(function(result){
                 // "result" is the actual data in a simple Array

@@ -25,7 +25,7 @@ require 'ruby_odata'
 <%=service.Name%>Service = OData::Service.new "<%=app.url + service.Name %>"
 # you'll need this if your database operation needs authentication/authorization
 # , { :username => "scott", :password=> "tiger" }
-<% if (service.DatabaseID){ %>
+<% if (service.DatabaseID && serviceType.memberDefinitions.getPublicMappedProperties()[0] && serviceType.memberDefinitions.getPublicMappedProperties()[0].elementType.memberDefinitions.getPublicMappedProperties()[1]){ %>
 #get all rows from an entityset
 <%=service.Name%>Service.<%= serviceType.memberDefinitions.getPublicMappedProperties()[0].name %>
 result = <%=service.Name%>Service.execute
