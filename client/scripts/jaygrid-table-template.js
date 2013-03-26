@@ -28,7 +28,17 @@ var templateList = [
             <table data-bind='visible: source' class='jay-data-grid table table-bordered table-hover' border='0'> \
                 <!-- ko template: { name: 'jay-data-grid-head' } --> \
                 <!-- /ko -->\
-                <!-- ko template: { name: 'jay-data-grid-body' } --> \
+                <!-- ko if: loaded -->\
+                    <!-- ko if: items().length -->\
+                        <!-- ko template: { name: 'jay-data-grid-body' } --> \
+                        <!-- /ko -->\
+                    <!-- /ko -->\
+                    <!-- ko ifnot: items().length -->\
+                        <tbody><tr><td style='text-align: left;'>Empty table</td></tr></tbody>\
+                    <!-- /ko -->\
+                <!-- /ko -->\
+                <!-- ko ifnot: loaded -->\
+                    <tbody><tr><td style='text-align: left;'>Loading...</td></tr></tbody>\
                 <!-- /ko -->\
             </table>\
                 <div data-bind='visible: source' class='action-buttons'>\
@@ -36,7 +46,7 @@ var templateList = [
                         <!-- ko if: showNewCommandBottom -->  \
                         <a class='btn btn-info' href='#' data-bind='click: addNew'><i class='icon-plus icon-white'></i> <span data-bind='text: newCommandCaption'></a> \
                         <!-- /ko -->\
-                        <input class='btn btn-success' type='submit' value='Save' data-bind='visible: pendingChanges'/>\
+                        <input class='btn btn-success' type='submit' data-bind='visible: pendingChanges, disabled: saving, value: saving() ? \"Saving...\" : \"Save\" '/>\
                     </span>\
                     <br />\
                     <span class='iblock margint10'>\

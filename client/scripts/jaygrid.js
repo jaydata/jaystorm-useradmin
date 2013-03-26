@@ -71,7 +71,7 @@
         } else if (source instanceof $data.Queryable ) {
             entityType = source._defaultType;
         }
-        var props = [].concat(entityType.memberDefinitions.getPublicMappedProperties());
+        var props = [].concat(entityType.memberDefinitions.getPublicMappedProperties().filter(function(it){ return !it.inverseProperty; }));
         if (fields.length > 0) {
             var res = [];
             for (var i = 0; i < fields.length; i++) {
@@ -260,6 +260,7 @@
                 self.itemsReceived = viewModel.itemsReceived || function () { };
 
                 self.items =  viewModel.items || ko.observableArray([]);
+                self.loaded = ko.observable(false);
 
                 if (self.monitorItems) {
                     self.monitorItems(self.items);
@@ -286,6 +287,7 @@
                     }
                     function doSave() {
                         source.entityContext.saveChanges( function() {
+                            self.saving(false);
                             console.log("Items in tracker #2:" + source.entityContext.stateManager.trackedEntities.length);
                             if (self.objectsToDelete().length > 0) {
                                 self.refresh(Math.random());
@@ -294,7 +296,7 @@
                             self.objectsInEditMode.removeAll();
                             self.saving(false);
 
-                        }).fail( function() { console.dir(arguments); })
+                        }).fail( function() { self.saving(false); console.dir(arguments); })
                     }
 
                     if (self.beforeSave) {
@@ -669,6 +671,7 @@
                             self.itemCount(x);
                         });
 
+                        self.loaded(false);
                         q = q.order(sortColumn)
                             .skip(this.pageSize() * this.currentPage())
                             .take(this.pageSize())
@@ -676,6 +679,7 @@
                                 function (entities) {
                                     $data.trace(1, "JayGrid data received:", entities);
                                     self.items.removeAll();
+                                    self.loaded(true);
                                     for (var i = 0; i < entities.length; i++) {
                                         var item = entities[i];
                                         var koItem = item.asKoObservable();
