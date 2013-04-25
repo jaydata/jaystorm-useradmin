@@ -8,8 +8,6 @@ $(function () {
 
         //var context = factory();
 
-
-
     function ClientApplication() {
         var self = this;
         

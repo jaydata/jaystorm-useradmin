@@ -12,6 +12,13 @@ function slideclick(e, element) {
     document.getElementById("welcome").style.display = "none";
     $(".nav a#" + element.getAttribute("id") + "").trigger("click");
 }
+function logout() {
+    var req = new XMLHttpRequest();
+    req.open('GET', '/logout');
+    req.setRequestHeader("Authorization", '');
+    req.send();
+    window.location.href = "/";
+}
 
 var ver = getInternetExplorerVersion();
 if (ver > -1) {
@@ -33,7 +40,7 @@ $(".sub-navbar a").live('click', function () {
 $(function () {
     // MENU ITEMS
     var menuItems = document.body.querySelectorAll("ul.nav li a"),
-        welcome = document.getElementById("welcome");
+    welcome = document.getElementById("welcome");
 
     for (var i = 0; i < menuItems.length; i++) {
         menuItems[i].addEventListener("click", function () {
