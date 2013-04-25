@@ -101,6 +101,7 @@
                         </select>
 
                         <div class="navbar sub-navbar iblock fright">
+                            <a href="javascript:void(0)" class="btn btn-info" disabled>Publish changes</a>
                             <a href="mailto:contact@jaystack.com?subject=JayStorm&#32;Admin&#32;Feedback" class="btn">Give us a feedback</a>
                         </div>
 
@@ -131,9 +132,8 @@
                 <div class="tab-content-item tab-pane fade">
                     <div id="SchemaManagerUI" data-bind="if: visible">
                         <script type="text/html" id="customizeField">
-                            <div>
-                                <h4 style="display: inline">Customize field</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
+                            <div class="modal-window inner-modal-window">
+                                <h4 class="modal-title">Customize field <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
                                 <form class="form-horizontal">
                                     <fieldset>
                                         <legend>Attributes</legend>
@@ -246,17 +246,17 @@
                                         </div>
                                     </fieldset>
                                 </form>
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
                             </div>
                         </script>
 
                         <script type="text/html" id="insideEditor">
-                            <div class="inner-table">
-                                <h4 style="display: inline">Add or remove fields</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
-                                <div data-bind="with: selectedEntity">
-                                    Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
-                                    <!--, EntityID: <span data-bind="text: EntityID"></span>-->
+                            <div class="modal-bg"></div>
+                            <div class="inner-table modal-window">
+                                <h4 class="modal-title">Add or remove fields <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
+                                <div class="modal-lead" data-bind="with: selectedEntity">
+                                    <p>Table item name: <b><span data-bind="text: Name"></span></b></p>
+                                    <p>Full JavaScript class name: <b><span data-bind="text: FullName"></span></b></p>
+                                    <!--EntityID: <span data-bind="text: EntityID"></span>-->
                                 </div>
                                 <div data-bind="jayGrid: {
                                                     source: $root.createContext().EntityFields,
@@ -281,7 +281,7 @@
                                                             value: value,
                                                             optionsCaption: value() ? undefined : 'Select'">
                                         </select>
-                                        <a href="#" data-bind="click: $data.showControls.bind({},'customizeField',FieldsCustomizeEditorModel, 
+                                        <a class="btn btn-info btn-full-width" href="#" data-bind="click: $data.showControls.bind({},'customizeField',FieldsCustomizeEditorModel, 
                                                                             { field: $data, parent: $root, factory: $root.contextFactory, currentDB: $root.currentDatabase })">Customize</a>
                                     </div>
                                     <div data-name-template="ElementType-editor">
@@ -295,17 +295,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
+                                <a href="#" class="btn btn-success" data-bind="click: closeControlBox">Save</a>
                             </div>
                         </script>
 
                         <script type="text/html" id="insideComplexTypeEditor">
-                            <div class="inner-table">
-                                <h4 style="display: inline">Add or remove fields</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
-                                <div data-bind="with: selectedEntity">
-                                    Complex type name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: FullName"></span>
-                                    <!--                                            , EntityID: <span data-bind="text: EntityID"></span>-->
+                            <div class="modal-bg"></div>
+                            <div class="inner-table modal-window">
+                                <h4 class="modal-title">Add or remove fields <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
+                                <div class="modal-lead" data-bind="with: selectedEntity">
+                                    <p>Complex type name: <b><span data-bind="text: Name"></span></b></p>
+                                    <p>Full JavaScript class name: <b><span data-bind="text: FullName"></span></b></p>
+                                    <!--EntityID: <span data-bind="text: EntityID"></span>-->
                                 </div>
                                 <div data-bind="jayGrid: {
                                         source: $root.createContext().EntityFields,
@@ -329,7 +330,7 @@
                                                 value: value,
                                                 optionsCaption: value() ? undefined : 'Select...'">
                                         </select>
-                                        <a href="#" data-bind="click: $data.showControls.bind({},'customizeField',FieldsCustomizeEditorModel, 
+                                        <a class="btn btn-info btn-full-width" href="#" data-bind="click: $data.showControls.bind({},'customizeField',FieldsCustomizeEditorModel, 
                                                                 { field: $data, parent: $root, factory: $root.contextFactory, currentDB: $root.currentDatabase })">Customize</a>
                                     </div>
                                     <div data-name-template="ElementType-editor">
@@ -343,7 +344,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
+                                <a href="#" class="btn btn-success" data-bind="click: closeControlBox">Save</a>
                             </div>
                         </script>
 
@@ -370,11 +371,12 @@
                         </script>
 
                         <script type="text/html" id="eventHandlersEditor">
-                            <div class="inner-table">
-                                <h4 style="display: inline">Add or remove events</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
-                                <div data-bind="with: selectedEntitySet">
-                                    Table item name: <span data-bind="text: Name"></span>, Full JavaScript class name: <span data-bind="text: console.log('fdfjkdshfjkdshkfhdskjhfkdshfhksdhfkjdhksja', $data)"></span>
+                            <div class="modal-bg"></div>
+                            <div class="inner-table modal-window">
+                                <h4 class="modal-title">Add or remove events <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
+                                <div class="modal-lead" data-bind="with: selectedEntitySet">
+                                    <p>Table item name: <b><span data-bind="text: Name"></span></b></p>
+                                    <p>Full JavaScript class name: <b><span data-bind="text: console.log('fdfjkdshfjkdshkfhdskjhfkdshfhksdhfkjdhksja', $data)"></span></b></p>
                                 </div>
                                 <div data-bind="jayGrid: {
                                                     source: $root.createContext().EventHandlers,
@@ -410,15 +412,14 @@
                                     <!--                                                    </a>-->
                                     <!--                                                </div>-->
                                 </div>
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
-
+                                <a href="#" class="btn btn-success" data-bind="click: closeControlBox">Save</a>
                             </div>
                         </script>
 
                         <script type="text/html" id="indexKeysEditor">
-                            <div>
-                                <h4 style="display: inline">Add or remove index keys</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
+                            <div class="modal-bg"></div>
+                            <div class="modal-window inner-modal-window">
+                                <h4 class="modal-title">Add or remove index keys <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
                                 <span data-bind="text: console.log($data, $root)"></span>
                                 <div data-bind="jayGrid: {
                                             source: $root.root().createContext().IndexKeys,
@@ -446,9 +447,7 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
-
+                                <a href="#" class="btn btn-success" data-bind="click: closeControlBox">Save</a>
                             </div>
                         </script>
 
@@ -465,11 +464,11 @@
                         </script>
 
                         <script type="text/html" id="indicesEditor">
-                            <div class="inner-table">
-                                <h4 style="display: inline">Add or remove indices</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
-                                <div data-bind="with: selectedEntitySet">
-                                    Table item name: <span data-bind="text: Name"></span>
+                            <div class="modal-bg"></div>
+                            <div class="inner-table modal-window">
+                                <h4 class="modal-title">Add or remove indices <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4></h4>
+                                <div class="modal-lead" data-bind="with: selectedEntitySet">
+                                    <p>Table item name: <b><span data-bind="text: Name"></span></b></p>
                                 </div>
 
                                 <div data-bind="jayGrid: {
@@ -487,9 +486,6 @@
                                             ]
                                         }">
                                 </div>
-
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
-
                             </div>
                         </script>
 
@@ -746,10 +742,9 @@
                         </script>
 
                         <script id="serviceOperationsEditor" type="text/html">
-                            <div>
-                                <h4 style="display: inline">Add or remove service operations</h4>
-                                <a href="#" class="btn btn-danger" style="float: right" data-bind="click: closeControlBox">Close</a>
-
+                            <div class="modal-bg"></div>
+                            <div class="modal-window">
+                                <h4 class="modal-title">Add or remove service operations <a href="#" class="btn btn-close pull-right" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
                                 <div data-bind="jayGrid: {
                                                     source: $root.createContext().ServiceOperations,
                                                     beforeSave: beforeSaveHandler,
@@ -767,7 +762,6 @@
                                     </div>
                                 </div>
                                 <a href="#" class="btn btn-info" data-bind="click: buildServiceSource">Build</a>
-                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
                             </div>
                         </script>
 
@@ -790,8 +784,7 @@
                             <script type="text/html" data-name-template="Name-display">
                                 <b><a data-bind="{text: value, attr: { target: '_blank', href: $root.application.currentApplication().url + value() } }"></a></b>
                                 <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
-                                <a href="#" data-bind="click: $data.showControls.bind({},'embedService',EmbedServiceModel, { service : $data, factory: $root.contextFactory })">API access tutorials</a>
-
+                                <a href="#" onclick="$('#nav-2 #9').trigger('click'); return false;">API access tutorials</a>
                                 <!--<a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
                             </script>
                             <script type="text/html" data-name-template="ServiceType-editor">
@@ -841,11 +834,11 @@
 
                             <script type="text/html" data-name-template="ServiceSource-display">
                                 <!--<pre data-bind="visible: owner.ServiceSourceType() == 'script' && value(), attr: { id: 'Service-' + ko.utils.unwrapObservable(rowIndex), codemirror: (function(){ if (value()) $root.codeHighlight('Service-' + ko.utils.unwrapObservable(rowIndex), value); })() }"></pre>-->
-                                <div><a href='#' data-bind='visible: !$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit source</a></div>
                                 <div data-bind="if: $root.serviceOperationsNotSupported">
                                     <a href='#' data-bind='visible: !$data.ServiceID, click: $data.showControls.bind({}, "serviceOperationsEditor", ServiceOperationsEditorModel, 
-                                                                            { service: $data, factory: $root.contextFactory }), visible: owner.ServiceSourceType() == "script"'>Edit service operations</a>
+                                        { service: $data, factory: $root.contextFactory }), visible: owner.ServiceSourceType() == "script"'>Service operations</a>
                                 </div>
+                                <div><a href='#' data-bind='visible: !$data.ServiceID, click: function(){ $root.editSource(owner, value, $root.error); }, visible: owner.ServiceSourceType() == "script"'>Edit source (advanced)</a></div>
                             </script>
                         </div>
 
@@ -1127,37 +1120,42 @@
                 <div class="tab-content-item tab-pane fade">
                     <div id="UserManagerUI" data-bind="if: visible">
                         <script type="text/html" id="GroupArrayEditor">
-                            <div>
+                            <div class="modal-bg"></div>
+                            <div class="modal-window modal-window-mini">
+                                <h4 class="modal-title">Choose permissions <a class="btn btn-close pull-right" href="#" data-bind="click: closeControlBox"><i class="icon-remove"></i></a></h4>
                                 <ul class="resetlist" data-bind="foreach: Groups">
                                     <li>
                                         <input type="checkbox" data-bind="checked: selected, attr: { id: Name }" />
                                         <label data-bind="text: Name, attr: { for: Name }"></label>
                                     </li>
                                 </ul>
-                                <a href="#" data-bind="click: closeControlBox">close</a>
+                                <a class="btn btn-success" href="#" data-bind="click: closeControlBox">Save</a>
                             </div>
                         </script>
 
                         <script type="text/html" id="setPasswordUI">
-                            <form data-bind="submit: savePassword">
-                                <div class="fields">
-                                    <label>
-                                        Password:
-                                            <br />
-                                        <input type="password" required data-bind="value: password" />
-                                    </label>
-                                    <br />
-                                    <label>
-                                        Retype:
-                                            <br />
-                                        <input type="password" required data-bind="value: rePassword" />
-                                    </label>
-                                    <br />
-                                    <span class="alert-danger" data-bind="text: validation"></span>
-                                </div>
-                                <input class="btn btn-info" type="submit" />
-                            </form>
-                            <a href="#" data-bind="click: close">close</a>
+                            <div class="modal-bg"></div>
+                            <div class="modal-window modal-window-mini">
+                                <h4 class="modal-title">Reset password <a href="#" class="btn btn-close pull-right" data-bind="click: close"><i class="icon-remove"></i></a></h4>
+                                <form data-bind="submit: savePassword">
+                                    <div class="fields">
+                                        <label>
+                                            Password:
+                                                <br />
+                                            <input type="password" required data-bind="value: password" />
+                                        </label>
+                                        <br />
+                                        <label>
+                                            Retype:
+                                                <br />
+                                            <input type="password" required data-bind="value: rePassword" />
+                                        </label>
+                                        <br />
+                                        <span class="alert-danger" data-bind="text: validation"></span>
+                                    </div>
+                                    <input class="btn btn-info" type="submit" value="Save" />
+                                </form>
+                            </div>
                         </script>
 
                         <!--<div class="alert alert-danger fright iblock">
@@ -1185,11 +1183,11 @@
 
                                 <script type="text/html" data-name-template="Groups-editor">
                                     <div data-bind="foreach: value">
-                                        <span data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></span>
+                                        <p data-bind="readValue: { source: $root.context().Groups, key: $data, field: 'Name' }"></p>
                                     </div>
                                     <a href="#"
                                         data-bind="click: $data.showControls.bind({},'GroupArrayEditor', 
-                                GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Click me!</a>
+                                GroupEditor, { meta: $data, entity: owner, value: value, context: $root.context })">Edit</a>
                                 </script>
 
                                 <script type="text/html" data-name-template="Groups-display">
@@ -1401,10 +1399,10 @@
                         </div>
                     </li>
                     <li>
-                        <div class="icon security">&nbsp;</div>
+                        <div class="icon user">&nbsp;</div>
                         <div class="item-content">
-                            <h2><a onclick="slideclick(event, this);" id="2" href="#">Security</a></h2>
-                            <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                            <h2><a onclick="slideclick(event, this);" id="5" href="#">Users</a></h2>
+                            <p>Manage your users and security groups of your app</p>
                         </div>
                     </li>
                 </ul>
@@ -1417,40 +1415,33 @@
                         </div>
                     </li>
                     <li>
+                        <div class="icon security">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="2" href="#">Security</a></h2>
+                            <p>Security manager provides fine-grained access control configuration to your entity sets and services. Assign the available actions for each group</p>
+                        </div>
+                    </li>
+                    <li>
                         <div class="icon file">&nbsp;</div>
                         <div class="item-content">
                             <h2><a onclick="slideclick(event, this);" id="5" href="#">File manager</a></h2>
                             <p>Upload the server-side JavaScript code or static files and we deploy them to all your compute units</p>
                         </div>
                     </li>
-                    <li>
-                        <div class="icon user">&nbsp;</div>
-                        <div class="item-content">
-                            <h2><a onclick="slideclick(event, this);" id="5" href="#">Users</a></h2>
-                            <p>Manage your users and security groups of your app</p>
-                        </div>
-                    </li>
                 </ul>
                 <ul class="feature full">
-                    <li>
-                        <div class="icon access">&nbsp;</div>
-                        <div class="item-content">
-                            <h2><a onclick="slideclick(event, this);" id="7" href="#">Publish</a></h2>
-                            <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="icon devices">&nbsp;</div>
-                        <div class="item-content">
-                            <h2><a onclick="slideclick(event, this);" id="#" href="#">Access Clients</a></h2>
-                            <p>Lorem ipsum is a text that should be seen hwo is the text should be seen is the example. </p>
-                        </div>
-                    </li>
                     <li>
                         <div class="icon data">&nbsp;</div>
                         <div class="item-content">
                             <h2><a onclick="slideclick(event, this);" id="8" href="#">Data manager</a></h2>
                             <p>Data manager provides front-end to CRUD your all tables in your databases. Editing your ApplicationDb to customize the hebavior of our app. </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon access">&nbsp;</div>
+                        <div class="item-content">
+                            <h2><a onclick="slideclick(event, this);" id="7" href="#">Publish</a></h2>
+                            <p>Here you can implement all modifications within your configuration onto all the dedicated virtual servers of the application environment.</p>
                         </div>
                     </li>
                 </ul>

@@ -51,6 +51,10 @@ select {
     margin-right: 5px;
 }
 
+.align-center {
+    text-align: center;
+}
+
 //============================================== HIDING <div> templates inside <script> tags ==============================================//
 div[data-name-template]{ display: none; }
 
@@ -292,7 +296,7 @@ div[data-name-template]{ display: none; }
 //============================================== WELCOME PAGE ==============================================//
 #welcome 
 {
-    position: absolute; top: 51px; left: 0; right: 0; 
+    position: absolute; top: 51px; left: 175px; right: 0; 
     height: auto; min-height: 100%;
     background: #fff; z-index: 950;
 
@@ -788,6 +792,25 @@ h5.muted
     }
 }
 
+.btn-close {
+    min-width: auto !important;
+
+    i { margin: 4px 0; }
+}
+
+.btn-full-width {
+    width: 100%;
+}
+
+.btn-mini {
+    min-width: auto !important;
+    padding: 5px 10px;
+
+    i { float: none; margin: 0; }
+}
+
+table.table tr .btn-full-width { margin: 10px 0 0; }
+
 .action-buttons { margin: 0 0 15px; }
 .actions { margin: 0 0 5px 10px; }
 
@@ -997,6 +1020,45 @@ fieldset
         background: url(../img/li_cyan.png) center left no-repeat;
         list-style-type: none;
     }
+}
+
+//============================================== Modal ==============================================//
+.modal-bg {
+    display: block;
+    position: fixed; top: 51px; right: 0; bottom: 0; left: 0;
+    background: rgba(0, 0, 0, 0.40);
+    z-index: 5500;
+}
+
+.modal-window {
+    display: block;
+    position: fixed; top: 15%; right: 5%; bottom: 15%; left: 5%;
+    padding: 15px;
+    background: #FFF;
+    -webkit-box-shadow: 0 0 10px #636363;
+    -moz-box-shadow: 0 0 10px #636363;
+    box-shadow: 0 0 10px #636363;
+    z-index: 7500;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    &.inner-modal-window {
+        top: 0; right: 0; bottom: 0; left: 0;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+
+    &.modal-window-mini {
+        top: 35%; right: 25%; bottom: 35%; left: 25%;
+    }
+}
+
+.modal-title {
+    display: block;
+    margin: -15px -15px 20px -15px; padding: 12px 15px;
+    background: #00AFF0; color: #FFF;
+
+    .btn-close { margin-top: -6px; }
 }
 
 //============================================== Screen -988 ==============================================//
