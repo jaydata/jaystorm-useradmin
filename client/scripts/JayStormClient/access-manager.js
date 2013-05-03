@@ -11,6 +11,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.AccessManager", {
                     item.data.HasChanges = true;
                 }
             }
+            adminApiClient.publishChanges(true);
         }
     }
 

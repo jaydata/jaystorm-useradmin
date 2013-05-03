@@ -102,7 +102,7 @@
 
                         <div class="navbar sub-navbar iblock fright">
                             <a href="mailto:contact@jaystack.com?subject=JayStorm&#32;Admin&#32;Feedback" class="btn">Give us a feedback</a>
-                            <a href="javascript:void(0)" class="btn btn-info" disabled>Publish changes</a>
+                            <a href="javascript:void(0)" class="btn btn-info" data-bind="attr: { disabled: !publishChanges() }, click: publishChangesLaunch">Publish changes</a>
                             <a href="javascript:void(0)" class="btn btn-info" onclick="logout()"><i class="icon-off icon-white"></i> Logout</a>
                         </div>
 
@@ -296,7 +296,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="btn btn-success" data-bind="click: closeControlBox">Save</a>
+                                <a href="#" class="btn btn-danger" data-bind="click: closeControlBox">Close</a>
                             </div>
                         </script>
 

@@ -105,7 +105,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
             //upon new table/entityset creation we provision a new entity as the item type
             //of the new entityset. also and id field is created
             //this would need much less code with relations support in v1.1
-
+            adminApiClient.publishChanges(true);
             var tracks = set.entityContext.stateManager.trackedEntities;
             var newEntities = { };
             var dbs = [];
@@ -177,6 +177,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         };
         
         self.beforeComplexTypeSave = function(set){
+            adminApiClient.publishChanges(true);
             var tracks = set.entityContext.stateManager.trackedEntities;
             tracks.forEach(function(complexType){
                 complexType = complexType.data;
@@ -349,6 +350,7 @@ function EventHandlerCodeEditorModel(vm){
                 eh.Handler = 
             });
         }*/
+        adminApiClient.publishChanges(true);
     };
     
     this.closeControlBox = function(){
@@ -414,6 +416,7 @@ function EventHandlersEditorModel(vm){
         });
         
         self.codeEditor.length = 0;
+        adminApiClient.publishChanges(true);
     };
     
     self.afterRevertHandler = function(item){
@@ -425,6 +428,7 @@ function EventHandlersEditorModel(vm){
         self.codeEditor.splice(self.codeEditor.indexOf(cb), 1);
         
         item.Handler(cb.originalValue);
+        adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     self.codeEditor = [];
@@ -506,6 +510,7 @@ function FieldsEditorModel(vm) {
             if (tracks.length) inverseFn(tracks.shift().data);
         };*/
         context.saveChanges();
+        adminApiClient.publishChanges(true);
     }
     this.selectedEntity = ko.observable();
     
@@ -516,6 +521,7 @@ function FieldsEditorModel(vm) {
         if (cb && cb.closeControlBox) cb.closeControlBox();
         
         self.customize.splice(self.customize.indexOf(cb), 1);
+        adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     self.customize = [];
@@ -555,6 +561,7 @@ function ComplexTypeEditorModel(vm) {
         context.attach(db);
         db.HasChanges(true);
         context.saveChanges();*/
+        adminApiClient.publishChanges(true);
     }
     this.selectedEntity = ko.observable(vm.entity);
     
@@ -565,6 +572,7 @@ function ComplexTypeEditorModel(vm) {
         if (cb && cb.closeControlBox) cb.closeControlBox();
         
         self.customize.splice(self.customize.indexOf(cb), 1);
+        adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     self.customize = [];
@@ -617,6 +625,7 @@ function IndicesEditorModel(vm) {
         context.attach(db);
         db.HasChanges(true);
         context.saveChanges();
+        adminApiClient.publishChanges(true);
     };
     
     self.afterRevertHandler = function(item){
@@ -626,6 +635,7 @@ function IndicesEditorModel(vm) {
         if (cb && cb.closeControlBox) cb.closeControlBox();
         
         self.customize.splice(self.customize.indexOf(cb), 1);*/
+        adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     //self.customize = [];
@@ -674,6 +684,7 @@ function IndexKeysEditorModel(vm) {
         context.attach(db);
         db.HasChanges(true);
         context.saveChanges();*/
+        adminApiClient.publishChanges(true);
     };
     //this.selectedEntity = ko.observable();
     
@@ -684,6 +695,7 @@ function IndexKeysEditorModel(vm) {
         if (cb && cb.closeControlBox) cb.closeControlBox();
         
         self.customize.splice(self.customize.indexOf(cb), 1);*/
+        adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     //self.customize = [];

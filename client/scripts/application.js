@@ -752,6 +752,7 @@ $(function () {
                     self.navigationVisible(true);
                     if (localStorage[value.appid]) self.publishSuccess(parseInt(localStorage[value.appid], 10));
                     else self.publishSuccess(0);
+                    new $data.JayStormClient.DeploymentManager(self).appContext(appDBFactory());
                 },
                 error: function () {
                     setTimeout(function () {
@@ -820,11 +821,13 @@ $(function () {
             xhr.open("POST", "launch", true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onerror = function () {
+                self.publishChanges(true);
                 alert("could not connect to dashboard.jaystack.net for launch");
             }
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
+                        self.publishChanges(false);
                         self.launchResult(xhr.responseText);
                         self.launchFinished(new Date());
                         
@@ -854,14 +857,26 @@ $(function () {
                             alert(err);
                         });
                     } else {
+                        self.publishChanges(true);
                         alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }
                 }
             }
             xhr.send(JSON.stringify({appid: appid}));
         }
+        
+        self.publishChangesLaunch = function(){
+            if (!self.publishChanges()) return false;
+            self.publishChanges(false);
+            new $data.JayStormClient.DeploymentManager(self).appContext(self.currentAppDBContextFactory());
+            var appid = self.currentApplication().appid;
+            launchApplication(appid);
+        };
 
+        self.publishChanges = ko.observable(false);
         self.launchCurrentApplication = function () {
+            if (!self.publishChanges()) return false;
+            self.publishChanges(false);
             var appid = self.currentApplication().appid;
             launchApplication(appid);
         }

@@ -17,7 +17,7 @@ function logout() {
     req.open('GET', '/logout');
     req.setRequestHeader("Authorization", '');
     req.send();
-    window.location.href = "/";
+    window.location.href = 'https://' + (window.location.href.indexOf('dev-') >= 0 ? 'dev-' : '') + 'dashboard.jaystack.com';
 }
 
 var ver = getInternetExplorerVersion();

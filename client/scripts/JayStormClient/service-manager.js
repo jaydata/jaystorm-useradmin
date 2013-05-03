@@ -93,6 +93,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
                     item.data.HasChanges = true;
                 }
             }
+            adminApiClient.publishChanges(true);
         };
         
         self.editData = function(item){
@@ -297,6 +298,7 @@ function ServiceOperationCodeEditorModel(vm){
                 eh.Handler = 
             });
         }*/
+        adminApiClient.publishChanges(true);
     };
     
     this.closeControlBox = function(){
@@ -333,6 +335,7 @@ function ServiceOperationsEditorModel(vm){
         });
         
         self.codeEditor.length = 0;
+        adminApiClient.publishChanges(true);
     };
     
     self.afterRevertHandler = function(item){
@@ -344,6 +347,7 @@ function ServiceOperationsEditorModel(vm){
         self.codeEditor.splice(self.codeEditor.indexOf(cb), 1);
         
         item.FunctionBody(cb.originalValue);
+        adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     self.codeEditor = [];
