@@ -875,7 +875,6 @@ $(function () {
 
         self.publishChanges = ko.observable(false);
         self.launchCurrentApplication = function () {
-            if (!self.publishChanges()) return false;
             self.publishChanges(false);
             var appid = self.currentApplication().appid;
             launchApplication(appid);
