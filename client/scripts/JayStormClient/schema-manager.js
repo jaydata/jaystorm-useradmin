@@ -9,7 +9,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
         //self.databases = ko.observable();
 
         self.clickDb = function(){
-            setTimeout(function(){ (document.querySelector('#SchemaManagerUI .nav.nav-tabs li a:not([data-dbname="ApplicationDB"])') || { click: function(){} }).click(); }, 0);
+            setTimeout(function () {
+                var el = document.querySelector('#SchemaManagerUI .nav.nav-tabs li a:not([data-dbname="ApplicationDB"])');
+                if (el) {
+                    el.click();
+                }
+            }, 0);
         };
         
         self.visible.subscribe(function(value){
@@ -20,8 +25,16 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
 
         self.context.subscribe(function (value) {
             if (value) {
-                value.Databases.toArray(self.databases).then(function(value){
-                    self.clickDb();
+                var alreadyVisible = self.visible() || self.databases().length === 0;
+                value.Databases.toArray(self.databases).then(function (value) {
+                    if (!(!alreadyVisible && self.visible())) {
+                        self.clickDb();
+                    } else {
+                        var el = document.querySelector('#SchemaManagerUI .nav.nav-tabs li a[data-dbname="' + self.currentDatabase().Name() + '"]');
+                        if (el) {
+                            el.parentNode.className = 'active';
+                        }
+                    }
                 });
             } else {
                 self.databases.removeAll();

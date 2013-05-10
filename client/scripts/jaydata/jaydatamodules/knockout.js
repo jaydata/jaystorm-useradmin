@@ -1,4 +1,4 @@
-// JayData 1.2.7
+// JayData 1.3.0
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -12,6 +12,20 @@
 //
 // More info: http://jaydata.org
 (function ($data) {
+
+    /*converters*/
+    Object.keys($data.Container.converters.to).forEach(function (typeName) {
+        var origConverter = $data.Container.converters.to[typeName] ? $data.Container.converters.to[typeName]['$data.Function'] || $data.Container.converters.to[typeName]['default'] : undefined;
+        $data.Container.registerConverter(typeName, '$data.Function', function (value) {
+            if (ko.isObservable(value)) {
+                return value;
+            } else if (origConverter) {
+                return origConverter.apply($data.Container.converters[typeName], arguments);
+            } else {
+                Guard.raise(new Exception('Type Error', 'value is not koObservable', value));
+            }
+        });
+    });
 
     function ObservableFactory(originalType, observableClassNem) {
         var instanceDefinition = {
@@ -77,7 +91,7 @@
 			while (
 				div.innerHTML = '<!--[if gt IE ' + (++version) + ']><i></i><![endif]-->',
 				iElems[0]
-			);
+			){};
 			return version > 4 ? version : undefined;
 		}());
 

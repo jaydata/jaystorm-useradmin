@@ -1,4 +1,4 @@
-// JayData 1.2.7
+// JayData 1.3.0
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -11,6 +11,38 @@
 //     Zoltán Gyebrovszki, Gábor Dolla
 //
 // More info: http://jaydata.org
+$data.FacebookConverter = {
+    fromDb: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Number': $data.Container.proxyConverter,
+        '$data.Integer': $data.Container.proxyConverter,
+        '$data.String': $data.Container.proxyConverter,
+        '$data.Date': function (value) { return new Date(typeof value === "string" ? parseInt(value) : value); },
+        '$data.Boolean': function (value) { return !!value },
+        '$data.Blob': $data.Container.proxyConverter,
+        '$data.Array': function (value) { if (value === undefined) { return new $data.Array(); } return value; }
+    },
+    toDb: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Number': $data.Container.proxyConverter,
+        '$data.Integer': $data.Container.proxyConverter,
+        '$data.String': function (value) { return "'" + value + "'"; },
+        '$data.Date': function (value) { return value ? value.valueOf() : null; },
+        '$data.Boolean': $data.Container.proxyConverter,
+        '$data.Blob': $data.Container.proxyConverter,
+        '$data.Array': function (value) { return '(' + value.join(', ') + ')'; }
+    }
+};
 
 $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.StorageProviderBase, null,
 {
@@ -48,7 +80,7 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
                 rigthValue: ') = 0'
             },
             'strpos': {
-                dataType: $data.String,
+                dataType: $data.Integer,
                 allowedIn: [$data.Expressions.FilterExpression, $data.Expressions.ProjectionExpression],
                 mapTo: "strpos",
                 parameters: [{ name: "@expression", dataType: $data.String }, { name: "strFragment", dataType: $data.String }]
@@ -60,7 +92,7 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
                 parameters: [{ name: "@expression", dataType: $data.String }, { name: "startIdx", dataType: $data.Number }, { name: "length", dataType: $data.Number }]
             },
             'strlen': {
-                dataType: $data.String,
+                dataType: $data.Integer,
                 allowedIn: [$data.Expressions.FilterExpression, $data.Expressions.ProjectionExpression],
                 mapTo: "strlen",
                 parameters: [{ name: "@expression", dataType: $data.String }]
@@ -89,28 +121,7 @@ $data.Class.define('$data.storageProviders.Facebook.FacebookProvider', $data.Sto
     supportedUnaryOperators: {
         value: {}
     },
-    fieldConverter: {
-        value: {
-            fromDb: {
-                '$data.Number': function (value) { return typeof value === "number" ? value : parseInt(value); },
-                '$data.Integer': function (value) { return typeof value === "number" ? value : parseFloat(value); },
-                '$data.String': function (value) { return value; },
-                '$data.Date': function (value) { return new Date(typeof value === "string" ? parseInt(value) : value); },
-                '$data.Boolean': function (value) { return !!value },
-                '$data.Blob': function (value) { return value; },
-                '$data.Array': function (value) { if (value === undefined) { return new $data.Array(); } return value; }
-            },
-            toDb: {
-                '$data.Number': function (value) { return value; },
-                '$data.Integer': function (value) { return value; },
-                '$data.String': function (value) { return "'" + value + "'"; },
-                '$data.Date': function (value) { return value ? value.valueOf() : null; },
-                '$data.Boolean': function (value) { return value },
-                '$data.Blob': function (value) { return value; },
-                '$data.Array': function (value) { return '(' + value.join(', ') + ')'; }
-            }
-        }
-    },
+    fieldConverter: { value: $data.FacebookConverter },
     supportedSetOperations: {
         value: {
             filter: {},
@@ -293,7 +304,7 @@ $C('$data.storageProviders.Facebook.FacebookCompiler', $data.Expressions.EntityE
             if (i != 0) selectStr += ', ';
             selectStr += memDef.name + ': s.' + memDef.name;
         });
-        selectStr += '};';
+        selectStr += '}; }';
 
         //var projectionFunc = null;
         //eval(selectStr);
@@ -363,7 +374,17 @@ $C('$data.storageProviders.Facebook.FacebookCompiler', $data.Expressions.EntityE
                 Guard.raise(new Exception(expression.right.type + " not allowed in '" + expression.resolution.mapTo + "' statement", "invalid operation"));
             }
 
-        var right = this.Visit(expression.right, context);
+        if (expression.resolution.name === 'in' && expression.right.value instanceof Array) {
+            var self = this;
+            context.sql += "(";
+            expression.right.value.forEach(function (item, i) {
+                if (i > 0) context.sql += ", ";
+                self.Visit(item, context);
+            });
+            context.sql += ")";
+        } else {
+            var right = this.Visit(expression.right, context);
+        }
         context.sql += ")";
     },
 
@@ -392,16 +413,16 @@ $C('$data.storageProviders.Facebook.FacebookCompiler', $data.Expressions.EntityE
     },
 
     VisitQueryParameterExpression: function (expression, context) {
-        var expressionValueType = Container.resolveType(Container.getTypeName(expression.value));
-        if (this.provider.supportedDataTypes.indexOf(expressionValueType) != -1)
-            context.sql += this.provider.fieldConverter.toDb[Container.resolveName(expressionValueType)](expression.value);
-        else {
-            switch (expressionValueType) {
-                case $data.Queryable:
-                    context.sql += '(' + expression.value.toTraceString().queryText + ')';
-                    break;
-                default:
-                    context.sql += "" + expression.value + ""; break;
+        if (expression.value instanceof $data.storageProviders.Facebook.EntitySets.Command) {
+            context.sql += "" + expression.value + "";
+        } else if (expression.value instanceof $data.Queryable) {
+            context.sql += '(' + expression.value.toTraceString().queryText + ')';
+        } else {
+            var expressionValueType = Container.resolveType(expression.type);
+            if (this.provider.supportedDataTypes.indexOf(expressionValueType) != -1)
+                context.sql += this.provider.fieldConverter.toDb[Container.resolveName(expressionValueType)](expression.value);
+            else {
+              context.sql += "" + expression.value + "";
             }
         }
     },
@@ -484,7 +505,7 @@ $C('$data.storageProviders.Facebook.FacebookCompiler', $data.Expressions.EntityE
                     context.fieldOperation = undefined;
 
             } else
-                Guard.raise(new Exception(parameter.type + " not allowed in '" + expression.operation.memberName + "' statement", "invalid operation"));
+                Guard.raise(new Exception(arg.dataType + " not allowed in '" + expression.operation.memberName + "' statement", "invalid operation"));
         }, this);
 
         if (context.fieldData && context.fieldData.name)
@@ -499,7 +520,7 @@ $C('$data.storageProviders.Facebook.FacebookCompiler', $data.Expressions.EntityE
 
 
 $data.Class.define("$data.Facebook.types.FbUser", $data.Entity, null, {
-    uid: { type: "int", key: true, isPublic: true, searchable: true },
+    uid: { type: "number", key: true, isPublic: true, searchable: true },
     username: { type: "string", isPublic: true, searchable: true },
     first_name: { type: "string", isPublic: true },
     middle_name: { type: "string", isPublic: true },
@@ -511,7 +532,7 @@ $data.Class.define("$data.Facebook.types.FbUser", $data.Entity, null, {
     pic: { type: "string" },
     affiliations: { type: "Array", elementType: "Object" },
     profile_update_time: { type: "datetime" },
-    timezone: { type: "int" },
+    timezone: { type: "number" },
     religion: { type: "string" },
     birthday: { type: "string" },
     birthday_date: { type: "string" },
@@ -520,7 +541,7 @@ $data.Class.define("$data.Facebook.types.FbUser", $data.Entity, null, {
     meeting_sex: { type: "Array", elementType: "Object" },
     meeting_for: { type: "Array", elementType: "Object" },
     relationship_status: { type: "string" },
-    significant_other_id: { type: "int" /*uid*/ },
+    significant_other_id: { type: "number" /*uid*/ },
     political: { type: "string" },
     current_location: { type: "Array", elementType: "Object" },
     activities: { type: "string" },
@@ -535,8 +556,8 @@ $data.Class.define("$data.Facebook.types.FbUser", $data.Entity, null, {
     hs_info: { type: "Array", elementType: "Object" },
     education_history: { type: "Array", elementType: "Object" },
     work_history: { type: "Array", elementType: "Object" },
-    notes_count: { type: "int" },
-    wall_count: { type: "int" },
+    notes_count: { type: "number" },
+    wall_count: { type: "number" },
     status: { type: "string" },
     has_added_app: { type: "bool" },
     online_presence: { type: "string" },
@@ -567,53 +588,55 @@ $data.Class.define("$data.Facebook.types.FbUser", $data.Entity, null, {
     favorite_teams: { type: "Array", elementType: "Object" },
     inspirational_people: { type: "Array", elementType: "Object" },
     languages: { type: "Array", elementType: "Object" },
-    likes_count: { type: "int" },
-    friend_count: { type: "int" },
-    mutual_friend_count: { type: "int" },
+    likes_count: { type: "number" },
+    friend_count: { type: "number" },
+    mutual_friend_count: { type: "number" },
     can_post: { type: "bool" }
 }, null)
+
 $data.Class.define("$data.Facebook.types.FbFriend", $data.Entity, null, {
-    uid1: { type: "int", key: true, searchable: true },
-    uid2: { type: "int", key: true, searchable: true }
-}, null);$data.Class.define("$data.Facebook.types.FbPage", $data.Entity, null, {
-    page_id: { type: "int", key: true, isPublic: true, searchable: true },
+    uid1: { type: "number", key: true, searchable: true },
+    uid2: { type: "number", key: true, searchable: true }
+}, null);
+$data.Class.define("$data.Facebook.types.FbPage", $data.Entity, null, {
+    page_id: { type: "number", key: true, isPublic: true, searchable: true },
     name: { type: "string", isPublic: true, searchable: true },
     username: { type: "string", isPublic: true, searchable: true },
     description: { type: "string", isPublic: true },
-    categories: { type: "string", isPublic: true },	//array	The categories
+    categories: { type: "array", isPublic: true },	//array	The categories
     is_community_page: { type: "bool", isPublic: true },	//string	Indicates whether the Page is a community Page.
     pic_small: { type: "string", isPublic: true },
     pic_big: { type: "string", isPublic: true },
     pic_square: { type: "string", isPublic: true },
     pic: { type: "string", isPublic: true },
     pic_large: { type: "string", isPublic: true },
-    pic_cover: { type: "string", isPublic: true },	//object	The JSON object containing three fields: cover_id (the ID of the cover photo), source (the URL for the cover photo), andoffset_y (indicating percentage offset from top [0-100])
-    unread_notif_count: { type: "int", isPublic: false },
-    new_like_count: { type: "int", isPublic: false },
-    fan_count: { type: "int", isPublic: true },
+    pic_cover: { type: "object", isPublic: true },	//object	The JSON object containing three fields: cover_id (the ID of the cover photo), source (the URL for the cover photo), andoffset_y (indicating percentage offset from top [0-100])
+    unread_notif_count: { type: "number", isPublic: false },
+    new_like_count: { type: "number", isPublic: false },
+    fan_count: { type: "number", isPublic: true },
     type: { type: "string", isPublic: true },
     website: { type: "string", isPublic: true },
     has_added_app: { type: "bool", isPublic: true },
     general_info: { type: "string", isPublic: true },
     can_post: { type: "bool", isPublic: true },
-    checkins: { type: "int", isPublic: true },
+    checkins: { type: "number", isPublic: true },
     is_published: { type: "bool", isPublic: true },
     founded: { type: "string", isPublic: true },
     company_overview: { type: "string", isPublic: true },
     mission: { type: "string", isPublic: true },
     products: { type: "string", isPublic: true },
-    location: { type: "string", isPublic: true }, //	array	Applicable to all Places.
-    parking: { type: "string", isPublic: true }, //     array	Applicable to Businesses and Places. Can be one of street, lot orvalet
-    hours: { type: "string", isPublic: true }, //	array	Applicable to Businesses and Places.
+    location: { type: "object", isPublic: true }, //	array	Applicable to all Places.
+    parking: { type: "object", isPublic: true }, //     array	Applicable to Businesses and Places. Can be one of street, lot orvalet
+    hours: { type: "array", isPublic: true }, //	array	Applicable to Businesses and Places.
     pharma_safety_info: { type: "string", isPublic: true },
     public_transit: { type: "string", isPublic: true },
     attire: { type: "string", isPublic: true },
-    payment_options: { type: "string", isPublic: true },	//array	Applicable to Restaurants or Nightlife.
+    payment_options: { type: "object", isPublic: true },	//array	Applicable to Restaurants or Nightlife.
     culinary_team: { type: "string", isPublic: true },
     general_manager: { type: "string", isPublic: true },
     price_range: { type: "string", isPublic: true },
-    restaurant_services: { type: "string", isPublic: true },//	array	Applicable to Restaurants.
-    restaurant_specialties: { type: "string", isPublic: true },//	array	Applicable to Restaurants.
+    restaurant_services: { type: "object", isPublic: true },//	array	Applicable to Restaurants.
+    restaurant_specialties: { type: "object", isPublic: true },//	array	Applicable to Restaurants.
     phone: { type: "string", isPublic: true },
     release_date: { type: "string", isPublic: true },
     genre: { type: "string", isPublic: true },
@@ -657,7 +680,14 @@ $data.Class.define('$data.storageProviders.Facebook.EntitySets.Command', null, n
         return this.Config.CommandValue;
     },
     Config: {}
-}, null);
+}, {
+    'to$data.Integer': function (value) {
+        return value;
+    },
+    'to$data.Number': function (value) {
+        return value;
+    }
+});
 
 $data.Class.define("$data.Facebook.FQLContext", $data.EntityContext, null, {
     constructor: function(){

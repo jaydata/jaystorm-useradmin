@@ -1,4 +1,4 @@
-// JayData 1.2.7
+// JayData 1.3.0
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -11,6 +11,38 @@
 //     Zoltán Gyebrovszki, Gábor Dolla
 //
 // More info: http://jaydata.org
+$data.YQLConverter = {
+    fromDb: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Number': function (value) { return typeof value === "number" ? value : parseInt(value); },
+        '$data.Integer': function (value) { return typeof value === "number" ? value : parseFloat(value); },
+        '$data.String': $data.Container.proxyConverter,
+        '$data.Date': function (value) { return new Date(typeof value === "string" ? parseInt(value) : value); },
+        '$data.Boolean': function (value) { return !!value },
+        '$data.Blob': $data.Container.proxyConverter,
+        '$data.Array': function (value) { if (value === undefined) { return new $data.Array(); } return value; }
+    },
+    toDb: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Number': $data.Container.proxyConverter,
+        '$data.Integer': $data.Container.proxyConverter,
+        '$data.String': function (value) { return "'" + value + "'"; },
+        '$data.Date': function (value) { return value ? value.valueOf() : null; },
+        '$data.Boolean': $data.Container.proxyConverter,
+        '$data.Blob': $data.Container.proxyConverter,
+        '$data.Array': function (value) { return '(' + value.join(', ') + ')'; }
+    }
+};
 $data.Class.define('$data.storageProviders.YQL.YQLProvider', $data.StorageProviderBase, null,
 {
     constructor: function (cfg) {
@@ -96,28 +128,7 @@ $data.Class.define('$data.storageProviders.YQL.YQLProvider', $data.StorageProvid
         enumerable: true,
         writable: true
     },
-    fieldConverter: {
-        value: {
-            fromDb: {
-                '$data.Number': function (value) { return typeof value === "number" ? value : parseInt(value); },
-                '$data.Integer': function (value) { return typeof value === "number" ? value : parseFloat(value); },
-                '$data.String': function (value) { return value; },
-                '$data.Date': function (value) { return new Date(typeof value === "string" ? parseInt(value) : value); },
-                '$data.Boolean': function (value) { return !!value },
-                '$data.Blob': function (value) { return value; },
-                '$data.Array': function (value) { if (value === undefined) { return new $data.Array(); } return value; }
-            },
-            toDb: {
-                '$data.Number': function (value) { return value; },
-                '$data.Integer': function (value) { return value; },
-                '$data.String': function (value) { return "'" + value + "'"; },
-                '$data.Date': function (value) { return value ? value.valueOf() : null; },
-                '$data.Boolean': function (value) { return value },
-                '$data.Blob': function (value) { return value; },
-                '$data.Array': function (value) { return '(' + value.join(', ') + ')'; }
-            }
-        }
-    },
+    fieldConverter: { value: $data.YQLConverter },
     executeQuery: function (query, callBack) {
         var self = this;
         callBack = $data.typeSystem.createCallbackSetting(callBack);
@@ -328,7 +339,17 @@ $C('$data.storageProviders.YQL.YQLCompiler', $data.Expressions.EntityExpressionV
                 Guard.raise(new Exception(expression.right.type + " not allowed in '" + expression.resolution.mapTo + "' statement", "invalid operation"));
             }
 
-        var right = this.Visit(expression.right, context);
+        if (expression.resolution.name === 'in' && expression.right.value instanceof Array) {
+            var self = this;
+            context.sql += "(";
+            expression.right.value.forEach(function (item, i) {
+                if (i > 0) context.sql += ", ";
+                self.Visit(item, context);
+            });
+            context.sql += ")";
+        } else {
+            var right = this.Visit(expression.right, context);
+        }
         context.sql += ")";
     },
 
@@ -372,17 +393,13 @@ $C('$data.storageProviders.YQL.YQLCompiler', $data.Expressions.EntityExpressionV
 
     VisitQueryParameterExpression: function (expression, context) {
         context.value = expression.value;
-        var expressionValueType = Container.resolveType(Container.getTypeName(expression.value));
-        if (this.provider.supportedDataTypes.indexOf(expressionValueType) != -1)
+        var expressionValueType = Container.resolveType(expression.type); //Container.resolveType(Container.getTypeName(expression.value));
+        if (expression.value instanceof $data.Queryable) {
+            context.sql += '(' + expression.value.toTraceString().queryText + ')';
+        } else if (this.provider.supportedDataTypes.indexOf(expressionValueType) != -1)
             context.sql += this.provider.fieldConverter.toDb[Container.resolveName(expressionValueType)](expression.value);
         else {
-            switch (expressionValueType) {
-                case $data.Queryable:
-                    context.sql += '(' + expression.value.toTraceString().queryText + ')';
-                    break;
-                default:
-                    context.sql += "" + expression.value + ""; break;
-            }
+            context.sql += "" + expression.value + "";
         }
     },
 
