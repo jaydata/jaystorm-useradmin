@@ -155,13 +155,100 @@ $(function () {
                             c.TypeTemplates.remove(tt.filter(function(it){ return it.Name == 'Geography' })[0]);
                         }
                         
-                        if (!tt.filter(function(it){ return it.Name == 'GUID' }).length){
+                        if (!tt.filter(function (it) { return it.Name == 'GUID' }).length) {
                             update = true;
                             c.TypeTemplates.add(new c.TypeTemplates.createNew({
                                 Name: 'GUID',
                                 Description: 'Globally unique identifier',
                                 TypeName: '$data.Guid',
                                 TypeDescriptor: '{"Type":"$data.Guid","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (tt.filter(function (it) { return it.Name == 'Number' && it.Description == 'A decimal number' }).length) {
+                            update = true;
+                            var number = tt.filter(function (it) { return it.Name == 'Number' && it.Description == 'A decimal number' })[0];
+                            c.TypeTemplates.attach(number);
+                            number.Description = 'A double number';
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'DateTimeOffset' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'DateTimeOffset',
+                                Description: 'A datetimeoffset value stored in Zulu',
+                                TypeName: '$data.DateTimeOffset',
+                                TypeDescriptor: '{"Type":"$data.DateTimeOffset","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'Time' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Time',
+                                Description: 'A time value',
+                                TypeName: '$data.Time',
+                                TypeDescriptor: '{"Type":"$data.Time","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'Decimal' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Decimal',
+                                Description: 'A decimal number',
+                                TypeName: '$data.Decimal',
+                                TypeDescriptor: '{"Type":"$data.Decimal","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'Single' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Single',
+                                Description: 'A single number',
+                                TypeName: '$data.Single',
+                                TypeDescriptor: '{"Type":"$data.Single","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'Byte' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Byte',
+                                Description: 'A byte',
+                                TypeName: '$data.Byte',
+                                TypeDescriptor: '{"Type":"$data.Byte","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'SByte' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'SByte',
+                                Description: 'A sbyte number',
+                                TypeName: '$data.SByte',
+                                TypeDescriptor: '{"Type":"$data.SByte","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'Int16' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Int16',
+                                Description: 'A short number',
+                                TypeName: '$data.Int16',
+                                TypeDescriptor: '{"Type":"$data.Int16","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
+                            }));
+                        }
+
+                        if (!tt.filter(function (it) { return it.Name == 'Int64' }).length) {
+                            update = true;
+                            c.TypeTemplates.add(new c.TypeTemplates.createNew({
+                                Name: 'Int64',
+                                Description: 'A long number',
+                                TypeName: '$data.Int64',
+                                TypeDescriptor: '{"Type":"$data.Int64","Key":false,"Computed":false,"Nullable":true,"MaxLength":null,"ExtendedProperties":"{}"}'
                             }));
                         }
                         
