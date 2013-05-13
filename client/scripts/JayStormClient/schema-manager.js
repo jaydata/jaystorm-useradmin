@@ -14,7 +14,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                 if (el) {
                     el.click();
                 }
-            }, 0);
+            }, 100);
         };
         
         self.visible.subscribe(function(value){

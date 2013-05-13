@@ -35,7 +35,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
 
             changes.Items.subscribe(function (values) {
                 self.hasChanges(!self.hasChanges() ? (values.length > 0) : true);
-                adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
+                if (!self.launching())
+                    adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
             });
             
             entitySet.filter(filterFn).toArray(changes.Items).then(function () {
@@ -43,9 +44,11 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 if (self.changedObjects().length === counter) {
                     self.launchDisabled(false);
                     self.launchInit(false);
-                    adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
+                    if (!self.launching())
+                        adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
                 }
-                adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
+                if (!self.launching())
+                    adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
             });
         }
 
@@ -68,7 +71,8 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.DeploymentManager", {
                 }
                 
                 var c = adminApiClient.currentAppDBContextFactory()();
-                adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
+                if (!self.launching())
+                    adminApiClient.publishChanges(adminApiClient.publishChanges() || self.hasChanges());
                 
                 c.onReady(function(){
                     c.AppItems.first(function(it){ return it.AppId == this.appid && it.Type == this.update; }, {

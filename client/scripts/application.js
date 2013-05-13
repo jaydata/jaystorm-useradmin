@@ -957,7 +957,7 @@ $(function () {
             self.publishChanges(false);
             self.submenuItems[0].Model.appContext(self.currentAppDBContextFactory()());
             var appid = self.currentApplication().appid;
-            launchApplication(appid);
+            self.submenuItems[0].Model.launch();
         };
 
         self.publishChanges = ko.observable(false);
