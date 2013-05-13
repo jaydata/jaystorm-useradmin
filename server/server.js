@@ -365,7 +365,7 @@ app.use('/logout', passport.authenticate('basic', { session: false }));
 app.use('/logout', function(req, res){
     if (req.logOut){
         req.logOut();
-        res.statusCode = 401;
+        res.statusCode = 200;
         res.setHeader('WWW-Authenticate', 'Basic realm="' + 'JayStorm API' + '"');
         res.write('Logout was successful.');
     }else res.write('Logout failed.');

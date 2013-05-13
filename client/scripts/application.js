@@ -22,6 +22,7 @@ $(function () {
         function getAuthroization(succ, err) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "getAuthorization", true);
+            
             xhr.onerror = function () {
                 alert("could not connect to dashboard.jaystack.net for authorization");
             }

@@ -16,8 +16,12 @@ function logout() {
     var req = new XMLHttpRequest();
     req.open('GET', '/logout');
     req.setRequestHeader("Authorization", '');
+    req.onreadystatechange=function(){
+    window.location.href="/";
+	}
     req.send();
     window.location.href = 'https://' + (window.location.href.indexOf('dev-') >= 0 ? 'dev-' : '') + 'dashboard.jaystack.com';
+//    window.location.href = "/";
 }
 
 var ver = getInternetExplorerVersion();
