@@ -22,6 +22,7 @@ $(function () {
         function getAuthroization(succ, err) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "getAuthorization", true);
+            
             xhr.onerror = function () {
                 alert("could not connect to dashboard.jaystack.net for authorization");
             }
@@ -875,7 +876,6 @@ $(function () {
 
         self.publishChanges = ko.observable(false);
         self.launchCurrentApplication = function () {
-            if (!self.publishChanges()) return false;
             self.publishChanges(false);
             var appid = self.currentApplication().appid;
             launchApplication(appid);
