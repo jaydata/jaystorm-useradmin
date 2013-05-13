@@ -680,12 +680,14 @@
                                     $data.trace(1, "JayGrid data received:", entities);
                                     self.items.removeAll();
                                     self.loaded(true);
+                                    var items = [];
                                     for (var i = 0; i < entities.length; i++) {
                                         var item = entities[i];
                                         var koItem = item.asKoObservable();
                                         self.extendItem(koItem);
-                                        self.items.push(koItem);
+                                        items.push(koItem);
                                     }
+                                    self.items(items);
                                     self.itemsReceived(entities);
                                     $data.trace(1, "JayGrid data pushed to grid:", self.items());
                                 }
@@ -887,8 +889,9 @@
 
 
             model.Date.subscribe(function (val) {
+                console.log('date');
 
-                var date = columnInfo.value();
+                var date = new Date(columnInfo.value());
                 var newdate;
                 if (!date && !val) {
                     return;
@@ -906,8 +909,9 @@
                 columnInfo.value(date);
             });
             model.Time.subscribe(function (val) {
+                console.log('time');
                 var time = new Date('0001/01/01 ' + val);
-                var date = columnInfo.value();
+                var date = new Date(columnInfo.value());
 
                 if (!date && !val) {
                     return;
@@ -923,6 +927,7 @@
             });
 
             columnInfo.value.subscribe(function (val) {
+                console.log('value');
                 if (columnInfo.value()) {
                     self.setDateModel(model, columnInfo.value());
                 } else {
@@ -1014,7 +1019,7 @@
                         L.geoJson(geoVal).addTo(dlmap);
                         console.log('st v2');
                     }
-                }, 500);
+                }, 1000);
                 return true;
             };
 
@@ -1145,7 +1150,7 @@
                 var basevalue = columnInfo.value();
                 var model = {
                     Value: ko.observable(basevalue),
-                    DataUri: ko.observable(basevalue ? 'data:image;base64,' + basevalue : ''),
+                    DataUri: ko.observable(basevalue ? $data.Blob.toDataURL(basevalue) : columnInfo.owner.getEntity().getFieldUrl(columnInfo.metadata.name)),
                     File: ko.observable(),
                     templateName: 'jay-data-grid-$data.Blob-Image-default'
                 }
@@ -1153,13 +1158,13 @@
                 model.Value.subscribe(function (val) {
                     columnInfo.value(val ? val : null);
                     var realValue = columnInfo.value();
-                    model.DataUri(realValue ? 'data:image;base64,' + realValue : '');
+                    model.DataUri(realValue ? $data.Blob.toDataURL(realValue) : columnInfo.owner.getEntity().getFieldUrl(columnInfo.metadata.name));
                 });
 
                 model.File.subscribe(function (val) {
                     var reader = new FileReader();
                     reader.onload = function (e) {
-                        model.Value(self._arrayBufferToBase64(e.target.result));
+                        model.Value(e.target.result);
                     };
                     reader.readAsArrayBuffer(val);
                 });

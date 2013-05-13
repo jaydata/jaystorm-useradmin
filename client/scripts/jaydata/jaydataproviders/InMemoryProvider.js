@@ -1,4 +1,4 @@
-// JayData 1.2.7
+// JayData 1.3.0
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -11,6 +11,93 @@
 //     Zoltán Gyebrovszki, Gábor Dolla
 //
 // More info: http://jaydata.org
+$data.InMemoryConverter = {
+    fromDb: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Integer': $data.Container.proxyConverter,
+        '$data.Number': $data.Container.proxyConverter,
+        '$data.Date': $data.Container.proxyConverter,
+        '$data.DateTimeOffset': $data.Container.proxyConverter,
+        '$data.Time': $data.Container.proxyConverter,
+        '$data.String': $data.Container.proxyConverter,
+        '$data.Boolean': $data.Container.proxyConverter,
+        '$data.Blob': $data.Container.proxyConverter,
+        '$data.Object': function (o) { if (o === undefined) { return new $data.Object(); } return o; },
+        '$data.Array': function (o) { if (o === undefined) { return new $data.Array(); } return o; },
+        '$data.Guid': function (guid) { return guid ? $data.parseGuid(guid).toString() : guid; },
+        '$data.GeographyPoint': function (g) { if (g) { return new $data.GeographyPoint(g); } return g; },
+        '$data.GeographyLineString': function (g) { if (g) { return new $data.GeographyLineString(g); } return g; },
+        '$data.GeographyPolygon': function (g) { if (g) { return new $data.GeographyPolygon(g); } return g; },
+        '$data.GeographyMultiPoint': function (g) { if (g) { return new $data.GeographyMultiPoint(g); } return g; },
+        '$data.GeographyMultiLineString': function (g) { if (g) { return new $data.GeographyMultiLineString(g); } return g; },
+        '$data.GeographyMultiPolygon': function (g) { if (g) { return new $data.GeographyMultiPolygon(g); } return g; },
+        '$data.GeographyCollection': function (g) { if (g) { return new $data.GeographyCollection(g); } return g; },
+        '$data.GeometryPoint': function (g) { if (g) { return new $data.GeometryPoint(g); } return g; },
+        '$data.GeometryLineString': function (g) { if (g) { return new $data.GeometryLineString(g); } return g; },
+        '$data.GeometryPolygon': function (g) { if (g) { return new $data.GeometryPolygon(g); } return g; },
+        '$data.GeometryMultiPoint': function (g) { if (g) { return new $data.GeometryMultiPoint(g); } return g; },
+        '$data.GeometryMultiLineString': function (g) { if (g) { return new $data.GeometryMultiLineString(g); } return g; },
+        '$data.GeometryMultiPolygon': function (g) { if (g) { return new $data.GeometryMultiPolygon(g); } return g; },
+        '$data.GeometryCollection': function (g) { if (g) { return new $data.GeometryCollection(g); } return g; }
+    },
+    toDb: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Integer': $data.Container.proxyConverter,
+        '$data.Number': $data.Container.proxyConverter,
+        '$data.Date': $data.Container.proxyConverter,
+        '$data.DateTimeOffset': $data.Container.proxyConverter,
+        '$data.Time': function (date) { return date ? Container.convertTo(date, $data.Time) : date; },
+        '$data.String': $data.Container.proxyConverter,
+        '$data.Boolean': $data.Container.proxyConverter,
+        '$data.Blob': $data.Container.proxyConverter,
+        '$data.Object': $data.Container.proxyConverter,
+        '$data.Array': $data.Container.proxyConverter,
+        '$data.Guid': function (guid) { return guid ? guid.toString() : guid; },
+        '$data.GeographyPoint': function (g) { if (g) { return g; } return g; },
+        '$data.GeographyLineString': function (g) { if (g) { return g; } return g; },
+        '$data.GeographyPolygon': function (g) { if (g) { return g; } return g; },
+        '$data.GeographyMultiPoint': function (g) { if (g) { return g; } return g; },
+        '$data.GeographyMultiLineString': function (g) { if (g) { return g; } return g; },
+        '$data.GeographyMultiPolygon': function (g) { if (g) { return g; } return g; },
+        '$data.GeographyCollection': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryPoint': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryLineString': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryPolygon': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryMultiPoint': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryMultiLineString': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryMultiPolygon': function (g) { if (g) { return g; } return g; },
+        '$data.GeometryCollection': function (g) { if (g) { return g; } return g; }
+    },
+    escape: {
+        '$data.Byte': $data.Container.proxyConverter,
+        '$data.SByte': $data.Container.proxyConverter,
+        '$data.Decimal': $data.Container.proxyConverter,
+        '$data.Float': $data.Container.proxyConverter,
+        '$data.Int16': $data.Container.proxyConverter,
+        '$data.Int64': $data.Container.proxyConverter,
+        '$data.Integer': $data.Container.proxyConverter,
+        '$data.Number': $data.Container.proxyConverter,
+        '$data.Date': function (date) { return date ? "new Date(Date.parse('" + date.toISOString() + "'))" : date; },
+        '$data.DateTimeOffset': function (date) { return date ? "new Date(Date.parse('" + date.toISOString() + "'))" : date; },
+        '$data.Time': function (date) { return date ? "new Date(Date.parse('" + date.toISOString() + "'))" : date; },
+        '$data.String': function (text) { return "'" + text.replace(/'/g, "''") + "'"; },
+        '$data.Boolean': function (bool) { return bool ? 'true' : 'false'; },
+        '$data.Blob': function (blob) { return "'" + $data.Blob.toString(blob) + "'"; },
+        '$data.Object': function (o) { return JSON.stringify(o); },
+        '$data.Array': function (o) { return JSON.stringify(o); },
+        '$data.Guid': function (guid) { return guid ? "'" + guid.toString() + "'" : guid; }
+    }
+};
 $C('$data.storageProviders.InMemory.InMemoryProvider', $data.StorageProviderBase, null,
 {
     constructor: function (cfg, ctx) {
@@ -31,10 +118,10 @@ $C('$data.storageProviders.InMemory.InMemoryProvider', $data.StorageProviderBase
 
         var setKeys = [];
         for(var i in this.context._entitySetReferences){
-            setKeys.push(this.context._entitySetReferences[i].tableName);
+            setKeys.push(this.context._entitySetReferences[i].collectionName);
         }
         var localStorageData = null;
-        if(this.providerConfiguration.persistentData && window.localStorage){
+        if (this.providerConfiguration.persistentData && window.localStorage && this.providerConfiguration.dbCreation !== $data.storageProviders.DbCreationType.DropAllExistingTables) {
             var localStoreName = this.providerConfiguration.databaseName || "JayData_InMemory_Provider";
             var that = this;
             localStorageData = JSON.parse(window.localStorage.getItem(localStoreName),
@@ -62,31 +149,38 @@ $C('$data.storageProviders.InMemory.InMemoryProvider', $data.StorageProviderBase
             }
             var isIntegerPk = false;
             if(computedKeys.length === 1){
-                var resolvedType = Container.resolveType(computedKeys[0].type);
-                if(resolvedType === $data.Integer){
+                var resolvedType = Container.resolveName(computedKeys[0].type);
+                if (this.supportedAutoincrementKeys[resolvedType] === true){
+                    //if(resolvedType === $data.Integer){
                     this.providerConfiguration.source['inmemory_sequence'][storageModel.TableName] = 0;
                     isIntegerPk = true;
-                }else if (resolvedType === $data.Guid){
+                }else if (typeof this.supportedAutoincrementKeys[resolvedType] === 'function'){
+                //}else if (resolvedType === $data.Guid){
 
-                }else{
-                    Guard.raise(new Exception('Not supported key field type. Computed pk field type are $data.Integer or $data.Guid!', 'ComputedKeyFieldError'));
+                } else {
+                    console.log("WARRNING! '" + resolvedType + "' not supported as computed Key!");
+                    //Guard.raise(new Exception('Not supported key field type. Computed pk field type are $data.Integer or $data.Guid!', 'ComputedKeyFieldError'));
                 }
             }
             //validate init data
             if (tempSource[storageModel.TableName]) {
                 for (var i = 0; i < tempSource[storageModel.TableName].length; i++) {
                     var entity = tempSource[storageModel.TableName][i];
-                    if(entity instanceof storageModel.LogicalType){
-                        if(isIntegerPk){
-                            var keyValue = entity[computedKeys[0].name]
-                            if (keyValue > this.providerConfiguration.source['inmemory_sequence'][storageModel.TableName]) {
-                                this.providerConfiguration.source['inmemory_sequence'][storageModel.TableName] = keyValue;
-                            }
+                    if (!(entity instanceof storageModel.LogicalType)) {
+                        if (localStorageData) {
+                            entity = new storageModel.LogicalType(entity);
+                        } else {
+                            Guard.raise(new Exception('Invalid element in source: ' + storageModel.TableName));
                         }
-                        this.providerConfiguration.source[storageModel.TableName].push(entity);
-                    }else{
-                        Guard.raise(new Exception('Invalid element in source: ' + storageModel.TableName));
                     }
+
+                    if(isIntegerPk){
+                        var keyValue = entity[computedKeys[0].name]
+                        if (keyValue > this.providerConfiguration.source['inmemory_sequence'][storageModel.TableName]) {
+                            this.providerConfiguration.source['inmemory_sequence'][storageModel.TableName] = keyValue;
+                        }
+                    }
+                    this.providerConfiguration.source[storageModel.TableName].push(entity);
                 }
             }
         }
@@ -193,15 +287,16 @@ $C('$data.storageProviders.InMemory.InMemoryProvider', $data.StorageProviderBase
         var keys = item.entitySet.elementType.memberDefinitions.getKeyProperties();
         if(keys.length === 1 && keys[0].computed){
             var key = keys[0];
-            var keyResolveType = Container.resolveType(key.type);
-            if(keyResolveType === $data.Guid){
-                item.data[key.name] = $data.Guid.NewGuid();
-            } else if(keyResolveType === $data.Integer){
+            var keyResolveType = Container.resolveName(key.type);
+            //if(keyResolveType === $data.Guid){
+            if (typeof this.supportedAutoincrementKeys[keyResolveType] === 'function') {
+                item.data[key.name] = this.supportedAutoincrementKeys[keyResolveType]();
+            } else if (this.supportedAutoincrementKeys[keyResolveType] === true) {
                 var sequenceValue = this.providerConfiguration.source['inmemory_sequence'][item.entitySet.tableName];
                 item.data[key.name] = sequenceValue+1;
                 this.providerConfiguration.source['inmemory_sequence'][item.entitySet.tableName] = sequenceValue + 1;
-            }else{
-                Guard.raise(new Exception("Not supported data type!"))
+            //}else{
+            //    Guard.raise(new Exception("Not supported data type!"))
             }
         }
         else{
@@ -233,7 +328,8 @@ $C('$data.storageProviders.InMemory.InMemoryProvider', $data.StorageProviderBase
     supportedDataTypes: {
         value: [$data.Integer, $data.String, $data.Number, $data.Blob, $data.Boolean, $data.Date, $data.Object, $data.Guid, $data.GeographyPoint,
             $data.GeographyLineString, $data.GeographyPolygon, $data.GeographyMultiPoint, $data.GeographyMultiLineString, $data.GeographyMultiPolygon, $data.GeographyCollection,
-            $data.GeometryPoint, $data.GeometryLineString, $data.GeometryPolygon, $data.GeometryMultiPoint, $data.GeometryMultiLineString, $data.GeometryMultiPolygon, $data.GeometryCollection],
+            $data.GeometryPoint, $data.GeometryLineString, $data.GeometryPolygon, $data.GeometryMultiPoint, $data.GeometryMultiLineString, $data.GeometryMultiPolygon, $data.GeometryCollection,
+            $data.Byte, $data.SByte, $data.Decimal, $data.Float, $data.Int16, $data.Int64, $data.Time, $data.DateTimeOffset],
         writable: false
     },
 
@@ -342,58 +438,11 @@ $C('$data.storageProviders.InMemory.InMemoryProvider', $data.StorageProviderBase
         enumerable: true,
         writable: true
     },
-    fieldConverter: {
+    fieldConverter: { value: $data.InMemoryConverter },
+    supportedAutoincrementKeys: {
         value: {
-            fromDb: {
-                '$data.Integer': function (number) { return number; },
-                '$data.Number': function (number) { return number; },
-                '$data.Date': function (dbData) { return dbData; },
-                '$data.String': function (text) { return text; },
-                '$data.Boolean': function (bool) { return bool; },
-                '$data.Blob': function (blob) { return blob; },
-                '$data.Object': function (o) { if (o === undefined) { return new $data.Object(); } return o; },
-                '$data.Array': function (o) { if (o === undefined) { return new $data.Array(); } return o; },
-                '$data.Guid': function (guid) { return typeof guid === 'string' ? $data.parseGuid(guid) : guid; },
-                '$data.GeographyPoint': function (g) { if (g) { return new $data.GeographyPoint(g); } return g; },
-                '$data.GeographyLineString': function (g) { if (g) { return new $data.GeographyLineString(g); } return g; },
-                '$data.GeographyPolygon': function (g) { if (g) { return new $data.GeographyPolygon(g); } return g; },
-                '$data.GeographyMultiPoint': function (g) { if (g) { return new $data.GeographyMultiPoint(g); } return g; },
-                '$data.GeographyMultiLineString': function (g) { if (g) { return new $data.GeographyMultiLineString(g); } return g; },
-                '$data.GeographyMultiPolygon': function (g) { if (g) { return new $data.GeographyMultiPolygon(g); } return g; },
-                '$data.GeographyCollection': function (g) { if (g) { return new $data.GeographyCollection(g); } return g; },
-                '$data.GeometryPoint': function (g) { if (g) { return new $data.GeometryPoint(g); } return g; },
-                '$data.GeometryLineString': function (g) { if (g) { return new $data.GeometryLineString(g); } return g; },
-                '$data.GeometryPolygon': function (g) { if (g) { return new $data.GeometryPolygon(g); } return g; },
-                '$data.GeometryMultiPoint': function (g) { if (g) { return new $data.GeometryMultiPoint(g); } return g; },
-                '$data.GeometryMultiLineString': function (g) { if (g) { return new $data.GeometryMultiLineString(g); } return g; },
-                '$data.GeometryMultiPolygon': function (g) { if (g) { return new $data.GeometryMultiPolygon(g); } return g; },
-                '$data.GeometryCollection': function (g) { if (g) { return new $data.GeometryCollection(g); } return g; }
-            },
-            toDb: {
-                '$data.Integer': function (number) { return number; },
-                '$data.Number': function (number) { return number; },
-                '$data.Date': function (date) { return date; },
-                '$data.String': function (text) { return text; },
-                '$data.Boolean': function (bool) { return bool; },
-                '$data.Blob': function (blob) { return blob; },
-                '$data.Object': function (o) { return o; },
-                '$data.Array': function (o) { return o; },
-                '$data.Guid': function (guid) { return guid ? guid.value : guid; },
-                '$data.GeographyPoint': function (g) { if (g) { return g; } return g; },
-                '$data.GeographyLineString': function (g) { if (g) { return g; } return g; },
-                '$data.GeographyPolygon': function (g) { if (g) { return g; } return g; },
-                '$data.GeographyMultiPoint': function (g) { if (g) { return g; } return g; },
-                '$data.GeographyMultiLineString': function (g) { if (g) { return g; } return g; },
-                '$data.GeographyMultiPolygon': function (g) { if (g) { return g; } return g; },
-                '$data.GeographyCollection': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryPoint': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryLineString': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryPolygon': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryMultiPoint': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryMultiLineString': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryMultiPolygon': function (g) { if (g) { return g; } return g; },
-                '$data.GeometryCollection': function (g) { if (g) { return g; } return g; }
-            }
+            '$data.Integer': true,
+            '$data.Guid': function () { return $data.createGuid(); }
         }
     }
 }, null);
@@ -403,23 +452,10 @@ $C('$data.storageProviders.InMemory.LocalStorageProvider', $data.storageProvider
     }
 }, null);
 $data.StorageProviderBase.registerProvider("InMemory", $data.storageProviders.InMemory.InMemoryProvider);
-$data.StorageProviderBase.registerProvider("LocalStore", $data.storageProviders.InMemory.LocalStorageProvider);$C('$data.storageProviders.InMemory.InMemoryCompiler', $data.Expressions.EntityExpressionVisitor, null, {
+$data.StorageProviderBase.registerProvider("LocalStore", $data.storageProviders.InMemory.LocalStorageProvider);
+$C('$data.storageProviders.InMemory.InMemoryCompiler', $data.Expressions.EntityExpressionVisitor, null, {
     constructor: function (provider) {
-        this.provider = {
-            fieldConverter: {
-                toDb: {
-                    '$data.Integer': function (number) { return number; },
-                    '$data.Number': function (number) { return number; },
-                    '$data.Date': function (date) { return date ? "new Date(Date.parse('" + date.toISOString() + "'))" : null; },
-                    '$data.String': function (text) { return "'" + text.replace(/'/g, "''") + "'"; },
-                    '$data.Boolean': function (bool) { return bool ? 'true' : 'false'; },
-                    '$data.Blob': function (blob) { return typeof blob === 'string' ? "'" + blob + "'" : blob; },
-                    '$data.Object': function (o) { return JSON.stringify(o); },
-                    '$data.Array': function (o) { return JSON.stringify(o); },
-                    '$data.Guid': function (guid) { return guid ? "'" + guid + "'" : null; }
-                }
-            }
-        };
+        this.provider = provider;
     },
     compile: function (query) {
 
@@ -530,9 +566,20 @@ $C('$data.storageProviders.InMemory.InMemoryFunctionCompiler', $data.Expressions
         context.data += ")";
     },
     VisitSimpleBinaryExpression: function (expression, context) {
+        var self = this;
         if (expression.resolution.reverse) {
             context.data += "(";
-            var right = this.Visit(expression.right, context);
+
+            if (expression.resolution.name === 'in' && Array.isArray(expression.right.value)) {
+                context.data += "[";
+                expression.right.value.forEach(function (item, i) {
+                    if (i > 0) context.data += ",";
+                    self.Visit(item, context);
+                });
+                context.data += "]";
+            } else {
+                var right = this.Visit(expression.right, context);
+            }
             context.data += expression.resolution.mapTo;
             var left = this.Visit(expression.left, context);
             if (expression.resolution.rightValue)
@@ -550,7 +597,8 @@ $C('$data.storageProviders.InMemory.InMemoryFunctionCompiler', $data.Expressions
     VisitConstantExpression: function (expression, context) {
         var type = Container.resolveType(expression.type);
         var typeName = Container.resolveName(type);
-        context.data += this.provider.fieldConverter.toDb[typeName](expression.value);
+        var converter = this.provider.fieldConverter.escape[typeName];
+        context.data += converter ? converter(expression.value) : expression.value;
     },
     VisitMemberInfoExpression: function (expression, context) {
         context.data += expression.memberName;

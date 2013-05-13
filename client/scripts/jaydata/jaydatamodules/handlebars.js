@@ -1,4 +1,4 @@
-// JayData 1.2.7
+// JayData 1.3.0
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //
@@ -266,9 +266,13 @@
                 if (md.kind === "property") {
                     var field = {
                         name: md.name,
-                        metadata: md,
-                        get value() { return self[name]; }
-                    }
+                        metadata: md
+                    };
+                    Object.defineProperty(field, 'value', {
+                        get: function(){
+                            return self[name];
+                        }
+                    });
                     results.push(field);
                 }
             });

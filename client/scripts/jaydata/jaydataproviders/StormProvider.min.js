@@ -1,4 +1,4 @@
-// JayData 1.2.7
+// JayData 1.3.0
 // Dual licensed under MIT and GPL v2
 // Copyright JayStack Technologies (http://jaydata.org/licensing)
 //

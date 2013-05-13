@@ -753,7 +753,7 @@ $(function () {
                     self.navigationVisible(true);
                     if (localStorage[value.appid]) self.publishSuccess(parseInt(localStorage[value.appid], 10));
                     else self.publishSuccess(0);
-                    new $data.JayStormClient.DeploymentManager(self).appContext(appDBFactory());
+                    self.submenuItems[0].Model.appContext(appDBFactory());
                 },
                 error: function () {
                     setTimeout(function () {
@@ -853,7 +853,7 @@ $(function () {
                                 });
                             };
                             
-                            fn();
+                            setTimeout(fn, 3000);
                         }).fail(function(err){
                             alert(err);
                         });
@@ -869,7 +869,7 @@ $(function () {
         self.publishChangesLaunch = function(){
             if (!self.publishChanges()) return false;
             self.publishChanges(false);
-            new $data.JayStormClient.DeploymentManager(self).appContext(self.currentAppDBContextFactory());
+            self.submenuItems[0].Model.appContext(self.currentAppDBContextFactory()());
             var appid = self.currentApplication().appid;
             launchApplication(appid);
         };
