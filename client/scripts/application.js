@@ -56,7 +56,8 @@ $(function () {
                         }else self.currentApplication(apps[0]);
 
                     } else {
-                        alert("not ok (200) response from getAuthorization:" + xhr.responseText);
+                        window.location.href = 'https://' + (window.location.href.indexOf('dev-') >= 0 ? 'dev-' : '') + 'dashboard.jaystack.com';
+                        //alert("not ok (200) response from getAuthorization:" + xhr.responseText);
                     }
                 }
             }

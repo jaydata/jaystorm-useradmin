@@ -309,9 +309,9 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SchemaManager", {
                                 holder.ElementType = null;
                             }
                             
-                            if (td.Type && t.isNavigation){
+                            /*if (td.Type && t.isNavigation){
                                 holder.InverseProperty = t.Entity.Name;
-                            }
+                            }*/
                         }
                     }
                 }
@@ -348,10 +348,15 @@ function EventHandlerCodeEditorModel(vm){
     //var h = self.data.owner.Handler();
     
     self.originalValue = self.data.owner.Handler();
-    setTimeout(function(){
-        if (!self.data.owner.Handler()) self.data.owner.Handler(new EJS({ url: '/scripts/eventhandlersource-template.ejs' }).render({ event: self.data.owner.Type() }));
-        new $data.JayStormUI.CodeMirror('handler-code-editor-' + self.data.rowIndex(), self.data.owner.Handler, self.error);
-    }, 1);
+    self.id = 'handler-code-editor-' + self.data.rowIndex();
+    //if (!vm.parent.codeMirrorInstances[self.id]){
+        setTimeout(function(){
+            if (!self.data.owner.Handler()) self.data.owner.Handler(new EJS({ url: '/scripts/eventhandlersource-template.ejs' }).render({ event: self.data.owner.Type() }));
+            //if (!vm.parent.codeMirrorInstances[self.id]){
+            vm.parent.codeMirrorInstances[self.id] = new $data.JayStormUI.CodeMirror(self.id, self.data.owner.Handler, self.error);
+            //}
+        }, 100);
+    //}
     
     this.saveHandler = function(){
         /*if (self.data.owner.Handler() != h){
@@ -439,12 +444,14 @@ function EventHandlersEditorModel(vm){
         if (cb && cb.closeControlBox) cb.closeControlBox();
         
         self.codeEditor.splice(self.codeEditor.indexOf(cb), 1);
+        delete self.codeMirrorInstances[cb.id];
         
         item.Handler(cb.originalValue);
         adminApiClient.publishChanges(adminApiClient.publishChanges() || false);
     };
     
     self.codeEditor = [];
+    self.codeMirrorInstances = {};
     
     self.editCode = function(e){
         e.showControls.bind({}, 'eventHandlerCodeEditor', EventHandlerCodeEditorModel, { eventHandler: e, parent: self });

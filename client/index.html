@@ -785,7 +785,7 @@
                             <script type="text/html" data-name-template="Name-display">
                                 <b><a data-bind="{text: value, attr: { target: '_blank', href: $root.application.currentApplication().url + value() } }"></a></b>
                                 <div data-bind="if: owner.HasChanges()">(unpublished changes)</div>
-                                <a href="#" onclick="$('#nav-2 #9').trigger('click'); return false;">API access tutorials</a>
+                                <a href="#" data-bind="click: $root.apiaccesstutorial">API access tutorials</a>
                                 <!--<a data-bind="{text: $root.application.currentApplication().url + '/' + value() }}"></a>-->
                             </script>
                             <script type="text/html" data-name-template="ServiceType-editor">
@@ -902,9 +902,9 @@
 
                         <h4>Add new permission</h4>
                         <form class="form-inline" data-bind="submit: addPermission">
-                            <select class="input-medium" data-bind="options: databases, optionsText:'Name', value: selectedDatabase, optionsCaption:'All databases'"></select>
-                            <select class="input-medium" data-bind="options: tables, optionsText:'Name',  value: selectedTable, optionsCaption:'All tables'"></select>
-                            <select class="input-medium" data-bind="options: groups, optionsText:'Name',  value: selectedGroup, optionsCaption:'All groups'"></select>
+                            <select class="input-medium" data-bind="options: databases, optionsText:'Name', value: selectedDatabase, optionsCaption:'Select database'"></select>
+                            <select class="input-medium" data-bind="options: tables, optionsText:'Name',  value: selectedTable, optionsCaption:'Select table'"></select>
+                            <select class="input-medium" data-bind="options: groups, optionsText:'Name',  value: selectedGroup, optionsCaption:'Select group'"></select>
 
                             <span class="iblock actions" data-bind="foreach: tablePermissions">
                                 <span class="label-group">
@@ -913,7 +913,7 @@
                                 </span>
                             </span>
 
-                            <input class="btn btn-info" type="submit" value="Add permission" />
+                            <input class="btn btn-info" type="submit" data-bind="disable: addPermissionDisabled" value="Add permission" />
                         </form>
 
                         <h4>List of active permissions</h4>
@@ -921,6 +921,7 @@
                         <div data-bind="jayGrid: {source: context().Permissions,
                                                 showNewCommandBottom: false,
                                                 showNewCommandTop: false,
+                                                afterSave: afterSave,
                                                fields: ['DatabaseID', 'EntitySetID','GroupID','Read','Create','Update','Delete','DeleteBatch'],
                                               refresher: $root.rf }">
 

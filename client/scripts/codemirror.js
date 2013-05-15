@@ -76,7 +76,9 @@ $data.Base.extend('$data.JayStormUI.CodeMirror', {
                 if (lint) error(false);
                 else error(JSHINT.errors);
             }
-            var editor = CodeMirror(document.getElementById(el), {
+            var htmlEl = document.getElementById(el);
+            if (htmlEl && htmlEl.firstChild && htmlEl.firstChild.className == 'CodeMirror') return;
+            var editor = CodeMirror(htmlEl, {
                 value: value(),
                 mode: 'javascript',
                 lineNumbers: true,

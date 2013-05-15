@@ -88,7 +88,7 @@ passport.use(new BasicStrategy ({
               console.log(err);
               done(null, null);
           })
-          
+          req.shouldKeepAlive = false;
           req.end();
           //console.dir(req);
       });
@@ -211,7 +211,7 @@ app.use('/launch', function (req, res, next) {
         console.log(err);
         res.end();
     });
-    
+    launchReq.shouldKeepAlive = false;
     launchReq.end(JSON.stringify(req.body));
 });
 

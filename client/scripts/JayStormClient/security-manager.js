@@ -62,14 +62,26 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
 
         self.selectedDatabase.subscribe(function (value) {
             console.log(value);
+            if (value){
             var id = value.DatabaseID();
             self.createContext().EntitySets
                 .filter(function (it) { return it.DatabaseID == this.id }, { id: id })
                 .toArray(self.tables);
+            }else self.tables([]);
         });
 
         self.selectedTable = ko.observable();
         self.selectedGroup = ko.observable();
+        
+        self.addPermissionDisabled = ko.computed(function(){
+            if (!self.selectedDatabase()) return true;
+            if (!self.selectedTable()) return true;
+            if (!self.selectedGroup()) return true;
+            for (var i = 0; i < self.tablePermissions.length; i++){
+                if (self.tablePermissions[i].value()) return false;
+            }
+            return true;
+        }, self);
 
         self.permissionRefresh = ko.observable();
 
@@ -77,7 +89,7 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
             //console.dir(p);
             var c = self.createContext();
 
-            var dbIDs = self.selectedDatabase() ? [self.selectedDatabase().DatabaseID()] :
+            /*var dbIDs = self.selectedDatabase() ? [self.selectedDatabase().DatabaseID()] :
                                                   self.databases().map(function (db) { return db.DatabaseID() });
 
 
@@ -104,14 +116,30 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.SecurityManager", {
                     self.items.push(koItem);
                     console.log("pushdone");
                 }
-            }
+            }*/
             //    }
             //}
+            var p = new c.Permissions.createNew({
+                DatabaseID: self.selectedDatabase() ? self.selectedDatabase().DatabaseID() : null,
+                EntitySetID: self.selectedTable() ? self.selectedTable().EntitySetID() : null,
+                GroupID: self.selectedGroup() ? self.selectedGroup().GroupID() : null
+            });
+            for (var z = 0; z < self.tablePermissions.length; z++) {
+                p[self.tablePermissions[z].field] = self.tablePermissions[z].value();
+            }
+            c.add(p);
             c.saveChanges(function () {
-                self.rf(Math.random());
+                self.rf(+new Date());
                 console.log("saved!");
-            })
-        }
+                adminApiClient.publishChanges(true);
+            }).fail(function(err){
+                console.error(err);
+            });
+        };
+        
+        self.afterSave = function(){
+            adminApiClient.publishChanges(true);
+        };
     }
 }
 );

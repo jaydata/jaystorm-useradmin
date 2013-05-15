@@ -9,6 +9,7 @@
         self.Groups = ko.observableArray([]);
 
         var currentList = self.value() || [];
+        var g = [];
         viewModel.context().Groups.forEach(function (item) {
             item.selected = ko.observable(currentList.indexOf(item.GroupID) > -1);
             item.selected.subscribe(function (value) {
@@ -20,8 +21,10 @@
                 }
                 self.value(list);
             });
-            self.Groups.push(item);
+            //self.Groups.push(item);
+            g.push(item);
         });
+        self.Groups(g);
 
     };
 
@@ -39,9 +42,10 @@
             }
             var z = this._cached_ko_array = ko.observableArray([]);
             this.toArray( function(items) {
-                items.forEach(function(item) {
+                z.concat(items);
+                /*items.forEach(function(item) {
                     z.push(item);
-                })
+                })*/
             });
             return z;
         }
@@ -295,6 +299,7 @@
                             self.objectsToDelete.removeAll();
                             self.objectsInEditMode.removeAll();
                             self.saving(false);
+                            if (self.afterSave) self.afterSave(source);
 
                         }).fail( function() { self.saving(false); console.dir(arguments); })
                     }
@@ -551,13 +556,15 @@
                     var koCells = ko.observableArray([]);
                     koItem.getControlCells = koCells;
                     koItem.showControlBox = function (index, data, template, viewModelType, viewModelData) {
-                        koCells.removeAll();
+                        //koCells.removeAll();
                         console.log("showControlBox");
                         viewModelData.closeControlBox = function () {
-                            koCells.removeAll();
+                            //koCells.removeAll();
+                            koCells([]);
                         };
                         var vm = new viewModelType(viewModelData);
                         var colcount = self.columns().length;
+                        var cells = [];
                         for (var i = 0; i < colcount; i++) {
                             var item = { index : i, asked: index };
                             item.colspan = 1;
@@ -569,12 +576,15 @@
                                 item.templateName = template;
                                 item.data = data;
                                 item.viewModel = vm;
-                                koCells.push(item);
+                                //koCells.push(item);
+                                cells.push(item);
                                 break;
                             }
-                            koCells.push(item);
+                            //koCells.push(item);
+                            cells.push(item);
                         }
-                        console.log(koCells().length);
+                        //console.log(koCells().length);
+                        koCells(cells);
                         
                         return false;
                     }

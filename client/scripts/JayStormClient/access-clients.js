@@ -4,7 +4,13 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.AccessClients", {
 
         self.services = ko.observableArray([]);
         self.clickDb = function(){
-            setTimeout(function(){ (document.querySelector('#AccessClientsUI .nav.nav-tabs li a:not([data-servicename="ApplicationDB"])') || { click: function(){} }).click(); }, 0);
+            setTimeout(function(){
+                ((adminApiClient.apiAccessTutorial
+                    ? document.querySelector('#AccessClientsUI .nav.nav-tabs li a[data-servicename="' + adminApiClient.apiAccessTutorial + '"]')
+                    : document.querySelector('#AccessClientsUI .nav.nav-tabs li a:not([data-servicename="ApplicationDB"])'))
+                || { click: function(){} }).click();
+                delete adminApiClient.apiAccessTutorial;
+            }, 0);
         };
         
         self.visible.subscribe(function(value){

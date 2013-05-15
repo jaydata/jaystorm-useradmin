@@ -96,6 +96,12 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.ServiceManager", {
             adminApiClient.publishChanges(true);
         };
         
+        self.apiaccesstutorial = function(data){
+            adminApiClient.apiAccessTutorial = data.value();
+            $('#nav-2 #9').trigger('click');
+            return false;
+        };
+        
         self.editData = function(item){
             window.editDataService = item.owner.ServiceID();
             window.editDataTable = undefined;
