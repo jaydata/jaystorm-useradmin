@@ -5,12 +5,14 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.AccessClients", {
         self.services = ko.observableArray([]);
         self.clickDb = function(){
             setTimeout(function(){
-                ((adminApiClient.apiAccessTutorial
+                var el = ((adminApiClient.apiAccessTutorial
                     ? document.querySelector('#AccessClientsUI .nav.nav-tabs li a[data-servicename="' + adminApiClient.apiAccessTutorial + '"]')
-                    : document.querySelector('#AccessClientsUI .nav.nav-tabs li a:not([data-servicename="ApplicationDB"])'))
-                || { click: function(){} }).click();
-                delete adminApiClient.apiAccessTutorial;
-            }, 0);
+                    : document.querySelector('#AccessClientsUI .nav.nav-tabs li a:not([data-servicename="ApplicationDB"])')));
+                if (el && el.parentNode.className != 'active'){
+                    el.click();
+                    el.parentNode.className = 'active';
+                }
+            }, 100);
         };
         
         self.visible.subscribe(function(value){
@@ -46,6 +48,17 @@ $data.JayStormUI.AdminModel.extend("$data.JayStormClient.AccessClients", {
                 value.Services.toArray(self.services).then(function(value){
                     self.clickDb();
                 });
+                /*var alreadyVisible = self.visible() || self.services().length === 0;
+                value.Services.toArray(self.services).then(function (value){
+                    if (!(!alreadyVisible && self.visible())) {
+                        self.clickDb();
+                    } else {
+                        var el = document.querySelector('#AccessClientsUI .nav.nav-tabs li a[data-servicename="' + adminApiClient.apiAccessTutorial || self.currentService().Name() + '"]');
+                        if (el) {
+                            el.parentNode.className = 'active';
+                        }
+                    }
+                });*/
             } else {
                 self.services.removeAll();
             }

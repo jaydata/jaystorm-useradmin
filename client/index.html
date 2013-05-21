@@ -1323,7 +1323,7 @@
                         </div>
 
                         <ul class="nav nav-tabs" data-bind="foreach:services">
-                            <li><a href="#" data-bind="text:Name,click: $root.currentService.bind($data), attr: { 'data-servicename': Name }"></a></li>
+                            <li data-bind="css: { active: $root.currentService() && Name() == $root.currentService().Name() }"><a href="#" data-bind="text:Name,click: $root.currentService.bind($data), attr: { 'data-servicename': Name }"></a></li>
                         </ul>
 
                         <div data-bind="if: data">
