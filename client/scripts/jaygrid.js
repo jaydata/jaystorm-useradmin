@@ -23,8 +23,9 @@
             });
             //self.Groups.push(item);
             g.push(item);
+        }).then(function(){
+            self.Groups(g);
         });
-        self.Groups(g);
 
     };
 
